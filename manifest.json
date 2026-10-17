@@ -13564,5 +13564,1293 @@
   "name": "男科检查项目",
   "description": "男科检查项目：就医准备与操作规范指南",
   "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "student-archive-keep-tianbao",
+  "category": "life-service",
+  "name": "学籍档案存放",
+  "description": "学籍档案存放：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "student-grant-apply-tianbao",
+  "category": "life-service",
+  "name": "贫困生助学金",
+  "description": "贫困生助学金：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "motorcycle-license-tianbao",
+  "category": "life-service",
+  "name": "摩托车驾照",
+  "description": "摩托车驾照：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "veteran-subsidy-tianbao",
+  "category": "life-service",
+  "name": "退伍补贴",
+  "description": "退伍补贴：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "medical-account-sharing-tianbao",
+  "category": "life-service",
+  "name": "医保个人账户共济",
+  "description": "医保个人账户共济：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "huiminbao-claim-tianbao",
+  "category": "life-service",
+  "name": "惠民保理赔",
+  "description": "惠民保理赔：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "flight-delay-claim-tianbao",
+  "category": "life-service",
+  "name": "航班延误险理赔",
+  "description": "航班延误险理赔：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "auto-claim-dispute-tianbao",
+  "category": "life-service",
+  "name": "车险定损争议",
+  "description": "车险定损争议：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "vehicle-scrapping-tianbao",
+  "category": "life-service",
+  "name": "车辆报废注销",
+  "description": "车辆报废注销：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "etc-charge-dispute-tianbao",
+  "category": "life-service",
+  "name": "ETC扣费异常",
+  "description": "ETC扣费异常：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "night-highway-safety-tianbao",
+  "category": "life-service",
+  "name": "夜间高速安全",
+  "description": "夜间高速安全：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "highway-accident-response-tianbao",
+  "category": "life-service",
+  "name": "事故高速处置",
+  "description": "事故高速处置：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "low-rent-housing-apply-tianbao",
+  "category": "life-service",
+  "name": "廉租房申请",
+  "description": "廉租房申请：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "flatmate-sharing-agreement-tianbao",
+  "category": "life-service",
+  "name": "合租分摊协议",
+  "description": "合租分摊协议：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "falling-object-claim-tianbao",
+  "category": "life-service",
+  "name": "高空抛物维权",
+  "description": "高空抛物维权：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "garbage-sorting-dispute-tianbao",
+  "category": "life-service",
+  "name": "垃圾分类争议",
+  "description": "垃圾分类争议：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "deceased-phone-transfer-tianbao",
+  "category": "life-service",
+  "name": "亲人去世手机号过户",
+  "description": "亲人去世手机号过户：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "game-account-inherit-tianbao",
+  "category": "life-service",
+  "name": "游戏账号继承",
+  "description": "游戏账号继承：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "virtual-asset-inherit-tianbao",
+  "category": "life-service",
+  "name": "虚拟财产继承",
+  "description": "虚拟财产继承：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "xinxin-crime-risk-tianbao",
+  "category": "life-service",
+  "name": "帮信罪风险",
+  "description": "帮信罪风险：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "facepay-risk-tianbao",
+  "category": "life-service",
+  "name": "刷脸支付风险",
+  "description": "刷脸支付风险：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "helmet-standard-tianbao",
+  "category": "life-service",
+  "name": "电动车头盔标准",
+  "description": "电动车头盔标准：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "legacy-support-agreement-tianbao",
+  "category": "life-service",
+  "name": "遗赠扶养协议",
+  "description": "遗赠扶养协议：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "transfer-contract-pitfall-tianbao",
+  "category": "life-service",
+  "name": "转让合同避坑",
+  "description": "转让合同避坑：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "child-labor-risk-tianbao",
+  "category": "life-service",
+  "name": "童工风险防范",
+  "description": "童工风险防范：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "tea-franchise-pitfall-tianbao",
+  "category": "life-service",
+  "name": "奶茶店加盟避坑",
+  "description": "奶茶店加盟避坑：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "home-repair-scam-tianbao",
+  "category": "life-service",
+  "name": "上门维修防骗",
+  "description": "上门维修防骗：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "ac-freon-scam-tianbao",
+  "category": "life-service",
+  "name": "空调加氟陷阱",
+  "description": "空调加氟陷阱：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "waterproof-scam-tianbao",
+  "category": "life-service",
+  "name": "防水补漏骗局",
+  "description": "防水补漏骗局：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "cross-province-moving-tianbao",
+  "category": "life-service",
+  "name": "跨省搬家比价",
+  "description": "跨省搬家比价：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "moving-packing-tips-tianbao",
+  "category": "life-service",
+  "name": "搬家打包技巧",
+  "description": "搬家打包技巧：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "used-car-check-tianbao",
+  "category": "life-service",
+  "name": "二手车过户查验",
+  "description": "二手车过户查验：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "farmland-subsidy-tianbao",
+  "category": "life-service",
+  "name": "耕地地力保护补贴",
+  "description": "耕地地力保护补贴：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "reforest-subsidy-tianbao",
+  "category": "life-service",
+  "name": "退耕还林补贴",
+  "description": "退耕还林补贴：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "poverty-monitor-aid-tianbao",
+  "category": "life-service",
+  "name": "脱贫监测户帮扶",
+  "description": "脱贫监测户帮扶：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "poultry-farm-license-tianbao",
+  "category": "life-service",
+  "name": "养鸡场办证",
+  "description": "养鸡场办证：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "greenhouse-subsidy-tianbao",
+  "category": "life-service",
+  "name": "大棚补贴",
+  "description": "大棚补贴：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "pig-insurance-claim-tianbao",
+  "category": "life-service",
+  "name": "生猪保险理赔",
+  "description": "生猪保险理赔：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "village-committee-election-tianbao",
+  "category": "life-service",
+  "name": "村委会选举",
+  "description": "村委会选举：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "neighbor-land-dispute-tianbao",
+  "category": "life-service",
+  "name": "邻里占地纠纷",
+  "description": "邻里占地纠纷：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "grave-dispute-tianbao",
+  "category": "life-service",
+  "name": "坟地纠纷",
+  "description": "坟地纠纷：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "township-hospital-reimburse-tianbao",
+  "category": "life-service",
+  "name": "乡镇卫生院报销",
+  "description": "乡镇卫生院报销：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "township-market-stall-tianbao",
+  "category": "life-service",
+  "name": "乡镇集市摊位",
+  "description": "乡镇集市摊位：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "rural-toilet-acceptance-tianbao",
+  "category": "life-service",
+  "name": "农村改厕验收",
+  "description": "农村改厕验收：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "rural-broadband-tianbao",
+  "category": "life-service",
+  "name": "农村宽带办理",
+  "description": "农村宽带办理：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "kinship-certificate-tianbao",
+  "category": "life-service",
+  "name": "亲属关系证明",
+  "description": "亲属关系证明：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "lucky-money-amount-tianbao",
+  "category": "life-service",
+  "name": "压岁钱给多少",
+  "description": "压岁钱给多少：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "birthday-banquet-flow-tianbao",
+  "category": "life-service",
+  "name": "寿宴流程",
+  "description": "寿宴流程：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "funeral-gift-amount-tianbao",
+  "category": "life-service",
+  "name": "白事随礼标准",
+  "description": "白事随礼标准：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "wheelchair-transfer-tianbao",
+  "category": "life-service",
+  "name": "轮椅转移技巧",
+  "description": "轮椅转移技巧：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "roseola-care-tianbao",
+  "category": "life-service",
+  "name": "幼儿急疹护理",
+  "description": "幼儿急疹护理：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "child-insurance-setup-tianbao",
+  "category": "life-service",
+  "name": "儿童保险配置",
+  "description": "儿童保险配置：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "blocked-duct-relief-tianbao",
+  "category": "life-service",
+  "name": "堵奶处理",
+  "description": "堵奶处理：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "umbilical-care-tianbao",
+  "category": "life-service",
+  "name": "脐带护理",
+  "description": "脐带护理：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "anemia-recipe-tianbao",
+  "category": "life-service",
+  "name": "贫血食谱",
+  "description": "贫血食谱：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "dysphagia-diet-tianbao",
+  "category": "life-service",
+  "name": "吞咽困难饮食",
+  "description": "吞咽困难饮食：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "seat-select-tips-tianbao",
+  "category": "life-service",
+  "name": "值机选座技巧",
+  "description": "值机选座技巧：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "air-miles-redeem-tianbao",
+  "category": "life-service",
+  "name": "航空里程兑换",
+  "description": "航空里程兑换：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "metro-dispute-tianbao",
+  "category": "life-service",
+  "name": "地铁内纠纷",
+  "description": "地铁内纠纷：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "bike-theft-report-tianbao",
+  "category": "life-service",
+  "name": "自行车被盗报警",
+  "description": "自行车被盗报警：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "vehicle-agency-tianbao",
+  "category": "life-service",
+  "name": "代办车驾管",
+  "description": "代办车驾管：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "gov-hall-booking-tianbao",
+  "category": "life-service",
+  "name": "政务大厅预约",
+  "description": "政务大厅预约：分步骤实操指南",
+  "source_batch": "batch26-mega"
+ },
+ {
+  "slug": "diploma-reissue-tianbao",
+  "category": "life-service",
+  "name": "毕业证丢失补办",
+  "description": "毕业证丢失补办：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "dorm-inspection-appeal-tianbao",
+  "category": "life-service",
+  "name": "宿舍查寝申诉",
+  "description": "宿舍查寝申诉：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "fresh-graduate-status-tianbao",
+  "category": "life-service",
+  "name": "应届生身份保留",
+  "description": "应届生身份保留：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "military-family-card-tianbao",
+  "category": "life-service",
+  "name": "军属优待证",
+  "description": "军属优待证：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "major-medical-reimburse-tianbao",
+  "category": "life-service",
+  "name": "大病医保二次报销",
+  "description": "大病医保二次报销：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "bank-card-limit-restore-tianbao",
+  "category": "life-service",
+  "name": "银行卡降额恢复",
+  "description": "银行卡降额恢复：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "travel-insurance-claim-tianbao",
+  "category": "life-service",
+  "name": "旅游险理赔",
+  "description": "旅游险理赔：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "offsite-violation-handle-tianbao",
+  "category": "life-service",
+  "name": "违章异地处理",
+  "description": "违章异地处理：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "license-lottery-apply-tianbao",
+  "category": "life-service",
+  "name": "摇号购车",
+  "description": "摇号购车：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "camera-ticket-appeal-tianbao",
+  "category": "life-service",
+  "name": "电子眼申诉",
+  "description": "电子眼申诉：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "tibet-drive-prep-tianbao",
+  "category": "life-service",
+  "name": "车辆进藏准备",
+  "description": "车辆进藏准备：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "rental-filing-tianbao",
+  "category": "life-service",
+  "name": "租房备案登记",
+  "description": "租房备案登记：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "rental-lawsuit-tianbao",
+  "category": "life-service",
+  "name": "房屋租赁纠纷起诉",
+  "description": "房屋租赁纠纷起诉：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "renovation-noise-complaint-tianbao",
+  "category": "life-service",
+  "name": "装修扰民投诉",
+  "description": "装修扰民投诉：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "parking-dispute-tianbao",
+  "category": "life-service",
+  "name": "停车位纠纷",
+  "description": "停车位纠纷：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "community-canteen-tianbao",
+  "category": "life-service",
+  "name": "社区养老食堂",
+  "description": "社区养老食堂：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "deceased-wechat-handle-tianbao",
+  "category": "life-service",
+  "name": "逝者微信账号处理",
+  "description": "逝者微信账号处理：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "cloud-account-inherit-tianbao",
+  "category": "life-service",
+  "name": "网盘账号继承",
+  "description": "网盘账号继承：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "livestream-fake-goods-tianbao",
+  "category": "life-service",
+  "name": "直播间买到假货",
+  "description": "直播间买到假货：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "takedown-appeal-tianbao",
+  "category": "life-service",
+  "name": "删帖维权",
+  "description": "删帖维权：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "bike-share-charge-tianbao",
+  "category": "life-service",
+  "name": "共享单车扣费争议",
+  "description": "共享单车扣费争议：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "child-support-enforce-tianbao",
+  "category": "life-service",
+  "name": "抚养费执行",
+  "description": "抚养费执行：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "hygiene-license-tianbao",
+  "category": "life-service",
+  "name": "卫生许可证办理",
+  "description": "卫生许可证办理：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "shop-opening-checklist-tianbao",
+  "category": "life-service",
+  "name": "开店筹备清单",
+  "description": "开店筹备清单：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "delivery-commission-compare-tianbao",
+  "category": "life-service",
+  "name": "美团饿了么抽成对比",
+  "description": "美团饿了么抽成对比：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "store-supply-channel-tianbao",
+  "category": "life-service",
+  "name": "便利店进货渠道",
+  "description": "便利店进货渠道：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "appliance-repair-fee-tianbao",
+  "category": "life-service",
+  "name": "家电维修乱收费",
+  "description": "家电维修乱收费：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "drain-unclog-fee-tianbao",
+  "category": "life-service",
+  "name": "下水道疏通收费",
+  "description": "下水道疏通收费：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "pc-repair-data-save-tianbao",
+  "category": "life-service",
+  "name": "电脑维修数据保命",
+  "description": "电脑维修数据保命：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "moving-damage-claim-tianbao",
+  "category": "life-service",
+  "name": "物品损坏索赔",
+  "description": "物品损坏索赔：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "fridge-moving-tianbao",
+  "category": "life-service",
+  "name": "冰箱搬运注意",
+  "description": "冰箱搬运注意：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "secondhand-scam-tianbao",
+  "category": "life-service",
+  "name": "二手平台骗局",
+  "description": "二手平台骗局：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "farm-machinery-subsidy-tianbao",
+  "category": "life-service",
+  "name": "农机购置补贴",
+  "description": "农机购置补贴：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "grassland-subsidy-tianbao",
+  "category": "life-service",
+  "name": "草原生态补贴",
+  "description": "草原生态补贴：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "anti-poverty-insurance-tianbao",
+  "category": "life-service",
+  "name": "防返贫保险",
+  "description": "防返贫保险：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "beekeeping-guide-tianbao",
+  "category": "life-service",
+  "name": "养蜂技术",
+  "description": "养蜂技术：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "orchard-subsidy-tianbao",
+  "category": "life-service",
+  "name": "果树种植补贴",
+  "description": "果树种植补贴：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "land-transfer-contract-tianbao",
+  "category": "life-service",
+  "name": "耕地流转合同",
+  "description": "耕地流转合同：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "village-dividend-tianbao",
+  "category": "life-service",
+  "name": "村集体分红",
+  "description": "村集体分红：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "village-road-dispute-tianbao",
+  "category": "life-service",
+  "name": "村道路纠纷",
+  "description": "村道路纠纷：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "village-rules-tianbao",
+  "category": "life-service",
+  "name": "村规民约",
+  "description": "村规民约：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "village-doctor-signup-tianbao",
+  "category": "life-service",
+  "name": "村医签约服务",
+  "description": "村医签约服务：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "rural-house-rating-tianbao",
+  "category": "life-service",
+  "name": "农村危房鉴定",
+  "description": "农村危房鉴定：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "rural-solar-install-tianbao",
+  "category": "life-service",
+  "name": "农村光伏安装",
+  "description": "农村光伏安装：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "flexible-employment-archive-tianbao",
+  "category": "life-service",
+  "name": "灵活就业档案",
+  "description": "灵活就业档案：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "marital-status-proof-tianbao",
+  "category": "life-service",
+  "name": "婚姻状况证明",
+  "description": "婚姻状况证明：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "baby-banquet-return-tianbao",
+  "category": "life-service",
+  "name": "满月酒回礼",
+  "description": "满月酒回礼：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "housewarming-host-tianbao",
+  "category": "life-service",
+  "name": "乔迁宴请",
+  "description": "乔迁宴请：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "tube-feeding-care-tianbao",
+  "category": "life-service",
+  "name": "鼻饲护理",
+  "description": "鼻饲护理：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "bedridden-feeding-tianbao",
+  "category": "life-service",
+  "name": "卧床老人喂饭",
+  "description": "卧床老人喂饭：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "child-burn-firstaid-tianbao",
+  "category": "life-service",
+  "name": "幼儿烫伤处理",
+  "description": "幼儿烫伤处理：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "contraction-logging-tianbao",
+  "category": "life-service",
+  "name": "宫缩记录",
+  "description": "宫缩记录：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "mastitis-care-tianbao",
+  "category": "life-service",
+  "name": "乳腺炎护理",
+  "description": "乳腺炎护理：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "postop-nutrition-tianbao",
+  "category": "life-service",
+  "name": "术后营养补充",
+  "description": "术后营养补充：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "liver-diet-tianbao",
+  "category": "life-service",
+  "name": "护肝饮食",
+  "description": "护肝饮食：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "flight-cancel-compensation-tianbao",
+  "category": "life-service",
+  "name": "航班取消赔偿",
+  "description": "航班取消赔偿：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "train-ticket-waitlist-tianbao",
+  "category": "life-service",
+  "name": "高铁抢票候补",
+  "description": "高铁抢票候补：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "elderly-flight-proof-tianbao",
+  "category": "life-service",
+  "name": "老人乘机证明",
+  "description": "老人乘机证明：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "last-train-query-tianbao",
+  "category": "life-service",
+  "name": "末班车时间查询",
+  "description": "末班车时间查询：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "hiking-lost-rescue-tianbao",
+  "category": "life-service",
+  "name": "登山迷路自救",
+  "description": "登山迷路自救：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "errand-platform-pick-tianbao",
+  "category": "life-service",
+  "name": "跑腿平台选择",
+  "description": "跑腿平台选择：分步骤实操指南",
+  "source_batch": "batch27-mega"
+ },
+ {
+  "slug": "league-membership-transfer-tianbao",
+  "category": "life-service",
+  "name": "团组织关系转移",
+  "description": "团组织关系转移：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "dispatch-certificate-tianbao",
+  "category": "life-service",
+  "name": "毕业派遣证",
+  "description": "毕业派遣证：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "veteran-resettlement-tianbao",
+  "category": "life-service",
+  "name": "退役士兵安置",
+  "description": "退役士兵安置：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "chronic-outpatient-apply-tianbao",
+  "category": "life-service",
+  "name": "门诊慢特病申请",
+  "description": "门诊慢特病申请：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "cross-region-referral-tianbao",
+  "category": "life-service",
+  "name": "异地转诊手续",
+  "description": "异地转诊手续：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "transfer-limit-adjust-tianbao",
+  "category": "life-service",
+  "name": "网银转账限额调整",
+  "description": "网银转账限额调整：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "accident-private-settlement-tianbao",
+  "category": "life-service",
+  "name": "交通事故私了协议",
+  "description": "交通事故私了协议：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "license-point-handle-tianbao",
+  "category": "life-service",
+  "name": "驾驶证扣分消分",
+  "description": "驾驶证扣分消分：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "plate-reissue-tianbao",
+  "category": "life-service",
+  "name": "车牌补办",
+  "description": "车牌补办：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "highway-free-schedule-tianbao",
+  "category": "life-service",
+  "name": "高速免费时间规划",
+  "description": "高速免费时间规划：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "winter-car-kit-tianbao",
+  "category": "life-service",
+  "name": "冬季行车装备",
+  "description": "冬季行车装备：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "crowded-rental-complaint-tianbao",
+  "category": "life-service",
+  "name": "群租房投诉",
+  "description": "群租房投诉：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "checkout-cleaning-standard-tianbao",
+  "category": "life-service",
+  "name": "退租保洁标准",
+  "description": "退租保洁标准：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "upstairs-leak-claim-tianbao",
+  "category": "life-service",
+  "name": "楼下漏水维权",
+  "description": "楼下漏水维权：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "owners-meeting-call-tianbao",
+  "category": "life-service",
+  "name": "业主大会召集",
+  "description": "业主大会召集：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "square-dance-noise-tianbao",
+  "category": "life-service",
+  "name": "广场舞扰民",
+  "description": "广场舞扰民：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "alipay-inheritance-tianbao",
+  "category": "life-service",
+  "name": "支付宝遗产提取",
+  "description": "支付宝遗产提取：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "deceased-account-close-tianbao",
+  "category": "life-service",
+  "name": "逝者社交账号注销",
+  "description": "逝者社交账号注销：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "price-discrimination-tianbao",
+  "category": "life-service",
+  "name": "大数据杀熟投诉",
+  "description": "大数据杀熟投诉：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "deepfake-fraud-prevent-tianbao",
+  "category": "life-service",
+  "name": "AI换脸诈骗防范",
+  "description": "AI换脸诈骗防范：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "charger-install-apply-tianbao",
+  "category": "life-service",
+  "name": "充电桩安装申请",
+  "description": "充电桩安装申请：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "visitation-dispute-tianbao",
+  "category": "life-service",
+  "name": "探望权纠纷",
+  "description": "探望权纠纷：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "shop-fire-acceptance-tianbao",
+  "category": "life-service",
+  "name": "消防验收小店",
+  "description": "消防验收小店：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "hourly-worker-hire-tianbao",
+  "category": "life-service",
+  "name": "钟点工雇佣",
+  "description": "钟点工雇佣：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "restaurant-transfer-tianbao",
+  "category": "life-service",
+  "name": "餐饮店转让流程",
+  "description": "餐饮店转让流程：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "douyin-shop-entry-tianbao",
+  "category": "life-service",
+  "name": "抖音小店入驻",
+  "description": "抖音小店入驻：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "4s-maintenance-pitfall-tianbao",
+  "category": "life-service",
+  "name": "汽车4S店保养避坑",
+  "description": "汽车4S店保养避坑：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "locksmith-scam-tianbao",
+  "category": "life-service",
+  "name": "开锁换锁防骗",
+  "description": "开锁换锁防骗：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "breaker-trip-check-tianbao",
+  "category": "life-service",
+  "name": "保险丝跳闸排查",
+  "description": "保险丝跳闸排查：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "pet-shipping-tianbao",
+  "category": "life-service",
+  "name": "宠物托运物流",
+  "description": "宠物托运物流：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "xianyu-inspect-tianbao",
+  "category": "life-service",
+  "name": "闲鱼验货宝",
+  "description": "闲鱼验货宝：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "old-clothes-recycle-tianbao",
+  "category": "life-service",
+  "name": "旧衣回收",
+  "description": "旧衣回收：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "grain-grower-subsidy-tianbao",
+  "category": "life-service",
+  "name": "种粮大户补贴",
+  "description": "种粮大户补贴：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "village-public-job-tianbao",
+  "category": "life-service",
+  "name": "村级公益岗",
+  "description": "村级公益岗：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "pig-farming-subsidy-tianbao",
+  "category": "life-service",
+  "name": "生猪养殖补贴",
+  "description": "生猪养殖补贴：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "aquaculture-license-tianbao",
+  "category": "life-service",
+  "name": "水产养殖证",
+  "description": "水产养殖证：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "corn-insurance-tianbao",
+  "category": "life-service",
+  "name": "玉米保险",
+  "description": "玉米保险：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "land-contract-dispute-tianbao",
+  "category": "life-service",
+  "name": "土地承包纠纷",
+  "description": "土地承包纠纷：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "homestead-dispute-tianbao",
+  "category": "life-service",
+  "name": "宅基地纠纷调解",
+  "description": "宅基地纠纷调解：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "irrigation-dispute-tianbao",
+  "category": "life-service",
+  "name": "灌溉用水纠纷",
+  "description": "灌溉用水纠纷：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "villager-group-meeting-tianbao",
+  "category": "life-service",
+  "name": "村民小组会议",
+  "description": "村民小组会议：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "rural-bus-schedule-tianbao",
+  "category": "life-service",
+  "name": "乡村客运时刻",
+  "description": "乡村客运时刻：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "rural-water-safety-tianbao",
+  "category": "life-service",
+  "name": "农村饮水安全",
+  "description": "农村饮水安全：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "rural-parcel-pickup-tianbao",
+  "category": "life-service",
+  "name": "乡村快递代收",
+  "description": "乡村快递代收：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "kinship-household-merge-tianbao",
+  "category": "life-service",
+  "name": "亲属投靠落户",
+  "description": "亲属投靠落户：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "vaccination-certificate-tianbao",
+  "category": "life-service",
+  "name": "疫苗接种证明",
+  "description": "疫苗接种证明：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "graduation-banquet-tianbao",
+  "category": "life-service",
+  "name": "升学宴筹办",
+  "description": "升学宴筹办：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "proposal-gift-tianbao",
+  "category": "life-service",
+  "name": "提亲礼金",
+  "description": "提亲礼金：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "turning-back-pat-tianbao",
+  "category": "life-service",
+  "name": "翻身拍背",
+  "description": "翻身拍背：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "dementia-care-tianbao",
+  "category": "life-service",
+  "name": "认知障碍照护",
+  "description": "认知障碍照护：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "child-choking-firstaid-tianbao",
+  "category": "life-service",
+  "name": "儿童异物卡喉",
+  "description": "儿童异物卡喉：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "painless-birth-consult-tianbao",
+  "category": "life-service",
+  "name": "无痛分娩咨询",
+  "description": "无痛分娩咨询：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "newborn-jaundice-watch-tianbao",
+  "category": "life-service",
+  "name": "新生儿黄疸观察",
+  "description": "新生儿黄疸观察：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "kid-height-recipe-tianbao",
+  "category": "life-service",
+  "name": "儿童长高食谱",
+  "description": "儿童长高食谱：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "chemo-diet-tianbao",
+  "category": "life-service",
+  "name": "化疗期间饮食",
+  "description": "化疗期间饮食：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "luggage-lost-claim-tianbao",
+  "category": "life-service",
+  "name": "行李丢失索赔",
+  "description": "行李丢失索赔：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "quiet-carriage-tianbao",
+  "category": "life-service",
+  "name": "高铁静音车厢",
+  "description": "高铁静音车厢：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "metro-rush-avoid-tianbao",
+  "category": "life-service",
+  "name": "地铁高峰避堵",
+  "description": "地铁高峰避堵：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "helmet-picking-tianbao",
+  "category": "life-service",
+  "name": "骑行头盔选购",
+  "description": "骑行头盔选购：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "walking-group-dispute-tianbao",
+  "category": "life-service",
+  "name": "暴走团纠纷",
+  "description": "暴走团纠纷：分步骤实操指南",
+  "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "hospital-companion-tianbao",
+  "category": "life-service",
+  "name": "挂号陪诊服务",
+  "description": "挂号陪诊服务：分步骤实操指南",
+  "source_batch": "batch28-mega"
  }
 ]
