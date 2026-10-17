@@ -16686,5 +16686,397 @@
   "name": "寄宿适应",
   "description": "寄宿适应：分步骤实操指南",
   "source_batch": "batch37-mega"
+ },
+ {
+  "slug": "curtain-fullness-tianbao",
+  "category": "life-service",
+  "name": "窗帘褶皱倍数",
+  "description": "窗帘褶皱倍数：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "bulb-color-temp-tianbao",
+  "category": "life-service",
+  "name": "灯泡色温",
+  "description": "灯泡色温：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "drying-rack-height-tianbao",
+  "category": "life-service",
+  "name": "晾衣架高度",
+  "description": "晾衣架高度：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "tpms-reading-tianbao",
+  "category": "life-service",
+  "name": "胎压监测读取",
+  "description": "胎压监测读取：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "cabin-filter-replace-tianbao",
+  "category": "life-service",
+  "name": "空调滤芯更换",
+  "description": "空调滤芯更换：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "fuel-octane-pick-tianbao",
+  "category": "life-service",
+  "name": "加油标号选择",
+  "description": "加油标号选择：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "motorcycle-inspection-tianbao",
+  "category": "life-service",
+  "name": "摩托年检",
+  "description": "摩托年检：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "fridge-capacity-tianbao",
+  "category": "life-service",
+  "name": "冰箱容量选择",
+  "description": "冰箱容量选择：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "hood-airflow-tianbao",
+  "category": "life-service",
+  "name": "油烟机风量",
+  "description": "油烟机风量：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "ro-vs-uf-filter-tianbao",
+  "category": "life-service",
+  "name": "净水器RO超滤",
+  "description": "净水器RO超滤：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "gift-money-return-rule-tianbao",
+  "category": "life-service",
+  "name": "份子钱回礼规则",
+  "description": "份子钱回礼规则：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "distant-relative-gift-tianbao",
+  "category": "life-service",
+  "name": "远房亲戚随礼",
+  "description": "远房亲戚随礼：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "gift-ledger-tianbao",
+  "category": "life-service",
+  "name": "礼金簿登记",
+  "description": "礼金簿登记：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "ancestral-house-inherit-tianbao",
+  "category": "life-service",
+  "name": "祖屋继承",
+  "description": "祖屋继承：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "ancestral-grave-occupied-tianbao",
+  "category": "life-service",
+  "name": "祖坟被占",
+  "description": "祖坟被占：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "village-road-occupy-tianbao",
+  "category": "life-service",
+  "name": "乡村道路占用",
+  "description": "乡村道路占用：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "mourning-hall-setup-tianbao",
+  "category": "life-service",
+  "name": "灵堂布置",
+  "description": "灵堂布置：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "fifty-seven-rite-tianbao",
+  "category": "life-service",
+  "name": "五七祭祀",
+  "description": "五七祭祀：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "ashes-storage-tianbao",
+  "category": "life-service",
+  "name": "骨灰寄存",
+  "description": "骨灰寄存：分步骤实操指南",
+  "source_batch": "batch38-mega"
+ },
+ {
+  "slug": "carpet-material-tianbao",
+  "category": "life-service",
+  "name": "地毯材质选择",
+  "description": "地毯材质选择：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "socket-planning-tianbao",
+  "category": "life-service",
+  "name": "开关插座点位",
+  "description": "开关插座点位：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "toilet-clearance-tianbao",
+  "category": "life-service",
+  "name": "马桶距墙尺寸",
+  "description": "马桶距墙尺寸：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "spare-tire-change-tianbao",
+  "category": "life-service",
+  "name": "备胎更换步骤",
+  "description": "备胎更换步骤：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "car-seat-install-tianbao",
+  "category": "life-service",
+  "name": "儿童安全座椅安装",
+  "description": "儿童安全座椅安装：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "ebike-battery-swap-tianbao",
+  "category": "life-service",
+  "name": "电动车电池更换",
+  "description": "电动车电池更换：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "helmet-standard-wear-tianbao",
+  "category": "life-service",
+  "name": "头盔佩戴标准",
+  "description": "头盔佩戴标准：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "washer-type-pick-tianbao",
+  "category": "life-service",
+  "name": "洗衣机波轮滚筒",
+  "description": "洗衣机波轮滚筒：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "stove-heat-load-tianbao",
+  "category": "life-service",
+  "name": "燃气灶热负荷",
+  "description": "燃气灶热负荷：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "lost-invoice-remedy-tianbao",
+  "category": "life-service",
+  "name": "丢失发票补救",
+  "description": "丢失发票补救：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "coworker-wedding-gift-tianbao",
+  "category": "life-service",
+  "name": "同事结婚随礼",
+  "description": "同事结婚随礼：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "unexpected-invite-tianbao",
+  "category": "life-service",
+  "name": "多年不联系喜帖",
+  "description": "多年不联系喜帖：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "gift-reconcile-tianbao",
+  "category": "life-service",
+  "name": "收礼回礼对账",
+  "description": "收礼回礼对账：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "old-house-confirm-tianbao",
+  "category": "life-service",
+  "name": "老宅确权",
+  "description": "老宅确权：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "rural-land-sale-risk-tianbao",
+  "category": "life-service",
+  "name": "老家宅基地买卖风险",
+  "description": "老家宅基地买卖风险：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "old-house-demolition-subsidy-tianbao",
+  "category": "life-service",
+  "name": "老屋拆除补贴",
+  "description": "老屋拆除补贴：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "funeral-procession-route-tianbao",
+  "category": "life-service",
+  "name": "出殡路线",
+  "description": "出殡路线：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "death-anniversary-rite-tianbao",
+  "category": "life-service",
+  "name": "周年祭日",
+  "description": "周年祭日：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "grave-renewal-tianbao",
+  "category": "life-service",
+  "name": "墓地续费",
+  "description": "墓地续费：分步骤实操指南",
+  "source_batch": "batch39-mega"
+ },
+ {
+  "slug": "art-hanging-height-tianbao",
+  "category": "life-service",
+  "name": "挂画高度",
+  "description": "挂画高度：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "bedside-lamp-pick-tianbao",
+  "category": "life-service",
+  "name": "床头灯选择",
+  "description": "床头灯选择：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "washer-fluid-fill-tianbao",
+  "category": "life-service",
+  "name": "玻璃水加注",
+  "description": "玻璃水加注：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "engine-bay-clean-tianbao",
+  "category": "life-service",
+  "name": "发动机舱清洁",
+  "description": "发动机舱清洁：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "dashcam-wiring-tianbao",
+  "category": "life-service",
+  "name": "行车记录仪走线",
+  "description": "行车记录仪走线：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "ebike-canopy-risk-tianbao",
+  "category": "life-service",
+  "name": "电动车雨篷风险",
+  "description": "电动车雨篷风险：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "ebike-recall-query-tianbao",
+  "category": "life-service",
+  "name": "电动车召回查询",
+  "description": "电动车召回查询：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "tv-size-distance-tianbao",
+  "category": "life-service",
+  "name": "电视尺寸距离",
+  "description": "电视尺寸距离：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "dishwasher-capacity-tianbao",
+  "category": "life-service",
+  "name": "洗碗机套数",
+  "description": "洗碗机套数：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "expense-claim-appeal-tianbao",
+  "category": "life-service",
+  "name": "报销被拒申诉",
+  "description": "报销被拒申诉：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "boss-event-gift-tianbao",
+  "category": "life-service",
+  "name": "领导红白事",
+  "description": "领导红白事：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "group-gift-pool-tianbao",
+  "category": "life-service",
+  "name": "集体凑份子",
+  "description": "集体凑份子：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "old-house-rebuild-approval-tianbao",
+  "category": "life-service",
+  "name": "老屋翻建审批",
+  "description": "老屋翻建审批：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "grave-relocation-apply-tianbao",
+  "category": "life-service",
+  "name": "迁坟申请",
+  "description": "迁坟申请：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "hukou-out-homestead-tianbao",
+  "category": "life-service",
+  "name": "户口迁出后宅基地",
+  "description": "户口迁出后宅基地：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "obituary-writing-tianbao",
+  "category": "life-service",
+  "name": "讣告撰写",
+  "description": "讣告撰写：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "head-seven-rite-tianbao",
+  "category": "life-service",
+  "name": "头七仪式",
+  "description": "头七仪式：分步骤实操指南",
+  "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "memorial-portrait-tianbao",
+  "category": "life-service",
+  "name": "遗像制作",
+  "description": "遗像制作：分步骤实操指南",
+  "source_batch": "batch40-mega"
  }
 ]
