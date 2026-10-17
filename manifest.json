@@ -14852,5 +14852,474 @@
   "name": "挂号陪诊服务",
   "description": "挂号陪诊服务：分步骤实操指南",
   "source_batch": "batch28-mega"
+ },
+ {
+  "slug": "year-end-bonus-dispute-tianbao",
+  "category": "life-service",
+  "name": "年终奖纠纷",
+  "description": "年终奖纠纷：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "unfinished-building-claim-tianbao",
+  "category": "life-service",
+  "name": "烂尾楼维权",
+  "description": "烂尾楼维权：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "maintenance-fund-apply-tianbao",
+  "category": "life-service",
+  "name": "物业维修基金申请",
+  "description": "物业维修基金申请：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "heating-fee-dispute-tianbao",
+  "category": "life-service",
+  "name": "供暖费纠纷",
+  "description": "供暖费纠纷：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "number-portability-tianbao",
+  "category": "life-service",
+  "name": "携号转网流程",
+  "description": "携号转网流程：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "5g-plan-pick-tianbao",
+  "category": "life-service",
+  "name": "5G套餐选择",
+  "description": "5G套餐选择：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "moutai-auth-tianbao",
+  "category": "life-service",
+  "name": "茅台鉴别",
+  "description": "茅台鉴别：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "amber-auth-tianbao",
+  "category": "life-service",
+  "name": "琥珀蜜蜡鉴别",
+  "description": "琥珀蜜蜡鉴别：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "adult-piano-start-tianbao",
+  "category": "life-service",
+  "name": "成人钢琴入门",
+  "description": "成人钢琴入门：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "dizi-membrane-tianbao",
+  "category": "life-service",
+  "name": "笛子贴膜",
+  "description": "笛子贴膜：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "erhu-rosin-tianbao",
+  "category": "life-service",
+  "name": "二胡松香",
+  "description": "二胡松香：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "guzheng-nails-tianbao",
+  "category": "life-service",
+  "name": "古筝指甲",
+  "description": "古筝指甲：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "swim-breathing-tianbao",
+  "category": "life-service",
+  "name": "游泳换气技巧",
+  "description": "游泳换气技巧：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "square-dance-learn-tianbao",
+  "category": "life-service",
+  "name": "广场舞学习",
+  "description": "广场舞学习：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "composting-tianbao",
+  "category": "life-service",
+  "name": "堆肥制作",
+  "description": "堆肥制作：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "cross-stitch-start-tianbao",
+  "category": "life-service",
+  "name": "十字绣入门",
+  "description": "十字绣入门：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "couplet-timing-tianbao",
+  "category": "life-service",
+  "name": "贴春联时间",
+  "description": "贴春联时间：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "qingming-offering-tianbao",
+  "category": "life-service",
+  "name": "清明祭品",
+  "description": "清明祭品：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "genealogy-update-tianbao",
+  "category": "life-service",
+  "name": "族谱修订",
+  "description": "族谱修订：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "elder-support-share-tianbao",
+  "category": "life-service",
+  "name": "长辈赡养分担",
+  "description": "长辈赡养分担：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "movein-cleansing-tianbao",
+  "category": "life-service",
+  "name": "乔迁净宅",
+  "description": "乔迁净宅：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "burial-process-tianbao",
+  "category": "life-service",
+  "name": "落葬流程",
+  "description": "落葬流程：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "apprenticeship-rite-tianbao",
+  "category": "life-service",
+  "name": "拜师礼",
+  "description": "拜师礼：分步骤实操指南",
+  "source_batch": "batch29-mega"
+ },
+ {
+  "slug": "seniority-buyout-tianbao",
+  "category": "life-service",
+  "name": "买断工龄",
+  "description": "买断工龄：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "property-cert-delay-tianbao",
+  "category": "life-service",
+  "name": "房产证办不下来",
+  "description": "房产证办不下来：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "gas-meter-replace-tianbao",
+  "category": "life-service",
+  "name": "燃气表更换",
+  "description": "燃气表更换：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "power-cut-legality-tianbao",
+  "category": "life-service",
+  "name": "物业停电合法吗",
+  "description": "物业停电合法吗：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "broadband-renewal-pitfall-tianbao",
+  "category": "life-service",
+  "name": "宽带到期续费坑",
+  "description": "宽带到期续费坑：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "stamp-collecting-tianbao",
+  "category": "life-service",
+  "name": "邮票收藏入门",
+  "description": "邮票收藏入门：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "aged-wine-keep-tianbao",
+  "category": "life-service",
+  "name": "老酒保存",
+  "description": "老酒保存：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "silver-dollar-auth-tianbao",
+  "category": "life-service",
+  "name": "银元鉴定",
+  "description": "银元鉴定：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "guitar-string-change-tianbao",
+  "category": "life-service",
+  "name": "吉他弦更换",
+  "description": "吉他弦更换：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "ukulele-tuning-tianbao",
+  "category": "life-service",
+  "name": "尤克里里调音",
+  "description": "尤克里里调音：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "drum-soundproof-tianbao",
+  "category": "life-service",
+  "name": "架子鼓隔音",
+  "description": "架子鼓隔音：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "badminton-tension-tianbao",
+  "category": "life-service",
+  "name": "羽毛球拍选磅数",
+  "description": "羽毛球拍选磅数：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "bike-saddle-height-tianbao",
+  "category": "life-service",
+  "name": "骑行坐垫高度",
+  "description": "骑行坐垫高度：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "orchid-repot-tianbao",
+  "category": "life-service",
+  "name": "兰花分盆",
+  "description": "兰花分盆：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "seed-sprouting-tianbao",
+  "category": "life-service",
+  "name": "种子催芽",
+  "description": "种子催芽：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "laba-porridge-tianbao",
+  "category": "life-service",
+  "name": "腊八粥做法",
+  "description": "腊八粥做法：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "red-envelope-prep-tianbao",
+  "category": "life-service",
+  "name": "压岁包准备",
+  "description": "压岁包准备：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "zongzi-leaves-tianbao",
+  "category": "life-service",
+  "name": "端午粽子叶",
+  "description": "端午粽子叶：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "ancestral-hall-affairs-tianbao",
+  "category": "life-service",
+  "name": "祠堂事务",
+  "description": "祠堂事务：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "full-moon-gift-tianbao",
+  "category": "life-service",
+  "name": "满月礼盒",
+  "description": "满月礼盒：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "opening-baskets-tianbao",
+  "category": "life-service",
+  "name": "开业花篮",
+  "description": "开业花篮：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "toast-order-tianbao",
+  "category": "life-service",
+  "name": "敬酒顺序",
+  "description": "敬酒顺序：分步骤实操指南",
+  "source_batch": "batch30-mega"
+ },
+ {
+  "slug": "dispatch-to-permanent-tianbao",
+  "category": "life-service",
+  "name": "劳务派遣转正",
+  "description": "劳务派遣转正：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "full-pay-housing-fund-tianbao",
+  "category": "life-service",
+  "name": "全款购房提取",
+  "description": "全款购房提取：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "property-fee-consequence-tianbao",
+  "category": "life-service",
+  "name": "物业费拖欠后果",
+  "description": "物业费拖欠后果：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "greening-parking-dispute-tianbao",
+  "category": "life-service",
+  "name": "小区绿化改停车场",
+  "description": "小区绿化改停车场：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "home-broadband-pick-tianbao",
+  "category": "life-service",
+  "name": "家庭宽带选择",
+  "description": "家庭宽带选择：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "coin-collect-auth-tianbao",
+  "category": "life-service",
+  "name": "钱币收藏鉴定",
+  "description": "钱币收藏鉴定：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "wenwan-walnut-tianbao",
+  "category": "life-service",
+  "name": "文玩核桃",
+  "description": "文玩核桃：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "ancient-coin-clean-tianbao",
+  "category": "life-service",
+  "name": "古钱币除锈",
+  "description": "古钱币除锈：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "harmonica-start-tianbao",
+  "category": "life-service",
+  "name": "口琴入门",
+  "description": "口琴入门：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "keyboard-picking-tianbao",
+  "category": "life-service",
+  "name": "电子琴选购",
+  "description": "电子琴选购：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "sax-care-tianbao",
+  "category": "life-service",
+  "name": "萨克斯保养",
+  "description": "萨克斯保养：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "running-shoe-pick-tianbao",
+  "category": "life-service",
+  "name": "跑鞋选择",
+  "description": "跑鞋选择：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "dumbbell-plan-tianbao",
+  "category": "life-service",
+  "name": "哑铃计划",
+  "description": "哑铃计划：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "rose-pruning-tianbao",
+  "category": "life-service",
+  "name": "月季修剪",
+  "description": "月季修剪：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "pot-picking-tianbao",
+  "category": "life-service",
+  "name": "花盆选择",
+  "description": "花盆选择：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "xiaonian-ritual-tianbao",
+  "category": "life-service",
+  "name": "小年祭灶",
+  "description": "小年祭灶：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "lantern-festival-tianbao",
+  "category": "life-service",
+  "name": "元宵灯会",
+  "description": "元宵灯会：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "mooncake-gift-pick-tianbao",
+  "category": "life-service",
+  "name": "中秋礼盒挑选",
+  "description": "中秋礼盒挑选：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "ancestral-tomb-repair-tianbao",
+  "category": "life-service",
+  "name": "祖坟修缮",
+  "description": "祖坟修缮：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "beam-raising-tianbao",
+  "category": "life-service",
+  "name": "上梁仪式",
+  "description": "上梁仪式：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "groundbreaking-tianbao",
+  "category": "life-service",
+  "name": "奠基仪式",
+  "description": "奠基仪式：分步骤实操指南",
+  "source_batch": "batch31-mega"
+ },
+ {
+  "slug": "gift-money-ledger-tianbao",
+  "category": "life-service",
+  "name": "随礼记账",
+  "description": "随礼记账：分步骤实操指南",
+  "source_batch": "batch31-mega"
  }
 ]
