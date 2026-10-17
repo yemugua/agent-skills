@@ -11492,5 +11492,215 @@
   "name": "ETC注销",
   "description": "ETC注销：分步骤实操指南",
   "source_batch": "batch12-blank"
+ },
+ {
+  "slug": "flue-check-valve-install-tianbao",
+  "category": "life-service",
+  "name": "烟道止逆阀安装",
+  "description": "烟道止逆阀安装：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "floor-drain-deodorize-tianbao",
+  "category": "life-service",
+  "name": "地漏防臭处理",
+  "description": "地漏防臭处理：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "shower-holder-replace-tianbao",
+  "category": "life-service",
+  "name": "花洒支架更换",
+  "description": "花洒支架更换：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "toilet-tank-parts-tianbao",
+  "category": "life-service",
+  "name": "马桶水箱配件更换",
+  "description": "马桶水箱配件更换：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "clothes-drying-rack-install-tianbao",
+  "category": "life-service",
+  "name": "晾衣架安装",
+  "description": "晾衣架安装：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "lock-cylinder-replace-tianbao",
+  "category": "life-service",
+  "name": "锁芯更换",
+  "description": "锁芯更换：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "door-peephole-replace-tianbao",
+  "category": "life-service",
+  "name": "猫眼更换",
+  "description": "猫眼更换：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "window-seal-strip-tianbao",
+  "category": "life-service",
+  "name": "窗户密封条更换",
+  "description": "窗户密封条更换：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "silicone-mold-remove-tianbao",
+  "category": "life-service",
+  "name": "玻璃胶除霉",
+  "description": "玻璃胶除霉：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "wall-peel-repair-tianbao",
+  "category": "life-service",
+  "name": "墙皮脱落修补",
+  "description": "墙皮脱落修补：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "curtain-rail-install-tianbao",
+  "category": "life-service",
+  "name": "窗帘轨道安装",
+  "description": "窗帘轨道安装：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "screen-window-repair-tianbao",
+  "category": "life-service",
+  "name": "纱窗修补",
+  "description": "纱窗修补：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "fridge-door-seal-tianbao",
+  "category": "life-service",
+  "name": "冰箱门封条更换",
+  "description": "冰箱门封条更换：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "gas-stove-ignition-fix-tianbao",
+  "category": "life-service",
+  "name": "燃气灶打不着火排查",
+  "description": "燃气灶打不着火排查：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "range-hood-mesh-clean-tianbao",
+  "category": "life-service",
+  "name": "油烟机油网清洗",
+  "description": "油烟机油网清洗：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "kettle-descale-tianbao",
+  "category": "life-service",
+  "name": "电水壶水垢清除",
+  "description": "电水壶水垢清除：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "vacuum-filter-replace-tianbao",
+  "category": "life-service",
+  "name": "吸尘器滤芯更换",
+  "description": "吸尘器滤芯更换：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "robot-vacuum-parts-tianbao",
+  "category": "life-service",
+  "name": "扫地机器人耗材更换",
+  "description": "扫地机器人耗材更换：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "phone-screen-protector-tianbao",
+  "category": "life-service",
+  "name": "手机贴膜技巧",
+  "description": "手机贴膜技巧：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "pc-dust-cleaning-tianbao",
+  "category": "life-service",
+  "name": "电脑除尘清灰",
+  "description": "电脑除尘清灰：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "thermal-paste-replace-tianbao",
+  "category": "life-service",
+  "name": "硅脂更换",
+  "description": "硅脂更换：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "ink-cartridge-refill-tianbao",
+  "category": "life-service",
+  "name": "墨盒加墨",
+  "description": "墨盒加墨：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "tent-setup-tianbao",
+  "category": "life-service",
+  "name": "帐篷搭建",
+  "description": "帐篷搭建：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "dumpling-dough-making-tianbao",
+  "category": "life-service",
+  "name": "饺子皮和面",
+  "description": "饺子皮和面：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "cake-removal-tianbao",
+  "category": "life-service",
+  "name": "蛋糕脱模",
+  "description": "蛋糕脱模：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "grain-insect-proof-tianbao",
+  "category": "life-service",
+  "name": "米面防虫",
+  "description": "米面防虫：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "kitchen-grease-clean-tianbao",
+  "category": "life-service",
+  "name": "厨房油污清洁",
+  "description": "厨房油污清洁：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "diaper-rash-care-tianbao",
+  "category": "life-service",
+  "name": "宝宝红臀护理",
+  "description": "宝宝红臀护理：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "child-solo-sleep-tianbao",
+  "category": "life-service",
+  "name": "孩子分房睡过渡",
+  "description": "孩子分房睡过渡：分步骤实操指南",
+  "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "elder-phone-setup-tianbao",
+  "category": "life-service",
+  "name": "老人手机设置",
+  "description": "老人手机设置：分步骤实操指南",
+  "source_batch": "batch13-blank"
  }
 ]
