@@ -12374,5 +12374,110 @@
   "name": "遗嘱公证",
   "description": "遗嘱公证：分步骤实操指南",
   "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "property-fee-hearing-tianbao",
+  "category": "life-service",
+  "name": "物业费调价听证",
+  "description": "物业费调价听证：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "elevator-inspection-query-tianbao",
+  "category": "life-service",
+  "name": "电梯年检查询",
+  "description": "电梯年检查询：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "fire-exit-complaint-tianbao",
+  "category": "life-service",
+  "name": "消防通道投诉",
+  "description": "消防通道投诉：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "shared-utility-dispute-tianbao",
+  "category": "life-service",
+  "name": "水电公摊异议",
+  "description": "水电公摊异议：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "housing-repair-fund-tianbao",
+  "category": "life-service",
+  "name": "房屋维修基金使用",
+  "description": "房屋维修基金使用：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "property-company-replace-tianbao",
+  "category": "life-service",
+  "name": "物业公司更换",
+  "description": "物业公司更换：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "fridge-raw-cooked-separation-tianbao",
+  "category": "life-service",
+  "name": "冰箱生熟分区",
+  "description": "冰箱生熟分区：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "cutting-board-color-coding-tianbao",
+  "category": "life-service",
+  "name": "砧板分色使用",
+  "description": "砧板分色使用：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "kitchen-duct-cleaning-cycle-tianbao",
+  "category": "life-service",
+  "name": "油烟管道清洗周期",
+  "description": "油烟管道清洗周期：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "tableware-disinfection-log-tianbao",
+  "category": "life-service",
+  "name": "餐具消毒记录",
+  "description": "餐具消毒记录：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "pest-control-log-tianbao",
+  "category": "life-service",
+  "name": "虫鼠防治记录",
+  "description": "虫鼠防治记录：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "tobacco-license-tianbao",
+  "category": "life-service",
+  "name": "烟草证办理",
+  "description": "烟草证办理：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "student-loan-renewal-tianbao",
+  "category": "life-service",
+  "name": "助学贷款续贷",
+  "description": "助学贷款续贷：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "foreign-license-exchange-tianbao",
+  "category": "life-service",
+  "name": "境外驾照换证",
+  "description": "境外驾照换证：分步骤实操指南",
+  "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "graduate-archive-transfer-tianbao",
+  "category": "life-service",
+  "name": "毕业档案去向",
+  "description": "毕业档案去向：分步骤实操指南",
+  "source_batch": "batch18-blank"
  }
 ]
