@@ -12815,5 +12815,152 @@
   "name": "浴室防滑",
   "description": "浴室防滑：分步骤实操指南",
   "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "water-filter-replace-cycle-tianbao",
+  "category": "life-service",
+  "name": "净水器滤芯更换周期",
+  "description": "净水器滤芯更换周期：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "bottled-water-shelf-life-tianbao",
+  "category": "life-service",
+  "name": "桶装水开封保质期",
+  "description": "桶装水开封保质期：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "water-dispenser-cleaning-tianbao",
+  "category": "life-service",
+  "name": "饮水机清洗",
+  "description": "饮水机清洗：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "kettle-descaler-tianbao",
+  "category": "life-service",
+  "name": "电水壶除垢剂使用",
+  "description": "电水壶除垢剂使用：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "boiler-scale-remove-tianbao",
+  "category": "life-service",
+  "name": "烧水壶水垢清除",
+  "description": "烧水壶水垢清除：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "mineral-vs-pure-water-tianbao",
+  "category": "life-service",
+  "name": "矿泉水与纯净水区别",
+  "description": "矿泉水与纯净水区别：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "morning-first-water-tianbao",
+  "category": "life-service",
+  "name": "晨起第一杯水",
+  "description": "晨起第一杯水：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "reboil-water-harm-tianbao",
+  "category": "life-service",
+  "name": "饮水机反复加热危害",
+  "description": "饮水机反复加热危害：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "midautumn-gift-elders-tianbao",
+  "category": "life-service",
+  "name": "中秋送长辈指南",
+  "description": "中秋送长辈指南：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "spring-visit-gift-tianbao",
+  "category": "life-service",
+  "name": "春节串门礼",
+  "description": "春节串门礼：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "teacher-day-gift-rules-tianbao",
+  "category": "life-service",
+  "name": "教师节送礼规定",
+  "description": "教师节送礼规定：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "hometown-gift-picking-tianbao",
+  "category": "life-service",
+  "name": "探亲特产选择",
+  "description": "探亲特产选择：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "souvenir-gift-picking-tianbao",
+  "category": "life-service",
+  "name": "伴手礼挑选",
+  "description": "伴手礼挑选：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "birthday-banquet-return-gift-tianbao",
+  "category": "life-service",
+  "name": "寿宴回礼",
+  "description": "寿宴回礼：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "highway-service-area-tianbao",
+  "category": "life-service",
+  "name": "高速服务区攻略",
+  "description": "高速服务区攻略：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "vehicle-inspection-agent-tianbao",
+  "category": "life-service",
+  "name": "汽车年检代办",
+  "description": "汽车年检代办：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "trunk-organizing-tianbao",
+  "category": "life-service",
+  "name": "后备箱收纳",
+  "description": "后备箱收纳：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "eye-care-lamp-picking-tianbao",
+  "category": "life-service",
+  "name": "护眼灯选择",
+  "description": "护眼灯选择：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "carpal-tunnel-prevention-tianbao",
+  "category": "life-service",
+  "name": "鼠标手预防",
+  "description": "鼠标手预防：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "nap-posture-tianbao",
+  "category": "life-service",
+  "name": "午睡姿势",
+  "description": "午睡姿势：分步骤实操指南",
+  "source_batch": "batch21-blank"
+ },
+ {
+  "slug": "office-firstaid-kit-tianbao",
+  "category": "life-service",
+  "name": "办公室急救包",
+  "description": "办公室急救包：分步骤实操指南",
+  "source_batch": "batch21-blank"
  }
 ]
