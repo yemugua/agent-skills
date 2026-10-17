@@ -13389,5 +13389,180 @@
   "name": "家庭药箱配置清单",
   "description": "家庭药箱配置清单：就医准备与操作规范指南",
   "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "appendicitis-aftercare-tianbao",
+  "category": "life-service",
+  "name": "阑尾炎术后护理",
+  "description": "阑尾炎术后护理：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "hemorrhoid-aftercare-tianbao",
+  "category": "life-service",
+  "name": "痔疮术后护理",
+  "description": "痔疮术后护理：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "cast-care-tianbao",
+  "category": "life-service",
+  "name": "骨折石膏护理",
+  "description": "骨折石膏护理：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "tooth-extraction-aftercare-tianbao",
+  "category": "life-service",
+  "name": "拔牙后护理",
+  "description": "拔牙后护理：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "double-eyelid-aftercare-tianbao",
+  "category": "life-service",
+  "name": "双眼皮术后护理",
+  "description": "双眼皮术后护理：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "c-section-recovery-tianbao",
+  "category": "life-service",
+  "name": "剖腹产后护理",
+  "description": "剖腹产后护理：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "lumbar-surgery-rehab-tianbao",
+  "category": "life-service",
+  "name": "腰椎术后康复锻炼",
+  "description": "腰椎术后康复锻炼：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "knee-ligament-rehab-tianbao",
+  "category": "life-service",
+  "name": "膝盖韧带康复训练",
+  "description": "膝盖韧带康复训练：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "achilles-rehab-tianbao",
+  "category": "life-service",
+  "name": "跟腱断裂康复",
+  "description": "跟腱断裂康复：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "frozen-shoulder-exercise-tianbao",
+  "category": "life-service",
+  "name": "肩周炎锻炼",
+  "description": "肩周炎锻炼：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "tennis-elbow-relief-tianbao",
+  "category": "life-service",
+  "name": "网球肘处理",
+  "description": "网球肘处理：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "tenosynovitis-relief-tianbao",
+  "category": "life-service",
+  "name": "腱鞘炎缓解",
+  "description": "腱鞘炎缓解：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "lumbar-strain-exercise-tianbao",
+  "category": "life-service",
+  "name": "腰肌劳损锻炼",
+  "description": "腰肌劳损锻炼：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "runner-knee-prevention-tianbao",
+  "category": "life-service",
+  "name": "跑步膝预防",
+  "description": "跑步膝预防：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "plantar-fasciitis-relief-tianbao",
+  "category": "life-service",
+  "name": "足底筋膜炎缓解",
+  "description": "足底筋膜炎缓解：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "tonsillectomy-aftercare-tianbao",
+  "category": "life-service",
+  "name": "扁桃体切除术后",
+  "description": "扁桃体切除术后：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "gallstone-aftercare-tianbao",
+  "category": "life-service",
+  "name": "胆结石术后护理",
+  "description": "胆结石术后护理：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "hernia-aftercare-tianbao",
+  "category": "life-service",
+  "name": "疝气术后护理",
+  "description": "疝气术后护理：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "thyroid-nodule-aftercare-tianbao",
+  "category": "life-service",
+  "name": "甲状腺结节术后",
+  "description": "甲状腺结节术后：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "gout-diet-taboo-tianbao",
+  "category": "life-service",
+  "name": "痛风饮食禁忌",
+  "description": "痛风饮食禁忌：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "anemia-diet-tianbao",
+  "category": "life-service",
+  "name": "贫血食疗",
+  "description": "贫血食疗：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "osteoporosis-diet-tianbao",
+  "category": "life-service",
+  "name": "骨质疏松饮食",
+  "description": "骨质疏松饮食：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "folic-acid-supplement-tianbao",
+  "category": "life-service",
+  "name": "叶酸补充须知",
+  "description": "叶酸补充须知：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "contraception-comparison-tianbao",
+  "category": "life-service",
+  "name": "避孕方式对比",
+  "description": "避孕方式对比：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
+ },
+ {
+  "slug": "male-health-checkup-tianbao",
+  "category": "life-service",
+  "name": "男科检查项目",
+  "description": "男科检查项目：就医准备与操作规范指南",
+  "source_batch": "batch25-rehab"
  }
 ]
