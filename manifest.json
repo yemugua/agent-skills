@@ -12276,5 +12276,103 @@
   "name": "抚恤金办理",
   "description": "抚恤金办理：分步骤实操指南",
   "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "guide-dog-apply-tianbao",
+  "category": "life-service",
+  "name": "导盲犬申请",
+  "description": "导盲犬申请：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "barrier-free-subsidy-tianbao",
+  "category": "life-service",
+  "name": "无障碍改造补贴",
+  "description": "无障碍改造补贴：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "disabled-entrepreneur-aid-tianbao",
+  "category": "life-service",
+  "name": "残疾人创业扶持",
+  "description": "残疾人创业扶持：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "kinship-notarization-tianbao",
+  "category": "life-service",
+  "name": "亲属关系公证",
+  "description": "亲属关系公证：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "veteran-registration-tianbao",
+  "category": "life-service",
+  "name": "退役士兵登记",
+  "description": "退役士兵登记：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "veteran-card-reissue-tianbao",
+  "category": "life-service",
+  "name": "退伍证补办",
+  "description": "退伍证补办：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "blood-donation-cert-reissue-tianbao",
+  "category": "life-service",
+  "name": "献血证补办",
+  "description": "献血证补办：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "cat-neuter-aftercare-tianbao",
+  "category": "life-service",
+  "name": "猫绝育术后护理",
+  "description": "猫绝育术后护理：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "dog-vaccine-schedule-tianbao",
+  "category": "life-service",
+  "name": "狗疫苗时间表",
+  "description": "狗疫苗时间表：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "pet-shipping-quarantine-tianbao",
+  "category": "life-service",
+  "name": "宠物托运检疫",
+  "description": "宠物托运检疫：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "circuit-breaker-trip-tianbao",
+  "category": "life-service",
+  "name": "电路跳闸排查",
+  "description": "电路跳闸排查：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "socket-overheat-fix-tianbao",
+  "category": "life-service",
+  "name": "插座发热处理",
+  "description": "插座发热处理：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "pension-verify-tianbao",
+  "category": "life-service",
+  "name": "养老金认证",
+  "description": "养老金认证：分步骤实操指南",
+  "source_batch": "batch17-blank"
+ },
+ {
+  "slug": "will-notarization-tianbao",
+  "category": "life-service",
+  "name": "遗嘱公证",
+  "description": "遗嘱公证：分步骤实操指南",
+  "source_batch": "batch17-blank"
  }
 ]
