@@ -10304,7 +10304,7 @@
     "source_batch": "local-job"
   },
   {
-    "slug": "公众号原创转载合规核查-tianbao",
+    "slug": "official-account-reprint-compliance-tianbao",
     "category": "wechat-ecosystem",
     "name": "公众号原创转载合规核查",
     "description": "面向微信公众号运营者的原创声明、授权转载与洗稿边界合规核查。输入一张采集表，输出含结论摘要、原创声明合规、授权转载合规、洗稿与抄袭边界、素材版权、转载连带责任、原创维权与整改清单的多段报告。适用于公众号图文原创声明滥用、未授权转载、洗稿雷同、配图字体音乐侵权等高频风险自查。",
