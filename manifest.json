@@ -12605,5 +12605,215 @@
   "name": "电动车充电位置",
   "description": "电动车充电位置：分步骤实操指南",
   "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "yoga-card-transfer-tianbao",
+  "category": "life-service",
+  "name": "瑜伽馆转卡",
+  "description": "瑜伽馆转卡：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "carwash-card-transfer-tianbao",
+  "category": "life-service",
+  "name": "洗车卡转让",
+  "description": "洗车卡转让：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "photo-deposit-refund-tianbao",
+  "category": "life-service",
+  "name": "摄影定金退还",
+  "description": "摄影定金退还：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "wedding-deposit-dispute-tianbao",
+  "category": "life-service",
+  "name": "婚庆定金纠纷",
+  "description": "婚庆定金纠纷：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "video-vip-carpool-tianbao",
+  "category": "life-service",
+  "name": "视频会员拼车",
+  "description": "视频会员拼车：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "airline-miles-redeem-tianbao",
+  "category": "life-service",
+  "name": "机票里程兑换",
+  "description": "机票里程兑换：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "hotel-status-match-tianbao",
+  "category": "life-service",
+  "name": "酒店会籍匹配",
+  "description": "酒店会籍匹配：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "phone-points-redeem-tianbao",
+  "category": "life-service",
+  "name": "话费积分兑换",
+  "description": "话费积分兑换：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "bank-points-guide-tianbao",
+  "category": "life-service",
+  "name": "银行积分薅羊毛",
+  "description": "银行积分薅羊毛：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "courier-no-doorstep-complaint-tianbao",
+  "category": "life-service",
+  "name": "快递不上门投诉",
+  "description": "快递不上门投诉：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "parcel-station-refusal-tianbao",
+  "category": "life-service",
+  "name": "驿站拒收处理",
+  "description": "驿站拒收处理：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "fresh-food-damage-claim-tianbao",
+  "category": "life-service",
+  "name": "生鲜快递损坏索赔",
+  "description": "生鲜快递损坏索赔：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "waybill-info-leak-tianbao",
+  "category": "life-service",
+  "name": "快递单信息泄露",
+  "description": "快递单信息泄露：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "courier-suspension-check-tianbao",
+  "category": "life-service",
+  "name": "快递停发区查询",
+  "description": "快递停发区查询：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "intercity-moving-compare-tianbao",
+  "category": "life-service",
+  "name": "跨市搬家比价",
+  "description": "跨市搬家比价：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "moving-scam-prevention-tianbao",
+  "category": "life-service",
+  "name": "搬家公司套路防范",
+  "description": "搬家公司套路防范：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "piano-moving-tianbao",
+  "category": "life-service",
+  "name": "钢琴搬运",
+  "description": "钢琴搬运：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "fishtank-moving-tianbao",
+  "category": "life-service",
+  "name": "鱼缸搬运",
+  "description": "鱼缸搬运：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "down-jacket-machine-wash-tianbao",
+  "category": "life-service",
+  "name": "羽绒服机洗",
+  "description": "羽绒服机洗：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "silk-washing-tianbao",
+  "category": "life-service",
+  "name": "真丝洗涤",
+  "description": "真丝洗涤：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "white-shoes-yellow-fix-tianbao",
+  "category": "life-service",
+  "name": "白鞋发黄恢复",
+  "description": "白鞋发黄恢复：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "clothes-mold-prevention-tianbao",
+  "category": "life-service",
+  "name": "衣物防霉",
+  "description": "衣物防霉：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "luggage-packing-tianbao",
+  "category": "life-service",
+  "name": "行李箱收纳",
+  "description": "行李箱收纳：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "cosmetic-expiry-clear-tianbao",
+  "category": "life-service",
+  "name": "化妆品过期清理",
+  "description": "化妆品过期清理：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "fridge-zone-storage-tianbao",
+  "category": "life-service",
+  "name": "冰箱分区收纳",
+  "description": "冰箱分区收纳：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "jewelry-cleaning-tianbao",
+  "category": "life-service",
+  "name": "首饰清洁",
+  "description": "首饰清洁：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "pot-bottom-black-removal-tianbao",
+  "category": "life-service",
+  "name": "锅底除黑",
+  "description": "锅底除黑：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "knife-sharpening-tianbao",
+  "category": "life-service",
+  "name": "菜刀磨刀",
+  "description": "菜刀磨刀：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "showerhead-descale-tianbao",
+  "category": "life-service",
+  "name": "花洒除垢",
+  "description": "花洒除垢：分步骤实操指南",
+  "source_batch": "batch20-blank"
+ },
+ {
+  "slug": "bathroom-anti-slip-tianbao",
+  "category": "life-service",
+  "name": "浴室防滑",
+  "description": "浴室防滑：分步骤实操指南",
+  "source_batch": "batch20-blank"
  }
 ]
