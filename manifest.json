@@ -11940,5 +11940,145 @@
   "name": "110报警记录调取",
   "description": "110报警记录调取：分步骤实操指南",
   "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "car-waxing-tianbao",
+  "category": "life-service",
+  "name": "汽车打蜡",
+  "description": "汽车打蜡：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "car-window-fog-tianbao",
+  "category": "life-service",
+  "name": "车窗玻璃起雾处理",
+  "description": "车窗玻璃起雾处理：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "car-odor-remove-tianbao",
+  "category": "life-service",
+  "name": "汽车除味",
+  "description": "汽车除味：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "car-fire-extinguisher-tianbao",
+  "category": "life-service",
+  "name": "车载灭火器选购放置",
+  "description": "车载灭火器选购放置：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "warning-triangle-place-tianbao",
+  "category": "life-service",
+  "name": "三角警示牌摆放",
+  "description": "三角警示牌摆放：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "tpms-reset-tianbao",
+  "category": "life-service",
+  "name": "胎压监测复位",
+  "description": "胎压监测复位：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "car-battery-jumpstart-tianbao",
+  "category": "life-service",
+  "name": "电瓶搭电",
+  "description": "电瓶搭电：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "car-cabin-filter-tianbao",
+  "category": "life-service",
+  "name": "汽车空调滤芯更换",
+  "description": "汽车空调滤芯更换：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "move-out-cleaning-tianbao",
+  "category": "life-service",
+  "name": "退租清洁标准",
+  "description": "退租清洁标准：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "rental-meter-reading-tianbao",
+  "category": "life-service",
+  "name": "租房水电抄表交接",
+  "description": "租房水电抄表交接：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "bank-card-reissue-tianbao",
+  "category": "life-service",
+  "name": "银行卡挂失补办",
+  "description": "银行卡挂失补办：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "magnetic-chip-card-tianbao",
+  "category": "life-service",
+  "name": "磁条卡换芯片卡",
+  "description": "磁条卡换芯片卡：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "blood-pressure-selftest-tianbao",
+  "category": "life-service",
+  "name": "血压自测方法",
+  "description": "血压自测方法：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "insulin-storage-tianbao",
+  "category": "life-service",
+  "name": "胰岛素保存",
+  "description": "胰岛素保存：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "crutch-usage-tianbao",
+  "category": "life-service",
+  "name": "拐杖使用方法",
+  "description": "拐杖使用方法：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "wheelchair-rental-tianbao",
+  "category": "life-service",
+  "name": "轮椅租赁",
+  "description": "轮椅租赁：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "health-report-reading-tianbao",
+  "category": "life-service",
+  "name": "体检报告解读入门",
+  "description": "体检报告解读入门：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "vaccine-catchup-tianbao",
+  "category": "life-service",
+  "name": "疫苗补种",
+  "description": "疫苗补种：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "medicated-patch-apply-tianbao",
+  "category": "life-service",
+  "name": "膏药正确贴法",
+  "description": "膏药正确贴法：分步骤实操指南",
+  "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "home-oxygen-machine-tianbao",
+  "category": "life-service",
+  "name": "家用制氧机使用",
+  "description": "家用制氧机使用：分步骤实操指南",
+  "source_batch": "batch15-blank"
  }
 ]
