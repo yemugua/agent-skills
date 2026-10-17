@@ -13123,5 +13123,131 @@
   "name": "钥匙反锁应急",
   "description": "钥匙反锁应急：分步骤实操指南",
   "source_batch": "batch22-blank"
+ },
+ {
+  "slug": "humid-weather-dehumidify-tianbao",
+  "category": "life-service",
+  "name": "回南天除湿",
+  "description": "回南天除湿：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "plum-rain-mold-prevention-tianbao",
+  "category": "life-service",
+  "name": "梅雨季防霉",
+  "description": "梅雨季防霉：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "dehumidifier-picking-tianbao",
+  "category": "life-service",
+  "name": "除湿机选购",
+  "description": "除湿机选购：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "wardrobe-moisture-proof-tianbao",
+  "category": "life-service",
+  "name": "衣柜防潮",
+  "description": "衣柜防潮：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "camera-moisture-care-tianbao",
+  "category": "life-service",
+  "name": "相机防潮",
+  "description": "相机防潮：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "tea-moisture-storage-tianbao",
+  "category": "life-service",
+  "name": "茶叶防潮保存",
+  "description": "茶叶防潮保存：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "medicine-moisture-storage-tianbao",
+  "category": "life-service",
+  "name": "药品防潮储存",
+  "description": "药品防潮储存：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "dried-tangerine-storage-tianbao",
+  "category": "life-service",
+  "name": "陈皮保存",
+  "description": "陈皮保存：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "electric-blanket-safety-tianbao",
+  "category": "life-service",
+  "name": "电热毯安全使用",
+  "description": "电热毯安全使用：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "down-jacket-wash-dry-tianbao",
+  "category": "life-service",
+  "name": "羽绒服清洗晾晒",
+  "description": "羽绒服清洗晾晒：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "electric-heater-picking-tianbao",
+  "category": "life-service",
+  "name": "电暖气选购",
+  "description": "电暖气选购：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "chilblain-treatment-tianbao",
+  "category": "life-service",
+  "name": "冻疮处理",
+  "description": "冻疮处理：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "winter-tire-change-tianbao",
+  "category": "life-service",
+  "name": "冬季轮胎更换",
+  "description": "冬季轮胎更换：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "ac-self-cleaning-tianbao",
+  "category": "life-service",
+  "name": "空调自行清洗",
+  "description": "空调自行清洗：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "mosquito-repel-methods-tianbao",
+  "category": "life-service",
+  "name": "驱蚊方法大全",
+  "description": "驱蚊方法大全：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "fridge-full-power-myth-tianbao",
+  "category": "life-service",
+  "name": "冰箱塞满省电误区",
+  "description": "冰箱塞满省电误区：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "watermelon-picking-tianbao",
+  "category": "life-service",
+  "name": "西瓜挑选",
+  "description": "西瓜挑选：分步骤实操指南",
+  "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "summer-mat-cleaning-tianbao",
+  "category": "life-service",
+  "name": "凉席清洁",
+  "description": "凉席清洁：分步骤实操指南",
+  "source_batch": "batch23-blank"
  }
 ]
