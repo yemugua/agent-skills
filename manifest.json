@@ -13249,5 +13249,145 @@
   "name": "凉席清洁",
   "description": "凉席清洁：分步骤实操指南",
   "source_batch": "batch23-blank"
+ },
+ {
+  "slug": "diabetic-foot-prevention-tianbao",
+  "category": "life-service",
+  "name": "糖尿病足日常预防",
+  "description": "糖尿病足日常预防：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "insulin-injection-technique-tianbao",
+  "category": "life-service",
+  "name": "胰岛素注射手法规范",
+  "description": "胰岛素注射手法规范：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "glucose-meter-usage-tianbao",
+  "category": "life-service",
+  "name": "血糖仪正确使用",
+  "description": "血糖仪正确使用：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "home-bp-monitoring-log-tianbao",
+  "category": "life-service",
+  "name": "高血压居家自测记录",
+  "description": "高血压居家自测记录：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "gout-flare-homecare-tianbao",
+  "category": "life-service",
+  "name": "痛风急性期居家护理",
+  "description": "痛风急性期居家护理：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "nasal-rinse-usage-tianbao",
+  "category": "life-service",
+  "name": "洗鼻器正确使用",
+  "description": "洗鼻器正确使用：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "asthma-inhaler-technique-tianbao",
+  "category": "life-service",
+  "name": "哮喘吸入器使用规范",
+  "description": "哮喘吸入器使用规范：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "gastroscopy-preparation-tianbao",
+  "category": "life-service",
+  "name": "胃镜检查前准备",
+  "description": "胃镜检查前准备：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "colonoscopy-preparation-tianbao",
+  "category": "life-service",
+  "name": "肠镜检查前准备",
+  "description": "肠镜检查前准备：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "health-checkup-prep-tianbao",
+  "category": "life-service",
+  "name": "体检前注意事项",
+  "description": "体检前注意事项：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "cataract-early-visit-tianbao",
+  "category": "life-service",
+  "name": "白内障早期就医指引",
+  "description": "白内障早期就医指引：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "tinnitus-visit-guide-tianbao",
+  "category": "life-service",
+  "name": "耳鸣就医检查指引",
+  "description": "耳鸣就医检查指引：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "preconception-checkup-list-tianbao",
+  "category": "life-service",
+  "name": "备孕检查项目清单",
+  "description": "备孕检查项目清单：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "folic-acid-guide-tianbao",
+  "category": "life-service",
+  "name": "叶酸补充须知",
+  "description": "叶酸补充须知：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "hpv-vaccine-guide-tianbao",
+  "category": "life-service",
+  "name": "HPV疫苗接种指引",
+  "description": "HPV疫苗接种指引：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "postpartum-recovery-timeline-tianbao",
+  "category": "life-service",
+  "name": "产后修复时间表",
+  "description": "产后修复时间表：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "pregnancy-medication-safety-tianbao",
+  "category": "life-service",
+  "name": "孕期用药安全须知",
+  "description": "孕期用药安全须知：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "child-vaccine-schedule-tianbao",
+  "category": "life-service",
+  "name": "儿童疫苗时间表",
+  "description": "儿童疫苗时间表：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "senior-fall-proofing-tianbao",
+  "category": "life-service",
+  "name": "老人居家防跌倒改造",
+  "description": "老人居家防跌倒改造：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
+ },
+ {
+  "slug": "home-medicine-cabinet-tianbao",
+  "category": "life-service",
+  "name": "家庭药箱配置清单",
+  "description": "家庭药箱配置清单：就医准备与操作规范指南",
+  "source_batch": "batch24-chronic"
  }
 ]
