@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "base_date": "2026-10-04",
+  "reg_date": "2018-06-15",
+  "age_years": 8,
+  "nodes": [
+    {
+      "age_year": 8,
+      "date": "2026-06-15",
+      "action": "领取检验标志（免检）",
+      "note": "12123 申领"
+    },
+    {
+      "age_year": 10,
+      "date": "2028-06-15",
+      "action": "上线检验",
+      "note": "需处理完全部违章"
+    }
+  ],
+  "deadlines": [
+    {
+      "item": "交强险",
+      "date": "2026-11-20",
+      "status": "47 天后",
+      "level": "低"
+    },
+    {
+      "item": "商业险",
+      "date": "2027-01-05",
+      "status": "93 天后",
+      "level": "低"
+    }
+  ],
+  "points": {
+    "current": 6,
+    "suspected": 6,
+    "total": 12,
+    "hits": [
+      [
+        "  2026-03-11   环城东路   闯红灯  ",
+        6
+      ],
+      [
+        "  2026-05-02   高速   超速 20%  ",
+        6
+      ]
+    ]
+  },
+  "missing": [],
+  "any_urgent": true
+}

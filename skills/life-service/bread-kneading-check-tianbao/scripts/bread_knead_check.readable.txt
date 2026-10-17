@@ -1,0 +1,626 @@
+# -*- coding: utf-8 -*-
+"""面包揉面状态判断与手法核查：面筋阶段、面团温度、含液量与后油法顺序。
+
+用法:
+  python bread_knead_check.py --file dough.json [--out result.md] [--format json]
+  python bread_knead_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 面粉: (键, 中文名, 含液量下限百分比, 含液量上限百分比, 适用, 目标阶段)
+FLOUR = [
+    ('high_gluten', '高筋面粉', 60.0, 65.0, '吐司、贝果、可颂等需要强韧面筋的面包', 'full'),
+    ('all_purpose', '中筋面粉', 55.0, 60.0, '餐包、软欧、中式面点', 'near'),
+    ('whole_wheat', '全麦面粉', 65.0, 72.0, '全麦面包，麸皮会切断面筋', 'expansion'),
+    ('low_gluten', '低筋面粉', 50.0, 55.0, '蛋糕为主，做面包面筋偏弱', 'expansion'),
+]
+
+# 面筋阶段: (键, 中文名, 特征, 该做的事)
+STAGES = [
+    ('mixed', '混合期', '材料混合成粗糙面团，表面已无片状干粉', '开始正式揉面，此时不要加黄油'),
+    ('forming', '面筋初步形成', '面团开始抱团，拉扯易断，表面仍粗糙', '继续揉，不要因为看着不光滑就加水'),
+    ('expansion', '扩展阶段', '能拉出较厚的膜，不透光，破口有锯齿', '黄油的加入分界线，软化黄油从此阶段开始分次加'),
+    ('near', '接近完全扩展', '能拉出半透明薄膜，破口有细锯齿', '再揉 1 至 2 分钟立即复检'),
+    ('full', '完全扩展', '能拉出透光薄膜，破口边缘光滑', '立刻停手，滚圆放松 15 至 20 分钟'),
+]
+
+STAGE_ORDER = ['mixed', 'forming', 'expansion', 'near', 'full']
+STAGE_NAME = dict((k, v) for k, v, _c, _d in STAGES)
+STAGE_FEATURE = dict((k, c) for k, _v, c, _d in STAGES)
+STAGE_ACTION = dict((k, d) for k, _v, _c, d in STAGES)
+
+# 面团温度（摄氏度）
+DOUGH_TEMP = {
+    'target_min': 24.0,
+    'target_max': 26.0,
+    'slow_min': 22.0,
+    'warn_max': 28.0,
+    'broken_max': 32.0,
+}
+
+# 摩擦升温参考: (键, 中文名, 下限, 上限)
+FRICTION = [
+    ('hand', '手揉', 2.0, 4.0),
+    ('mixer_low', '厨师机低速', 5.0, 8.0),
+    ('mixer_high', '厨师机中高速长时间', 8.0, 12.0),
+]
+
+FRICTION_NAME = dict((k, v) for k, v, _a, _b in FRICTION)
+
+# 窗玻璃膜输入字段
+WINDOWPANE_FIELDS = ('can_stretch', 'translucent', 'edge_smooth', 'breaks_at_once')
+
+# 八项操作检查: (键, 中文名, 合格口径, 不合格的原因)
+CHECKS = [
+    ('weighed', '材料已称重',
+     '面粉与液体都按重量称过，不用量杯估',
+     '量杯估算的误差可达两成，阶段判定的起点就不准'),
+    ('hydration_ok', '含液量在区间内',
+     '含液量落在该面粉的推荐区间',
+     '偏离区间后，窗玻璃膜的判定标准本身失效'),
+    ('autolyse_done', '已做自解静置',
+     '粉水混合后静置 20 至 30 分钟',
+     '省下的揉面时间远多于静置时间'),
+    ('salt_yeast_apart', '盐与酵母未直接接触',
+     '盐与酵母分两侧放置，各自拌开再揉匀',
+     '直接接触会抑制酵母活性，小份量尤其明显'),
+    ('butter_after_expansion', '黄油在扩展阶段后加入',
+     '软化黄油在能拉出较厚的膜之后分次加入',
+     '提前加油会把面筋油断，后面怎么揉都拉不出膜'),
+    ('windowpane_tested', '已做窗玻璃膜测试',
+     '每揉 3 至 5 分钟复检一次',
+     '时间只是参考，阶段才是判定依据'),
+    ('temp_measured', '面团温度已实测',
+     '用探针温度计测面团中心温度',
+     '手感估差两度就是两种结果'),
+    ('no_extra_flour', '未撒干粉补救发黏',
+     '发黏先找原因，不撒手粉',
+     '撒粉改变配方比例，面团越揉越干'),
+]
+
+CHECK_WHY = dict((k, why) for k, _n, _o, why in CHECKS)
+
+# 揉过头信号: (键, 中文名, 说明)
+OVERDONE = [
+    ('weeping', '表面渗水发黏', '手上会带下一层稀糊'),
+    ('lost_elasticity', '失去弹性', '按下去不留弹'),
+    ('film_collapses', '膜一碰就化', '拉出的薄膜立刻塌掉'),
+    ('cannot_round', '滚不圆', '越揉越湿越摊，无法收圆'),
+]
+
+# 六条明确禁止的操作
+BANNED = [
+    '用方子写了几分钟当停手依据，不看阶段',
+    '面团发黏时反复撒干粉补救',
+    '一开始就把软化黄油和所有材料一起投进去',
+    '对全麦、黑麦面团追求透光手套膜',
+    '凭手感估计面团温度而不实测',
+    '把越揉越湿黏当成还没揉到继续加时间',
+]
+
+LEVEL_HARD = '必须处理'
+LEVEL_CONTINUE = '还需继续'
+LEVEL_WEAK = '存在薄弱环节'
+LEVEL_UNKNOWN = '待确认'
+LEVEL_OK = '可以继续'
+
+
+def get_flour(key):
+    for row in FLOUR:
+        if row[0] == str(key or '').strip().lower():
+            return row
+    raise ValueError('未知的面粉种类: %s，可选 %s 之一' % (key, '/'.join(r[0] for r in FLOUR)))
+
+
+def judge_stage(w):
+    """按窗玻璃膜四档现象判定面筋阶段。返回阶段键。"""
+    if w is None:
+        w = {}
+    if not isinstance(w, dict):
+        raise ValueError('windowpane 必须是对象')
+    for k in w:
+        if k not in WINDOWPANE_FIELDS:
+            raise ValueError('未知的窗玻璃膜字段: %s，可选 %s 之一' % (k, '/'.join(WINDOWPANE_FIELDS)))
+    # 严格按现象判定，不要给任何「视为合格」的宽容分支。
+    if not w.get('can_stretch'):
+        return 'mixed'
+    if w.get('breaks_at_once'):
+        return 'forming'
+    if not w.get('translucent'):
+        return 'expansion'
+    if not w.get('edge_smooth'):
+        return 'near'
+    return 'full'
+
+
+def check_items(flags):
+    if flags is None:
+        flags = {}
+    if not isinstance(flags, dict):
+        raise ValueError('checks 必须是对象')
+    keys = [c[0] for c in CHECKS]
+    for k in flags:
+        if str(k).strip().lower() not in keys:
+            raise ValueError('未知的检查项: %s，可选项见 CHECKS 表' % k)
+    rows = []
+    bad = []
+    unk = []
+    for key, name, ok_desc, why in CHECKS:
+        v = flags.get(key)
+        if v is None:
+            rows.append({'name': name, 'status': '未检查', 'desc': ok_desc, 'why': why})
+            unk.append(name)
+        elif v:
+            rows.append({'name': name, 'status': '合格', 'desc': ok_desc, 'why': why})
+        else:
+            rows.append({'name': name, 'status': '不合格', 'desc': ok_desc, 'why': why})
+            bad.append(name)
+    return rows, bad, unk
+
+
+def water_temp(target, room, flour_t, friction):
+    """加水水温换算: 目标面团温度乘以 3 减去室温、粉温与摩擦升温。"""
+    return target * 3.0 - room - flour_t - friction
+
+
+def water_advise(temp):
+    if temp < 0:
+        return '算出的水温低于 0 摄氏度，光调水温不够，需要同时冷藏面粉和搅拌缸并降低室温'
+    if temp < 4:
+        return '算出的水温低于 4 摄氏度，直接使用冰水'
+    return '按 %.1f 摄氏度调水即可' % temp
+
+
+def check_overdone(signs):
+    if signs is None:
+        signs = {}
+    if not isinstance(signs, dict):
+        raise ValueError('overdone_signs 必须是对象')
+    keys = [o[0] for o in OVERDONE]
+    for k in signs:
+        if str(k).strip().lower() not in keys:
+            raise ValueError('未知的揉过头信号: %s，可选项见 OVERDONE 表' % k)
+    hit = []
+    rows = []
+    for key, name, desc in OVERDONE:
+        v = signs.get(key)
+        if v is True:
+            hit.append(name)
+            rows.append({'name': name, 'status': '出现', 'desc': desc})
+        elif v is False:
+            rows.append({'name': name, 'status': '未出现', 'desc': desc})
+        else:
+            rows.append({'name': name, 'status': '未检查', 'desc': desc})
+    return rows, hit
+
+
+def calc(data):
+    if not isinstance(data, dict):
+        raise ValueError('输入必须是 JSON 对象')
+    row = get_flour(data.get('flour'))
+    fkey, fname, hmin, hmax, fusage, ftarget = row
+
+    stage = judge_stage(data.get('windowpane'))
+
+    hyd = data.get('hydration_pct')
+    hyd_row = None
+    hyd_bad = False
+    if hyd is not None:
+        try:
+            hyd = float(hyd)
+        except (TypeError, ValueError):
+            raise ValueError('hydration_pct 必须是数字')
+        ok = hmin <= hyd <= hmax
+        hyd_row = {'flour': fname, 'value': hyd, 'min': hmin, 'max': hmax,
+                   'status': '在区间内' if ok else '超出区间', 'usage': fusage}
+        hyd_bad = not ok
+
+    rows, bad, unk = check_items(data.get('checks'))
+    od_rows, od_hit = check_overdone(data.get('overdone_signs'))
+
+    dtemp = data.get('dough_temp')
+    temp_row = None
+    temp_hard = False
+    temp_missing = dtemp is None
+    if dtemp is not None:
+        try:
+            dtemp = float(dtemp)
+        except (TypeError, ValueError):
+            raise ValueError('dough_temp 必须是数字')
+        if dtemp > DOUGH_TEMP['broken_max']:
+            status = '已受损'
+            why = '高于 32 摄氏度，面筋已被破坏，不要再追求吐司，改做披萨、饼类或佛卡夏'
+            temp_hard = True
+        elif dtemp > DOUGH_TEMP['warn_max']:
+            status = '超标'
+            why = '超过 28 摄氏度警戒上限，发酵会失控、面筋易断，先摊平冷藏降温 10 至 15 分钟'
+            temp_hard = True
+        elif dtemp > DOUGH_TEMP['target_max']:
+            status = '略高'
+            why = '略高于 26 摄氏度目标上限，注意后续发酵速度会偏快'
+        elif dtemp < DOUGH_TEMP['slow_min']:
+            status = '偏低'
+            why = '低于 22 摄氏度，扩展与发酵明显变慢，需用温水盆或发酵箱回温'
+        else:
+            status = '达标'
+            why = '落在 24 至 26 摄氏度目标区间内'
+        temp_row = {'value': dtemp, 'status': status, 'why': why}
+
+    target_t = data.get('target_dough_temp')
+    room = data.get('room_temp')
+    flour_t = data.get('flour_temp')
+    friction = data.get('friction')
+    water = None
+    if None not in (target_t, room, flour_t, friction):
+        try:
+            water = water_temp(float(target_t), float(room), float(flour_t), float(friction))
+        except (TypeError, ValueError):
+            raise ValueError('水温换算的四个参数都必须是数字')
+
+    sidx = STAGE_ORDER.index(stage)
+    tidx = STAGE_ORDER.index(ftarget)
+    gap = tidx - sidx
+    knead_done = bool(data.get('knead_done'))
+    short_stop = knead_done and gap > 0
+    over_stage = None
+    if fkey in ('whole_wheat', 'low_gluten') and gap < 0:
+        over_stage = '该面粉不需要做到此阶段，麸皮或低蛋白含量会切断面筋，硬拉只会把膜拉破'
+
+    # 判定顺序: 先看真实缺陷(温度受损/超标、揉过头、未到目标阶段就停手),
+    # 再看检查项是否不合格, 最后才看信息是否完整。
+    if temp_hard:
+        level = LEVEL_HARD
+    elif od_hit:
+        level = LEVEL_HARD
+    elif short_stop:
+        level = LEVEL_CONTINUE
+    elif bad or hyd_bad:
+        level = LEVEL_WEAK
+    elif temp_missing or unk or data.get('windowpane') is None:
+        level = LEVEL_UNKNOWN
+    else:
+        level = LEVEL_OK
+
+    return {
+        'flour': {'key': fkey, 'name': fname, 'usage': fusage,
+                  'target_stage': STAGE_NAME[ftarget], 'hyd_min': hmin, 'hyd_max': hmax},
+        'stage': {'key': stage, 'name': STAGE_NAME[stage],
+                  'feature': STAGE_FEATURE[stage], 'action': STAGE_ACTION[stage]},
+        'gap': gap,
+        'target_stage_name': STAGE_NAME[ftarget],
+        'short_stop': short_stop,
+        'over_stage_note': over_stage,
+        'hyd_row': hyd_row,
+        'temp_row': temp_row,
+        'temp_missing': temp_missing,
+        'check_rows': rows,
+        'bad': bad,
+        'unk': unk,
+        'overdone_rows': od_rows,
+        'overdone_hit': od_hit,
+        'water_temp': water,
+        'water_advise': water_advise(water) if water is not None else None,
+        'level': level,
+        'temp_limits': DOUGH_TEMP,
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 面包揉面状态判定结果')
+    L.append('')
+    L.append('**总体判定：%s**' % r['level'])
+    L.append('')
+    L.append('## 一、面粉与目标阶段')
+    L.append('')
+    L.append('| 项目 | 内容 |')
+    L.append('|---|---|')
+    L.append('| 面粉 | %s |' % r['flour']['name'])
+    L.append('| 适用 | %s |' % r['flour']['usage'])
+    L.append('| 推荐含液量（百分比） | %.0f 至 %.0f |' % (r['flour']['hyd_min'], r['flour']['hyd_max']))
+    L.append('| 目标阶段 | %s |' % r['target_stage_name'])
+    L.append('')
+    L.append('## 二、当前面筋阶段')
+    L.append('')
+    L.append('| 项目 | 内容 |')
+    L.append('|---|---|')
+    L.append('| 判定阶段 | %s |' % r['stage']['name'])
+    L.append('| 特征 | %s |' % r['stage']['feature'])
+    L.append('| 下一步 | %s |' % r['stage']['action'])
+    L.append('| 距离目标阶段 | %s |' % (('还差 %d 档' % r['gap']) if r['gap'] > 0 else (
+        '已达到' if r['gap'] == 0 else '已超出目标阶段')))
+    if r['short_stop']:
+        L.append('')
+        L.append('> **未达到目标阶段就停手**：应在到达「%s」后再停，否则成品体积小、组织粗糙。' % r['target_stage_name'])
+    if r['over_stage_note']:
+        L.append('')
+        L.append('> %s' % r['over_stage_note'])
+    L.append('')
+    L.append('## 三、面团温度核查')
+    L.append('')
+    if r['temp_row'] is None:
+        L.append('未提供面团温度。**缺少实测温度无法给出最终判定**，请用探针温度计测中心温度。')
+    else:
+        t = r['temp_row']
+        L.append('| 实测值（摄氏度） | 状态 | 说明 |')
+        L.append('|---|---|---|')
+        L.append('| %.1f | %s | %s |' % (t['value'], t['status'], t['why']))
+        L.append('')
+        L.append('目标区间 %.0f 至 %.0f，警戒上限 %.0f。' % (
+            r['temp_limits']['target_min'], r['temp_limits']['target_max'], r['temp_limits']['warn_max']))
+    L.append('')
+    L.append('## 四、加水水温换算')
+    L.append('')
+    if r['water_temp'] is None:
+        L.append('未提供 target_dough_temp、room_temp、flour_temp、friction 四项，无法换算。')
+    else:
+        L.append('建议加水温度：**%.1f 摄氏度**。%s' % (r['water_temp'], r['water_advise']))
+    L.append('')
+    L.append('## 五、含液量核查')
+    L.append('')
+    if r['hyd_row'] is None:
+        L.append('未提供 hydration_pct，无法核查含液量。')
+    else:
+        h = r['hyd_row']
+        L.append('| 面粉 | 实测（百分比） | 推荐区间 | 状态 |')
+        L.append('|---|---|---|---|')
+        L.append('| %s | %.1f | %.0f 至 %.0f | %s |' % (h['flour'], h['value'], h['min'], h['max'], h['status']))
+    L.append('')
+    L.append('## 六、揉过头信号')
+    L.append('')
+    L.append('| 信号 | 状态 | 说明 |')
+    L.append('|---|---|---|')
+    for row in r['overdone_rows']:
+        L.append('| %s | %s | %s |' % (row['name'], row['status'], row['desc']))
+    if r['overdone_hit']:
+        L.append('')
+        L.append('> 出现「%s」，请立即停手并改做披萨、佛卡夏、烙饼或饼干。' % '、'.join(r['overdone_hit']))
+    L.append('')
+    L.append('## 七、八项操作检查')
+    L.append('')
+    L.append('| 检查项 | 状态 | 合格口径 | 不合格的原因 |')
+    L.append('|---|---|---|---|')
+    for row in r['check_rows']:
+        L.append('| %s | %s | %s | %s |' % (row['name'], row['status'], row['desc'], row['why']))
+    if r['bad']:
+        L.append('')
+        L.append('不合格项及原因：')
+        for row in r['check_rows']:
+            if row['status'] == '不合格':
+                L.append('- **%s**：%s' % (row['name'], row['why']))
+    if r['unk']:
+        L.append('')
+        L.append('未检查项：%s' % '、'.join(r['unk']))
+    L.append('')
+    L.append('## 八、明确禁止的操作')
+    L.append('')
+    for i, b in enumerate(BANNED, 1):
+        L.append('%d. %s' % (i, b))
+    L.append('')
+    L.append('## 九、人工确认清单')
+    L.append('')
+    L.append('- [ ] 面粉与液体都按重量称过')
+    L.append('- [ ] 含液量在该面粉的推荐区间内')
+    L.append('- [ ] 粉水混合后做过 20 至 30 分钟自解')
+    L.append('- [ ] 盐与酵母没有直接堆在一起')
+    L.append('- [ ] 黄油在能拉出较厚的膜之后加入')
+    L.append('- [ ] 停手前刚做过窗玻璃膜测试')
+    L.append('- [ ] 探针温度计实测中心温度在 24 至 26 摄氏度')
+    L.append('- [ ] 面团表面不黏手，戳洞能回弹')
+    L.append('')
+    L.append('## 十、免责')
+    L.append('')
+    L.append('本结果为家庭烘焙方法论整理，不构成成品效果承诺，也不作任何食品安全性判断。')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    allok = dict((c[0], True) for c in CHECKS)
+    base = {
+        'flour': 'high_gluten',
+        'hydration_pct': 62,
+        'knead_done': True,
+        'windowpane': {'can_stretch': True, 'translucent': True, 'edge_smooth': True},
+        'dough_temp': 25,
+        'room_temp': 26,
+        'flour_temp': 26,
+        'friction': 3,
+        'target_dough_temp': 25,
+        'checks': dict(allok),
+        'overdone_signs': {'weeping': False, 'lost_elasticity': False,
+                           'film_collapses': False, 'cannot_round': False},
+    }
+
+    # 1 正例
+    r1 = calc(base)
+    ck(r1['level'] == LEVEL_OK, '正例应为可以继续，实为 %s' % r1['level'])
+    ck(r1['stage']['key'] == 'full', '正例应判完全扩展，实为 %s' % r1['stage']['key'])
+    ck(r1['gap'] == 0, '正例距离目标应为 0，实为 %s' % r1['gap'])
+
+    # 2 反例: 一拉就断却已停手
+    r2 = calc(dict(base, windowpane={'can_stretch': True, 'breaks_at_once': True}))
+    ck(r2['level'] == LEVEL_CONTINUE, '未到目标阶段就停手应判还需继续，实为 %s' % r2['level'])
+    ck(r2['stage']['key'] == 'forming', '一拉就断应判面筋初步形成，实为 %s' % r2['stage']['key'])
+    ck(r2['short_stop'] is True, 'short_stop 应为 True')
+
+    # 3 反例: 拉不开也不透光
+    r3 = calc(dict(base, knead_done=False, windowpane={'can_stretch': True, 'translucent': False}))
+    ck(r3['stage']['key'] == 'expansion', '能拉成膜不透光应判扩展阶段，实为 %s' % r3['stage']['key'])
+
+    # 4 反例: 温度超标必须优先处理
+    r4 = calc(dict(base, dough_temp=30))
+    ck(r4['level'] == LEVEL_HARD, '温度超过警戒上限应判必须处理，实为 %s' % r4['level'])
+    ck(r4['temp_row']['status'] == '超标', '温度状态应为超标，实为 %s' % r4['temp_row']['status'])
+    ck('面筋易断' in r4['temp_row']['why'], '温度超标必须带出原因，实为 %s' % r4['temp_row']['why'])
+
+    # 5 温度已受损
+    r5 = calc(dict(base, dough_temp=34))
+    ck(r5['temp_row']['status'] == '已受损', '高于 32 度应判已受损，实为 %s' % r5['temp_row']['status'])
+    ck(r5['level'] == LEVEL_HARD, '已受损应判必须处理，实为 %s' % r5['level'])
+
+    # 6 反例: 揉过头信号
+    r6 = calc(dict(base, overdone_signs={'weeping': True, 'lost_elasticity': True}))
+    ck(r6['level'] == LEVEL_HARD, '出现揉过头信号应判必须处理，实为 %s' % r6['level'])
+    ck('表面渗水发黏' in r6['overdone_hit'], '应点名渗水信号，实为 %s' % r6['overdone_hit'])
+
+    # 7 反例: 黄油提前加
+    r7 = calc(dict(base, checks=dict(allok, butter_after_expansion=False)))
+    ck(r7['level'] == LEVEL_WEAK, '黄油提前加应判薄弱环节，实为 %s' % r7['level'])
+    ck('黄油在扩展阶段后加入' in r7['bad'], '应点名黄油项，实为 %s' % r7['bad'])
+    ck(CHECK_WHY['butter_after_expansion'] == '提前加油会把面筋油断，后面怎么揉都拉不出膜',
+       '黄油项必须带出为什么')
+
+    # 8 反例: 盐与酵母直接接触
+    r8 = calc(dict(base, checks=dict(allok, salt_yeast_apart=False)))
+    ck(r8['level'] == LEVEL_WEAK, '盐酵母未隔离应判薄弱环节，实为 %s' % r8['level'])
+    ck('盐与酵母未直接接触' in r8['bad'], '应点名盐酵母项，实为 %s' % r8['bad'])
+
+    # 9 反例: 含液量超出区间
+    r9 = calc(dict(base, hydration_pct=72))
+    ck(r9['hyd_row']['status'] == '超出区间', '含液量 72 对高筋应判超出，实为 %s' % r9['hyd_row']['status'])
+    ck(r9['level'] == LEVEL_WEAK, '含液量超标应判薄弱环节，实为 %s' % r9['level'])
+
+    # 10 全麦不需要追求完全扩展
+    r10 = calc(dict(base, flour='whole_wheat', hydration_pct=68,
+                    checks=dict(allok), windowpane={'can_stretch': True, 'translucent': True, 'edge_smooth': True}))
+    ck(r10['flour']['target_stage'] == STAGE_NAME['expansion'], '全麦目标应为扩展阶段')
+    ck(r10['over_stage_note'] is not None, '全麦做到完全扩展应给出不必追求的提示')
+
+    # 11 水温换算
+    ck(water_temp(25, 28, 28, 3) == 16.0, '水温换算应为 16，实为 %s' % water_temp(25, 28, 28, 3))
+    ck(water_temp(25, 30, 30, 2) == 13.0, '水温换算应为 13，实为 %s' % water_temp(25, 30, 30, 2))
+    ck(water_advise(-1.0).startswith('算出的水温低于 0'), '负水温应提示冷藏粉缸')
+    ck(water_advise(2.0).startswith('算出的水温低于 4'), '低水温应提示用冰水')
+
+    # 12 缺关键信息应判待确认(且不能被「其他都好」掩盖通过)
+    r12 = calc(dict(base, dough_temp=None))
+    ck(r12['level'] == LEVEL_UNKNOWN, '未测温度应判待确认，实为 %s' % r12['level'])
+    r12b = calc(dict(base, checks=dict(allok, weighed=None)))
+    ck(r12b['level'] == LEVEL_UNKNOWN, '检查项未填应判待确认，实为 %s' % r12b['level'])
+
+    # 13 判定分支顺序: 真实缺陷不能被「信息不全」压成待确认
+    r13 = calc(dict(base, dough_temp=30, checks=dict(allok, weighed=None)))
+    ck(r13['level'] == LEVEL_HARD, '温度超标且信息不全仍应判必须处理，实为 %s' % r13['level'])
+    r13b = calc(dict(base, windowpane={'can_stretch': True, 'breaks_at_once': True},
+                     dough_temp=None, checks=dict(allok, weighed=None)))
+    ck(r13b['level'] == LEVEL_CONTINUE, '阶段未到且信息不全仍应判还需继续，实为 %s' % r13b['level'])
+
+    # 14 BOM 两条路径
+    bom_text = '﻿' + json.dumps({'flour': 'high_gluten', 'dough_temp': 30})
+    r14 = calc(json.loads(bom_text.lstrip('﻿')))
+    ck(r14['level'] == LEVEL_HARD, 'BOM 字符串应能正确解析，实为 %s' % r14['level'])
+    ck(r14['temp_row']['value'] == 30.0, 'BOM 输入温度应为 30，实为 %s' % r14['temp_row']['value'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe_bread.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps(dict(base, flour='all_purpose', hydration_pct=58)))
+    try:
+        loaded = json.loads(open(tmp, 'r', encoding='utf-8-sig').read())
+        r14b = calc(loaded)
+        ck(r14b['flour']['name'] == '中筋面粉', 'utf-8-sig 读取应拿到中筋面粉，实为 %s' % r14b['flour']['name'])
+        ck(r14b['flour']['target_stage'] == STAGE_NAME['near'], '中筋面粉目标应为接近完全扩展')
+        ck(r14b['level'] == LEVEL_OK, '中筋面粉含液量 58 且做到完全扩展应判可以继续，实为 %s' % r14b['level'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 15 非法输入必须报错
+    for payload, why in (
+        ({'flour': 'rye'}, '未知面粉'),
+        ({'flour': 'high_gluten', 'checks': {'weighed': True, '拼错的项': True}}, '未知检查项'),
+        ({'flour': 'high_gluten', 'windowpane': {'拼错的字段': True}}, '未知膜字段'),
+        ({'flour': 'high_gluten', 'overdone_signs': {'拼错的信号': True}}, '未知过头信号'),
+        ({'flour': 'high_gluten', 'dough_temp': '很热'}, '温度非数字'),
+        ({'flour': 'high_gluten', 'windowpane': '不是对象'}, '膜非对象'),
+        ({'flour': 'high_gluten', 'checks': '不是对象'}, '检查项非对象'),
+        ('不是对象', '输入非对象'),
+    ):
+        try:
+            calc(payload)
+            ck(False, '用例15 %s 应抛错却通过' % why)
+        except ValueError:
+            ck(True, '')
+        except Exception as e:
+            ck(False, '用例15 %s 应抛 ValueError，实为 %s' % (why, e))
+
+    # 16 输出结构
+    md = render_md(r2)
+    for key in ('总体判定', '面粉与目标阶段', '当前面筋阶段', '面团温度核查',
+                '加水水温换算', '八项操作检查', '明确禁止的操作', '人工确认清单', '免责'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(r2['check_rows']) == 8, '检查项应 8 条，实为 %d' % len(r2['check_rows']))
+    ck(len(BANNED) == 6, '禁止项应 6 条，实为 %d' % len(BANNED))
+    ck(len(FLOUR) == 4, '面粉种类应 4 种，实为 %d' % len(FLOUR))
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    if errs:
+        msg = 'SELFTEST FAIL\n' + '\n'.join(errs)
+    else:
+        msg = ('SELFTEST OK\n断言数: %d\n覆盖: 正例/一拉就断/扩展阶段/温度超标/温度受损/'
+               '揉过头信号/黄油提前/盐酵母未隔离/含液量超标/全麦目标阶段/水温换算与冰水提醒/'
+               '待确认/判定分支顺序/未知面粉与未知字段/BOM 两条路径/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='面包揉面状态判断与手法核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    target = a.out or os.path.join(os.path.dirname(os.path.abspath(__file__)), '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

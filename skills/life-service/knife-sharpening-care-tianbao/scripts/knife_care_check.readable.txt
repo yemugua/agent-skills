@@ -1,0 +1,481 @@
+# -*- coding: utf-8 -*-
+"""刀具保养与磨刀核查：按刀型给出刃口角度、磨刀方式、禁忌与保养检查项。
+
+用法:
+  python knife_care_check.py --file knife.json [--out result.md] [--format json]
+  python knife_care_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 刀型 -> (中文名, 刃口角度, 推荐磨刀方式, 推荐磨料, 磨刀注意事项)
+KNIVES = {
+    'chinese_cleaver': ('中式片刀', 15, '磨刀石', '细目与粗目配合',
+                   '刃口薄，平推轻磨；只用磨刀石，忌用磨刀棒硬刮'),
+    'japanese_gyuto': ('日式主厨刀', 15, '磨刀石', '细目 1000 至 3000',
+                  '单刃结构，只磨主刃，凹刃侧不要磨出斜面'),
+    'gyuto_alt': ('日式主厨刀（15 度型）', 15, '磨刀石', '细目 1000 至 3000',
+                  '单刃结构，只磨主刃，注意保持原有弧度'),
+    'beef_knife': ('中式片刀（厚背型）', 20, '磨刀石', '粗细目配合',
+                '刃角较厚，先粗磨定型再细磨，握持位置靠近刀跟'),
+    'boning_knife': ('剔骨刀', 20, '磨刀石', '细目为主',
+                '刃薄需轻磨，握持靠近刀尖便于精细控制'),
+    'utility_knife': ('西式厨刀', 20, '磨刀器或磨刀石', '中细目',
+                 '适用磨刀器，注意磨料槽与刀身角度贴合'),
+    'kitchen_scissors': ('厨房剪刀', 20, '磨刀器专用剪刀位', '专用细目',
+                   '剪刀不可整体压上磨刀器，用专用剪刀位逐刃磨'),
+    'bread_knife': ('面包刀', 20, '磨刀石', '细目 400 至 600',
+                '锯齿刃，按原有锯齿形态逐齿修整，不磨成平刃'),
+    'serrated_bread': ('锯齿面包刀', 20, '专用锯齿磨具', '专用细目',
+                  '锯齿刀不可磨成平刃，会失去锯切能力'),
+    'paring_knife': ('削皮刀与餐刀', 20, '磨刀石', '细目 1000 以上',
+                 '小刀刃短，握持靠近刀尖控制力度'),
+    'cleaver_hatchet': ('中式斩切刀', 20, '磨刀石', '粗目为主',
+                  '刃角较厚，磨除量较大，分多次进行避免过热'),
+}
+
+# 磨刀器与磨刀石对比
+TOOL_COMPARE = [
+    ('磨刀器', '日常快速修整，效率高，对操作要求低',
+     '控制力度不当时极易磨出「V 形凹口」，且会明显消耗刀刃',
+     '不追求刃口精细度时首选'),
+    ('磨刀石', '刃口可控性好，可磨出理想的平直刃线与弧度',
+     '需要一定手法与练习，学习成本较高',
+     '追求锋利度与刃口几何形状时使用'),
+    ('磨刀棒（陶瓷或钢）', '快速恢复刃口锋利，延缓钝化',
+     '**只能修整不能真正磨出锋利刃口**，且会改变刃角',
+     '日常维护，不作为主要磨刀方式'),
+]
+
+# 磨刀方向与力度（核心操作口径）
+GRIND_RULE = (
+    '磨刀的核心是**逆刃推磨，不是来回拉锯**。'
+    '刀刃放在磨料上，**由刀跟向刀尖单向推动**，每一下都从同一个方向。'
+    '来回拉锯会在刃口磨出高低不平的波浪线，形成锯齿状缺陷。'
+    '力度要**均匀而轻**，靠磨料自身的磨削作用去除金属，而不是靠压。'
+    '每磨几下观察一次刃口线是否平直，不要盲磨。'
+)
+
+# 去毛刺要求
+BURRS_NOTE = (
+    '磨完必须**去毛刺**：用一根细麻绳或皮革条，'
+    '顺着与刃口垂直的方向**轻轻拉过整个刃口**，把向一侧倒伏的毛边扳倒回去，'
+    '再顺着切削方向轻拉一次。'
+    '不去毛刺的刀会「挂毛」「撕纤维」，切出来的断面不干净，'
+    '而且毛边会让刀刃更快再次钝化。'
+)
+
+# 收纳要求
+STORAGE_RULE = (
+    '收纳四条：'
+    '① **刀具不可叠放**，刃口互相碰撞会瞬间崩刃；'
+    '② **竖放或用刀架、刀块**，刃口朝下或插入槽位；'
+    '③ **刃口不碰金属**，木质或塑料刀架更安全；'
+    '④ 洗后**立刻擦干**，潮湿会锈蚀并使刀口边缘发黑。'
+)
+
+# 明确禁止的操作
+BANNED = [
+    '木头柄与竹柄刀具不可进洗碗机，高温与长时间浸水会使柄部开裂变形',
+    '木头柄与竹柄刀具不可长时间泡水，浸水后柄部会膨胀松动',
+    '不可用洗碗机清洗任何优质刀具，洗碗机的高温与洗涤剂会损伤刃口',
+    '不可用磨刀棒当主要磨刀方式，磨刀棒只能修整不能磨出锋利刃口',
+    '不可用陶瓷刀磨玻璃或大理石台面，会剧烈磨损刀刃',
+    '不可把刀丢进水槽底部，容易缺口且难以发现',
+    '不可用力过猛单侧下压，会磨出凹口并使刃线不再平直',
+    '剪刀不可整体压上磨刀器，须用专用剪刀位逐刃修磨',
+]
+
+# 生熟分离要求
+COLOR_SEPARATION = (
+    '生熟刀必须分离：'
+    '红色或粉色标识刀用于生肉，蓝色或绿色标识刀用于蔬菜与熟食，'
+    '黄色标识刀用于一般用途。'
+    '同一把刀切过生肉后**不应直接接触即食或即入口食品**，'
+    '生肉表面可能带有沙门氏菌、弯曲菌等致病菌。'
+    '若只有一把刀，切完生肉后必须**彻底冲洗并用皂液清洁刀面**，'
+    '且不要用擦刀布只擦干表面就收起来。'
+)
+
+# 检查项: (键, 中文名, 说明, 不合格后果)
+CHECK_ITEMS = [
+    ('sharpness', '锋利度', '能轻松切开纸张或黄瓜片而不拖泥带水',
+     '钝刀切菜需加大力度，更容易滑刀割伤'),
+    ('edge_line', '刃线平直', '刃口线平直无高低波浪，无 V 形凹口',
+     '凹口与波浪线使切割不干净，且难以恢复'),
+    ('burr', '毛刺已清除', '刃口迎光观察无倒伏毛边，切割不挂毛',
+     '挂毛撕纤维，断面不干净，且加速再次钝化'),
+    ('handle', '柄部完好', '木柄竹柄无开裂松动，金属柄无松动锈蚀',
+     '柄部松动时刀身受力异常，刃口易崩'),
+    ('corrosion', '无锈蚀', '刃面无锈点，刃口边缘无发黑',
+     '锈蚀消耗刃口材料，钝化速度明显加快'),
+    ('dry', '已完全擦干', '刀身与柄部完全干燥无残留水渍',
+     '潮湿导致锈蚀与柄部开裂'),
+    ('storage', '收纳合规', '未叠放，竖放或用刀架，刃口不碰金属',
+     '叠放碰撞会瞬间崩刃'),
+    ('clean', '清洁到位', '刀面已用皂液清洁并冲净，无残留',
+     '残留物与潮湿共同导致异味与锈蚀'),
+    ('separation', '生熟分离', '生肉刀与即食刀分用，分色管理',
+     '生肉交叉污染即食食品'),
+]
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def knife_of(key):
+    k = norm(key)
+    if k not in KNIVES:
+        raise ValueError('未知刀型键: %s，可选键见 KNIVES 表' % key)
+    return k, KNIVES[k]
+
+
+def angle_tier(a):
+    if a <= 15:
+        return '薄刃（适合精细切割，易崩需谨慎）'
+    if a <= 20:
+        return '标准刃（兼顾锋利与耐用）'
+    return '厚刃（耐用，适合劈砍与重活）'
+
+
+def angle_valid(a):
+    try:
+        v = float(a)
+    except (TypeError, ValueError):
+        return False
+    return 0 < v <= 30
+
+
+def calc(data):
+    items = data.get('items') or []
+    checks = data.get('checks') or {}
+    if not isinstance(checks, dict):
+        raise ValueError('checks 必须是对象')
+    for k in checks:
+        if not any(norm(c[0]) == norm(k) for c in CHECK_ITEMS):
+            raise ValueError('未知的检查项: %s，可选项见 CHECK_ITEMS 表' % k)
+
+    if items:
+        rows = []
+        for it in items:
+            key, (name, angle, tool, grit, note) = knife_of(it.get('knife'))
+            use_angle = it.get('angle')
+            if use_angle is not None and not angle_valid(use_angle):
+                raise ValueError('angle 必须在 0 到 30 之间，实为: %s' % use_angle)
+            rows.append({
+                'name': it.get('name', name),
+                'knife': key,
+                'knife_name': name,
+                'rec_angle': angle,
+                'use_angle': use_angle,
+                'angle_tier': angle_tier(angle),
+                'tool': tool,
+                'grit': grit,
+                'note': note,
+                'serrated': key in ('bread_knife', 'serrated_bread', 'kitchen_scissors'),
+                'wood_handle': key in ('chinese_cleaver', 'beef_knife', 'chopping_hachet'),
+            })
+        rows.sort(key=lambda r: r['knife_name'])
+    else:
+        rows = []
+
+    ck_rows = []
+    bad = []
+    unk = []
+    for ckey, cname, cdesc, cwhy in CHECK_ITEMS:
+        v = checks.get(ckey)
+        if v is None:
+            ck_rows.append({'name': cname, 'status': '未检查', 'desc': cdesc, 'why': cwhy})
+            unk.append(cname)
+        elif v:
+            ck_rows.append({'name': cname, 'status': '合格', 'desc': cdesc, 'why': cwhy})
+        else:
+            ck_rows.append({'name': cname, 'status': '不合格', 'desc': cdesc, 'why': cwhy})
+            bad.append(cname)
+
+    warns = []
+    for r in rows:
+        if r['serrated']:
+            warns.append('%s 属锯齿或剪刀类，**不可磨成平刃**，否则失去锯切能力' % r['name'])
+        if r['wood_handle']:
+            warns.append('%s 为木质柄类，**不可进洗碗机、不可长时间泡水**，'
+                         '否则柄部开裂变形且刀身锈蚀' % r['name'])
+        if r['use_angle'] is not None and abs(float(r['use_angle']) - r['rec_angle']) >= 5:
+            warns.append('%s 建议刃角 %d 度，当前按 %s 度，偏差较大，刃线几何会改变'
+                         % (r['name'], r['rec_angle'], r['use_angle']))
+    for b in bad:
+        warns.append('检查不合格：%s，%s' % (b, next(c[3] for c in CHECK_ITEMS if c[1] == b)))
+    for u in unk:
+        warns.append('检查未完成：%s，建议逐项确认后再继续使用' % u)
+
+    if len(bad) >= 1:
+        level = '需处理后使用'
+    elif unk:
+        level = '待确认'
+    else:
+        level = '状态良好'
+
+    return {
+        'level': level,
+        'items': rows,
+        'check_rows': ck_rows,
+        'bad': bad,
+        'unchecked': unk,
+        'warns': warns,
+        'tool_compare': [{'name': a, 'good': b, 'bad': c, 'use': d}
+                         for a, b, c, d in TOOL_COMPARE],
+        'grind_rule': GRIND_RULE,
+        'burrs_note': BURRS_NOTE,
+        'storage_rule': STORAGE_RULE,
+        'banned': BANNED,
+        'separation': COLOR_SEPARATION,
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 刀具保养与磨刀核查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['level'])
+    L.append('')
+    L.append('## 二、按刀型的磨刀参数')
+    L.append('')
+    if r['items']:
+        L.append('| 刀具 | 刀型 | 建议刃角 | 刃角档位 | 推荐工具 | 磨料 | 注意 |')
+        L.append('|---|---|---|---|---|---|---|')
+        for x in r['items']:
+            L.append('| %s | %s | %d 度 | %s | %s | %s | %s |'
+                     % (x['name'], x['knife_name'], x['rec_angle'], x['angle_tier'],
+                        x['tool'], x['grit'], x['note']))
+    else:
+        L.append('- 未填写刀具记录')
+    L.append('')
+    L.append('## 三、磨刀器与磨刀石对比')
+    L.append('')
+    L.append('| 工具 | 优点 | 缺点 | 适用 |')
+    L.append('|---|---|---|---|')
+    for t in r['tool_compare']:
+        L.append('| %s | %s | %s | %s |' % (t['name'], t['good'], t['bad'], t['use']))
+    L.append('')
+    L.append('## 四、磨刀的方向与力度（核心）')
+    L.append('')
+    L.append('- %s' % r['grind_rule'])
+    L.append('')
+    L.append('## 五、去毛刺')
+    L.append('')
+    L.append('- %s' % r['burrs_note'])
+    L.append('')
+    L.append('## 六、收纳')
+    L.append('')
+    L.append('- %s' % r['storage_rule'])
+    L.append('')
+    L.append('## 七、明确禁止的操作')
+    L.append('')
+    for b in r['banned']:
+        L.append('- %s' % b)
+    L.append('')
+    L.append('## 八、生熟刀分离')
+    L.append('')
+    L.append('- %s' % r['separation'])
+    L.append('')
+    L.append('## 九、检查项')
+    L.append('')
+    L.append('| 检查项 | 状态 | 怎么判断 | 不合格后果 |')
+    L.append('|---|---|---|---|')
+    for c in r['check_rows']:
+        L.append('| %s | %s | %s | %s |' % (c['name'], c['status'], c['desc'], c['why']))
+    L.append('')
+    L.append('## 十、提示')
+    L.append('')
+    if r['warns']:
+        for w in r['warns']:
+            L.append('- %s' % w)
+    else:
+        L.append('- 未发现不合格项，按日常保养要点维护即可')
+    L.append('')
+    L.append('## 十一、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 刃口线平直，无 V 形凹口与波浪线')
+    L.append('- [ ] 已完成去毛刺，切割不挂毛')
+    L.append('- [ ] 木柄竹柄刀具未进过洗碗机、未长时间泡水')
+    L.append('- [ ] 刀具已完全擦干并合规收纳，未叠放')
+    L.append('- [ ] 生熟刀分离，分色管理')
+    L.append('- [ ] 磨刀为逆刃单向推磨，力度均匀而轻')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    # 1 刃角档位
+    ck(angle_tier(15) == '薄刃（适合精细切割，易崩需谨慎）', '15 度档位有误: %s' % angle_tier(15))
+    ck(angle_tier(20) == '标准刃（兼顾锋利与耐用）', '20 度档位有误: %s' % angle_tier(20))
+    ck(angle_tier(25) == '厚刃（耐用，适合劈砍与重活）', '25 度档位有误: %s' % angle_tier(25))
+
+    # 2 刃角合法性
+    ck(angle_valid(15) is True, '15 度应合法')
+    ck(angle_valid(0) is False, '0 度应非法')
+    ck(angle_valid(31) is False, '31 度应非法')
+
+    # 3 中式片刀参数
+    r3 = calc({'items': [{'knife': 'chinese_cleaver'}]})
+    ck(r3['items'][0]['rec_angle'] == 15, '中式片刀应为 15 度，实为 %s' % r3['items'][0]['rec_angle'])
+    ck(r3['items'][0]['wood_handle'] is True, '中式片刀应标木柄类')
+    ck(any('洗碗机' in w for w in r3['warns']), '木柄类应提示不可进洗碗机，实为 %s' % r3['warns'])
+
+    # 4 日式主厨刀
+    r4 = calc({'items': [{'knife': 'japanese_gyuto'}]})
+    ck(r4['items'][0]['knife_name'] == '日式主厨刀', '刀型名有误: %s' % r4['items'][0]['knife_name'])
+    ck('只磨主刃' in r4['items'][0]['note'], '日式刀应说明只磨主刃，实为 %s' % r4['items'][0]['note'])
+
+    # 5 锯齿刀不可磨平
+    r5 = calc({'items': [{'knife': 'serrated_bread'}]})
+    ck(r5['items'][0]['serrated'] is True, '锯齿刀应标锯齿类')
+    ck(any('不可磨成平刃' in w for w in r5['warns']), '锯齿刀应提示不可磨平，实为 %s' % r5['warns'])
+
+    # 6 剪刀不可整体上磨刀器
+    ck(any('剪刀不可整体压上磨刀器' in b for b in BANNED), '必须含剪刀不可整体上磨刀器')
+    ck(any('磨刀棒只能修整不能磨出锋利刃口' in b for b in BANNED), '必须含磨刀棒的限制说明')
+
+    # 7 磨刀方向口径
+    ck('逆刃推磨' in GRIND_RULE, '必须含逆刃推磨')
+    ck('不是来回拉锯' in GRIND_RULE, '必须明确不是来回拉锯')
+    ck('由刀跟向刀尖' in GRIND_RULE, '必须含单向推动方向')
+
+    # 8 去毛刺要求
+    ck('去毛刺' in BURRS_NOTE, '必须含去毛刺要求')
+    ck('挂毛' in BURRS_NOTE, '去毛刺应说明挂毛后果')
+
+    # 9 收纳四条
+    ck('不可叠放' in STORAGE_RULE, '收纳必须含不可叠放')
+    ck('刃口不碰金属' in STORAGE_RULE, '收纳必须含刃口不碰金属')
+    ck('竖放' in STORAGE_RULE, '收纳必须含竖放或刀架')
+
+    # 10 检查项三级判定
+    allok = {k: True for k, _, _, _ in CHECK_ITEMS}
+    r10 = calc({'checks': allok})
+    ck(r10['level'] == '状态良好', '全合格应状态良好，实为 %s' % r10['level'])
+    ck(len(r10['check_rows']) == 9, '检查项应 9 条，实为 %d' % len(r10['check_rows']))
+    r10b = calc({'checks': dict(allok, burr=False)})
+    ck(r10b['level'] == '需处理后使用', '毛刺不合格应需处理，实为 %s' % r10b['level'])
+    ck('毛刺已清除' in r10b['bad'], '应点名毛刺项，实为 %s' % r10b['bad'])
+    r10c = calc({'checks': {k: True for k, _, _, _ in CHECK_ITEMS if k != 'corrosion'}})
+    ck(r10c['level'] == '待确认', '缺项应待确认，实为 %s' % r10c['level'])
+    ck('无锈蚀' in r10c['unchecked'], '应列出未确认的无锈蚀，实为 %s' % r10c['unchecked'])
+
+    # 11 角度偏差告警
+    r11 = calc({'items': [{'knife': 'japanese_gyuto', 'angle': 25}]})
+    ck(any('偏差较大' in w for w in r11['warns']), '角度偏差应告警，实为 %s' % r11['warns'])
+
+    # 12 生熟分离要求
+    ck('生熟刀必须分离' in COLOR_SEPARATION, '必须含生熟刀分离')
+    ck('沙门氏菌' in COLOR_SEPARATION, '生熟分离应说明致病菌')
+
+    # 13 BOM 两条路径
+    bom = '﻿{"items": [{"knife": "boning_knife"}]}'
+    r13 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r13['items'][0]['rec_angle'] == 20, 'BOM 输入应解析，剔骨刀应为 20 度，实为 %s' % r13['items'][0]['rec_angle'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe6.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'checks': dict(allok, storage=False)}))
+    try:
+        r13b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r13b['level'] == '需处理后使用', 'utf-8-sig 读取应正常，实为 %s' % r13b['level'])
+        ck('收纳合规' in r13b['bad'], '应点名收纳项，实为 %s' % r13b['bad'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 14 非法输入
+    for bad, why in (
+        ({'items': [{'knife': '不存在的刀'}]}, '未知刀型'),
+        ({'checks': {'不存在的项': True}}, '未知检查项'),
+        ({'checks': '不是对象'}, 'checks 非对象'),
+        ({'items': [{'knife': 'chinese_cleaver', 'angle': 45}]}, '角度超范围'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例14 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 15 输出结构
+    md = render_md(r3)
+    for key in ('磨刀器与磨刀石', '逆刃推磨', '去毛刺', '收纳', '禁止', '生熟刀分离', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含 %s' % key)
+    ck(len(r3['banned']) >= 7, '禁止项至少 7 条，实为 %d' % len(r3['banned']))
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 刃角档位/刃角合法性/中式片刀木柄禁忌/日式单刃/锯齿不可磨平/'
+        '剪刀与磨刀棒限制/逆刃推磨口径/去毛刺/收纳四条/检查项三级判定/角度偏差告警/'
+        '生熟分离/BOM 两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='刀具保养与磨刀核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+
+

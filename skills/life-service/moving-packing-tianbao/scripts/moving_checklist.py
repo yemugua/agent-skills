@@ -1,0 +1,361 @@
+# -*- coding: utf-8 -*-
+"""\u642c\u5bb6\u6e05\u5355\u751f\u6210\u4e0e\u6821\u9a8c\uff1a\u6309\u623f\u95f4\u4f30\u7b97\u7bb1\u91cf\uff0c\u751f\u6210\u88c5\u7bb1\u987a\u5e8f\u4e0e\u4e24\u4efd\u6838\u67e5\u6e05\u5355\u3002
+
+\u7528\u6cd5:
+  python moving_checklist.py --rooms "\u5ba2\u53852,\u5367\u5ba42,\u53a8\u623f1,\u536b\u751f\u95f41"
+  python moving_checklist.py --file \u623f\u95f4.json --out \u642c\u5bb6\u6e05\u5355.md
+  python moving_checklist.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# ---- \u623f\u95f4\u53c2\u8003\u7bb1\u91cf\u4e0e\u63d0\u793a ----
+ROOM_BASE = {
+    '\u5ba2\u5385': (3, 6, '\u7535\u89c6\u3001\u97f3\u54cd\u3001\u88c5\u9970\u54c1\u662f\u5426\u9700\u8981\u5355\u72ec\u52a0\u56fa'),
+    '\u5367\u5ba4': (3, 6, '\u8863\u7269\u4e0e\u4e66\u7c4d\u91cf'),
+    '\u53a8\u623f': (2, 4, '\u9910\u5177\u6570\u91cf\u4e0e\u9505\u5177\u4f53\u79ef'),
+    '\u536b\u751f\u95f4': (1, 2, '\u6d17\u6f31\u4e0e\u6e05\u6d01\u7528\u54c1\u6570\u91cf'),
+    '\u9633\u53f0': (1, 3, '\u662f\u5426\u542b\u5927\u4ef6\u4e0e\u6742\u7269'),
+    '\u4e66\u623f': (4, 10, '\u4e66\u7c4d\u662f\u4e3b\u8981\u53d8\u91cf\uff0c\u8d8a\u91cd\u8d8a\u9700\u8981\u5c0f\u7bb1'),
+    '\u9910\u5385': (1, 3, '\u9910\u5177\u4e0e\u684c\u8fb9\u50a8\u7269'),
+    '\u513f\u7ae5\u623f': (2, 4, '\u73a9\u5177\u4e0e\u8863\u7269'),
+}
+
+DEFAULT_ROOMS = [
+    ('\u5ba2\u5385', 2), ('\u5367\u5ba4', 2), ('\u53a8\u623f', 1), ('\u536b\u751f\u95f4', 1), ('\u9633\u53f0', 1), ('\u4e66\u623f', 1),
+]
+
+# ---- \u88c5\u7bb1\u987a\u5e8f ----
+LOAD_ORDER = [
+    ('\u7b2c\u4e00\u6279', '\u4e0d\u5e38\u7528\u7269\u54c1\uff08\u6362\u5b63\u8863\u7269\u3001\u65e7\u4e66\u3001\u7eaa\u5ff5\u54c1\uff09', '\u642c\u5bb6\u8fc7\u7a0b\u4e2d\u57fa\u672c\u4e0d\u52a8'),
+    ('\u7b2c\u4e8c\u6279', '\u4e0d\u5e38\u7528\u4f46\u4e0d\u91cd\u7684\uff08\u88c5\u9970\u54c1\u3001\u5907\u7528\u9910\u5177\uff09', '\u88c5\u5728\u5927\u7bb1\u91cc'),
+    ('\u7b2c\u4e09\u6279', '\u5e38\u7528\u4f46\u4e0d\u6025\u7684\uff08\u5927\u90e8\u5206\u8863\u7269\u3001\u4e66\u7c4d\uff09', '\u88c5\u5728\u4e2d\u95f4'),
+    ('\u7b2c\u56db\u6279', '\u5e38\u7528\u4e14\u6025\u7528\u7684\uff08\u53a8\u623f\u57fa\u672c\u7528\u54c1\u3001\u536b\u6d74\u7528\u54c1\u3001\u6bdb\u5dfe\uff09', '\u88c5\u5c0f\u7bb1\u5e76\u6807\u5148\u5f00'),
+]
+
+NOT_BOXED = [
+    '\u8bc1\u4ef6\u3001\u5408\u540c\u3001\u836f\u54c1\u3001\u73b0\u91d1',
+    '\u76f8\u673a\u3001\u7535\u8111\u3001\u73e0\u5b9d\u7b49\u8d35\u91cd\u7269\u54c1',
+    '\u672a\u5bc6\u5c01\u7684\u6db2\u4f53',
+    '\u6613\u788e\u9ad8\u4ef7\u7269\u54c1\uff08\u9700\u4e13\u95e8\u5305\u88f9\u540e\u5355\u72ec\u88c5\u7bb1\u5e76\u8d34\u6807\u7b7e\uff09',
+    '\u5de5\u5177\u4e0e\u542b\u7535\u6c60\u7269\u54c1',
+]
+
+# ---- \u6e05\u5355 A\uff1a\u642c\u5bb6\u524d\u51c6\u5907 ----
+CHECK_A = [
+    '\u7269\u4e1a\u62a5\u5907\uff08\u642c\u8fd0\u65f6\u95f4\u3001\u7535\u68af\u4f7f\u7528\u3001\u8d27\u8f66\u505c\u9760\uff09',
+    '\u65ad\u7535\u3001\u65ad\u6c34\u3001\u65ad\u71c3\u6c14\uff08\u6309\u7269\u4e1a\u4e0e\u71c3\u6c14\u516c\u53f8\u8981\u6c42\u529e\u7406\uff09',
+    '\u6e05\u7406\u51b0\u7bb1\u4e0e\u6d17\u8863\u673a\uff08\u65ad\u7535\u9759\u7f6e\u5e76\u5904\u7406\u6b8b\u7559\u6c34\uff09',
+    '\u7a7a\u8c03\u4e0e\u5bb6\u7528\u7535\u5668\u6309\u8bf4\u660e\u4e66\u5173\u673a\u53ca\u79fb\u673a\u5b89\u6392',
+    '\u95e8\u7a97\u3001\u62bd\u5c49\u3001\u67dc\u95e8\u56fa\u5b9a\u5230\u4f4d',
+    '\u6613\u788e\u4e0e\u8d35\u91cd\u7269\u54c1\u5df2\u5355\u72ec\u5904\u7406',
+    '\u8bc1\u4ef6\u3001\u5408\u540c\u3001\u836f\u54c1\u3001\u73b0\u91d1\u5df2\u968f\u8eab',
+    '\u6bcf\u4e2a\u7eb8\u7bb1\u5916\u90e8\u4e24\u9762\u8d34\u597d\u6807\u7b7e\u5e76\u7f16\u53f7',
+    '\u5f53\u5929\u5fc5\u7528\u7269\u54c1\u5df2\u5355\u72ec\u88c5\u5148\u5f00\u7bb1',
+]
+
+# ---- \u6e05\u5355 B\uff1a\u5730\u5740\u4e0e\u4e1a\u52a1\u8fc1\u79fb ----
+CHECK_B = [
+    '\u6c34\u7535\u71c3\u6c14\u5f00\u6237\u6216\u8fc7\u6237',
+    '\u5bbd\u5e26\u4e0e\u7f51\u7edc\u8fc1\u79fb\u7533\u8bf7',
+    '\u56fa\u5b9a\u7535\u8bdd\u8fc1\u79fb\uff08\u5982\u4f7f\u7528\uff09',
+    '\u5feb\u9012\u4e0e\u90ae\u4ef6\u5730\u5740\u53d8\u66f4',
+    '\u5404\u7c7b\u4f1a\u5458\u4e0e\u8ba2\u9605\u5730\u5740\u66f4\u65b0',
+    '\u94f6\u884c\u4e0e\u4fdd\u9669\u8054\u7cfb\u5730\u5740\u66f4\u65b0',
+    '\u8f66\u8f86\u5e74\u68c0\u4e0e\u9a7e\u9a76\u8bc1\u5730\u5740\uff08\u5982\u9002\u7528\uff09',
+    '\u5ba0\u7269\u5b89\u7f6e\uff08\u643a\u5e26\u8bc1\u660e\u3001\u75ab\u82d7\u8bb0\u5f55\u3001\u6258\u8fd0\u6216\u5bc4\u517b\uff09',
+    '\u5b66\u6821\u4e0e\u63a5\u9001\u70b9\u53d8\u66f4\uff08\u5982\u9002\u7528\uff09',
+    '\u533b\u9662\u4e0e\u793e\u533a\u670d\u52a1\u4e2d\u5fc3\u767b\u8bb0\u53d8\u66f4',
+]
+
+# ---- \u4e22\u4ef6\u9ad8\u53d1\u73af\u8282 ----
+LOSE_RISK = [
+    ('\u88c5\u7bb1\u65f6\u672a\u8d34\u6807\u7b7e', '\u5230\u65b0\u5bb6\u4e0d\u77e5\u7bb1\u5185\u662f\u4ec0\u4e48\uff0c\u5bb9\u6613\u5f03\u7f6e', '\u6bcf\u7bb1\u5916\u90e8\u4e24\u9762\u8d34\u6807\u7b7e\uff0c\u5199\u7c7b\u522b\u4e0e\u7bb1\u53f7'),
+    ('\u62c6\u7bb1\u540e\u672a\u767b\u8bb0', '\u62c6\u5f00\u6ca1\u6536\u8d77\u6765\uff0c\u6700\u540e\u627e\u4e0d\u5230', '\u62c6\u7bb1\u5f53\u573a\u767b\u8bb0\u5df2\u5f00\u7bb1\u4e0e\u7bb1\u5185\u7269\u54c1'),
+    ('\u8bc1\u4ef6\u4e0e\u8d35\u91cd\u6df7\u88c5', '\u9014\u4e2d\u4e22\u5931\u6216\u88ab\u6c34\u6d78', '\u5168\u7a0b\u968f\u8eab'),
+    ('\u6db2\u4f53\u672a\u5bc6\u5c01', '\u6cc4\u6f0f\u540e\u6574\u7bb1\u7269\u54c1\u88ab\u5f03', '\u53cc\u5c42\u5bc6\u5c01\u888b\uff0c\u76f4\u7acb\u653e\u7f6e'),
+    ('\u5927\u5c0f\u7bb1\u6df7\u88c5\u8d85\u91cd', '\u5e95\u90e8\u7bb1\u5b50\u642c\u4e0d\u52a8\uff0c\u88ab\u7559\u5728\u539f\u5730', '\u5927\u4ef6\u91cd\u7269\u5355\u72ec\u5c0f\u7bb1\uff0c\u4e0d\u8d85\u91cd'),
+    ('\u76f8\u540c\u6807\u7b7e\u591a\u7bb1', '\u8bb0\u4e0d\u6e05\u54ea\u7bb1\u662f\u54ea\u7bb1', '\u7f16\u53f7\u7bb1\u53f7'),
+    ('\u642c\u8fd0\u9014\u4e2d\u6563\u843d', '\u7f16\u7ec7\u888b\u7834\u635f\u3001\u7eb8\u7bb1\u5e95\u53d7\u6f6e\u7834\u88c2', '\u7f16\u7ec7\u888b\u5e95\u90e8\u52a0\u4e00\u5c42\uff0c\u7eb8\u7bb1\u5e95\u52a0\u80f6\u5e26'),
+    ('\u5230\u65b0\u5bb6\u8fb9\u62c6\u8fb9\u627e', '\u62c6\u4e00\u534a\u5c31\u4e71', '\u6309\u5f00\u7bb1\u987a\u5e8f\uff0c\u5148\u5f52\u4f4d\u518d\u62c6\u4e0b\u4e00\u7bb1'),
+]
+
+PACK_BY_CATEGORY = [
+    ('\u4e66\u7c4d', '\u5c0f\u53f7\u7bb1\uff0c\u6bcf\u7bb1\u4e0d\u8d85\u8fc7 10 \u81f3 15 \u516c\u65a4\uff0c\u586b\u6ee1\u7a7a\u9699\u9632\u53d8\u5f62'),
+    ('\u88ab\u8925\u5e8a\u54c1', '\u7f16\u7ec7\u888b\u6216\u5927\u53f7\u7bb1\uff0c\u76f4\u63a5\u88c5\u4e0d\u538b\u7f29'),
+    ('\u8863\u7269', '\u4e2d\u53f7\u7bb1\u6309\u4eba\u5206\u7bb1\uff0c\u5377\u53e0\u88c5\u5e76\u586b\u6ee1\u7a7a\u9699'),
+    ('\u53a8\u623f\u9910\u5177', '\u4e2d\u53f7\u7bb1\uff0c\u7bb1\u5916\u8d34\u6613\u788e\u6807\u7b7e\uff0c\u6bcf\u4ef6\u72ec\u7acb\u5305\u88f9'),
+    ('\u73bb\u7483\u5668\u76bf', '\u5c0f\u53f7\u7bb1\u5355\u72ec\uff0c\u62a5\u7eb8\u6216\u6c14\u6ce1\u819c\u5305\u88f9\u540e\u586b\u5145'),
+    ('\u7535\u5668', '\u539f\u5305\u88c5\u4f18\u5148\uff0c\u7528\u539f\u6ce1\u68c9\u4e0e\u9632\u9707\u6750\u6599'),
+    ('\u6e05\u6d01\u4e0e\u536b\u6d74', '\u5355\u72ec\u7bb1\uff0c\u6db2\u4f53\u53cc\u5c42\u5bc6\u5c01\u5e76\u76f4\u7acb\u653e\u7f6e'),
+    ('\u836f\u54c1', '\u968f\u8eab\uff0c\u539f\u5305\u88c5\uff0c\u5904\u65b9\u836f\u5e26\u8bf4\u660e\u4e66'),
+    ('\u8bc1\u4ef6\u5408\u540c', '\u968f\u8eab\uff0c\u4e0d\u88c5\u7bb1\uff0c\u6587\u4ef6\u888b\u6309\u7c7b\u522b\u5206\u88c5'),
+    ('\u8d35\u91cd\u7269\u54c1', '\u968f\u8eab\uff0c\u76f8\u673a\u7535\u8111\u73e0\u5b9d\u5355\u72ec\u5904\u7406'),
+    ('\u6742\u7269\u96f6\u788e', '\u5927\u53f7\u6536\u7eb3\u7bb1\uff0c\u7528\u888b\u5b50\u5206\u88c5\u5e76\u5199\u660e\u5185\u5bb9'),
+]
+
+VACUUM = [
+    ('\u7fbd\u7ed2\u88ab', '\u4e0d\u5efa\u8bae\u957f\u671f', '\u957f\u671f\u538b\u7f29\u7834\u574f\u7ed2\u7c07\u7ed3\u6784\uff0c\u56de\u5f39\u53d8\u5dee'),
+    ('\u539a\u88ab\u8925\u3001\u68c9\u88ab', '\u53ef\u4ee5', '\u68c9\u7ea4\u7ef4\u53d7\u538b\u53d8\u5f62\u5f71\u54cd\u8f83\u5c0f'),
+    ('\u7fbd\u7ed2\u670d', '\u4e0d\u5efa\u8bae\u957f\u671f', '\u4e0e\u7fbd\u7ed2\u88ab\u540c\u7406\uff0c\u5f71\u54cd\u84ec\u677e\u5ea6'),
+    ('\u7f8a\u6bdb\u88ab\u3001\u7f8a\u6bdb\u886b', '\u4e0d\u5efa\u8bae', '\u7f8a\u6bdb\u7ea4\u7ef4\u53d7\u538b\u6613\u4ea7\u751f\u6298\u75d5\uff0c\u6062\u590d\u56f0\u96be'),
+    ('\u8695\u4e1d\u88ab', '\u4e0d\u5efa\u8bae', '\u957f\u671f\u538b\u7f29\u53ef\u80fd\u9020\u6210\u7ed3\u6784\u53d8\u5f62'),
+    ('\u6795\u5934', '\u53ef\u77ed\u671f', '\u5230\u5bb6\u540e\u7acb\u5373\u53d6\u51fa\u644a\u5f00'),
+    ('\u5e8a\u54c1\u3001\u88ab\u5957', '\u53ef\u4ee5', '\u7eaf\u68c9\u7ec7\u7269\u77ed\u671f\u538b\u7f29\u65e0\u788d'),
+    ('\u6bdb\u6bef', '\u53ef\u4ee5', '\u65e0\u586b\u5145\u7ed3\u6784\uff0c\u77ed\u671f\u538b\u7f29\u65e0\u788d'),
+]
+
+NEED_PRO = [
+    '\u5927\u578b\u5bb6\u5177\uff08\u94a2\u7434\u3001\u4fdd\u9669\u67dc\u3001\u5927\u7406\u77f3\u53f0\u9762\uff09\u9700\u62c6\u88c5\u6216\u642c\u8fd0',
+    '\u6613\u788e\u9ad8\u4ef7\u7269\u54c1\uff08\u74f7\u5668\u3001\u6c34\u6676\u3001\u73bb\u7483\u5236\u54c1\uff09\u9700\u7279\u6b8a\u5305\u88c5\u4e0e\u8fd0\u8f93',
+    '\u9700\u8981\u6052\u6e29\u7684\u7269\u54c1\uff08\u90e8\u5206\u836f\u54c1\u4e0e\u7535\u5b50\u8bbe\u5907\uff09',
+    '\u5fc5\u987b\u5168\u7a0b\u968f\u8eab\u7684\u91cd\u8981\u6587\u4ef6\u4e0e\u8bc1\u4ef6\u6570\u91cf\u8f83\u591a',
+    '\u8de8\u7701\u957f\u9014\u8fd0\u8f93',
+    '\u697c\u5c42\u8f83\u9ad8\u4e14\u65e0\u7535\u68af\uff0c\u9700\u4eba\u5de5\u642c\u8fd0\u4e0a\u697c\u4e0b',
+]
+
+
+def parse_rooms(spec):
+    """\u89e3\u6790 \u5ba2\u53852 / \u5367\u5ba42 \u5f62\u5f0f\uff0c\u8fd4\u56de [(\u623f\u95f4, \u6570\u91cf)]\u3002"""
+    out = []
+    for part in str(spec).replace('\uff0c', ',').split(','):
+        part = part.strip()
+        if not part:
+            continue
+        num = 1
+        name = part
+        digits = ''
+        while part and part[-1].isdigit():
+            digits = part[-1] + digits
+            part = part[:-1]
+        if digits:
+            num = int(digits)
+            name = part.strip()
+        if not name:
+            continue
+        out.append((name, num))
+    return out
+
+
+def build(rooms):
+    rooms = parse_rooms(rooms)
+    lines = []
+    lines.append('# \u642c\u5bb6\u88c5\u7bb1\u89c4\u5212\u4e0e\u6838\u67e5\u6e05\u5355')
+    lines.append('')
+    lines.append('> \u6838\u5fc3\u539f\u5219\uff1a\u6309\u7c7b\u522b\u6253\u5305\u4e0d\u6309\u623f\u95f4\u6253\u5305\uff1b\u4e0d\u5e38\u7528\u5148\u88c5\u7bb1\uff0c\u6700\u540e\u88c5\u7bb1\u7684\u5148\u53d6\u3002')
+    lines.append('')
+
+    lines.append('## \u4e00\u3001\u7eb8\u7bb1\u6570\u91cf\u4f30\u7b97')
+    lines.append('')
+    lines.append('| \u623f\u95f4 | \u7bb1\u6570 | \u4f30\u7b97\u53c2\u8003 | \u4e3b\u8981\u5f71\u54cd\u56e0\u7d20 |')
+    lines.append('|---|---|---|---|')
+    total = 0
+    warns = []
+    for name, cnt in rooms:
+        base = ROOM_BASE.get(name)
+        lo, hi = (base[0], base[1]) if base else (cnt, cnt)
+        total += cnt
+        factor = base[2] if base else '\u672a\u8bc6\u522b\u623f\u95f4\uff0c\u6309\u5b9e\u9645\u7269\u54c1\u91cf\u6838\u5bf9'
+        lines.append('| %s | %d | \u7ea6 %d \u81f3 %d \u7bb1 | %s |' % (name, cnt, lo * cnt, hi * cnt, factor))
+        if not base:
+            warns.append('%s \u4e0d\u5728\u53c2\u8003\u8303\u56f4\uff0c\u8bf7\u6309\u5b9e\u9645\u7269\u54c1\u91cf\u6838\u5bf9\u7bb1\u91cf' % name)
+        if name == '\u4e66\u623f' and cnt > 10:
+            warns.append('\u4e66\u623f\u7bb1\u6570\u504f\u591a\uff0c\u4e66\u7c4d\u5efa\u8bae\u6539\u7528\u66f4\u5c0f\u7684\u7bb1\u5b50\u5206\u88c5\uff0c\u800c\u4e0d\u662f\u52a0\u5927\u5355\u7bb1\u88c5\u8f7d\u91cf')
+    lines.append('')
+    lines.append('**\u5f53\u524d\u89c4\u5212\u5408\u8ba1\uff1a%d \u7bb1\u3002** \u5efa\u8bae\u5728\u6b64\u57fa\u7840\u4e0a\u9884\u7559 10%% \u81f3 20%% \u7684\u4f59\u91cf\u3002' % total)
+    lines.append('')
+    if warns:
+        lines.append('**\u7bb1\u91cf\u63d0\u9192\uff1a**')
+        lines.append('')
+        for w in warns:
+            lines.append('- %s' % w)
+        lines.append('')
+
+    lines.append('## \u4e8c\u3001\u6309\u7c7b\u522b\u6253\u5305\u6cd5')
+    lines.append('')
+    lines.append('| \u7c7b\u522b | \u6253\u5305\u505a\u6cd5 |')
+    lines.append('|---|---|')
+    for k, v in PACK_BY_CATEGORY:
+        lines.append('| %s | %s |' % (k, v))
+    lines.append('')
+
+    lines.append('## \u4e09\u3001\u88c5\u7bb1\u987a\u5e8f')
+    lines.append('')
+    lines.append('| \u9636\u6bb5 | \u88c5\u4ec0\u4e48 | \u8bf4\u660e |')
+    lines.append('|---|---|---|')
+    for a, b, c in LOAD_ORDER:
+        lines.append('| %s | %s | %s |' % (a, b, c))
+    lines.append('')
+    lines.append('**\u4e0d\u8fdb\u7bb1\u3001\u5168\u90e8\u968f\u8eab\uff1a**')
+    lines.append('')
+    for n in NOT_BOXED:
+        lines.append('- %s' % n)
+    lines.append('')
+    lines.append('**\u65b0\u5bb6\u5f00\u7bb1\u987a\u5e8f**\uff1a\u5148\u536b\u751f\u95f4\u4e0e\u53a8\u623f\uff0c\u518d\u5367\u5ba4\uff0c\u6700\u540e\u5176\u4ed6\u3002')
+    lines.append('')
+
+    lines.append('## \u56db\u3001\u771f\u7a7a\u538b\u7f29\u888b\u9002\u7528\u4e0e\u7981\u5fcc')
+    lines.append('')
+    lines.append('| \u7269\u54c1 | \u80fd\u5426\u957f\u671f\u538b\u7f29 | \u539f\u56e0 |')
+    lines.append('|---|---|---|')
+    for k, v, why in VACUUM:
+        lines.append('| %s | %s | %s |' % (k, v, why))
+    lines.append('')
+    lines.append('\u77ed\u671f\u8fd0\u8f93\u538b\u7f29\u4e0e\u957f\u671f\u5b58\u50a8\u662f\u4e24\u56de\u4e8b\uff0c\u8d85\u8fc7\u4e00\u4e24\u4e2a\u6708\u7684\u538b\u7f29\u4e0d\u8981\u7528\u4e8e\u7fbd\u7ed2\u4e0e\u7f8a\u6bdb\u3002\u5230\u5bb6\u540e\u7acb\u5373\u53d6\u51fa\u644a\u5f00\u3002')
+    lines.append('')
+
+    lines.append('## \u4e94\u3001\u6e05\u5355 A\uff1a\u642c\u5bb6\u524d\u51c6\u5907')
+    lines.append('')
+    for c in CHECK_A:
+        lines.append('- [ ] %s' % c)
+    lines.append('')
+
+    lines.append('## \u516d\u3001\u6e05\u5355 B\uff1a\u5730\u5740\u4e0e\u4e1a\u52a1\u8fc1\u79fb')
+    lines.append('')
+    for c in CHECK_B:
+        lines.append('- [ ] %s' % c)
+    lines.append('')
+    lines.append('\u5177\u4f53\u529e\u7406\u8981\u6c42\u4e0e\u65f6\u9650\u4ee5\u5f53\u5730\u76f8\u5173\u5355\u4f4d\u4e0e\u670d\u52a1\u5546\u7684\u89c4\u5b9a\u4e3a\u51c6\u3002')
+    lines.append('')
+
+    lines.append('## \u4e03\u3001\u4e22\u4ef6\u9ad8\u53d1\u73af\u8282\u4e0e\u5e94\u5bf9')
+    lines.append('')
+    lines.append('| \u73af\u8282 | \u4e3a\u4ec0\u4e48\u4f1a\u4e22 | \u5e94\u5bf9 |')
+    lines.append('|---|---|---|')
+    for a, b, c in LOSE_RISK:
+        lines.append('| %s | %s | %s |' % (a, b, c))
+    lines.append('')
+
+    lines.append('## \u516b\u3001\u5efa\u8bae\u8f6c\u4e13\u4e1a\u642c\u5bb6\u7684\u60c5\u5f62')
+    lines.append('')
+    for n in NEED_PRO:
+        lines.append('- %s' % n)
+    lines.append('')
+
+    lines.append('---')
+    lines.append('')
+    lines.append('\u672c\u6e05\u5355\u4e3a\u6253\u5305\u89c4\u5212\u53c2\u8003\uff0c\u7bb1\u91cf\u4f30\u7b97\u4ec5\u4f9b\u89c4\u5212\u3002\u8fd0\u8f93\u9014\u4e2d\u7684\u635f\u574f\u8d23\u4efb\u5212\u5206\u6309\u8fd0\u8f93\u5408\u540c\u7ea6\u5b9a\u4e0e\u76f8\u5173\u4e3b\u7ba1\u90e8\u95e8\u8981\u6c42\u529e\u7406\u3002')
+    return '\n'.join(lines)
+
+
+def analyse(spec):
+    rooms = parse_rooms(spec)
+    total = sum(c for _, c in rooms)
+    unknown = [n for n, _ in rooms if n not in ROOM_BASE]
+    heavy_book = any(n == '\u4e66\u623f' and c > 10 for n, c in rooms)
+    return {'rooms': rooms, 'total': total, 'unknown': unknown,
+            'heavy_book': heavy_book,
+            'ok': total > 0 and len(rooms) > 0}
+
+
+def read_input(path):
+    raw = open(path, 'rb').read().decode('utf-8', 'replace')
+    if raw.lstrip('\ufeff').strip().startswith('{'):
+        data = json.loads(raw.lstrip('\ufeff'))
+        rooms = data.get('rooms', [])
+        if isinstance(rooms, list):
+            return ','.join(str(x) for x in rooms)
+        return str(rooms)
+    return raw
+
+
+def selftest():
+    errs = []
+
+    def eq(name, got, want):
+        if got != want:
+            errs.append('%s got=%r want=%r' % (name, got, want))
+
+    r1 = parse_rooms('\u5ba2\u53852,\u5367\u5ba42,\u53a8\u623f1,\u536b\u751f\u95f41,\u9633\u53f01,\u4e66\u623f1')
+    eq('case1 \u623f\u95f4\u6570', len(r1), 6)
+    eq('case2 \u5ba2\u5385\u6570\u91cf', dict(r1)['\u5ba2\u5385'], 2)
+    eq('case3 \u536b\u751f\u95f4\u6570\u91cf', dict(r1)['\u536b\u751f\u95f4'], 1)
+
+    r2 = parse_rooms('\u4e3b\u5367')
+    eq('case4 \u65e0\u6570\u5b57\u9ed8\u8ba41', r2, [('\u4e3b\u5367', 1)])
+
+    r3 = parse_rooms('\u5ba2\u53853')
+    eq('case5 \u5355\u623f\u95f4', r3, [('\u5ba2\u5385', 3)])
+
+    a1 = analyse('\u5ba2\u53852,\u5367\u5ba42,\u53a8\u623f1,\u536b\u751f\u95f41')
+    eq('case6 \u603b\u7bb1\u6570', a1['total'], 6)
+    eq('case7 \u5168\u90e8\u8bc6\u522b', a1['unknown'], [])
+    eq('case8 \u6821\u9a8c\u901a\u8fc7', a1['ok'], True)
+
+    a2 = analyse('\u9601\u697c10')
+    eq('case9 \u672a\u77e5\u623f\u95f4', a2['unknown'], ['\u9601\u697c'])
+    eq('case10 \u4e0d\u89e6\u53d1\u4e66\u623f\u8d85\u91cf', a2['heavy_book'], False)
+
+    a3 = analyse('\u4e66\u623f12')
+    eq('case11 \u4e66\u7c4d\u8d85\u91cf\u63d0\u9192', a3['heavy_book'], True)
+
+    md = build('\u5ba2\u53852,\u5367\u5ba42,\u53a8\u623f1')
+    eq('case12 \u8f93\u51fa\u8868\u5934', md.startswith('# '), True)
+    eq('case13 \u542b\u6e05\u5355A', '\u6e05\u5355 A' in md, True)
+    eq('case14 \u542b\u6e05\u5355B', '\u6e05\u5355 B' in md, True)
+    eq('case15 \u542b\u771f\u7a7a\u7981\u5fcc', '\u7f8a\u6bdb\u88ab\u3001\u7f8a\u6bdb\u886b' in md, True)
+    eq('case16 \u542b\u4e22\u4ef6\u73af\u8282', '\u4e22\u4ef6\u9ad8\u53d1\u73af\u8282' in md, True)
+    eq('case17 \u542b\u4f59\u91cf\u63d0\u793a', '\u4f59\u91cf' in md, True)
+
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write('{"rooms": ["\u5ba2\u53852", "\u5367\u5ba42", "\u53a8\u623f1"]}')
+    got = read_input(tmp)
+    os.remove(tmp)
+    eq('case18 \u5e26BOM\u7684JSON\u9996\u952e', analyse(got)['total'], 5)
+
+    out_dir = os.path.dirname(os.path.abspath(__file__))
+    res_path = os.path.join(out_dir, '_selftest_result.txt')
+    if errs:
+        msg = 'SELFTEST FAIL\n' + '\n'.join(errs)
+    else:
+        msg = ('SELFTEST OK\n\u65ad\u8a00\u6570: 19\n\u8986\u76d6: \u623f\u95f4\u89e3\u6790/\u7bb1\u91cf\u4f30\u7b97/\u672a\u77e5\u623f\u95f4/\u4e66\u7c4d\u8d85\u91cf/'
+               '\u88c5\u7bb1\u987a\u5e8f/\u771f\u7a7a\u7981\u5fcc/\u6e05\u5355AB/\u4e22\u4ef6\u73af\u8282/BOM\u89e3\u6790')
+    with open(res_path, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='\u642c\u5bb6\u88c5\u7bb1\u89c4\u5212\u4e0e\u6838\u67e5\u6e05\u5355\u751f\u6210')
+    ap.add_argument('--rooms', help='\u623f\u95f4\u4e0e\u7bb1\u6570\uff0c\u9017\u53f7\u5206\u9694\uff0c\u5982 \u5ba2\u53852,\u5367\u5ba42')
+    ap.add_argument('--file', help='\u4ece\u6587\u4ef6\u8bfb\uff0c\u652f\u6301 txt / json')
+    ap.add_argument('--out', help='\u6e05\u5355\u8f93\u51fa\u8def\u5f84')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    spec = a.rooms or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file \u4e0d\u5b58\u5728')
+            return 2
+        spec = read_input(a.file)
+    if not spec.strip():
+        spec = '\u5ba2\u53852,\u5367\u5ba42,\u53a8\u623f1,\u536b\u751f\u95f41'
+
+    if a.format == 'json':
+        out = json.dumps(analyse(spec), ensure_ascii=False, indent=2)
+    else:
+        out = build(spec)
+    if a.out:
+        with open(a.out, 'w', encoding='utf-8') as f:
+            f.write(out + '\n')
+        print('\u6e05\u5355\u5df2\u5199\u5165: %s' % a.out)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

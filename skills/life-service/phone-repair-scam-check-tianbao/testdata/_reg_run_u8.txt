@@ -1,0 +1,21 @@
+python.exe : Traceback (most recent call last):
+所在位置 行:445 字符: 107
++ ... \testdata"; & "C:\Users\Ti'an'bao\.workbuddy\binaries\python\versions ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last) 
+   ::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\Ti'an'bao\WorkBuddy\2026-10-03-23-06-22\consume\phone-repair-s
+cam-check\testdata\鍥炲綊娴嬭瘯.py", line 68, in <module>
+    d = check_json("鏍蜂緥灏忕梾澶т慨", None, "涓嶉€氳繃")
+        ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ti'an'bao\WorkBuddy\2026-10-03-23-06-22\consume\phone-repair-s
+cam-check\testdata\鍥炲綊娴嬭瘯.py", line 50, in check_json
+    rc2, out = run(md_text, extra=["--json"])
+               ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Ti'an'bao\WorkBuddy\2026-10-03-23-06-22\consume\phone-repair-s
+cam-check\testdata\鍥炲綊娴嬭瘯.py", line 28, in run
+    f.write(md_text)
+    ~~~~~~~^^^^^^^^^
+TypeError: write() argument must be str, not None

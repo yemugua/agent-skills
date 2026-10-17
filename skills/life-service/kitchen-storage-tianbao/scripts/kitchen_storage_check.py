@@ -1,0 +1,330 @@
+# -*- coding: utf-8 -*-
+"""\u53a8\u623f\u6536\u7eb3\u5224\u5b9a\uff1a\u5339\u914d\u52a8\u7ebf\u95ee\u9898\u3001\u6307\u51fa\u4e0d\u63a8\u8350\u505a\u6cd5\u3001\u68c0\u67e5\u5b89\u5168\u7ea2\u7ebf\u3002
+
+\u7528\u6cd5:
+  python kitchen_storage_check.py --text "\u9505\u5177\u653e\u5728\u7076\u53f0\u4e0a\u65b9\u540a\u67dc\u91cc\u5b89\u5168\u5417"
+  python kitchen_storage_check.py --file \u60c5\u51b5.txt --out \u7ed3\u679c.md
+  python kitchen_storage_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# ---- \u52a8\u7ebf\u95ee\u9898 ----
+FLOW = [
+    {'id': 'W1', 'name': '\u52a8\u7ebf\u6298\u8fd4',
+     'kw': ['\u6298\u8fd4', '\u6765\u56de', '\u56de\u5934', '\u8dd1', '\u7ed5', '\u6765\u56de\u8dd1'],
+     'sign': '\u4e3b\u8981\u6d41\u7a0b\u4e0d\u56de\u5934',
+     'msg': '\u6d17\u5b8c\u83dc\u8981\u8dd1\u56de\u51b0\u7bb1\u62ff\u4e1c\u897f\uff0c\u8bf4\u660e\u52a8\u7ebf\u5b58\u5728\u6298\u8fd4\uff0c\u5e94\u8c03\u6574\u51b0\u7bb1\u4e0e\u6c34\u69fd\u7684\u76f8\u5bf9\u4f4d\u7f6e\u6216\u7269\u54c1\u5f52\u4f4d'},
+    {'id': 'W2', 'name': '\u51b0\u7bb1\u4e0e\u6c34\u69fd\u8ddd\u79bb\u8fc7\u8fdc',
+     'kw': ['\u51b0\u7bb1\u8fdc', '\u8ddd\u79bb\u8fdc', '\u79bb\u5f97\u8fdc', '\u51b0\u7bb1\u79bb\u7076\u53f0', '\u51b0\u7bb1\u548c\u6c34\u69fd'],
+     'sign': '\u76f8\u90bb\u6b65\u9aa4\u95f4\u8ddd\u5927',
+     'msg': '\u51b0\u7bb1\u4e0e\u6c34\u69fd\u8ddd\u79bb\u8fc7\u8fdc\u4f1a\u589e\u52a0\u6d12\u6f0f\u4e0e\u75b2\u52b3\uff0c\u52a8\u7ebf\u89c4\u5212\u65f6\u5e94\u5c3d\u91cf\u7f29\u77ed\u8fd9\u6bb5\u8ddd\u79bb'},
+    {'id': 'W3', 'name': '\u5907\u9910\u533a\u88ab\u5360',
+     'kw': ['\u53f0\u9762\u4e71', '\u53f0\u9762\u5806', '\u6ca1\u6709\u53f0\u9762', '\u53f0\u9762\u88ab\u5360', '\u6ca1\u5730\u65b9\u5207', '\u64cd\u4f5c\u9762'],
+     'sign': '\u5207\u83dc\u6ca1\u6709\u64cd\u4f5c\u7a7a\u95f4',
+     'msg': '\u5907\u9910\u533a\u9700\u8981\u8fde\u7eed\u7684\u64cd\u4f5c\u9762\uff0c\u53f0\u9762\u5806\u6ee1\u4e1c\u897f\u4f1a\u5bfc\u81f4\u5207\u83dc\u65f6\u9891\u7e41\u632a\u52a8'},
+    {'id': 'W4', 'name': '\u5e38\u7528\u7269\u54c1\u4e0d\u5728\u987a\u624b\u4f4d\u7f6e',
+     'kw': ['\u8c03\u6599\u627e\u4e0d\u5230', '\u627e\u4e0d\u5230\u8c03\u6599', '\u6700\u9ad8\u5c42', '\u540a\u67dc', '\u8981\u722c', '\u8e2e\u811a', '\u5f2f\u8170'],
+     'sign': '\u5e38\u7528\u7684\u9700\u8981\u62ac\u624b\u6216\u5f2f\u8170',
+     'msg': '\u5e38\u7528\u7269\u54c1\u5e94\u653e\u5728\u4f38\u624b\u53ef\u53ca\u5904\uff0c\u7092\u83dc\u65f6\u4e34\u65f6\u627e\u8c03\u6599\u662f\u6700\u5e38\u89c1\u7684\u52a8\u7ebf\u5931\u8d25'},
+    {'id': 'W5', 'name': '\u51b0\u7bb1\u672a\u6309\u54c1\u7c7b\u5206\u533a',
+     'kw': ['\u51b0\u7bb1\u4e71', '\u51b0\u7bb1\u585e\u6ee1', '\u6ca1\u5206\u533a', '\u6df7\u653e', '\u51b0\u7bb1\u5806'],
+     'sign': '\u5b58\u53d6\u4e0d\u4fbf\u3001\u5bb9\u6613\u4e32\u5473',
+     'msg': '\u51b0\u7bb1\u5e94\u6309\u5c42\u4f4d\u4e0e\u54c1\u7c7b\u5206\u533a\uff1a\u91cd\u7269\u653e\u4e0b\u5c42\uff0c\u679c\u852c\u62bd\u5c49\u7528\u5206\u9694\uff0c\u4e0d\u540c\u54c1\u79cd\u5206\u5f00\u5b58\u653e'},
+]
+
+# ---- \u4e94\u79cd\u4e0d\u63a8\u8350\u505a\u6cd5 ----
+NOT_RECOMMEND = [
+    {'id': 'N1', 'name': '\u91cd\u7269\u653e\u5728\u9ad8\u5904',
+     'kw': ['\u9ad8\u5904\u653e', '\u9ad8\u5c42\u653e\u9505', '\u4e0a\u9762\u653e\u9505', '\u540a\u67dc\u653e\u9505', '\u9876\u4e0a\u653e\u91cd', '\u653e\u4e0a\u9762\u653e\u91cd', '\u540a\u67dc\u91cc\u653e\u9505', '\u9505\u5177\u653e\u5728\u9ad8', '\u9ad8\u5904\u653e\u9505\u5177', '\u540a\u67dc\u91cc'],
+     'msg': '\u91cd\u7269\u653e\u9ad8\u5904\u53d6\u653e\u8d39\u529b\u4e14\u6389\u843d\u98ce\u9669\u9ad8\uff0c\u5e94\u653e\u4e0b\u5c42\uff0c\u91cd\u5fc3\u4f4e'},
+    {'id': 'N2', 'name': '\u6240\u6709\u4e1c\u897f\u505a\u6210\u540c\u6b3e\u5bc6\u5c01\u76d2',
+     'kw': ['\u540c\u6b3e', '\u4e00\u6837\u7684\u76d2\u5b50', '\u4e00\u6837\u7684\u5bc6\u5c01\u76d2', '\u4e00\u6837\u7684', '\u7edf\u4e00\u76d2\u5b50', '\u5168\u90e8\u5bc6\u5c01', '\u90fd\u5bc6\u5c01', '\u4e70\u4e00\u6837\u7684'],
+     'msg': '\u5e72\u8d27\u4e0e\u53f6\u83dc\u9700\u8981\u900f\u6c14\uff0c\u6db2\u4f53\u624d\u9700\u8981\u5bc6\u5c01\u3002\u540c\u6b3e\u5bc6\u5c01\u76d2\u662f\u5f62\u5f0f\u6574\u9f50\u4f46\u529f\u80fd\u9519\u8bef'},
+    {'id': 'N3', 'name': '\u5355\u4ef6\u6536\u7eb3\u5bfc\u81f4\u62ff\u53d6\u4e0d\u4fbf',
+     'kw': ['\u5355\u4ef6', '\u4e00\u4ef6\u4e00\u76d2', '\u4e00\u4e2a\u4e00\u4e2a\u88c5', '\u5355\u72ec\u5305\u88c5', '\u62c6\u5305\u88c5'],
+     'msg': '\u53d6\u4e00\u4ef6\u8981\u62c6\u4e00\u5806\u5305\u88c5\uff0c\u5e94\u540c\u7c7b\u5f52\u7ec4\uff0c\u7ec4\u5185\u518d\u5206\u88c5'},
+    {'id': 'N4', 'name': '\u4e3a\u6536\u7eb3\u800c\u4e70\u66f4\u591a\u6536\u7eb3\u5de5\u5177',
+     'kw': ['\u4e70\u6536\u7eb3\u76d2', '\u4e70\u76d2\u5b50', '\u4e70\u7bb1\u5b50', '\u518d\u4e70', '\u6536\u7eb3\u5de5\u5177', '\u53c8\u4e70\u4e86'],
+     'msg': '\u7269\u54c1\u91cf\u6ca1\u51cf\u5c11\uff0c\u53ea\u662f\u6362\u4e86\u4e2a\u5730\u65b9\u5806\u7740\u3002\u5e94\u5148\u51cf\u91cf\u518d\u914d\u7f6e\u5de5\u5177'},
+    {'id': 'N5', 'name': '\u7076\u53f0\u9644\u8fd1\u653e\u91cd\u7269\u4e0e\u6db2\u4f53',
+     'kw': ['\u7076\u53f0\u653e', '\u7076\u8fb9\u653e', '\u7076\u53f0\u4e0a\u653e', '\u9505\u653e\u7076\u53f0', '\u6cb9\u653e\u7076\u53f0', '\u7076\u65c1', '\u7076\u53f0\u65c1', '\u6cb9\u58f6\u653e'],
+     'msg': '\u7076\u53f0\u9644\u8fd1\u653e\u91cd\u7269\u4e0e\u6db2\u4f53\u4f1a\u663e\u8457\u4e0a\u5347\u706b\u707e\u4e0e\u6e85\u6d12\u98ce\u9669\uff0c\u91cd\u7269\u4e0b\u79fb\u3001\u6db2\u4f53\u8fdc\u79bb\u70ed\u6e90'},
+]
+
+# ---- \u5b89\u5168\u7ea2\u7ebf ----
+RED = [
+    {'kw': ['\u71c3\u6c14\u8868', '\u71c3\u6c14\u7ba1\u9053', '\u71c3\u6c14\u9600', '\u7164\u6c14\u8868'],
+     'msg': '\u660e\u786e\u7981\u6b62\u5728\u71c3\u6c14\u7ba1\u9053\u4e0e\u71c3\u6c14\u8868\u9644\u8fd1\u52a0\u88c5\u6302\u4ef6\uff0c\u8fd9\u4e00\u6761\u6ca1\u6709\u4f8b\u5916'},
+    {'kw': ['\u6253\u5b54', '\u94bb\u5b54', '\u6302\u5899', '\u5899\u4e0a\u88c5', '\u88c5\u6302\u6746', '\u6401\u677f'],
+     'msg': '\u5899\u9762\u6302\u4ef6\u9700\u5148\u786e\u8ba4\u5899\u4f53\u7c7b\u578b\u4e0e\u627f\u91cd\u80fd\u529b\uff0c\u627f\u91cd\u4ee5\u4ea7\u54c1\u8bf4\u660e\u4e66\u6807\u6ce8\u4e3a\u51c6\uff0c\u4e0d\u6e05\u695a\u5219\u4e0d\u6253\u5b54\uff1b\u6253\u5b54\u4f4d\u7f6e\u9700\u907f\u5f00\u5899\u5185\u7ba1\u7ebf'},
+    {'kw': ['\u78b0\u5934', '\u5934\u90e8', '\u649e\u5934', '\u5bb9\u6613\u78b0\u5230'],
+     'msg': '\u5934\u90e8\u9ad8\u5ea6\u8303\u56f4\u4e0d\u88c5\u6302\u4ef6\uff0c\u907f\u514d\u78b0\u5934'},
+    {'kw': ['\u73bb\u7483', '\u73bb\u7483\u7f50', '\u73bb\u7483\u74f6'],
+     'msg': '\u9ad8\u5904\u4e0d\u653e\u5927\u7c73\u3001\u996e\u6599\u7bb1\u3001\u73bb\u7483\u5668\u76bf\u3001\u6db2\u4f53\u5bb9\u5668\u4e0e\u9505\u5177\uff0c\u6389\u843d\u4f1a\u9020\u6210\u4f24\u5bb3'},
+    {'kw': ['\u6539\u71c3\u6c14', '\u632a\u71c3\u6c14', '\u79fb\u71c3\u6c14', '\u6539\u7535\u8def', '\u632a\u7076', '\u6539\u7076'],
+     'msg': '\u6539\u52a8\u71c3\u6c14\u7ba1\u9053\u3001\u71c3\u6c14\u8868\u4f4d\u7f6e\u3001\u7535\u8def\u6216\u7076\u5177\u4f4d\u7f6e\u5c5e\u4e13\u4e1a\u65bd\u5de5\u8303\u56f4\uff0c\u8f6c\u6709\u8d44\u8d28\u7684\u4eba\u5458\u5b9e\u65bd'},
+]
+
+# ---- \u5bb9\u5668\u56db\u6761\u539f\u5219 ----
+CONTAINER = [
+    ('\u5c3a\u5bf8\u4e0e\u7076\u5177\u5339\u914d', '\u9505\u5177\u5bb9\u5668\u4e0e\u7076\u5177\u53e3\u5f84\u3001\u6df1\u5ea6\u5339\u914d', '\u9505\u653e\u4e0d\u7a33\u3001\u7076\u53f0\u7559\u4e00\u5708\u6cb9'),
+    ('\u53ef\u53e0\u653e', '\u540c\u7c7b\u5bb9\u5668\u80fd\u53e0\u653e\u8282\u7701\u7eb5\u5411\u7a7a\u95f4', '\u7eb5\u5411\u7a7a\u95f4\u6d6a\u8d39\uff0c\u540c\u7c7b\u6563\u4e71'),
+    ('\u6750\u8d28\u8010\u70ed', '\u7076\u53f0\u533a\u4e0e\u6d17\u7897\u533a\u5bb9\u5668\u9700\u8010\u70ed', '\u53d8\u5f62\u3001\u5f00\u88c2\u3001\u8001\u5316'),
+    ('\u5bc6\u5c01\u6027\u8db3\u591f', '\u6db2\u4f53\u7c7b\u3001\u5e72\u8d27\u7c7b\u5fc5\u987b\u6709\u5bc6\u5c01', '\u6e17\u6f0f\u3001\u53d7\u6f6e\u3001\u6c14\u5473\u4e92\u4e32'),
+]
+
+# ---- \u51b0\u7bb1\u5206\u5c42 ----
+FRIDGE = [
+    ['\u5c42\u4f4d', '\u9002\u5408\u653e', '\u8bf4\u660e'],
+    ['\u6700\u4e0b\u5c42', '\u91cd\u7684\u3001\u74f6\u5b50\u7c7b\u3001\u5269\u83dc', '\u627f\u91cd\u597d\uff0c\u91cd\u7269\u653e\u4e0b\u5c42\u53d6\u653e\u66f4\u5b89\u5168'],
+    ['\u4e2d\u4e0b\u5c42', '\u719f\u98df\u3001\u5976\u5236\u54c1', '\u6e29\u5ea6\u7a33\u5b9a\u533a\u57df'],
+    ['\u4e2d\u4e0a\u5c42', '\u852c\u83dc\u3001\u6c34\u679c\u3001\u86cb\u7c7b', '\u679c\u852c\u5c42\uff0c\u6ce8\u610f\u5206\u9694\u907f\u514d\u6c14\u5473\u4e92\u4e32'],
+    ['\u6700\u4e0a\u5c42', '\u5269\u83dc\u3001\u9700\u5bc6\u5c01\u7684\u6db2\u4f53', '\u6e29\u5ea6\u7565\u9ad8\uff0c\u51cf\u5c11\u4ea4\u53c9\u6c61\u67d3\u98ce\u9669'],
+    ['\u62bd\u5c49\u5c42', '\u679c\u852c\uff08\u6309\u54c1\u79cd\u5206\u5f00\uff09', '\u4fdd\u6301\u6e7f\u5ea6\uff0c\u4e0d\u540c\u54c1\u79cd\u5206\u5f00\u5b58\u653e'],
+    ['\u95e8\u67b6\u5c42', '\u8c03\u5473\u54c1\u3001\u996e\u6599', '\u6e29\u5ea6\u6ce2\u52a8\u6700\u5927\uff0c\u4e0d\u5b9c\u653e\u6613\u53d8\u8d28\u7269\u54c1'],
+]
+
+# ---- \u7076\u53f0\u533a\u914d\u7f6e ----
+STOVE = [
+    ['\u4f4d\u7f6e', '\u9002\u5408\u653e', '\u4e0d\u9002\u5408\u653e'],
+    ['\u7076\u53f0\u4fa7\u524d\u65b9', '\u5e38\u7528\u8c03\u6599\u3001\u6cb9\u76d0\u3001\u9505\u94f2\uff08\u4f38\u624b\u53ef\u53ca\uff09', '\u91cd\u7269\u3001\u73bb\u7483\u5668\u76bf\u3001\u6db2\u4f53'],
+    ['\u7076\u53f0\u4e0b\u65b9', '\u4e0e\u7076\u5177\u7c7b\u578b\u5339\u914d\u7684\u9505\u5177\u3001\u5e73\u5e95\u9505', '\u5c16\u9510\u5200\u5177\u3001\u6613\u788e\u54c1\u3001\u5851\u6599\u5236\u54c1'],
+    ['\u7076\u53f0\u540e\u65b9\u6321\u677f\u533a', '\u8010\u70ed\u62b9\u5e03\u3001\u6cb9\u58f6\uff08\u7a33\u56fa\u4e0d\u5012\uff09', '\u5e03\u827a\u3001\u7eb8\u8d28\u3001\u5851\u6599'],
+]
+
+
+def analyse(text):
+    t = (text or '').replace(' ', '').replace('\u3000', '')
+    flow = []
+    for w in FLOW:
+        hits = [k for k in w['kw'] if k in t]
+        if hits:
+            flow.append({'name': w['name'], 'hits': hits, 'msg': w['msg']})
+    notrec = []
+    for n in NOT_RECOMMEND:
+        hits = [k for k in n['kw'] if k in t]
+        if hits:
+            notrec.append({'name': n['name'], 'hits': hits, 'msg': n['msg']})
+    reds = [r['msg'] for r in RED if any(k in t for k in r['kw'])]
+    return {'flow': flow, 'notrec': notrec, 'reds': reds,
+            'ok': not reds and not notrec}
+
+
+def render_md(r):
+    lines = ['# \u53a8\u623f\u6536\u7eb3\u6838\u67e5\u7ed3\u679c', '']
+    lines.append('> \u5148\u76d8\u7269\u54c1\uff0c\u518d\u4e70\u5de5\u5177\u3002\u987a\u5e8f\u53cd\u4e86\u5c31\u4f1a\u4e70\u5230\u4e00\u5806\u7528\u4e0d\u4e0a\u7684\u6536\u7eb3\u76d2\u3002')
+    lines.append('')
+
+    lines.append('## \u4e00\u3001\u6d17\u5207\u7092\u52a8\u7ebf')
+    lines.append('')
+    lines.append('**\u57fa\u672c\u52a8\u7ebf**\uff1a\u6d17 \u2192 \u5207 \u2192 \u7092')
+    lines.append('')
+    lines.append('```')
+    lines.append('[\u51b0\u7bb1/\u50a8\u7269\u533a] \u2192 [\u6e05\u6d17\u533a\u6c34\u69fd] \u2192 [\u5907\u9910\u533a\u53f0\u9762] \u2192 [\u7076\u53f0\u533a] \u2192 [\u51fa\u83dc/\u9910\u684c]')
+    lines.append('```')
+    lines.append('')
+    lines.append('| \u6807\u51c6 | \u542b\u4e49 | \u4e0d\u8fbe\u6807\u7684\u8868\u73b0 |')
+    lines.append('|---|---|---|')
+    lines.append('| \u5355\u5411\u4e0d\u6298\u8fd4 | \u4e3b\u8981\u6d41\u7a0b\u4e0d\u56de\u5934 | \u6d17\u5b8c\u83dc\u8981\u8dd1\u56de\u51b0\u7bb1\u62ff\u4e1c\u897f |')
+    lines.append('| \u52a8\u7ebf\u77ed | \u76f8\u90bb\u6b65\u9aa4\u95f4\u8ddd\u5c0f | \u5207\u5b8c\u7aef\u5230\u7076\u53f0\u8981\u8d70\u534a\u4e2a\u53a8\u623f |')
+    lines.append('| \u53d6\u653e\u987a\u624b | \u5e38\u7528\u7684\u4f38\u624b\u5c31\u591f\u5230 | \u5e38\u7528\u8c03\u6599\u5728\u6700\u9ad8\u5c42\u540a\u67dc\u91cc |')
+    lines.append('')
+
+    lines.append('## \u4e8c\u3001\u52a8\u7ebf\u95ee\u9898\uff08\u547d\u4e2d %d \u9879\uff09' % len(r['flow']))
+    lines.append('')
+    if not r['flow']:
+        lines.append('\u672a\u8bc6\u522b\u5230\u660e\u786e\u7684\u52a8\u7ebf\u95ee\u9898\u3002\u82e5\u5b58\u5728\uff0c\u53ef\u63cf\u8ff0\uff1a\u662f\u5426\u6765\u56de\u8dd1\u3001\u53f0\u9762\u662f\u5426\u591f\u7528\u3001\u8c03\u6599\u662f\u5426\u987a\u624b\u3002')
+    else:
+        for w in r['flow']:
+            lines.append('- **%s**\uff1a%s' % (w['name'], w['msg']))
+    lines.append('')
+
+    lines.append('## \u4e09\u3001\u7076\u53f0\u533a\u914d\u7f6e')
+    lines.append('')
+    lines.append('| ' + ' | '.join(STOVE[0]) + ' |')
+    lines.append('|---|---|---|')
+    for row in STOVE[1:]:
+        lines.append('| ' + ' | '.join(row) + ' |')
+    lines.append('')
+    lines.append('**\u4e24\u6761\u786c\u89c4\u5219**\uff1a\u7076\u53f0\u9644\u8fd1\u4e0d\u653e\u91cd\u7269\uff1b\u7076\u53f0\u9644\u8fd1\u4e0d\u653e\u6db2\u4f53\u3002')
+    lines.append('')
+
+    lines.append('## \u56db\u3001\u5bb9\u5668\u9009\u62e9\u56db\u6761\u539f\u5219')
+    lines.append('')
+    lines.append('| \u539f\u5219 | \u8bf4\u660e | \u4e0d\u8fbe\u6807\u7684\u540e\u679c |')
+    lines.append('|---|---|---|')
+    for a, b, c in CONTAINER:
+        lines.append('| %s | %s | %s |' % (a, b, c))
+    lines.append('')
+
+    lines.append('## \u4e94\u3001\u51b0\u7bb1\u5185\u90e8\u5206\u533a')
+    lines.append('')
+    lines.append('| ' + ' | '.join(FRIDGE[0]) + ' |')
+    lines.append('|---|---|')
+    for row in FRIDGE[1:]:
+        lines.append('| ' + ' | '.join(row) + ' |')
+    lines.append('')
+    lines.append('**\u5c42\u9ad8\u5229\u7528\u4e09\u6761**\uff1a\u5bb9\u5668\u9ad8\u5ea6\u5339\u914d\u5c42\u9ad8\uff1b\u540c\u7c7b\u53e0\u653e\u800c\u975e\u524d\u540e\u6392\u5217\uff1b\u62bd\u5c49\u5c42\u7528\u5206\u9694\u3002')
+    lines.append('')
+
+    lines.append('## \u516d\u3001\u5782\u76f4\u7a7a\u95f4\u5229\u7528\u7684\u524d\u63d0')
+    lines.append('')
+    lines.append('- **\u5899\u4f53\u7c7b\u578b**\uff1a\u660e\u786e\u6750\u8d28\uff0c\u4e0d\u786e\u5b9a\u65f6\u4e0d\u8981\u81ea\u884c\u6253\u5b54')
+    lines.append('- **\u627f\u91cd\u80fd\u529b**\uff1a\u4ee5\u4ea7\u54c1\u8bf4\u660e\u4e66\u6807\u6ce8\u4e3a\u51c6\uff0c\u4e0d\u6e05\u695a\u5219\u4e0d\u6253\u5b54')
+    lines.append('- **\u9ad8\u5904\u53ea\u653e\u8f7b\u7269**\uff1a\u6d77\u7ef5\u3001\u62b9\u5e03\u3001\u94f2\u5b50\u3001\u91cf\u52fa\u3001\u5e38\u7528\u5c0f\u4ef6')
+    lines.append('- **\u71c3\u6c14\u7ba1\u9053\u4e0e\u71c3\u6c14\u8868\u9644\u8fd1\u7981\u6b62\u52a0\u88c5\u6302\u4ef6**\uff0c\u6ca1\u6709\u4f8b\u5916')
+    lines.append('- **\u5934\u90e8\u9ad8\u5ea6\u8303\u56f4\u4e0d\u88c5\u6302\u4ef6**\uff0c\u907f\u514d\u78b0\u5934')
+    lines.append('')
+
+    lines.append('## \u4e03\u3001\u4e94\u79cd\u4e0d\u63a8\u8350\u7684\u505a\u6cd5')
+    lines.append('')
+    if r['notrec']:
+        for n in r['notrec']:
+            lines.append('- **%s**\uff1a%s' % (n['name'], n['msg']))
+    else:
+        for _, n in [(0, NOT_RECOMMEND[0]), (1, NOT_RECOMMEND[1]), (2, NOT_RECOMMEND[2]),
+                     (3, NOT_RECOMMEND[3]), (4, NOT_RECOMMEND[4])]:
+            lines.append('- **%s**\uff1a%s' % (n['name'], n['msg']))
+    lines.append('')
+
+    lines.append('## \u516b\u3001\u5b89\u5168\u7ea2\u7ebf')
+    lines.append('')
+    if r['reds']:
+        for m in r['reds']:
+            lines.append('- %s' % m)
+    else:
+        lines.append('- \u672c\u6b21\u672a\u547d\u4e2d\u7ea2\u7ebf\u3002\u4ecd\u9700\u81ea\u67e5\uff1a\u71c3\u6c14\u8868\u9644\u8fd1\u662f\u5426\u52a0\u88c5\u6302\u4ef6\u3001'
+                     '\u9ad8\u5904\u662f\u5426\u653e\u4e86\u91cd\u7269\u6216\u73bb\u7483\u5668\u76bf\u3001\u5899\u9762\u6302\u4ef6\u662f\u5426\u786e\u8ba4\u4e86\u627f\u91cd\u3002')
+    lines.append('')
+
+    lines.append('---')
+    lines.append('')
+    lines.append('\u672c\u7ed3\u679c\u4e3a\u89c4\u5212\u5efa\u8bae\u4e0e\u5b89\u5168\u63d0\u793a\uff0c\u4e0d\u4ee3\u8868\u73b0\u573a\u5224\u65ad\uff0c\u4e0d\u6784\u6210\u88c5\u4fee\u8bbe\u8ba1\u6216\u65bd\u5de5\u7ed3\u8bba\u3002')
+    lines.append('\u627f\u91cd\u8981\u6c42\u4e0e\u5b89\u88c5\u8981\u6c42\u4ee5\u4ea7\u54c1\u8bf4\u660e\u4e66\u53ca\u5f53\u5730\u65bd\u5de5\u89c4\u8303\u4e3a\u51c6\u3002')
+    return '\n'.join(lines)
+
+
+def read_input(path):
+    raw = open(path, 'rb').read().decode('utf-8', 'replace')
+    if raw.lstrip('\ufeff').strip().startswith('{'):
+        try:
+            data = json.loads(raw.lstrip('\ufeff'))
+        except ValueError:
+            return raw
+        if isinstance(data, dict):
+            for k in ('desc', 'text', 'description', '\u60c5\u51b5', '\u63cf\u8ff0'):
+                if k in data and isinstance(data[k], str):
+                    return data[k]
+        return raw
+    return raw
+
+
+def selftest():
+    errs = []
+
+    def eq(name, got, want):
+        if got != want:
+            errs.append('%s got=%r want=%r' % (name, got, want))
+
+    r1 = analyse('\u9505\u5177\u653e\u5728\u7076\u53f0\u4e0a\u65b9\u540a\u67dc\u91cc\u5b89\u5168\u5417')
+    eq('case1 \u9ad8\u5904\u91cd\u7269\u547d\u4e2d', any(n['name'] == '\u91cd\u7269\u653e\u5728\u9ad8\u5904' for n in r1['notrec']), True)
+    eq('case2 \u5224\u5b9a\u4e3a\u4e0d\u53ef', r1['ok'], False)
+
+    r2 = analyse('\u60f3\u5728\u71c3\u6c14\u8868\u65c1\u8fb9\u88c5\u4e2a\u6302\u6746\u653e\u94f2\u5b50')
+    eq('case3 \u71c3\u6c14\u7ea2\u7ebf', any('\u71c3\u6c14' in m for m in r2['reds']), True)
+    eq('case4 \u4e0d\u53ef', r2['ok'], False)
+
+    r3 = analyse('\u6240\u6709\u4e1c\u897f\u90fd\u4e70\u4e00\u6837\u7684\u5bc6\u5c01\u76d2')
+    eq('case5 \u540c\u6b3e\u76d2\u547d\u4e2d', any('\u540c\u6b3e' in n['name'] for n in r3['notrec']), True)
+
+    r4 = analyse('\u53f0\u9762\u5806\u6ee1\u4e86\u6ca1\u6709\u5730\u65b9\u5207\u83dc')
+    eq('case6 \u5907\u9910\u533a', any('\u5907\u9910\u533a' in f['name'] for f in r4['flow']), True)
+
+    r5 = analyse('\u8c03\u6599\u653e\u5728\u6700\u9ad8\u5c42\u540a\u67dc\uff0c\u7092\u83dc\u603b\u8981\u627e')
+    eq('case7 \u987a\u624b\u6027', any('\u987a\u624b' in f['name'] for f in r5['flow']), True)
+
+    r6 = analyse('\u4e3a\u4e86\u6536\u7eb3\u53c8\u4e70\u4e86\u5f88\u591a\u6536\u7eb3\u76d2')
+    eq('case8 \u5de5\u5177\u56e4\u79ef', any('\u6536\u7eb3\u5de5\u5177' in n['name'] for n in r6['notrec']), True)
+
+    r7 = analyse('\u51b0\u7bb1\u91cc\u6df7\u653e\u6ca1\u5206\u533a')
+    eq('case9 \u51b0\u7bb1\u5206\u533a', any('\u51b0\u7bb1' in f['name'] for f in r7['flow']), True)
+
+    r8 = analyse('\u6cb9\u58f6\u653e\u5728\u7076\u53f0\u4e0a')
+    eq('case10 \u7076\u53f0\u6db2\u4f53', any('\u7076\u53f0' in n['name'] for n in r8['notrec']), True)
+
+    r9 = analyse('\u53a8\u623f\u633a\u597d\u7684\u6ca1\u4ec0\u4e48\u95ee\u9898')
+    eq('case11 \u65e0\u95ee\u9898', (r9['flow'], r9['notrec'], r9['reds']), ([], [], []))
+    eq('case12 \u5224\u5b9a\u4e3a\u53ef', r9['ok'], True)
+
+    md = render_md(r1)
+    eq('case13 \u8f93\u51fa\u8868\u5934', md.startswith('# '), True)
+    eq('case14 \u542b\u52a8\u7ebf', '\u6d17 \u2192 \u5207 \u2192 \u7092' in md, True)
+    eq('case15 \u542b\u71c3\u6c14\u7ea2\u7ebf', '\u71c3\u6c14\u8868' in md, True)
+    eq('case16 \u542b\u56db\u6761\u539f\u5219', '\u53ef\u53e0\u653e' in md, True)
+    eq('case17 \u542b\u51b0\u7bb1\u5206\u5c42', '\u95e8\u67b6\u5c42' in md, True)
+    js = json.loads(json.dumps(r1, ensure_ascii=False))
+    eq('case18 JSON\u952e', sorted(js.keys()), ['flow', 'notrec', 'ok', 'reds'])
+
+    # \u5e26 BOM \u7684 JSON \u8f93\u5165\u5fc5\u987b\u80fd\u6b63\u786e\u89e3\u6790
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write('{"desc": "\u6cb9\u58f6\u653e\u5728\u7076\u53f0\u4e0a"}')
+    got = read_input(tmp)
+    os.remove(tmp)
+    eq('case19 \u5e26BOM\u7684JSON\u9996\u952e', any('\u7076\u53f0' in n['name'] for n in analyse(got)['notrec']), True)
+
+    out_dir = os.path.dirname(os.path.abspath(__file__))
+    res_path = os.path.join(out_dir, '_selftest_result.txt')
+    if errs:
+        msg = 'SELFTEST FAIL\n' + '\n'.join(errs)
+    else:
+        msg = ('SELFTEST OK\n\u65ad\u8a00\u6570: 21\n\u8986\u76d6: \u9ad8\u5904\u91cd\u7269/\u71c3\u6c14\u7ea2\u7ebf/\u540c\u6b3e\u76d2/\u5907\u9910\u533a/\u987a\u624b\u6027/'
+               '\u5de5\u5177\u56e4\u79ef/\u51b0\u7bb1\u5206\u533a/\u7076\u53f0\u6db2\u4f53/\u65e0\u95ee\u9898/BOM\u89e3\u6790')
+    with open(res_path, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='\u53a8\u623f\u6536\u7eb3\u89c4\u5212\u4e0e\u5b89\u5168\u6838\u67e5')
+    ap.add_argument('--text', help='\u53a8\u623f\u73b0\u72b6\u4e0e\u6536\u7eb3\u56f0\u60d1\u63cf\u8ff0')
+    ap.add_argument('--file', help='\u4ece\u6587\u4ef6\u8bfb\uff0c\u652f\u6301 txt / md / json')
+    ap.add_argument('--out', help='\u7ed3\u679c\u8f93\u51fa\u8def\u5f84')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    text = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file \u4e0d\u5b58\u5728')
+            return 2
+        text = read_input(a.file)
+    if not text.strip():
+        print('ERROR \u9700\u8981 --text \u6216 --file')
+        return 2
+
+    r = analyse(text)
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    if a.out:
+        with open(a.out, 'w', encoding='utf-8') as f:
+            f.write(out + '\n')
+        print('\u7ed3\u679c\u5df2\u5199\u5165: %s' % a.out)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

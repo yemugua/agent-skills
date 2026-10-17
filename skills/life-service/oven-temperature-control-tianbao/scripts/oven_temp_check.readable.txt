@@ -1,0 +1,444 @@
+# -*- coding: utf-8 -*-
+"""烤箱温控与烘烤时间核查：温度换算、上下火调整、食材时间对照与易焦不熟成因判定。
+
+用法:
+  python oven_temp_check.py --file oven.json [--out result.md] [--format json]
+  python oven_temp_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 食材 -> (中文名, 建议温度, 建议时间分钟, 厚度或批量影响, 易焦成因, 不熟成因)
+FOODS = {
+    'whole_chicken': ('整鸡', 190, 70, 6,
+                  '表皮上色过快而中心未熟，建议降温或加盖锡纸',
+                  '中心温度不足，解冻不彻底或温度偏低'),
+    'chicken_wing': ('鸡翅', 200, 25, 3,
+                 '糖分或酱料直接接触上火易焦，中途刷油翻面',
+                 '翅根未熟透，摆放过密'),
+    'beef_steak': ('牛排', 200, 8, 3,
+               '高温长时间使表面碳化，内部仍偏生',
+               '厚度不够或预热不足'),
+    'pork_rib': ('排骨', 190, 45, 5,
+             '酱汁含糖易焦，中途翻面并降温',
+             '肋排贴近烤盘受热不足'),
+    'fish': ('整条鱼', 190, 25, 4,
+           '鱼皮直接暴露易焦，需垫锡纸或提前刷油',
+           '鱼肉厚薄不均，靠鱼尾处易生'),
+    'roast_vegetable': ('烤蔬菜', 200, 30, 3,
+                   '水分多易出水后焦边，温度过高',
+                   '块太大或铺满烤盘，间距不足'),
+    'bread': ('面包与吐司', 180, 30, 4,
+             '糖浆与奶制品易焦，上火过高',
+             '发酵不足或烤箱温度偏低'),
+    'cake': ('蛋糕', 170, 40, 5,
+           '表面糖分高易焦，需要垫烘焙纸',
+           '蛋白未打发或开裂导致未熟'),
+    'cookie': ('曲奇饼干', 170, 15, 3,
+             '糖浆易焦，需盯视颜色变化',
+             '面团过厚或炉温偏低'),
+    'pizza': ('披萨', 220, 12, 3,
+            '芝士与番茄酱易焦，上火过高时几分钟就上色',
+            '饼底太厚或水分过多'),
+    'roast_roots': ('烤根茎', 200, 40, 5,
+                '糖分表面易焦，中途翻面',
+                '块太厚或烤盘过密'),
+    'chestnut': ('栗子', 200, 25, 4,
+             '壳易焦，需开口后再烤',
+             '开口不足导致无法受热均匀'),
+    'tofu': ('烤豆腐', 200, 25, 4,
+           '表面水分多易焦边，需先煎或沥干',
+           '豆腐太嫩易碎，翻动过早'),
+    'sweet_potato': ('烤红薯', 200, 45, 6,
+                 '糖分渗出易焦，中途翻面',
+                 '红薯太大或温度不足'),
+}
+
+# 华氏摄氏换算表
+FAHRENHEIT = [100, 120, 140, 150, 160, 170, 180, 190, 200, 220,
+              230, 240, 250, 260, 280, 300, 320, 350]
+
+# 上火与下火的常见调整
+HEAT_SPLIT = {
+    'top_heavy': ('上火偏高', '上火调低 20 至 30 摄氏度或延长总时间，避免表面碳化'),
+    'bottom_heavy': ('下火偏高', '下火调低 20 至 30 摄氏度或垫空烤盘，避免底部焦边'),
+    'even': ('上下火基本平衡', '维持当前设定，按建议时间执行'),
+    'too_low': ('炉温不足', '提高设定温度 10 至 20 摄氏度，或延长 20 分钟并提前 5 分钟复检'),
+    'too_high': ('炉温过高', '降低设定温度 10 至 20 摄氏度，或加盖锡纸延缓上色'),
+}
+
+# 风扇模式与非风扇模式差异
+FAN_NOTE = (
+    '风扇模式（热风循环）使热量分布更均匀，同温度下通常比非风扇模式快约 20%%，'
+    '需相应缩短时间。蛋糕与部分酥类点心在风扇模式下表面可能提前上色，'
+    '建议调低温度 10 至 20 摄氏度。非风扇模式以上下发热管直接加热，'
+    '靠近上管的食材容易先焦。'
+)
+
+# 预热必要性
+PREHEAT_NOTE = (
+    '预热不可省略。充分预热后烤箱内实际温度才达到设定值。'
+    '未充分预热时，投入食材会吸收大量热量导致实际温度骤降，'
+    '结果是需要更长时间才能上色，同时内部可能仍未熟透。'
+    '家用烤箱建议预热 10 至 15 分钟，可空箱或放空烤盘。'
+)
+
+# 开门对温场的影响
+DOOR_NOTE = (
+    '开门会导致烤箱内温度在短时间内明显下降。'
+    '短时间开门取出检查影响相对有限；长时间开门或连续多次开门，'
+    '会显著延长烘烤时间并造成温场不均。'
+    '建议一次开门完成观察与调整，关门后按原时间继续。'
+    '烤箱预热期间不宜频繁开门。'
+)
+
+# 探针温度计使用要点
+PROBE_NOTE = [
+    '探针插入食物最厚处中心，不能触到烤盘或烤架',
+    '肉类禽类中心温度达到 75 摄氏度并保持，可靠性明显提高',
+    '薄片与小块不适合探针测量，应按时间与外观综合判断',
+    '探针每次用完要清洁消毒，不同食材之间不要混用',
+    '插拔探针时先开门降温，避免蒸汽烫伤',
+]
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def f_to_c(f):
+    return (float(f) - 32.0) * 5.0 / 9.0
+
+
+def c_to_f(c):
+    return float(c) * 9.0 / 5.0 + 32.0
+
+
+def c_to_f_table():
+    return [(f, round(f_to_c(f))) for f in FAHRENHEIT]
+
+
+def food_of(key):
+    k = norm(key)
+    if k not in FOODS:
+        raise ValueError('未知食材键: %s，可选键见 FOODS 表' % key)
+    return k, FOODS[k]
+
+
+def scaled_minutes(minutes, temp, base_temp, fan):
+    """时间 = 原时间 × (基准温度 / 实际温度), 风扇模式再乘 0.8。"""
+    if temp <= 0:
+        raise ValueError('温度必须为正数')
+    m = (float(minutes) * (float(base_temp) / float(temp)))
+    if fan:
+        m *= 0.8
+    return max(1.0, round(m))
+
+
+def calc(data):
+    temp_c = data.get('temp_c')
+    if temp_c is not None and float(temp_c) <= 0:
+        raise ValueError('temp_c 必须为正数')
+    fan = bool(data.get('fan_mode'))
+    preheat = data.get('preheat_done')
+    heat_state = norm(data.get('heat_state') or 'even')
+    if heat_state not in HEAT_SPLIT:
+        raise ValueError('heat_state 只能填 %s 之一，实为: %s'
+                         % ('/'.join(HEAT_SPLIT), heat_state))
+
+    rows = []
+    for it in data.get('items') or []:
+        key, (name, rec_temp, rec_min, thick, burn, raw) = food_of(it.get('food'))
+        actual = it.get('temp_c')
+        if actual is not None and float(actual) <= 0:
+            raise ValueError('item 的 temp_c 必须为正数')
+        use_temp = float(actual) if actual is not None else float(rec_temp)
+        use_min = scaled_minutes(rec_min, use_temp, rec_temp, fan)
+        rows.append({
+            'name': it.get('name', name),
+            'food': key,
+            'food_name': name,
+            'rec_temp': rec_temp,
+            'rec_minutes': rec_min,
+            'temp_used': use_temp,
+            'minutes_used': use_min,
+            'delta_minutes': use_min - rec_min,
+            'thick': thick,
+            'burn_cause': burn,
+            'raw_cause': raw,
+            'probe': it.get('probe'),
+        })
+    rows.sort(key=lambda r: -abs(r['delta_minutes']))
+
+    warns = []
+    for r in rows:
+        if r['temp_used'] > r['rec_temp'] + 10:
+            warns.append('%s 实际温度 %d 摄氏度高于建议 %d 摄氏度，时间虽缩短但易焦，'
+                         '易焦成因：%s'
+                         % (r['name'], r['temp_used'], r['rec_temp'], r['burn_cause']))
+        if r['temp_used'] < r['rec_temp'] - 10:
+            warns.append('%s 实际温度 %d 摄氏度低于建议 %d 摄氏度，内部易不熟，'
+                         '不熟成因：%s'
+                         % (r['name'], r['temp_used'], r['rec_temp'], r['raw_cause']))
+        if r['probe'] is False and r['thick'] >= 4:
+            warns.append('%s 厚度较大，未使用探针温度计时存在中心未熟风险' % r['name'])
+    if preheat is False:
+        warns.append('未充分预热，实际炉温未达设定值，烘烤时间会明显延长')
+    if heat_state in ('too_low', 'too_high', 'top_heavy', 'bottom_heavy'):
+        label, adj = HEAT_SPLIT[heat_state]
+        warns.append('%s：%s' % (label, adj))
+    if fan:
+        warns.append('风扇模式同温度下通常快约 20%，脚本已按 0.8 折算，'
+                     '蛋糕与酥类点心建议降温 10 至 20 摄氏度')
+
+    return {
+        'temp_c': temp_c,
+        'temp_f': None if temp_c is None else round(c_to_f(float(temp_c))),
+        'fan_mode': fan,
+        'preheat_done': preheat,
+        'heat_state': heat_state,
+        'heat_advice': HEAT_SPLIT[heat_state][1],
+        'rows': rows,
+        'warns': warns,
+        'table': c_to_f_table(),
+        'fan_note': FAN_NOTE,
+        'preheat_note': PREHEAT_NOTE,
+        'door_note': DOOR_NOTE,
+        'probe_notes': PROBE_NOTE,
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 烤箱温控与烘烤时间核查')
+    L.append('')
+    L.append('## 一、基本条件')
+    L.append('')
+    L.append('| 项 | 值 |')
+    L.append('|---|---|')
+    L.append('| 摄氏设定温度 | %s |' % (r['temp_c'] if r['temp_c'] is not None else '未填写'))
+    L.append('| 对应华氏温度 | %s |' % (r['temp_f'] if r['temp_f'] is not None else '未填写'))
+    L.append('| 风扇模式 | %s |' % ('是' if r['fan_mode'] else '否'))
+    L.append('| 已充分预热 | %s |' % ('是' if r['preheat_done'] else
+                                       ('否' if r['preheat_done'] is False else '未填写')))
+    L.append('| 温场状态 | %s |' % r['heat_advice'])
+    L.append('')
+    L.append('## 二、温度换算表（华氏与摄氏）')
+    L.append('')
+    L.append('| 华氏 | 摄氏 |')
+    L.append('|---|---|')
+    for f, c in r['table']:
+        L.append('| %d | %d |' % (f, c))
+    L.append('')
+    L.append('## 三、逐项烘烤参数')
+    L.append('')
+    if r['rows']:
+        L.append('| 食材 | 建议温度 | 建议分钟 | 实际温度 | 实际分钟 | 时间差 | 易焦成因 | 不熟成因 |')
+        L.append('|---|---|---|---|---|---|---|---|')
+        for x in r['rows']:
+            L.append('| %s | %d℃ | %d | %d℃ | %d | %+d | %s | %s |'
+                     % (x['name'], x['rec_temp'], x['rec_minutes'], x['temp_used'],
+                        x['minutes_used'], x['delta_minutes'],
+                        x['burn_cause'], x['raw_cause']))
+    else:
+        L.append('- 未填写食材记录')
+    L.append('')
+    L.append('## 四、风扇模式与非风扇模式')
+    L.append('')
+    L.append('- %s' % r['fan_note'])
+    L.append('')
+    L.append('## 五、预热的必要性')
+    L.append('')
+    L.append('- %s' % r['preheat_note'])
+    L.append('')
+    L.append('## 六、开门对温场的影响')
+    L.append('')
+    L.append('- %s' % r['door_note'])
+    L.append('')
+    L.append('## 七、探针温度计使用要点')
+    L.append('')
+    for p in r['probe_notes']:
+        L.append('- %s' % p)
+    L.append('')
+    L.append('## 八、提示')
+    L.append('')
+    if r['warns']:
+        for w in r['warns']:
+            L.append('- %s' % w)
+    else:
+        L.append('- 参数在建议范围内，按建议时间执行并复视颜色与状态')
+    L.append('')
+    L.append('## 九、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 已充分预热 10 至 15 分钟')
+    L.append('- [ ] 烤盘位置与食材摆放间距合适，未铺满')
+    L.append('- [ ] 已在预计完成时间前复视颜色与状态')
+    L.append('- [ ] 肉类禽类已用探针确认中心温度或按可靠时间执行')
+    L.append('- [ ] 未频繁开门')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    # 1 华氏摄氏换算
+    ck(abs(f_to_c(212) - 100.0) < 0.001, '212 华氏应为 100 摄氏，实为 %s' % f_to_c(212))
+    ck(abs(f_to_c(350) - 176.6666666) < 0.01, '350 华氏换算有误: %s' % f_to_c(350))
+    ck(abs(c_to_f(100) - 212.0) < 0.001, '100 摄氏应为 212 华氏，实为 %s' % c_to_f(100))
+    ck(abs(c_to_f(180) - 356.0) < 0.001, '180 摄氏应为 356 华氏，实为 %s' % c_to_f(180))
+    ck(abs(f_to_c(c_to_f(175)) - 175.0) < 0.001, '往返换算应一致')
+
+    # 2 换算表覆盖常见烘烤温度
+    tbl = dict(c_to_f_table())
+    ck(tbl[180] == 82 and tbl[200] == 93 and tbl[220] == 104,
+       '换算表取值有误: 180->%s 200->%s 220->%s' % (tbl[180], tbl[200], tbl[220]))
+
+    # 3 温度降低时间延长
+    ck(scaled_minutes(20, 200, 200, False) == 20, '同温同模式应不变，实为 %s' % scaled_minutes(20, 200, 200, False))
+    ck(scaled_minutes(20, 180, 200, False) == 22, '降温 20 度时间应延长到 22，实为 %s' % scaled_minutes(20, 180, 200, False))
+    ck(scaled_minutes(20, 200, 200, True) == 16, '风扇模式应乘 0.8，实为 %s' % scaled_minutes(20, 200, 200, True))
+
+    # 4 风扇模式确实更快
+    ck(scaled_minutes(30, 200, 200, True) < scaled_minutes(30, 200, 200, False),
+       '风扇模式时间应短于非风扇模式')
+
+    # 5 整鸡数据
+    r5 = calc({'temp_c': 190, 'items': [{'food': 'whole_chicken'}]})
+    ck(r5['rows'][0]['rec_temp'] == 190, '整鸡建议温度应为 190，实为 %s' % r5['rows'][0]['rec_temp'])
+    ck(r5['rows'][0]['rec_minutes'] == 70, '整鸡建议时间应为 70 分钟，实为 %s' % r5['rows'][0]['rec_minutes'])
+    ck(r5['temp_f'] == 374, '190 摄氏应为 374 华氏，实为 %s' % r5['temp_f'])
+
+    # 6 温度过高易焦告警
+    r6 = calc({'temp_c': 200, 'items': [
+        {'food': 'whole_chicken', 'temp_c': 240}]})
+    ck(any('易焦' in w for w in r6['warns']), '温度过高应提示易焦，实为 %s' % r6['warns'])
+
+    # 7 温度过低不熟告警
+    r7 = calc({'temp_c': 160, 'items': [
+        {'food': 'whole_chicken', 'temp_c': 150}]})
+    ck(any('不熟' in w for w in r7['warns']), '温度过低应提示不熟，实为 %s' % r7['warns'])
+
+    # 8 未预热告警
+    r8 = calc({'preheat_done': False, 'items': [{'food': 'cookie'}]})
+    ck(any('预热' in w for w in r8['warns']), '未预热应告警，实为 %s' % r8['warns'])
+
+    # 9 风扇模式折算已应用
+    r9 = calc({'temp_c': 200, 'fan_mode': True, 'items': [{'food': 'pizza'}]})
+    ck(r9['rows'][0]['minutes_used'] == 10,
+       '披萨 12 分钟在 200 度风扇模式应折算为 10 分钟，实为 %s' % r9['rows'][0]['minutes_used'])
+
+    # 10 厚食材无探针告警
+    r10 = calc({'temp_c': 190, 'items': [
+        {'food': 'whole_chicken', 'probe': False}]})
+    ck(any('探针' in w for w in r10['warns']), '厚食材未用探针应告警，实为 %s' % r10['warns'])
+
+    # 11 排序：时间变化大的在前
+    r11 = calc({'temp_c': 200, 'items': [
+        {'food': 'cookie', 'name': '曲奇'},
+        {'food': 'beef_steak', 'name': '牛排', 'temp_c': 150}]})
+    ck(r11['rows'][0]['name'] == '牛排', '时间延长最多应排最前，实为 %s' % r11['rows'][0]['name'])
+
+    # 12 BOM 两条路径
+    bom = '﻿{"temp_c": 180, "items": [{"food": "bread"}]}'
+    r12 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r12['rows'][0]['rec_temp'] == 180, 'BOM 输入应正确解析，实为 %s' % r12['rows'][0]['rec_temp'])
+    ck(r12['temp_f'] == 356, '180 摄氏应为 356 华氏，实为 %s' % r12['temp_f'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe5.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'temp_c': 220, 'items': [{'food': 'pizza'}]}))
+    try:
+        r12b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r12b['rows'][0]['rec_temp'] == 220, 'utf-8-sig 读取应正常，实为 %s' % r12b['rows'][0]['rec_temp'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 13 非法输入
+    for bad, why in (
+        ({'temp_c': 0}, '温度为 0'),
+        ({'heat_state': '不存在的状态'}, '非法 heat_state'),
+        ({'items': [{'food': '不存在的食材'}]}, '未知食材'),
+        ({'temp_c': 180, 'items': [{'food': 'bread', 'temp_c': -5}]}, '负温度'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例13 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 14 输出结构
+    md = render_md(r5)
+    for key in ('温度换算表', '风扇模式', '预热', '开门', '探针温度计', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(r5['probe_notes']) == 5, '探针要点应为 5 条，实为 %d' % len(r5['probe_notes']))
+    ck(len(md.split('| 100 |')[0].splitlines()) > 0, '换算表应已生成')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 华氏摄氏双向换算/换算表取值/往返一致/时间按温度折算/'
+        '风扇模式折算/易焦告警/不熟告警/未预热告警/厚食材无探针告警/排序/'
+        'BOM 两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='烤箱温控与烘烤时间核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

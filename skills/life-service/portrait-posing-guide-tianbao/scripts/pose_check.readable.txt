@@ -1,0 +1,570 @@
+# -*- coding: utf-8 -*-
+"""人像摆姿自查：核查焦段、重心腿、手臂三角、转体、下巴、裁切与留白。
+
+用法:
+  python pose_check.py --file poses.json [--out result.md] [--format json]
+  python pose_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 阈值
+TOL = {
+    'lens_min': 35.0,        # 人像可接受的最小等效焦距
+    'lens_ideal_lo': 50.0,   # 推荐焦段下限
+    'lens_ideal_hi': 135.0,  # 推荐焦段上限
+    'turn_min': 20.0,        # 转体角度下限（度）
+    'turn_max': 45.0,        # 转体角度上限（度）
+    'shoulder_min': 5.0,     # 肩线角度下限（度）
+    'shoulder_max': 30.0,    # 肩线角度上限（度）
+    'headroom_min': 0.05,    # 头顶留白下限
+    'headroom_max': 0.20,    # 头顶留白上限
+}
+
+# 手的安排方式：值为 True 表示「手有明确安排」
+HAND_POSE = [
+    ('waist', '手叉腰', '拇指朝后，手肘向后撑开，手臂与躯干留出三角'),
+    ('pocket', '插兜露拇指', '手插裤兜或衣兜，露出拇指，不要整只手塞进去'),
+    ('hold', '拿东西', '拿杯子、外套、包、花，让手有事情做'),
+    ('face', '抬手碰脸', '轻撩头发、扶眼镜、搭下巴，手指放松不要用力按'),
+    ('lean', '扶墙或扶椅', '手撑在墙面、栏杆、椅面上，手臂自然伸长'),
+]
+
+# 眼神方向: (键, 说明, 是否涣散)
+EYE = [
+    ('lens', '看镜头', False),
+    ('off_axis', '看向画面外的明确方向', False),
+    ('closed', '闭眼（情绪表达）', False),
+    ('down', '低头看地面', True),
+    ('wandering', '眼神飘忽没有落点', True),
+]
+
+# 裁切位置: (键, 说明, 是否裁在关节)
+CROP = [
+    ('thigh', '大腿中段', False),
+    ('upper_arm', '上臂中段', False),
+    ('waist', '腰部', False),
+    ('full', '全身入画不裁', False),
+    ('wrist', '手腕（关节）', True),
+    ('elbow', '手肘（关节）', True),
+    ('knee', '膝盖（关节）', True),
+    ('ankle', '脚踝（关节）', True),
+]
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def _f(shot, key):
+    v = shot.get(key)
+    if v is None:
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        raise ValueError('%s 必须是数字，实为 %s' % (key, v))
+
+
+def _opt(shot, key, table, required=False):
+    v = shot.get(key)
+    if v is None or v == '':
+        if required:
+            raise ValueError('缺少必填项: %s' % key)
+        return None
+    n = norm(v)
+    for row in table:
+        if norm(row[0]) == n:
+            return row
+    raise ValueError('未知的 %s: %s，可选 %s 之一' % (key, v, '/'.join(r[0] for r in table)))
+
+
+def pose_check(shot):
+    if not isinstance(shot, dict):
+        raise ValueError('shots 的每一项必须是对象')
+    name = str(shot.get('name') or '未命名').strip()
+    lens = _f(shot, 'lens_mm')
+    turn = _f(shot, 'body_turn_deg')
+    shoulder = _f(shot, 'shoulder_angle_deg')
+    headroom = _f(shot, 'headroom')
+    weight = shot.get('weight_leg')
+    arm = shot.get('arm_triangle')
+    chin = shot.get('chin_forward')
+    breathe = shot.get('exhaled')
+    crop = _opt(shot, 'crop_at', CROP)
+    eye = _opt(shot, 'eye_direction', EYE)
+    hand = _opt(shot, 'hand_pose', HAND_POSE)
+
+    issues = []
+    misses = []
+
+    # 严重项 1：焦段
+    if lens is None:
+        misses.append('镜头等效焦距')
+    else:
+        if lens < TOL['lens_min']:
+            issues.append({
+                'sev': 3, 'item': '镜头焦距',
+                'detail': '等效 %.0f mm，低于 %.0f mm' % (lens, TOL['lens_min']),
+                'why': '广角会把离镜头近的鼻子额头放大，脸变形、头显大；换 2 倍镜或退远一点',
+            })
+        elif lens < TOL['lens_ideal_lo']:
+            # 35 到 50mm 属于「能用但有变形风险」，不上升为严重项
+            issues.append({
+                'sev': 2, 'item': '镜头焦距',
+                'detail': '等效 %.0f mm，未达推荐的 %.0f 到 %.0f mm'
+                          % (lens, TOL['lens_ideal_lo'], TOL['lens_ideal_hi']),
+                'why': '焦段偏广，边缘仍有变形风险，人像优先用 2 倍镜或退远拍摄',
+            })
+
+    # 严重项 2：裁在关节
+    if crop is None:
+        misses.append('裁切位置')
+    elif crop[2]:
+        issues.append({
+            'sev': 3, 'item': '裁切位置',
+            'detail': '裁在%s' % crop[1],
+            'why': '裁在关节上看起来像被截肢；改裁大腿中段、上臂中段或腰部，要么就全身入画',
+        })
+
+    # 严重项 3：手的位置
+    if hand is None:
+        if shot.get('hand_pose') is None:
+            misses.append('手的位置')
+        else:
+            issues.append({
+                'sev': 3, 'item': '手的位置',
+                'detail': '没有安排手的动作',
+                'why': '手垂在两侧贴着身体，是「不知道往哪放」最典型的画面；'
+                       '直接给具体动作：叉腰、插兜、拿杯子',
+            })
+    else:
+        if norm(hand[0]) == 'pocket' and shot.get('thumb_out') is False:
+            issues.append({
+                'sev': 2, 'item': '手的位置',
+                'detail': '插兜但没露拇指',
+                'why': '整只手塞进兜里会把手臂截断，露出拇指能让手臂线条完整',
+            })
+
+    # 严重项 4：下巴
+    if chin is None:
+        misses.append('下巴是否前伸')
+    elif not chin:
+        issues.append({
+            'sev': 3, 'item': '下巴',
+            'detail': '下巴未前伸',
+            'why': '下巴回收会挤出双下巴、脖子消失、脸显大；要说「下巴往前一点点，头略低」',
+        })
+
+    # 可改进项：重心腿
+    if weight is None:
+        misses.append('重心腿')
+    elif not weight:
+        issues.append({
+            'sev': 2, 'item': '重心腿',
+            'detail': '重心平分两脚',
+            'why': '重心平分身体就僵、胯部正、腿不显长；把重心压在后腿，前脚脚尖点地',
+        })
+
+    # 可改进项：手臂三角
+    if arm is None:
+        misses.append('手臂三角')
+    elif not arm:
+        issues.append({
+            'sev': 2, 'item': '手臂三角',
+            'detail': '手臂贴着躯干',
+            'why': '手臂与身体之间没空隙，手臂被压扁显粗、腰显宽；手叉腰把手肘向后撑开',
+        })
+
+    # 可改进项：转体
+    if turn is None:
+        misses.append('转体角度')
+    elif not TOL['turn_min'] <= turn <= TOL['turn_max']:
+        why = ('完全正对镜头最显宽，肩宽全展开'
+               if turn < TOL['turn_min'] else '转到接近 90 度身体太薄，失去体积感')
+        issues.append({
+            'sev': 2, 'item': '转体角度',
+            'detail': '转体 %.0f 度，合格区间 %.0f 到 %.0f 度'
+                      % (turn, TOL['turn_min'], TOL['turn_max']),
+            'why': why,
+        })
+
+    # 可改进项：肩线
+    if shoulder is None:
+        misses.append('肩线角度')
+    elif not TOL['shoulder_min'] <= shoulder <= TOL['shoulder_max']:
+        issues.append({
+            'sev': 2, 'item': '肩线角度',
+            'detail': '肩线 %.0f 度，合格区间 %.0f 到 %.0f 度'
+                      % (shoulder, TOL['shoulder_min'], TOL['shoulder_max']),
+            'why': '肩线完全水平像证件照，斜 5 到 30 度才有动感',
+        })
+
+    # 可改进项：眼神
+    if eye is None:
+        misses.append('眼神方向')
+    elif eye[2]:
+        issues.append({
+            'sev': 2, 'item': '眼神',
+            'detail': '%s，属于眼神涣散' % eye[1],
+            'why': '眼神没有落点会让照片失去焦点；要么看镜头，要么看向画面外的明确方向',
+        })
+
+    # 可改进项：头顶留白
+    if headroom is not None:
+        if not TOL['headroom_min'] <= headroom <= TOL['headroom_max']:
+            why = ('留得太少会顶得压抑、像被裁掉额头'
+                   if headroom < TOL['headroom_min'] else '留太多人显小、画面松散')
+            issues.append({
+                'sev': 2, 'item': '头顶留白',
+                'detail': '留白 %.2f，合格区间 %.2f 到 %.2f'
+                          % (headroom, TOL['headroom_min'], TOL['headroom_max']),
+                'why': why,
+            })
+
+    # 可改进项：呼气
+    if breathe is False:
+        issues.append({
+            'sev': 2, 'item': '呼吸',
+            'detail': '憋气拍摄',
+            'why': '憋气会让肩膀上提、脖子变短；按快门前喊一声「呼气」',
+        })
+
+    issues.sort(key=lambda r: -r['sev'])
+
+    if any(i['sev'] == 3 for i in issues):
+        level = '摆姿有明显问题'
+    elif issues:
+        level = '有可改进项'
+    elif misses:
+        level = '待确认'
+    else:
+        level = '摆姿规范'
+
+    return {
+        'name': name, 'issues': issues, 'misses': misses, 'level': level,
+        'lens': lens, 'turn': turn, 'shoulder': shoulder, 'headroom': headroom,
+        'crop': crop[1] if crop else None, 'eye': eye[1] if eye else None,
+        'hand': hand[1] if hand else None,
+    }
+
+
+def calc(data):
+    shots = data.get('shots')
+    if shots is None:
+        raise ValueError('输入缺少 shots 列表')
+    if not isinstance(shots, list) or not shots:
+        raise ValueError('shots 必须是非空列表')
+    rows = [pose_check(s) for s in shots]
+    n_bad = len([r for r in rows if r['level'] == '摆姿有明显问题'])
+    n_mid = len([r for r in rows if r['level'] == '有可改进项'])
+    n_unk = len([r for r in rows if r['level'] == '待确认'])
+    if n_bad:
+        overall = '存在需要重拍的人像'
+    elif n_mid:
+        overall = '存在可改进的人像'
+    elif n_unk:
+        overall = '待确认'
+    else:
+        overall = '全部摆姿规范'
+
+    def _sev(r):
+        return max([i['sev'] for i in r['issues']], default=0)
+
+    order = sorted(rows, key=lambda r: (-_sev(r), -len(r['issues']), r['name']))
+    return {
+        'overall': overall, 'rows': rows,
+        'n_bad': n_bad, 'n_mid': n_mid, 'n_unk': n_unk,
+        'n_ok': len(rows) - n_bad - n_mid - n_unk,
+        'fix_order': [r['name'] for r in order if r['issues']],
+        'hand_poses': [{'key': k, 'name': n, 'how': h} for k, n, h in HAND_POSE],
+        'eyes': [{'key': k, 'name': n, 'vague': v} for k, n, v in EYE],
+        'crops': [{'key': k, 'name': n, 'joint': j} for k, n, j in CROP],
+        'tol': dict(TOL),
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 人像摆姿自查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['overall'])
+    L.append('')
+    L.append('| 类别 | 张数 |')
+    L.append('|---|---|')
+    L.append('| 需要重拍 | %d |' % r['n_bad'])
+    L.append('| 可改进 | %d |' % r['n_mid'])
+    L.append('| 待确认 | %d |' % r['n_unk'])
+    L.append('| 摆姿规范 | %d |' % r['n_ok'])
+    L.append('')
+    if r['fix_order']:
+        L.append('整改顺序（严重度高的先改）：%s' % '、'.join(r['fix_order']))
+        L.append('')
+    L.append('## 二、逐张判定')
+    L.append('')
+    for row in r['rows']:
+        L.append('### %s' % row['name'])
+        L.append('')
+        L.append('- 判定：**%s**' % row['level'])
+        if row['lens'] is not None:
+            L.append('- 镜头等效焦距：%.0f mm' % row['lens'])
+        if row['crop']:
+            L.append('- 裁切位置：%s' % row['crop'])
+        if row['hand']:
+            L.append('- 手的安排：%s' % row['hand'])
+        if row['issues']:
+            L.append('')
+            L.append('| 严重度 | 项目 | 问题 | 为什么要在意 |')
+            L.append('|---|---|---|---|')
+            for i in row['issues']:
+                L.append('| %s | %s | %s | %s |'
+                         % ('严重' if i['sev'] == 3 else '可改进', i['item'], i['detail'], i['why']))
+        if row['misses']:
+            L.append('')
+            L.append('- 未填写：%s' % '、'.join(row['misses']))
+        L.append('')
+    L.append('## 三、手的五种安排')
+    L.append('')
+    L.append('| 方式 | 怎么摆 |')
+    L.append('|---|---|')
+    for h in r['hand_poses']:
+        L.append('| %s | %s |' % (h['name'], h['how']))
+    L.append('')
+    L.append('## 四、裁切位置')
+    L.append('')
+    L.append('| 位置 | 是否关节 |')
+    L.append('|---|---|')
+    for c in r['crops']:
+        L.append('| %s | %s |' % (c['name'], '是，不能裁' if c['joint'] else '可以裁'))
+    L.append('')
+    L.append('## 五、阈值')
+    L.append('')
+    L.append('| 项目 | 阈值 |')
+    L.append('|---|---|')
+    L.append('| 镜头等效焦距 | 不低于 %.0f mm，推荐 %.0f 到 %.0f mm |'
+             % (r['tol']['lens_min'], r['tol']['lens_ideal_lo'], r['tol']['lens_ideal_hi']))
+    L.append('| 转体角度 | %.0f 到 %.0f 度 |' % (r['tol']['turn_min'], r['tol']['turn_max']))
+    L.append('| 肩线角度 | %.0f 到 %.0f 度 |' % (r['tol']['shoulder_min'], r['tol']['shoulder_max']))
+    L.append('| 头顶留白 | %.2f 到 %.2f |' % (r['tol']['headroom_min'], r['tol']['headroom_max']))
+    L.append('')
+    L.append('## 六、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 用的是 2 倍镜或退远拍摄，没用主摄贴脸拍')
+    L.append('- [ ] 裁切位置不在手腕、手肘、膝盖、脚踝上')
+    L.append('- [ ] 手有明确安排：叉腰、插兜露拇指、拿东西、抬手碰脸、扶墙')
+    L.append('- [ ] 下巴微前伸并略低，没有双下巴')
+    L.append('- [ ] 重心压在一条腿上，手臂与躯干有三角空隙')
+    L.append('- [ ] 每拍一组回放一次，放大看眼睛有没有闭')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    good = {'name': '站姿半身', 'lens_mm': 50, 'weight_leg': True, 'arm_triangle': True,
+            'body_turn_deg': 30, 'shoulder_angle_deg': 15, 'chin_forward': True,
+            'eye_direction': 'lens', 'headroom': 0.12, 'hand_pose': 'waist',
+            'crop_at': 'waist', 'exhaled': True}
+
+    # 1 正例
+    r1 = pose_check(good)
+    ck(r1['level'] == '摆姿规范', '正例应判摆姿规范，实为 %s' % r1['level'])
+    ck(r1['issues'] == [], '正例不应有问题项，实为 %s' % r1['issues'])
+
+    # 2 反例：主摄广角
+    r2 = pose_check(dict(good, lens_mm=24))
+    ck(r2['level'] == '摆姿有明显问题', '24mm 应判严重，实为 %s' % r2['level'])
+    ck(any(i['item'] == '镜头焦距' for i in r2['issues']), '应点名焦段')
+    ck(pose_check(dict(good, lens_mm=35))['level'] == '有可改进项',
+       '35mm 边界应判可改进而非严重，实为 %s' % pose_check(dict(good, lens_mm=35))['level'])
+    ck(any(i['item'] == '镜头焦距' for i in pose_check(dict(good, lens_mm=40))['issues']),
+       '40mm 未达推荐区间仍应提示')
+    ck(pose_check(dict(good, lens_mm=50))['issues'] == [], '50mm 应合格')
+    ck(pose_check(dict(good, lens_mm=135))['issues'] == [], '135mm 应合格')
+
+    # 3 反例：裁在关节
+    for joint in ('wrist', 'elbow', 'knee', 'ankle'):
+        r3 = pose_check(dict(good, crop_at=joint))
+        ck(r3['level'] == '摆姿有明显问题', '裁在 %s 应判严重，实为 %s' % (joint, r3['level']))
+    ck(pose_check(dict(good, crop_at='thigh'))['level'] == '摆姿规范', '裁大腿中段应合格')
+    ck(pose_check(dict(good, crop_at='full'))['level'] == '摆姿规范', '全身入画应合格')
+
+    # 4 反例：手无处安放
+    r4 = pose_check(dict(good, hand_pose=''))
+    ck(r4['level'] == '摆姿有明显问题', '手没安排应判严重，实为 %s' % r4['level'])
+    ck(any(i['item'] == '手的位置' for i in r4['issues']), '应点名手的位置')
+    r4b = pose_check(dict(good, hand_pose='pocket', thumb_out=False))
+    ck(any(i['item'] == '手的位置' for i in r4b['issues']), '插兜不露拇指应提示')
+    ck(r4b['level'] == '有可改进项', '插兜不露拇指应判可改进，实为 %s' % r4b['level'])
+
+    # 5 反例：下巴不前伸
+    r5 = pose_check(dict(good, chin_forward=False))
+    ck(r5['level'] == '摆姿有明显问题', '下巴不前伸应判严重，实为 %s' % r5['level'])
+    ck(any(i['item'] == '下巴' for i in r5['issues']), '应点名下巴项')
+
+    # 6 反例：正对镜头不转体
+    r6 = pose_check(dict(good, body_turn_deg=0))
+    ck(any(i['item'] == '转体角度' for i in r6['issues']), '不转体应提示')
+    ck(r6['level'] == '有可改进项', '不转体应判可改进，实为 %s' % r6['level'])
+    ck(pose_check(dict(good, body_turn_deg=20))['issues'] == [], '转体 20 度边界应合格')
+    ck(pose_check(dict(good, body_turn_deg=45))['issues'] == [], '转体 45 度边界应合格')
+    ck(any(i['item'] == '转体角度' for i in pose_check(dict(good, body_turn_deg=80))['issues']),
+       '转体 80 度应提示太薄')
+
+    # 7 反例：手臂贴身
+    r7 = pose_check(dict(good, arm_triangle=False))
+    ck(any(i['item'] == '手臂三角' for i in r7['issues']), '手臂贴身应提示')
+
+    # 8 反例：重心平分
+    r8 = pose_check(dict(good, weight_leg=False))
+    ck(any(i['item'] == '重心腿' for i in r8['issues']), '重心平分应提示')
+
+    # 9 反例：眼神涣散
+    r9 = pose_check(dict(good, eye_direction='down'))
+    ck(any(i['item'] == '眼神' for i in r9['issues']), '低头看地应提示眼神涣散')
+    ck(pose_check(dict(good, eye_direction='wandering'))['level'] == '有可改进项',
+       '眼神飘忽应判可改进')
+    ck(pose_check(dict(good, eye_direction='off_axis'))['issues'] == [], '看向明确方向应合格')
+
+    # 10 反例：肩线水平
+    r10 = pose_check(dict(good, shoulder_angle_deg=0))
+    ck(any(i['item'] == '肩线角度' for i in r10['issues']), '肩线水平应提示')
+    ck(pose_check(dict(good, shoulder_angle_deg=5))['issues'] == [], '肩线 5 度边界应合格')
+
+    # 11 反例：留白越界与边界值
+    ck(any(i['item'] == '头顶留白' for i in pose_check(dict(good, headroom=0.30))['issues']),
+       '留白 0.30 应提示')
+    ck(any(i['item'] == '头顶留白' for i in pose_check(dict(good, headroom=0.02))['issues']),
+       '留白 0.02 应提示')
+    ck(pose_check(dict(good, headroom=0.05))['issues'] == [], '留白 0.05 边界应合格')
+    ck(pose_check(dict(good, headroom=0.20))['issues'] == [], '留白 0.20 边界应合格')
+
+    # 12 排序方向：严重项排最前
+    r12 = pose_check(dict(good, lens_mm=24, arm_triangle=False, headroom=0.3))
+    ck(r12['issues'][0]['sev'] == 3, '严重项应排最前，实为 %s' % r12['issues'][0]['sev'])
+    ck(r12['issues'][0]['item'] == '镜头焦距', '首个应是焦段，实为 %s' % r12['issues'][0]['item'])
+
+    # 13 判定顺序：有严重项时不因缺信息判待确认
+    r13 = pose_check({'name': '缺留白', 'lens_mm': 24, 'chin_forward': True})
+    ck(r13['level'] == '摆姿有明显问题', '缺其他项但有严重项不应判待确认，实为 %s' % r13['level'])
+    r13b = pose_check({'name': '只填焦段', 'lens_mm': 85})
+    ck(r13b['level'] == '待确认', '只填焦段应判待确认，实为 %s' % r13b['level'])
+
+    # 14 汇总与整改顺序
+    r14 = calc({'shots': [good,
+                          dict(good, name='广角脸变形', lens_mm=24),
+                          dict(good, name='手臂贴身', arm_triangle=False)]})
+    ck(r14['overall'] == '存在需要重拍的人像', '有严重项应判需要重拍，实为 %s' % r14['overall'])
+    ck(r14['n_bad'] == 1, '严重项应为 1 张，实为 %d' % r14['n_bad'])
+    ck(r14['fix_order'][0] == '广角脸变形', '严重项应先改，实为 %s' % r14['fix_order'])
+    ck(r14['fix_order'][1] == '手臂贴身', '可改进项排其后，实为 %s' % r14['fix_order'])
+
+    # 15 BOM 两条路径
+    bom = '﻿' + json.dumps({'shots': [dict(good, lens_mm=24)]})
+    r15 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r15['overall'] == '存在需要重拍的人像', 'BOM 字符串应正确解析，实为 %s' % r15['overall'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe_c2.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'shots': [dict(good, name='带BOM', crop_at='knee')]}))
+    try:
+        r15b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r15b['rows'][0]['name'] == '带BOM', 'BOM 文件首个 key 应解析正常，实为 %s' % r15b['rows'][0]['name'])
+        ck(r15b['n_bad'] == 1, '裁在膝盖应判严重，实为 %d' % r15b['n_bad'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 16 非法输入
+    for bad, why in (
+        ({}, '缺 shots'),
+        ({'shots': []}, 'shots 空列表'),
+        ({'shots': [{'lens_mm': 'abc'}]}, '焦段非数字'),
+        ({'shots': [dict(good, crop_at='脚后跟')]}, '未知裁切位置'),
+        ({'shots': [dict(good, eye_direction='斜眼看人')]}, '未知眼神方向'),
+        ({'shots': [dict(good, hand_pose='插腰')]}, '未知手的安排'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例16 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 17 输出结构
+    md = render_md(r14)
+    for key in ('总体判定', '逐张判定', '手的五种安排', '裁切位置', '阈值', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(HAND_POSE) == 5, '手的安排应 5 种')
+    ck(len([c for c in CROP if c[2]]) == 4, '关节裁切位置应 4 个')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 正例/广角焦段反例与边界/关节裁切反例/手无处安放反例/'
+        '下巴反例/转体与边界/手臂贴身/重心平分/眼神涣散/肩线/留白边界/严重项排序/'
+        '判定顺序/汇总整改顺序/BOM两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='人像摆姿自查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

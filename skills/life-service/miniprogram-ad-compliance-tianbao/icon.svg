@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="24" fill="#07C160"/>
+  <rect x="20" y="30" width="88" height="56" rx="8" fill="#ffffff"/>
+  <rect x="20" y="30" width="88" height="56" rx="8" fill="none" stroke="#07C160" stroke-width="3"/>
+  <text x="64" y="58" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#07C160" text-anchor="middle">广告</text>
+  <text x="64" y="80" font-family="Arial, sans-serif" font-size="13" fill="#999" text-anchor="middle">AD</text>
+  <circle cx="96" cy="30" r="12" fill="#FF5B5B"/>
+  <text x="96" y="35" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">!</text>
+</svg>

@@ -1,0 +1,435 @@
+# -*- coding: utf-8 -*-
+"""钢琴指法违规检查与练习剂量核对工具。
+
+用法:
+  python piano_fingering_check.py --file case.json [--json]
+  python piano_fingering_check.py --selftest
+
+判定顺序: 先看真实缺陷(指法违规、音阶指法不符、手型不合格、准确率不达标、提速过早),
+再看信息是否完整; 缺指法数据时不得掩盖已查出的手型问题。
+"""
+import argparse
+import io
+import json
+import os
+import sys
+import tempfile
+
+SCALE_FINGERS = {
+    ("C", "right"): [1, 2, 3, 1, 2, 3, 4, 5],
+    ("C", "left"): [5, 4, 3, 2, 1, 3, 2, 1],
+    ("G", "right"): [1, 2, 3, 1, 2, 3, 4, 5],
+    ("G", "left"): [5, 4, 3, 2, 1, 3, 2, 1],
+    ("D", "right"): [1, 2, 3, 1, 2, 3, 4, 5],
+    ("D", "left"): [5, 4, 3, 2, 1, 3, 2, 1],
+    ("F", "right"): [1, 2, 3, 4, 1, 2, 3, 4],
+    ("Am", "right"): [1, 2, 3, 1, 2, 3, 4, 5],
+}
+
+HAND_SHAPE_ITEMS = [
+    ("palm_arch", u"掌关节自然拱起", u"手背平塌、掌关节凹陷，需慢速断奏重建拱形"),
+    ("knuckle_support", u"第一指节不塌陷", u"塌指会让指尖失去支撑，弹不快也弹不匀"),
+    ("wrist_level", u"手腕与掌关节持平或略高", u"手腕低于掌关节会卡死，抬高会僵硬"),
+    ("thumb_bent", u"拇指自然弯曲不外翘", u"拇指伸直外翘会带偏后续指法"),
+    ("arm_relaxed", u"肩臂放松不耸肩", u"耸肩会导致肩颈酸痛与耐力差"),
+]
+
+ACC_BAD = 90.0
+ACC_SPEED = 95.0
+MIN_MINUTES = 15.0
+MAX_MINUTES = 60.0
+MIN_DAYS = 4.0
+
+
+def finger_violations(notes):
+    """按输入原序扫描, 不做任何重排。"""
+    bad_range = []
+    thumb_black = []
+    same_run = []
+    run = 1
+    prev_f = None
+    prev_k = None
+    for i, n in enumerate(notes, 1):
+        f = n.get("finger")
+        k = n.get("key")
+        black = bool(n.get("black", False))
+        if f is None:
+            continue
+        try:
+            fi = int(f)
+        except (TypeError, ValueError):
+            bad_range.append(i)
+            continue
+        if fi < 1 or fi > 5:
+            bad_range.append(i)
+        if fi == 1 and black:
+            thumb_black.append(i)
+        if prev_f is not None and fi == prev_f and k != prev_k:
+            run += 1
+            if run >= 3:
+                same_run.append(i)
+        else:
+            run = 1
+        prev_f = fi
+        prev_k = k
+    return bad_range, thumb_black, same_run
+
+
+def scale_check(scale, hand, notes):
+    std = SCALE_FINGERS.get((scale, hand))
+    if std is None:
+        return None, u"没有该调该手的标准指法表，跳过比对"
+    if len(notes) != len(std):
+        return None, u"音符数 %d 与标准指法长度 %d 不一致，跳过比对" % (len(notes), len(std))
+    actual = []
+    for n in notes:
+        try:
+            actual.append(int(n.get("finger")))
+        except (TypeError, ValueError):
+            return None, u"存在无效指号，跳过比对"
+    if actual == std:
+        return True, u"%s %s 音阶指法与标准表一致" % (scale, hand)
+    diff = [i + 1 for i in range(len(std)) if actual[i] != std[i]]
+    return False, u"%s %s 音阶指法与标准表不一致，第 %s 个音不符（应为 %s）" % (
+        scale, hand, u"、".join(str(i) for i in diff), u" ".join(str(x) for x in std))
+
+
+def speed_verdict(acc, target, actual):
+    if acc is None:
+        return u"待确认", u"未提供准确率"
+    a = float(acc)
+    if a < ACC_BAD:
+        return u"不合格", u"准确率 %.1f%% 低于 %.0f%%，回到分手慢练，不要合手提速" % (a, ACC_BAD)
+    t = None if target is None else float(target)
+    x = None if actual is None else float(actual)
+    if t is not None and x is not None and x > t and a < ACC_SPEED:
+        return u"不合格", u"实际速度 %g BPM 已超过目标 %g BPM，但准确率仅 %.1f%%，属于提速过早" % (x, t, a)
+    if t is not None and x is not None and x > t + 10:
+        return u"需改进", u"单次提速超过 10 BPM（目标 %g，实际 %g），幅度过大" % (t, x)
+    if a < ACC_SPEED:
+        return u"需改进", u"准确率 %.1f%% 未达提速门槛 %.0f%%，维持当前速度" % (a, ACC_SPEED)
+    return u"合格", u"准确率 %.1f%% 达标，可提速 5-10 BPM" % a
+
+
+def dose_advice(minutes, days, separate):
+    """返回 (需改进项, 待确认项), 没填的字段只记待确认, 不当成需改进。"""
+    out = []
+    pend = []
+    if minutes is None:
+        pend.append(u"未提供单次练习时长")
+    else:
+        m = float(minutes)
+        if m < MIN_MINUTES:
+            out.append(u"单次 %.0f 分钟偏短，建议 20-30 分钟并分 2-3 段" % m)
+        elif m > MAX_MINUTES:
+            out.append(u"单次 %.0f 分钟偏长，分 2-3 段并在段间休息 5-10 分钟" % m)
+    if days is None:
+        pend.append(u"未提供每周练习天数")
+    else:
+        d = float(days)
+        if d < MIN_DAYS:
+            out.append(u"每周 %.0f 天偏少，规律性比单次时长更重要，建议 4-5 天" % d)
+    if separate is None:
+        pend.append(u"未填是否做过分手练习")
+    elif separate is False:
+        out.append(u"未做分手练习：先单手，连续三遍无错再合手")
+    return out, pend
+
+
+def load_json(path):
+    with io.open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def build_report(data):
+    notes = data.get("notes", []) or []
+    hand = data.get("hand", "right")
+    scale = data.get("scale")
+    hs = data.get("hand_shape", {}) or {}
+    acc = data.get("accuracy")
+    target = data.get("tempo_target")
+    actual = data.get("tempo_actual")
+    minutes = data.get("session_minutes")
+    days = data.get("practice_days_per_week")
+    separate = data.get("separate_hands")
+
+    defects = []
+    fine = []
+    pending = []
+
+    if not notes:
+        pending.append(u"未提供逐音指法，无法做指法违规检查")
+        bad_range, thumb_black, same_run = [], [], []
+        sok, smsg = None, u"未提供音符，跳过音阶比对"
+    else:
+        bad_range, thumb_black, same_run = finger_violations(notes)
+        if bad_range:
+            defects.append(u"指号越界（第 %s 个音），指号只能是 1-5" % u"、".join(str(i) for i in bad_range))
+        if thumb_black:
+            defects.append(u"第 %s 个音用 1 指弹黑键：拇指短且靠外，上黑键会把手掌扭歪并带偏后续指法" % (
+                u"、".join(str(i) for i in thumb_black)))
+        if same_run:
+            defects.append(u"第 %s 个音出现连续三次以上同指按不同键，未做同音或长音换指" % (
+                u"、".join(str(i) for i in same_run)))
+        sok, smsg = scale_check(scale, hand, notes)
+        if sok is False:
+            defects.append(smsg)
+        elif sok is None:
+            pending.append(smsg)
+
+    shape_bad = []
+    shape_unknown = []
+    for key, name, why in HAND_SHAPE_ITEMS:
+        v = hs.get(key)
+        if v is None:
+            shape_unknown.append(name)
+        elif v is False:
+            shape_bad.append((name, why))
+    if shape_bad:
+        for name, why in shape_bad:
+            defects.append(u"手型不合格：%s —— %s" % (name, why))
+    if shape_unknown:
+        pending.append(u"手型项未填：%s" % u"、".join(shape_unknown))
+
+    sv, smsg2 = speed_verdict(acc, target, actual)
+    if sv == u"不合格":
+        defects.append(smsg2)
+    elif sv == u"需改进":
+        fine.append(smsg2)
+    elif sv == u"待确认":
+        pending.append(smsg2)
+
+    dose, dose_pending = dose_advice(minutes, days, separate)
+    fine.extend(dose)
+    pending.extend(dose_pending)
+
+    lines = []
+    lines.append("=" * 62)
+    lines.append(u"钢琴指法违规检查与练习剂量核对")
+    lines.append("=" * 62)
+    lines.append(u"手别：%s    曲目调性：%s    音符数：%d" % (
+        u"右手" if hand == "right" else u"左手", scale if scale else u"未填", len(notes)))
+    lines.append("")
+    lines.append(u"[一] 指法检查")
+    lines.append(u"  指号越界：%s" % (u"%d 处" % len(bad_range) if bad_range else u"无"))
+    lines.append(u"  1 指上黑键：%s" % (u"%d 处" % len(thumb_black) if thumb_black else u"无"))
+    lines.append(u"  连续同指：%s" % (u"%d 处" % len(same_run) if same_run else u"无"))
+    lines.append(u"  音阶指法比对：%s" % smsg)
+    lines.append("")
+    lines.append(u"[二] 手型检查")
+    if shape_bad:
+        for name, why in shape_bad:
+            lines.append(u"  不合格：%s —— %s" % (name, why))
+    else:
+        lines.append(u"  已填项全部合格")
+    lines.append("")
+    lines.append(u"[三] 速度与准确率")
+    lines.append(u"  准确率：%s    目标速度：%s BPM    实际速度：%s BPM" % (
+        (u"%.1f%%" % float(acc)) if acc is not None else u"--",
+        (u"%g" % float(target)) if target is not None else u"--",
+        (u"%g" % float(actual)) if actual is not None else u"--"))
+    lines.append(u"  判定：%s —— %s" % (sv, smsg2))
+    lines.append("")
+    lines.append(u"[四] 不合格项与原因")
+    if defects:
+        for i, d in enumerate(defects, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[五] 需改进项")
+    if fine:
+        for i, d in enumerate(fine, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[六] 待确认项")
+    if pending:
+        for i, d in enumerate(pending, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[七] 练习处方")
+    lines.append(u"  1. 指法一旦确定就不再改，每次弹同一段用同一套指法")
+    if thumb_black or bad_range or same_run:
+        lines.append(u"  2. 先修指法违规，用慢速断奏逐音重排指法")
+    if shape_bad:
+        lines.append(u"  3. 手型未过不谈速度：降速、断奏、连奏、再提速")
+    lines.append(u"  4. 提速条件：当前速度连续三遍 100%% 无错，每次只加 5-10 BPM")
+    lines.append(u"  5. 每日 20-30 分钟分 2-3 段，每周 4-5 天")
+    lines.append(u"  6. 手指手腕疼痛时立即停手，不要忍痛练习")
+
+    if defects:
+        overall = u"不合格"
+    elif fine:
+        overall = u"需改进"
+    elif pending:
+        overall = u"待确认"
+    else:
+        overall = u"合格"
+
+    lines.append("")
+    lines.append(u"总判定：%s" % overall)
+    lines.append(u"免责：本结果为指法自查输出，不构成钢琴教学结论或医学诊断。")
+    lines.append("=" * 62)
+
+    summary = {
+        "finger_out_of_range": bad_range,
+        "thumb_on_black": thumb_black,
+        "same_finger_runs": same_run,
+        "scale_match": sok,
+        "hand_shape_bad": [n for n, _ in shape_bad],
+        "speed_verdict": sv,
+        "defects": defects,
+        "fine": fine,
+        "pending": pending,
+        "overall": overall,
+    }
+    return "\n".join(lines), summary
+
+
+def _run_checks():
+    r = []
+    b, t, s = finger_violations([{"key": "C4", "finger": 1, "black": False},
+                                 {"key": "D4", "finger": 2, "black": False}])
+    r.append((u"正常指法无违规", not b and not t and not s))
+
+    b1, t1, _ = finger_violations([{"key": "C#4", "finger": 1, "black": True}])
+    r.append((u"反例：1 指上黑键被检出", t1 == [1]))
+
+    b2, _, _ = finger_violations([{"key": "C4", "finger": 6, "black": False}])
+    r.append((u"反例：指号 6 被判越界", b2 == [1]))
+
+    _, _, s3 = finger_violations([
+        {"key": "C4", "finger": 3, "black": False},
+        {"key": "D4", "finger": 3, "black": False},
+        {"key": "E4", "finger": 3, "black": False},
+    ])
+    r.append((u"反例：连续三次同指被检出", s3 == [3]))
+
+    ok, msg = scale_check("C", "right", [{"key": "C4", "finger": 1}, {"key": "D4", "finger": 2},
+                                         {"key": "E4", "finger": 3}, {"key": "F4", "finger": 1},
+                                         {"key": "G4", "finger": 2}, {"key": "A4", "finger": 3},
+                                         {"key": "B4", "finger": 4}, {"key": "C5", "finger": 5}])
+    r.append((u"C 大调右手指法一致", ok is True))
+
+    ok2, _ = scale_check("C", "right", [{"key": "C4", "finger": 1}, {"key": "D4", "finger": 2},
+                                        {"key": "E4", "finger": 3}, {"key": "F4", "finger": 4},
+                                        {"key": "G4", "finger": 5}, {"key": "A4", "finger": 4},
+                                        {"key": "B4", "finger": 3}, {"key": "C5", "finger": 2}])
+    r.append((u"反例：指法与标准表不一致判不合格", ok2 is False))
+
+    ok3, _ = scale_check("X", "right", [{"key": "C4", "finger": 1}])
+    r.append((u"无对应标准表时跳过比对", ok3 is None))
+
+    r.append((u"准确率 85 判不合格", speed_verdict(85, 80, 80)[0] == u"不合格"))
+    r.append((u"反例：提速过早判不合格", speed_verdict(92, 80, 100)[0] == u"不合格"))
+    r.append((u"反例：单次提速超 10 BPM 判需改进", speed_verdict(100, 80, 95)[0] == u"需改进"))
+    r.append((u"准确率达标判合格", speed_verdict(100, 80, 85)[0] == u"合格"))
+
+    _, s = build_report({
+        "notes": [{"key": "C4", "finger": 1, "black": False},
+                  {"key": "D4", "finger": 2, "black": False},
+                  {"key": "E4", "finger": 3, "black": False},
+                  {"key": "F4", "finger": 1, "black": False},
+                  {"key": "G4", "finger": 2, "black": False},
+                  {"key": "A4", "finger": 3, "black": False},
+                  {"key": "B4", "finger": 4, "black": False},
+                  {"key": "C5", "finger": 5, "black": False}],
+        "hand": "right", "scale": "C",
+        "hand_shape": {"palm_arch": True, "knuckle_support": True, "wrist_level": True,
+                       "thumb_bent": True, "arm_relaxed": True},
+        "accuracy": 100, "tempo_target": 80, "tempo_actual": 85,
+        "session_minutes": 30, "practice_days_per_week": 5, "separate_hands": True,
+    })
+    r.append((u"标准样例判定合格", s["overall"] == u"合格"))
+
+    _, s1 = build_report({
+        "notes": [{"key": "C#4", "finger": 1, "black": True},
+                  {"key": "D#4", "finger": 2, "black": True}],
+        "hand": "right",
+        "hand_shape": {"palm_arch": True, "knuckle_support": False, "wrist_level": True,
+                       "thumb_bent": True, "arm_relaxed": True},
+        "accuracy": 92, "tempo_target": 80, "tempo_actual": 100,
+        "session_minutes": 30, "practice_days_per_week": 5, "separate_hands": True,
+    })
+    r.append((u"反例：综合违规判不合格", s1["overall"] == u"不合格"))
+    r.append((u"反例：1 指黑键进缺陷表", any(u"1 指弹黑键" in d for d in s1["defects"])))
+    r.append((u"反例：塌指进缺陷表", any(u"第一指节" in d for d in s1["defects"])))
+
+    _, s2 = build_report({
+        "hand_shape": {"palm_arch": True, "knuckle_support": False, "wrist_level": True,
+                       "thumb_bent": True, "arm_relaxed": True},
+    })
+    r.append((u"缺指法数据时手型问题仍判不合格", s2["overall"] == u"不合格"))
+
+    _, s3 = build_report({"hand_shape": {}})
+    r.append((u"手型全未填记为待确认", s3["overall"] == u"待确认"))
+
+    p = os.path.join(tempfile.gettempdir(), "_piano_bom_case.json")
+    blob = b"\xef\xbb\xbf" + json.dumps({
+        "notes": [{"key": "C4", "finger": 1, "black": False}],
+        "hand": "right", "accuracy": 100, "tempo_target": 80, "tempo_actual": 80,
+    }, ensure_ascii=False).encode("utf-8")
+    with open(p, "wb") as f:
+        f.write(blob)
+    try:
+        d = load_json(p)
+        r.append((u"UTF-8 BOM 输入首键可读", len(d.get("notes", [])) == 1))
+        r.append((u"UTF-8 BOM 输入数值可读", abs(d.get("accuracy", 0) - 100.0) < 1e-9))
+    finally:
+        if os.path.exists(p):
+            os.remove(p)
+
+    return r
+
+
+def selftest():
+    results = _run_checks()
+    failed = [name for name, ok in results if not ok]
+    ok = len(failed) == 0
+    lines = ["SELFTEST %s" % ("OK" if ok else "FAILED")]
+    lines.append("checks=%d passed=%d failed=%d" % (len(results), len(results) - len(failed), len(failed)))
+    for name in failed:
+        lines.append("FAILED: %s" % name)
+    with io.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_selftest_result.txt"),
+                 "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+    return ok
+
+
+def main():
+    parser = argparse.ArgumentParser(description=u"钢琴指法违规检查工具")
+    parser.add_argument("--file", help=u"输入 JSON 文件路径（UTF-8）")
+    parser.add_argument("--json", action="store_true", help=u"以 JSON 输出")
+    parser.add_argument("--out", help=u"结果写入指定文件")
+    parser.add_argument("--selftest", action="store_true", help=u"运行自检")
+    args = parser.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        sys.exit(0 if selftest() else 1)
+
+    if not args.file:
+        parser.error(u"需要 --file 或 --selftest")
+
+    data = load_json(args.file)
+
+    report, summary = build_report(data)
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.json else report
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    with io.open(out_path, "w", encoding="utf-8") as f:
+        f.write(body)
+    print(body)
+    print("")
+    print(u"结果已写入：%s" % out_path)
+
+
+if __name__ == "__main__":
+    main()
+
+

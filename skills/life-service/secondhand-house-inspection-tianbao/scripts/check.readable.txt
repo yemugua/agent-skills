@@ -1,0 +1,183 @@
+# -*- coding: utf-8 -*-
+"""二手房验房记录校验脚本。
+
+用法:
+  python check.py --file 验房记录.json
+  python check.py --selftest
+
+JSON 字段:
+  checked_zones    已检查分区列表, 如 ["door","wall","window","kitchen","electric","plumbing"]
+  defects          缺陷项列表, 每项 {"zone":..., "level":"minor/general/major", "red_line":false}
+  red_line_found   是否发现红线项 (true/false)
+"""
+import argparse
+import json
+import os
+import sys
+
+ALL_ZONES = ["door", "wall", "window", "kitchen", "electric", "plumbing"]
+RED_LINE_ZONES = {"electric", "structure"}
+
+
+def evaluate(data):
+    reasons = []
+    ok = True
+
+    zones = data.get("checked_zones") or []
+    missing = [z for z in ALL_ZONES if z not in zones]
+    if missing:
+        ok = False
+        reasons.append("未检查分区 %s, 验房不完整, 不能判定可收房" % "/".join(missing))
+
+    defects = data.get("defects") or []
+    major = [d for d in defects if isinstance(d, dict) and d.get("level") == "major"]
+    if major:
+        ok = False
+        reasons.append("存在 %d 处严重缺陷(影响安全/重大使用), 须整改后再收房" % len(major))
+
+    red = data.get("red_line_found")
+    if red is True:
+        ok = False
+        reasons.append("发现红线项(结构/电路隐蔽/渗漏责任不清等), 须转交持证专业人士确认, 勿自行下结论")
+
+    if not defects and not red and not missing:
+        reasons.append("未发现缺陷且分区齐全, 记录可作为可收房参考(仍建议专业复核)")
+
+    if ok:
+        reasons.append("验房记录通过: 分区齐全且无严重缺陷/红线项")
+    return ok, reasons
+
+
+def load_json(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def selftest():
+    passed = 0
+
+    # 1. 正例: 六区齐全, 仅 1 轻微缺陷 -> 通过
+    ok, rs = evaluate({
+        "checked_zones": ALL_ZONES, "red_line_found": False,
+        "defects": [{"zone": "wall", "level": "minor", "red_line": False}],
+    })
+    assert ok is True, "正例应通过: %s" % rs
+    passed += 1
+
+    # 2. 反例: 漏查分区 -> 必须不合格
+    ok, rs = evaluate({
+        "checked_zones": ["door", "wall"], "red_line_found": False, "defects": [],
+    })
+    assert ok is False, "漏查分区必须判不合格"
+    assert any("未检查分区" in r for r in rs), "漏查原因缺失: %s" % rs
+    passed += 1
+
+    # 3. 反例: 严重缺陷 -> 必须不合格
+    ok, rs = evaluate({
+        "checked_zones": ALL_ZONES, "red_line_found": False,
+        "defects": [{"zone": "electric", "level": "major", "red_line": False}],
+    })
+    assert ok is False, "严重缺陷必须判不合格"
+    assert any("严重缺陷" in r for r in rs), "严重原因缺失: %s" % rs
+    passed += 1
+
+    # 4. 反例: 红线项 -> 必须不合格
+    ok, rs = evaluate({
+        "checked_zones": ALL_ZONES, "red_line_found": True, "defects": [],
+    })
+    assert ok is False, "红线项必须判不合格"
+    assert any("转交" in r for r in rs), "红线原因缺失: %s" % rs
+    passed += 1
+
+    # 5. 反例: 既漏查又有严重 -> 必须不合格且含两项
+    ok, rs = evaluate({
+        "checked_zones": ["door"], "red_line_found": False,
+        "defects": [{"zone": "wall", "level": "major", "red_line": False}],
+    })
+    assert ok is False, "多重缺陷必须判不合格"
+    assert any("未检查分区" in r for r in rs) and any("严重缺陷" in r for r in rs), "应含两项: %s" % rs
+    passed += 1
+
+    # 6. 反例: 空记录(无分区) -> 必须不合格
+    ok, rs = evaluate({})
+    assert ok is False, "空记录必须判不合格"
+    passed += 1
+
+    # 7. 反例: 严重缺陷被错标为 minor 仍应被识别 -> 这里故意标 general 不算 major
+    ok, rs = evaluate({
+        "checked_zones": ALL_ZONES, "red_line_found": False,
+        "defects": [{"zone": "wall", "level": "general", "red_line": False}],
+    })
+    # general 不触发严重, 但分区齐全无红线 -> 通过
+    assert ok is True, "一般缺陷不应阻断收房: %s" % rs
+    passed += 1
+
+    # 8. 反例: red_line_found 非布尔 True -> 不触发红线
+    ok, rs = evaluate({
+        "checked_zones": ALL_ZONES, "red_line_found": "yes", "defects": [],
+    })
+    assert ok is True, "非 True 红线不触发: %s" % rs
+    passed += 1
+
+    # 9. BOM 处理
+    here = os.path.dirname(os.path.abspath(__file__))
+    bom_path = os.path.join(here, "_bom_sample.json")
+    payload = json.dumps({
+        "checked_zones": ALL_ZONES, "red_line_found": False, "defects": [],
+    }, ensure_ascii=False)
+    with open(bom_path, "wb") as f:
+        f.write(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+    d = load_json(bom_path)
+    assert d.get("red_line_found") is False, "BOM 输入 key 不应带 \﻿"
+    assert "checked_zones" in d, "BOM 输入 key 必须干净"
+    os.remove(bom_path)
+    passed += 1
+
+    # 10. 边界: 六区齐全无缺陷无红线 -> 通过
+    ok, rs = evaluate({
+        "checked_zones": ALL_ZONES, "red_line_found": False, "defects": [],
+    })
+    assert ok is True, "齐全无缺陷应通过: %s" % rs
+    passed += 1
+
+    line = "SELFTEST OK (%d assertions)" % passed
+    return line, passed
+
+
+def main():
+    ap = argparse.ArgumentParser(description="二手房验房记录校验")
+    ap.add_argument("--file", help="验房记录 JSON")
+    ap.add_argument("--selftest", action="store_true", help="内置自检")
+    args = ap.parse_args()
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        line, total = selftest()
+        with open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        print(line)
+        return 0 if line.startswith("SELFTEST OK") else 1
+
+    if args.file:
+        try:
+            data = load_json(args.file)
+        except Exception as e:  # noqa: BLE001
+            msg = "读取失败: %s" % e
+            with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            print(msg)
+            return 1
+        ok, reasons = evaluate(data)
+        out = ("PASS " if ok else "FAIL ") + "；".join(reasons)
+        with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+            f.write(out + "\n")
+        print(out)
+        return 0 if ok else 1
+
+    print("需要 --file 或 --selftest")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

@@ -1,0 +1,120 @@
+PASS P01 norm 去空格
+PASS P02 norm 全角括号
+PASS P03 filled 空
+PASS P04 filled 斜杠提示串
+PASS P05 filled 待填开头
+PASS P06 filled 真值
+PASS P07 parse_num 整数
+PASS P08 parse_num 带符号与千分位
+PASS P09 parse_num 文字取 None
+PASS P10 pct_num 百分号
+PASS P11 pct_num 倍数换算
+PASS P12 pct_num 无数字
+PASS P13 fmt_num 去 .0
+PASS P14 fmt_num None
+PASS P15 money 前缀
+PASS P16 yes 是
+PASS P17 no 否
+PASS P18 unknown 不清楚
+PASS P19 parse_date ISO
+PASS P20 parse_date 中文
+PASS P21 parse_date 空
+PASS P22 build_kv 表格行
+PASS P23 build_kv 冒号行
+PASS P24 get_text 保留表头列
+PASS P25 get_text 最长别名优先
+PASS P26 get_text 未命中空串
+PASS P27 base_date 空取今天
+PASS P28 base_date 指定
+PASS C01 detect 关门跑路
+PASS C02 detect 迁址
+PASS C03 detect 转让不承接
+PASS C04 detect 教练不符
+PASS C05 detect 健康原因
+PASS C06 detect 单纯不想用
+PASS C07 detect 未填
+PASS C08 clause_flags 命中概不退费
+PASS C09 clause_flags 命中最终解释权
+PASS C10 clause_flags 命中单方变更
+PASS C11 clause_flags 余额过期作废不命中
+PASS C12 clause_flags 空协议为空
+PASS F01 calc 天数口径识别
+PASS F02 calc 赠送摊薄单价
+PASS F03 calc 已消耗=单价×已用
+PASS F04 calc 未履行部分
+PASS F05 calc 挂牌口径对照
+PASS F06 calc 课时口径识别
+PASS F07 calc 课时单价含赠送摊薄
+PASS F08 calc 课时已消耗
+PASS F09 calc 缺数返回未知
+PASS F10 calc 赠送使单价下降
+PASS F11 penalty 经营者违约=0
+PASS F12 penalty 健康原因 None
+PASS F13 penalty 按约定比例
+PASS F14 penalty 未填比例按 20% 参考
+PASS F15 penalty 未约定=0
+PASS F16 penalty 未履行未知时待补正
+PASS F17 penalty_calc 应退=未履行-违约金
+PASS C13 cooling 有规定但缺购卡日期
+PASS C14 cooling 有规定且已过期
+PASS C15 cooling 期内未消费=通过
+PASS C16 cooling 期内已消费=有风险
+PASS C17 cooling 未填=待补正
+PASS C18 cooling 填无=待补正
+PASS C19 cooling 文案含以当地为准
+PASS F18 path_order 默认四步
+PASS F19 path_order s1 增加查主体
+PASS F20 path_order s3 增加主张原经营者
+PASS F21 path_order 分期贷追加第五步
+PASS F22 path_order 无分期贷不加步
+PASS F23 todo_list 含书面申请留痕
+PASS F24 todo_list 分期贷含联系贷款机构
+PASS F25 evidence_rows 九项
+PASS F26 evidence_rows 办卡合同=是
+PASS F27 evidence_rows 书面交涉记录=否
+PASS F28 evidence_rows 只判有/否不臆断
+PASS R01 样例 rc=0
+PASS R02 样例无异常输出
+PASS R03 样例含结论摘要
+PASS R04 样例章节数>=9
+PASS R05 样例含待办补正动作
+PASS R06 样例含边界与纪律
+PASS R07 样例含退费测算段
+PASS R08 样例识别关闭跑路
+PASS R09 样例给出应退金额
+PASS R10 样例给出未履行部分
+PASS R11 样例标出无效格式条款
+PASS R12 样例提示分期贷风险
+PASS R13 样例冷静期判定
+PASS R14 样例无【待填】泄漏
+PASS R15 样例无乱码
+PASS R16 样例提示以当地为准
+PASS R17 样例列出资证缺口
+PASS R18 样例时效 3 年
+PASS R19 样例结尾免责
+PASS R20 样例金额无 .0 尾巴
+PASS R21 样例表格不裂
+PASS R22 样例识别卡种
+PASS R23 样例冷静期天数两处一致
+PASS J01 json rc=0
+PASS J02 json 可解析
+PASS J03 json 含测算键
+PASS J04 json 测算 应退=10240
+PASS J05 json 三类结论键
+PASS J06 json 待办非空
+PASS J07 json 退卡情形
+PASS J08 json 冷静期键
+PASS E01 空输入 rc=2
+PASS E02 空输入不崩
+PASS E03 空输入有输出
+PASS E04 空输入提示缺失
+PASS E05 空输入不臆造金额
+PASS E06 空输入 json 可解析
+PASS E07 空输入 json 解析不报错
+PASS E08 空输入不产生任何金额
+PASS T01 --out 落盘
+PASS T02 落盘内容含九段
+PASS T03 落盘无乱码
+PASS T04 落盘无【待填】
+PASS T05 落盘可重复覆盖
+== TOTAL PASS=119 FAIL=0 ==

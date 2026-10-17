@@ -1,0 +1,602 @@
+# -*- coding: utf-8 -*-
+"""烧烤腌制配方与时间核查：时长、含盐量、酸性与酶类上限、温度与卫生纪律。
+
+用法:
+  python bbq_marinade_check.py --file marinade.json [--out result.md] [--format json]
+  python bbq_marinade_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 食材: (键, 中文名, 腌制下限分钟, 腌制上限分钟, 备注)
+ITEMS = [
+    ('thin_slice', '薄肉片、肉串小块', 15, 30, '超过会让肉出水变紧'),
+    ('poultry_bone', '鸡翅、鸡腿、鸡爪', 120, 240, '带骨带皮，味道到骨边需要时间'),
+    ('duck_part', '鸭胸、鸭腿', 120, 240, '腥味重，可加少量料酒与姜'),
+    ('prawn_seafood', '虾、贝、鱼片', 10, 20, '超时出水变紧，海鲜尤其敏感'),
+    ('steak_lamb', '牛排、羊排、肉块', 30, 120, '厚切取上限，薄切按下限'),
+    ('big_cut', '整鸡腿、整扇排骨、大块猪颈背', 480, 1440, '长时间腌制要把含盐量压到 0.8 至 1.0'),
+    ('veg', '蔬菜、菌菇', 0, 10, '撒早了会大量出水，烤出来是煮不是烤'),
+]
+
+ITEM_MAP = dict((r[0], r) for r in ITEMS)
+
+# 含盐量区间（按肉重百分比）
+SALT = {'min': 0.8, 'max': 1.5, 'long_cut_max': 1.0}
+
+# 酸性腌料上限分钟
+ACID_LIMIT = {'default': 120, 'seafood': 30}
+SEAFOOD_KINDS = ('prawn_seafood',)
+
+# 酶类嫩肉上限分钟
+ENZYME_LIMIT = 30
+
+# 冷藏与室温纪律
+FRIDGE = {'min': 0.0, 'max': 4.0}
+ROOM_MINUTES_MAX = 30
+REST_MIN = 15
+
+# 中心温度要求: (键, 中文名, 要求摄氏度)
+MEAT_CLASS = [
+    ('poultry', '禽肉与肉馅类', 75.0),
+    ('red', '猪牛羊肉块与肉饼', 71.0),
+]
+
+MEAT_CLASS_MAP = dict((m[0], m) for m in MEAT_CLASS)
+
+# 卫生检查项: (键, 中文名, 合格口径, 不合格原因)
+HYGIENE = [
+    ('two_bowls', '腌生肉与刷酱分两个碗',
+     '腌生肉的碗不拿来刷酱',
+     '拿腌过生肉的碗刷酱是最典型的交叉污染，酱是直接入口的，烤多高的温度也救不回来'),
+    ('leftover_boiled', '剩余腌料煮沸后使用',
+     '剩下的腌料煮沸之后才当酱',
+     '腌料里已有生肉汁液，不煮沸就是生的'),
+    ('skewer_soaked', '竹签已浸泡不少于 30 分钟',
+     '竹签下水浸泡不少于 30 分钟',
+     '干签子会烧断，还会让串好的肉掉进炭里并蹿起火苗把表面烤焦'),
+]
+
+# 六条明确禁止的操作
+BANNED = [
+    '用菠萝、木瓜、猕猴桃汁腌制超过 30 分钟',
+    '拿腌过生肉的碗直接刷酱',
+    '在室温下腌制超过 30 分钟',
+    '剩余的腌料不煮沸就当酱淋上去',
+    '含盐量超过 1.5 又长时间腌制',
+    '干竹签直接上烤炉',
+]
+
+LEVEL_HARD = '必须处理'
+LEVEL_WEAK = '存在薄弱环节'
+LEVEL_UNKNOWN = '待确认'
+LEVEL_OK = '操作规范'
+
+
+def num(v, name):
+    if v is None:
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        raise ValueError('%s 必须是数字' % name)
+
+
+def get_item(kind):
+    key = str(kind or '').strip().lower()
+    if key not in ITEM_MAP:
+        raise ValueError('未知的食材种类: %s，可选 %s 之一' % (kind, '/'.join(ITEM_MAP.keys())))
+    return ITEM_MAP[key]
+
+
+def check_items(items):
+    if items is None:
+        items = []
+    if not isinstance(items, list):
+        raise ValueError('items 必须是列表')
+    rows = []
+    hard = []
+    weak = []
+    for raw in items:
+        if not isinstance(raw, dict):
+            raise ValueError('items 的每一项必须是对象')
+        key, name, mn, mx, note = get_item(raw.get('kind'))
+        minutes = num(raw.get('marinate_minutes'), 'marinate_minutes')
+        salt = num(raw.get('salt_pct'), 'salt_pct')
+        acid = raw.get('acid')
+        enzyme = raw.get('enzyme')
+        label = raw.get('name') or name
+        rec = {'name': label, 'kind_name': name, 'note': note, 'minutes': minutes,
+               'range': '%d 至 %d' % (mn, mx), 'salt': salt}
+        problems = []
+        hard_p = False
+
+        if minutes is None:
+            rec['status'] = '未检查'
+            rec['why'] = '缺少腌制分钟，无法判定'
+            rows.append(rec)
+            continue
+
+        if minutes < mn:
+            problems.append('腌制 %g 分钟低于该类食材下限 %d 分钟，中心不入味' % (minutes, mn))
+            weak.append(label)
+        elif minutes > mx:
+            problems.append('腌制 %g 分钟高于该类食材上限 %d 分钟，会让肉出水变紧、表面发柴' % (minutes, mx))
+            weak.append(label)
+
+        if salt is None:
+            rec['status'] = '未检查'
+            rec['why'] = '缺少含盐量，无法判定咸度'
+            rows.append(rec)
+            continue
+        if minutes > 240 and salt > SALT['long_cut_max']:
+            problems.append('长时间腌制配合含盐 %g，已超过长时间腌制的 1.0 上限，成品会明显偏咸' % salt)
+            hard_p = True
+        elif salt < SALT['min']:
+            problems.append('含盐 %g 低于 0.8 下限，入味不足、中心寡淡' % salt)
+            weak.append(label)
+        elif salt > SALT['max']:
+            problems.append('含盐 %g 高于 1.5 上限，偏咸且腌制时间越长越咸' % salt)
+            hard_p = True
+
+        if enzyme and str(enzyme).strip().lower() != 'none':
+            if minutes > ENZYME_LIMIT:
+                problems.append('使用酶类嫩肉并腌制 %g 分钟，超过 30 分钟上限，肌肉纤维会被分解到发粉发糊' % minutes)
+                hard_p = True
+
+        if acid and str(acid).strip().lower() != 'none':
+            limit = ACID_LIMIT['seafood'] if key in SEAFOOD_KINDS else ACID_LIMIT['default']
+            if minutes > limit:
+                problems.append('使用酸性腌料并腌制 %g 分钟，超过该类 %d 分钟上限，会把蛋白质变性到发渣松散'
+                                % (minutes, limit))
+                hard_p = True
+
+        if problems:
+            rec['status'] = '不合格'
+            rec['why'] = '；'.join(problems)
+            if hard_p:
+                hard.append(label)
+        else:
+            rec['status'] = '合格'
+            rec['why'] = '时长、含盐量与酸酶上限都符合该类食材的口径'
+        rows.append(rec)
+    return rows, hard, weak
+
+
+def check_hygiene(flags):
+    if flags is None:
+        flags = {}
+    if not isinstance(flags, dict):
+        raise ValueError('hygiene 必须是对象')
+    keys = [h[0] for h in HYGIENE]
+    for k in flags:
+        if str(k).strip().lower() not in keys:
+            raise ValueError('未知的卫生项: %s，可选项见 HYGIENE 表' % k)
+    rows = []
+    hard = []
+    unk = []
+    for key, name, ok_desc, why in HYGIENE:
+        v = flags.get(key)
+        if v is None:
+            rows.append({'name': name, 'status': '未检查', 'desc': ok_desc, 'why': why})
+            unk.append(name)
+        elif v:
+            rows.append({'name': name, 'status': '合格', 'desc': ok_desc, 'why': why})
+        else:
+            rows.append({'name': name, 'status': '不合格', 'desc': ok_desc, 'why': why})
+            hard.append(name)
+    return rows, hard, unk
+
+
+def calc(data):
+    if not isinstance(data, dict):
+        raise ValueError('输入必须是 JSON 对象')
+
+    rows, hard_items, weak_items = check_items(data.get('items'))
+    hyg_rows, hyg_hard, hyg_unk = check_hygiene(data.get('hygiene'))
+
+    fridge = num(data.get('fridge_temp'), 'fridge_temp')
+    fridge_row = None
+    fridge_hard = False
+    if fridge is None:
+        fridge_row = {'status': '未检查', 'why': '未提供冷藏温度'}
+    elif fridge > FRIDGE['max']:
+        fridge_row = {'value': fridge, 'status': '不合格',
+                      'why': '冷藏 %.1f 摄氏度高于 4 摄氏度上限，细菌繁殖速度明显上升' % fridge}
+        fridge_hard = True
+    elif fridge < FRIDGE['min']:
+        fridge_row = {'value': fridge, 'status': '不合格',
+                      'why': '冷藏 %.1f 摄氏度低于 0 摄氏度，已冻结状态不适合腌制入味' % fridge}
+        fridge_hard = True
+    else:
+        fridge_row = {'value': fridge, 'status': '合格', 'why': '落在 0 至 4 摄氏度区间'}
+
+    room = num(data.get('room_temp_minutes'), 'room_temp_minutes')
+    room_row = None
+    room_hard = False
+    if room is None:
+        room_row = {'status': '未检查', 'why': '未提供室温操作时长'}
+    elif room > ROOM_MINUTES_MAX:
+        room_row = {'value': room, 'status': '不合格',
+                    'why': '室温操作 %g 分钟超过 30 分钟上限，这是腌制环节最容易失守的地方' % room}
+        room_hard = True
+    else:
+        room_row = {'value': room, 'status': '合格', 'why': '室温操作在 30 分钟以内'}
+
+    cls = data.get('meat_class')
+    center = num(data.get('target_center_temp'), 'target_center_temp')
+    center_row = None
+    center_hard = False
+    if cls is not None and cls not in MEAT_CLASS_MAP:
+        raise ValueError('未知的肉种类别: %s，可选 %s 之一' % (cls, '/'.join(MEAT_CLASS_MAP.keys())))
+    ckey, cname, creq = MEAT_CLASS_MAP.get(cls, (None, None, None))
+    if center is None or cls is None:
+        center_row = {'status': '未检查', 'why': '缺少肉种类别或中心温度实测值'}
+    elif center < creq:
+        center_row = {'value': center, 'status': '不合格',
+                      'why': '%s要求中心温度不低于 %.0f 摄氏度，实测 %.1f 摄氏度属于未熟透'
+                             % (cname, creq, center)}
+        center_hard = True
+    else:
+        center_row = {'value': center, 'status': '合格',
+                      'why': '%s达到 %.0f 摄氏度要求' % (cname, creq)}
+
+    rest = num(data.get('rest_minutes'), 'rest_minutes')
+    rest_row = None
+    rest_weak = False
+    if rest is None:
+        rest_row = {'status': '未检查', 'why': '未提供烤前回温时长'}
+    elif rest < REST_MIN:
+        rest_row = {'value': rest, 'status': '偏低',
+                    'why': '回温 %g 分钟少于 15 分钟，冰肉直接上火容易外焦里生' % rest}
+        rest_weak = True
+    else:
+        rest_row = {'value': rest, 'status': '合格', 'why': '已完成烤前回温'}
+
+    # 判定: 先看安全类真实缺陷, 再看口味类缺陷, 最后才看信息是否完整
+    if fridge_hard or room_hard or center_hard or hyg_hard or hard_items:
+        level = LEVEL_HARD
+    elif weak_items or rest_weak:
+        level = LEVEL_WEAK
+    elif (fridge is None or room is None or center is None or rest is None
+          or hyg_unk or any(x['status'] == '未检查' for x in rows)):
+        level = LEVEL_UNKNOWN
+    else:
+        level = LEVEL_OK
+
+    return {
+        'items_rows': rows,
+        'hard_items': hard_items,
+        'weak_items': weak_items,
+        'hyg_rows': hyg_rows,
+        'hyg_hard': hyg_hard,
+        'fridge_row': fridge_row,
+        'room_row': room_row,
+        'center_row': center_row,
+        'center_req': creq,
+        'center_class': cname,
+        'rest_row': rest_row,
+        'level': level,
+        'limits': {'salt': SALT, 'fridge': FRIDGE, 'room': ROOM_MINUTES_MAX,
+                   'enzyme': ENZYME_LIMIT, 'acid': ACID_LIMIT},
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 烧烤腌制核查结果')
+    L.append('')
+    L.append('**总体判定：%s**' % r['level'])
+    L.append('')
+    L.append('## 一、逐食材核查')
+    L.append('')
+    if not r['items_rows']:
+        L.append('未提供食材清单，无法核查腌制时长与含盐量。')
+    else:
+        L.append('| 食材 | 种类 | 腌制（分钟） | 推荐区间 | 含盐量 | 状态 |')
+        L.append('|---|---|---|---|---|---|')
+        for row in r['items_rows']:
+            L.append('| %s | %s | %s | %s | %s | %s |' % (
+                row['name'], row['kind_name'],
+                ('%g' % row['minutes']) if row['minutes'] is not None else '未填',
+                row['range'],
+                ('%g' % row['salt']) if row['salt'] is not None else '未填',
+                row['status']))
+        bad = [x for x in r['items_rows'] if x['status'] == '不合格']
+        if bad:
+            L.append('')
+            L.append('不合格项及原因：')
+            for row in bad:
+                L.append('- **%s**：%s' % (row['name'], row['why']))
+    L.append('')
+    L.append('含盐量口径：0.8 至 1.5（按肉重，含酱油折算）；腌制超过 4 小时的建议压到 0.8 至 1.0。')
+    L.append('')
+    L.append('## 二、温度与室温核查')
+    L.append('')
+    L.append('| 项目 | 状态 | 说明 |')
+    L.append('|---|---|---|')
+    if r['fridge_row'].get('value') is not None:
+        L.append('| 冷藏腌制温度（摄氏度） | %s | %s |' % (r['fridge_row']['status'], r['fridge_row']['why']))
+    else:
+        L.append('| 冷藏腌制温度（摄氏度） | %s | %s |' % (r['fridge_row']['status'], r['fridge_row']['why']))
+    if r['room_row'].get('value') is not None:
+        L.append('| 室温操作（分钟） | %s | %s |' % (r['room_row']['status'], r['room_row']['why']))
+    else:
+        L.append('| 室温操作（分钟） | %s | %s |' % (r['room_row']['status'], r['room_row']['why']))
+    L.append('')
+    L.append('口径：冷藏 0 至 4 摄氏度，室温操作累计不超过 30 分钟。')
+    L.append('')
+    L.append('## 三、中心温度与回温')
+    L.append('')
+    L.append('| 项目 | 状态 | 说明 |')
+    L.append('|---|---|---|')
+    L.append('| 中心温度 | %s | %s |' % (r['center_row']['status'], r['center_row']['why']))
+    L.append('| 烤前回温 | %s | %s |' % (r['rest_row']['status'], r['rest_row']['why']))
+    L.append('')
+    L.append('中心温度以**探针温度计插最厚处实测**为准，外观与手感不作为熟度依据。')
+    L.append('')
+    L.append('## 四、卫生检查项')
+    L.append('')
+    L.append('| 检查项 | 状态 | 合格口径 | 不合格的原因 |')
+    L.append('|---|---|---|---|')
+    for row in r['hyg_rows']:
+        L.append('| %s | %s | %s | %s |' % (row['name'], row['status'], row['desc'], row['why']))
+    if r['hyg_hard']:
+        L.append('')
+        L.append('不合格项及原因：')
+        for row in r['hyg_rows']:
+            if row['status'] == '不合格':
+                L.append('- **%s**：%s' % (row['name'], row['why']))
+    L.append('')
+    L.append('## 五、六条明确禁止的操作')
+    L.append('')
+    for i, b in enumerate(BANNED, 1):
+        L.append('%d. %s' % (i, b))
+    L.append('')
+    L.append('## 六、人工确认清单')
+    L.append('')
+    L.append('- [ ] 每种食材的腌制时长都在对应区间内')
+    L.append('- [ ] 含盐量（含酱油折算）在 0.8 至 1.5 之间')
+    L.append('- [ ] 使用酶类嫩肉的，腌制不超过 30 分钟')
+    L.append('- [ ] 使用酸性腌料的，腌制未超过对应上限')
+    L.append('- [ ] 腌制全程在 0 至 4 摄氏度冷藏，室温操作不超过 30 分钟')
+    L.append('- [ ] 腌生肉的碗和刷酱的碗是两个碗')
+    L.append('- [ ] 剩余腌料当酱前已煮沸')
+    L.append('- [ ] 竹签已浸泡不少于 30 分钟')
+    L.append('- [ ] 烤前回温 15 至 20 分钟')
+    L.append('- [ ] 探针实测最厚处中心温度达到要求')
+    L.append('')
+    L.append('## 七、免责')
+    L.append('')
+    L.append('本结果为家庭烧烤方法论整理，不检测致病菌、不判断肉是否变质，不构成食品安全判定结论。')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    base = {
+        'items': [{'name': '鸡翅中', 'kind': 'poultry_bone', 'marinate_minutes': 180,
+                   'salt_pct': 1.2, 'acid': 'none', 'enzyme': 'none'}],
+        'hygiene': {'two_bowls': True, 'leftover_boiled': True, 'skewer_soaked': True},
+        'fridge_temp': 3,
+        'room_temp_minutes': 20,
+        'meat_class': 'poultry',
+        'target_center_temp': 75,
+        'rest_minutes': 15,
+    }
+
+    # 1 正例
+    r1 = calc(base)
+    ck(r1['level'] == LEVEL_OK, '正例应为操作规范，实为 %s' % r1['level'])
+    ck(r1['items_rows'][0]['status'] == '合格', '鸡翅腌 180 分钟含盐 1.2 应判合格')
+
+    # 2 反例: 冷藏温度超标
+    r2 = calc(dict(base, fridge_temp=7))
+    ck(r2['level'] == LEVEL_HARD, '冷藏 7 度应判必须处理，实为 %s' % r2['level'])
+    ck(r2['fridge_row']['status'] == '不合格', '冷藏项应判不合格')
+    ck('细菌繁殖' in r2['fridge_row']['why'], '必须带出为什么，实为 %s' % r2['fridge_row']['why'])
+
+    # 3 反例: 室温超时
+    r3 = calc(dict(base, room_temp_minutes=45))
+    ck(r3['level'] == LEVEL_HARD, '室温 45 分钟应判必须处理，实为 %s' % r3['level'])
+    ck('最容易失守' in r3['room_row']['why'], '必须说明这是最易失守项，实为 %s' % r3['room_row']['why'])
+
+    # 4 反例: 酶类超时
+    r4 = calc(dict(base, items=[{'name': '牛肉', 'kind': 'steak_lamb',
+                                 'marinate_minutes': 300, 'salt_pct': 1.0,
+                                 'acid': 'none', 'enzyme': 'pineapple'}]))
+    ck(r4['level'] == LEVEL_HARD, '菠萝汁腌 300 分钟应判必须处理，实为 %s' % r4['level'])
+    ck('发粉发糊' in r4['items_rows'][0]['why'], '必须说明会发粉发糊，实为 %s' % r4['items_rows'][0]['why'])
+
+    # 5 酶类在限内应合格
+    r5 = calc(dict(base, items=[{'name': '牛肉片', 'kind': 'thin_slice',
+                                 'marinate_minutes': 25, 'salt_pct': 1.0,
+                                 'acid': 'none', 'enzyme': 'pineapple'}]))
+    ck(r5['items_rows'][0]['status'] == '合格', '菠萝汁腌 25 分钟应判合格，实为 %s' % r5['items_rows'][0]['status'])
+
+    # 6 反例: 酸性腌料超时
+    r6 = calc(dict(base, items=[{'name': '鸡翅', 'kind': 'poultry_bone',
+                                 'marinate_minutes': 200, 'salt_pct': 1.0,
+                                 'acid': 'vinegar', 'enzyme': 'none'}]))
+    ck('发渣' in r6['items_rows'][0]['why'], '酸性超时必须说明发渣，实为 %s' % r6['items_rows'][0]['why'])
+    ck(r6['level'] == LEVEL_HARD, '酸性超时应判必须处理，实为 %s' % r6['level'])
+    r6b = calc(dict(base, items=[{'name': '虾', 'kind': 'prawn_seafood',
+                                  'marinate_minutes': 45, 'salt_pct': 1.0,
+                                  'acid': 'lemon', 'enzyme': 'none'}]))
+    ck('30 分钟上限' in r6b['items_rows'][0]['why'], '海鲜酸上限应为 30 分钟，实为 %s' % r6b['items_rows'][0]['why'])
+
+    # 7 反例: 海鲜腌制过久
+    r7 = calc(dict(base, items=[{'name': '虾', 'kind': 'prawn_seafood',
+                                 'marinate_minutes': 300, 'salt_pct': 1.0,
+                                 'acid': 'none', 'enzyme': 'none'}]))
+    ck(r7['items_rows'][0]['status'] == '不合格', '虾腌 300 分钟应判不合格')
+    ck('出水变紧' in r7['items_rows'][0]['why'], '必须说明会出水变紧，实为 %s' % r7['items_rows'][0]['why'])
+
+    # 8 反例: 长时间腌制含盐偏高
+    r8 = calc(dict(base, items=[{'name': '大排', 'kind': 'big_cut',
+                                 'marinate_minutes': 720, 'salt_pct': 1.4,
+                                 'acid': 'none', 'enzyme': 'none'}]))
+    ck(r8['level'] == LEVEL_HARD, '腌 12 小时含盐 1.4 应判必须处理，实为 %s' % r8['level'])
+    ck('偏咸' in r8['items_rows'][0]['why'], '必须说明偏咸，实为 %s' % r8['items_rows'][0]['why'])
+    r8b = calc(dict(base, items=[{'name': '大排', 'kind': 'big_cut',
+                                  'marinate_minutes': 720, 'salt_pct': 0.9,
+                                  'acid': 'none', 'enzyme': 'none'}]))
+    ck(r8b['items_rows'][0]['status'] == '合格', '长时间腌含盐 0.9 应判合格')
+
+    # 9 反例: 含盐过低与过高
+    r9 = calc(dict(base, items=[{'name': '肉片', 'kind': 'thin_slice',
+                                 'marinate_minutes': 25, 'salt_pct': 0.5,
+                                 'acid': 'none', 'enzyme': 'none'}]))
+    ck('入味不足' in r9['items_rows'][0]['why'], '含盐 0.5 应说明入味不足')
+    r9b = calc(dict(base, items=[{'name': '肉片', 'kind': 'thin_slice',
+                                  'marinate_minutes': 25, 'salt_pct': 2.0,
+                                  'acid': 'none', 'enzyme': 'none'}]))
+    ck('偏咸' in r9b['items_rows'][0]['why'], '含盐 2.0 应说明偏咸')
+
+    # 10 反例: 中心温度不足
+    r10 = calc(dict(base, target_center_temp=68))
+    ck(r10['level'] == LEVEL_HARD, '禽肉中心 68 度应判必须处理，实为 %s' % r10['level'])
+    ck('未熟透' in r10['center_row']['why'], '必须说明未熟透，实为 %s' % r10['center_row']['why'])
+    r10b = calc(dict(base, meat_class='red', target_center_temp=71))
+    ck(r10b['center_row']['status'] == '合格', '猪牛羊肉饼 71 度应判合格')
+
+    # 11 反例: 同碗蘸刷
+    r11 = calc(dict(base, hygiene={'two_bowls': False, 'leftover_boiled': True, 'skewer_soaked': True}))
+    ck(r11['level'] == LEVEL_HARD, '同碗蘸刷应判必须处理，实为 %s' % r11['level'])
+    ck('腌生肉与刷酱分两个碗' in r11['hyg_hard'], '应点名分碗项，实为 %s' % r11['hyg_hard'])
+    r11b = calc(dict(base, hygiene={'two_bowls': True, 'leftover_boiled': False, 'skewer_soaked': True}))
+    ck('剩余腌料煮沸后使用' in r11b['hyg_hard'], '应点名剩余腌料项，实为 %s' % r11b['hyg_hard'])
+
+    # 12 竹签未泡
+    r12 = calc(dict(base, hygiene={'two_bowls': True, 'leftover_boiled': True, 'skewer_soaked': False}))
+    ck('竹签已浸泡不少于 30 分钟' in r12['hyg_hard'], '竹签未泡应被点名，实为 %s' % r12['hyg_hard'])
+
+    # 13 回温不足只算薄弱环节
+    r13 = calc(dict(base, rest_minutes=5))
+    ck(r13['level'] == LEVEL_WEAK, '回温不足应判薄弱环节，实为 %s' % r13['level'])
+
+    # 14 判定分支顺序: 真实缺陷不能被信息不全压成待确认
+    r14 = calc(dict(base, room_temp_minutes=45, rest_minutes=None))
+    ck(r14['level'] == LEVEL_HARD, '室温超标且缺回温数据仍应判必须处理，实为 %s' % r14['level'])
+    r14b = calc(dict(base, target_center_temp=None))
+    ck(r14b['level'] == LEVEL_UNKNOWN, '无缺陷但缺中心温度应判待确认，实为 %s' % r14b['level'])
+
+    # 15 BOM 两条路径
+    bom_text = '﻿' + json.dumps(dict(base, fridge_temp=8))
+    r15 = calc(json.loads(bom_text.lstrip('﻿')))
+    ck(r15['level'] == LEVEL_HARD, 'BOM 字符串应能正确解析，实为 %s' % r15['level'])
+    ck(r15['fridge_row']['value'] == 8.0, 'BOM 输入冷藏应为 8，实为 %s' % r15['fridge_row']['value'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe_bbq.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps(dict(base, items=[{'name': '羊肉串', 'kind': 'steak_lamb',
+                                              'marinate_minutes': 60, 'salt_pct': 1.0,
+                                              'acid': 'none', 'enzyme': 'none'}])))
+    try:
+        loaded = json.loads(open(tmp, 'r', encoding='utf-8-sig').read())
+        r15b = calc(loaded)
+        ck(r15b['items_rows'][0]['kind_name'] == '牛排、羊排、肉块',
+           'utf-8-sig 读取应拿到牛排羊排，实为 %s' % r15b['items_rows'][0]['kind_name'])
+        ck(r15b['level'] == LEVEL_OK, '羊排腌 60 分钟含盐 1.0 应判操作规范，实为 %s' % r15b['level'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 16 非法输入必须报错
+    for payload, why in (
+        ({'items': [{'kind': 'unknown', 'marinate_minutes': 10, 'salt_pct': 1.0}]}, '未知种类'),
+        ({'items': '不是列表'}, '食材非列表'),
+        ({'hygiene': {'拼错的项': True}}, '未知卫生项'),
+        ({'meat_class': 'fish'}, '未知肉种类别'),
+        ({'fridge_temp': '很冷'}, '温度非数字'),
+        ({'hygiene': '不是对象'}, '卫生项非对象'),
+    ):
+        try:
+            calc(payload)
+            ck(False, '用例16 %s 应抛错却通过' % why)
+        except ValueError:
+            ck(True, '')
+        except Exception as e:
+            ck(False, '用例16 %s 应抛 ValueError，实为 %s' % (why, e))
+
+    # 17 输出结构与表规模
+    md = render_md(r4)
+    for key in ('总体判定', '逐食材核查', '温度与室温核查', '中心温度与回温',
+                '卫生检查项', '六条明确禁止的操作', '人工确认清单', '免责'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(ITEMS) == 7, '食材种类应 7 类，实为 %d' % len(ITEMS))
+    ck(len(BANNED) == 6, '禁止项应 6 条，实为 %d' % len(BANNED))
+    ck(ENZYME_LIMIT == 30, '酶类上限应为 30 分钟')
+    ck(ACID_LIMIT['seafood'] == 30, '海鲜酸上限应为 30 分钟')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    if errs:
+        msg = 'SELFTEST FAIL\n' + '\n'.join(errs)
+    else:
+        msg = ('SELFTEST OK\n断言数: %d\n覆盖: 正例/冷藏超标/室温超时/酶类超时与合格/酸性超时与海鲜上限/'
+               '海鲜腌制过久/长时间腌含盐偏高/含盐过低过高/中心温度不足与区分/同碗蘸刷与剩余腌料/'
+               '竹签未泡/回温不足/判定分支顺序/BOM 两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='烧烤腌制配方与时间核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    target = a.out or os.path.join(os.path.dirname(os.path.abspath(__file__)), '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+
+

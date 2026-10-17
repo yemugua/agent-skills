@@ -1,0 +1,437 @@
+# -*- coding: utf-8 -*-
+"""冰箱除霜与化霜周期核查：按结霜厚度给出化霜必要性、周期建议与安全做法校验。
+
+用法:
+  python defrost_check.py --file defrost.json [--out result.md] [--format json]
+  python defrost_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 结霜厚度分档: (键, 中文名, 下限毫米, 上限毫米, 等级, 影响, 处置)
+ICE_TIERS = [
+    ('light', '轻度结霜', 0, 5, '正常', '制冷效率基本不受影响，无需化霜',
+     '保持现状，日常擦拭即可'),
+    ('moderate', '中度结霜', 5, 10, '开始影响', '制冷效率下降，耗电增加，制冷速度变慢',
+     '安排化霜，建议一周内完成'),
+    ('heavy', '重度结霜', 10, 20, '明显影响', '耗电显著增加，压缩机负荷加重，温差加大',
+     '尽快化霜，建议三天内完成'),
+    ('severe', '严重结霜', 20, 10000, '必须化霜',
+     '冷凝管被冰壳包覆，制冷能力大幅下降，可能缩短压缩机寿命并增加用电',
+     '立即安排化霜，不要继续累积'),
+]
+
+# 化霜周期建议: (使用强度键, 中文名, 建议周期月, 说明)
+CYCLE = [
+    ('light_use', '轻度使用', 12,
+     '一到两人、开门少、冷藏为主，蒸发器结霜慢，可半年到一年化一次'),
+    ('normal_use', '一般使用', 6,
+     '三口之家、每日开门数次，冷冻与冷藏并用，建议半年化一次'),
+    ('heavy_use', '高频使用', 3,
+     '四人及以上、频繁开关、存取大量生鲜，建议每季度化一次'),
+    ('intensive', '极高频使用', 2,
+     '商用强度或频繁大量存取，化霜周期应进一步缩短并考虑增加化霜次数'),
+]
+
+# 绝对禁止的操作
+FORBIDDEN = [
+    ('凿', '严禁用刀凿或任何尖锐工具撬刮冷冻室结冰',
+     '极易刺穿内胆或制冷剂铜管，一旦破损制冷剂泄漏，只能由专业维修处理，且维修费用高昂'),
+    ('hot_water', '严禁用热水浇淋或冲淋冷冻室',
+     '内外温差过大会导致内胆开裂、塑料件变形，且会使冷冻室食品局部解冻后再次冻结，'
+     '加速食品变质'),
+    ('hairdryer', '严禁用热风枪、电吹风等加热设备对着内胆吹',
+     '局部高温同样可能损伤内胆与管路，且加热不均造成风险'),
+    ('pry', '严禁强行撬开被冰粘住的抽屉或门封',
+     '用力撬会撕裂门封条与塑料内胆，导致密封失效与漏冷'),
+    ('force_power', '严禁在结冰未清除时反复通电测试',
+     '结冰会迫使压缩机高负荷持续运转，缩短压缩机寿命并显著耗电'),
+    ('hot_water_food', '严禁用热水直接冲淋冷冻室内的食品',
+     '局部升温后再次冻结，破坏食品品质并增加微生物繁殖风险'),
+]
+
+# 正确的化霜做法步骤
+CORRECT_STEPS = [
+    '断电：拔掉插头或关闭电源开关，不要只调制冷开关',
+    '开门静置：打开冷冻室门，让空气自然流通，等待冰层自然融化',
+    '放置接水：门体下垫毛巾或放置接水盆，防止融水流入电器或地面',
+    '温水辅助：可在冷冻室**内胆**外侧或门体放置温水容器辅助，'
+    '但**严禁直接浇淋内胆或管路**',
+    '清理化霜水：融化后用干布擦拭内壁与排水口，保持排水通畅',
+    '擦干确认：内胆与门封彻底擦干，排水孔无堵塞',
+    '回温后再通电：静置 1 至 2 小时让内部回温，再通电',
+    '通电后确认：放置温度计，确认温度稳定回落到正常范围后再放回食品',
+    '记录：记下化霜日期，作为下一次化霜的基准',
+]
+
+# 化霜期间食品处理
+FOOD_RULE = [
+    '化霜前把食品**转移到保温箱或保温袋**中，尽量减少温度波动',
+    '化霜时间控制在**数小时内完成**，不要一放就是一两天',
+    '已解冻的生鲜**不要再次冷冻**，按当次吃完处理',
+    '已解冻但仍冰冷的食品可冷藏，但**保存期按已解冻口径缩短**',
+    '冰块可保留，用于后续冷藏降温',
+    '化霜结束后**确认温度恢复**再放回食品，避免温升导致变质',
+]
+
+# 回温等待要求
+WAIT_NOTE = (
+    '化霜完成后建议静置 1 至 2 小时再通电，让内部温度回温，'
+    '避免刚放回的食品被骤冷表面激冷。'
+    '更重要的是：**通电后必须确认温度稳定回落到正常范围，才能放回食品**。'
+    '刚通电时内部温度尚未下降，直接放回食品会让温控系统长时间高负荷运转。'
+)
+
+# 转专业维修的情形
+PROFESSIONAL = [
+    '除霜后制冷效果**仍未恢复**，或恢复后很快又结厚霜',
+    '冷冻室内胆有**裂纹、破损或渗水**',
+    '发现制冷管路有**油渍渗出**，可能制冷剂泄漏',
+    '排水孔**完全堵塞**且无法疏通，融水积存在内胆',
+    '压缩机有**异常噪音、持续震动或频繁启停**',
+    '化霜过程中听到**异响或闻到焦糊味**',
+    '冰箱整体异常结霜（如只有一角结霜严重），可能为系统问题',
+]
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def tier_of(mm):
+    if mm is None:
+        raise ValueError('缺少 ice_mm（结霜厚度，单位毫米）')
+    v = float(mm)
+    if v < 0:
+        raise ValueError('ice_mm 不能为负数')
+    for key, name, lo, hi, level, effect, action in ICE_TIERS:
+        if lo <= v < hi:
+            return key, name, level, effect, action
+    return ('severe', '严重结霜', '必须化霜', '制冷能力大幅下降', '立即安排化霜')
+
+
+def cycle_of(use):
+    u = norm(use)
+    for key, name, months, note in CYCLE:
+        if key == u:
+            return key, name, months, note
+    raise ValueError('usage 只能填 %s 之一' % '/'.join(c[0] for c in CYCLE))
+
+
+def calc(data):
+    mm = data.get('ice_mm')
+    key, name, level, effect, action = tier_of(mm)
+    ckey, cname, months, cnote = cycle_of(data.get('usage') or 'normal_use')
+
+    last = data.get('last_defrost')
+    days_since = data.get('days_since')
+    urgency = None
+    if days_since is not None:
+        d = float(days_since)
+        if d < 0:
+            raise ValueError('days_since 不能为负数')
+        ratio = d / (months * 30.0)
+        if ratio >= 1.0:
+            urgency = '已超出建议周期'
+        elif ratio >= 0.7:
+            urgency = '接近建议周期'
+        else:
+            urgency = '尚在建议周期内'
+
+    if level == '正常':
+        verdict = '无需化霜'
+    elif level == '开始影响':
+        verdict = '建议安排化霜'
+    elif level == '明显影响':
+        verdict = '应尽快化霜'
+    else:
+        verdict = '必须立即化霜'
+
+    if urgency == '已超出建议周期':
+        verdict = '必须立即化霜'
+
+    warns = []
+    if level != '正常':
+        warns.append('%s：%s，%s' % (name, effect, action))
+    if urgency == '已超出建议周期':
+        warns.append('距上次化霜已超过%s的建议周期 %d 个月，应尽快安排' % (cname, months))
+    elif urgency == '接近建议周期':
+        warns.append('距上次化霜已接近%s的建议周期 %d 个月，可提前安排' % (cname, months))
+    if level == '必须化霜' or urgency == '已超出建议周期':
+        warns.append('**严禁用刀凿、热水浇淋或热风枪加热内胆**，正确做法是断电后自然化霜')
+
+    return {
+        'ice_mm': mm,
+        'tier': key,
+        'tier_name': name,
+        'level': level,
+        'effect': effect,
+        'action': action,
+        'usage': ckey,
+        'usage_name': cname,
+        'cycle_months': months,
+        'cycle_note': cnote,
+        'last_defrost': last,
+        'days_since': days_since,
+        'urgency': urgency,
+        'verdict': verdict,
+        'warns': warns,
+        'tiers': [{'key': k, 'name': n, 'lo': lo, 'hi': hi, 'level': lv,
+                   'effect': e, 'action': a}
+                  for k, n, lo, hi, lv, e, a in ICE_TIERS],
+        'forbidden': [{'key': k, 'rule': r, 'why': w} for k, r, w in FORBIDDEN],
+        'steps': CORRECT_STEPS,
+        'food_rule': FOOD_RULE,
+        'wait_note': WAIT_NOTE,
+        'professional': PROFESSIONAL,
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 冰箱除霜与化霜周期核查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['verdict'])
+    L.append('')
+    L.append('| 项 | 值 |')
+    L.append('|---|---|')
+    L.append('| 结霜厚度 | %s 毫米 |' % r['ice_mm'])
+    L.append('| 厚度分档 | %s（%s） |' % (r['tier_name'], r['level']))
+    L.append('| 对制冷的影响 | %s |' % r['effect'])
+    L.append('| 处置建议 | %s |' % r['action'])
+    L.append('| 使用强度 | %s |' % r['usage_name'])
+    L.append('| 建议化霜周期 | %d 个月 |' % r['cycle_months'])
+    L.append('| 周期依据 | %s |' % r['cycle_note'])
+    L.append('| 距上次化霜 | %s 天 |' % (r['days_since'] if r['days_since'] is not None else '未填写'))
+    L.append('| 周期状态 | %s |' % (r['urgency'] if r['urgency'] else '未填写'))
+    L.append('')
+    L.append('## 二、结霜厚度分档表')
+    L.append('')
+    L.append('| 分档 | 厚度范围（毫米） | 等级 | 对制冷的影响 | 处置 |')
+    L.append('|---|---|---|---|---|')
+    for t in r['tiers']:
+        hi = t['hi'] if t['hi'] < 10000 else 10000
+        L.append('| %s | %d 至 %d | %s | %s | %s |'
+                 % (t['name'], t['lo'], hi, t['level'], t['effect'], t['action']))
+    L.append('')
+    L.append('## 三、绝对禁止的操作')
+    L.append('')
+    for f in r['forbidden']:
+        L.append('- **%s**' % f['rule'])
+        L.append('  - 为什么：%s' % f['why'])
+    L.append('')
+    L.append('## 四、正确的化霜做法')
+    L.append('')
+    for i, s in enumerate(r['steps'], 1):
+        L.append('%d. %s' % (i, s))
+    L.append('')
+    L.append('## 五、化霜期间的食品处理')
+    L.append('')
+    for f in r['food_rule']:
+        L.append('- %s' % f)
+    L.append('')
+    L.append('## 六、回温与放回食品')
+    L.append('')
+    L.append('- %s' % r['wait_note'])
+    L.append('')
+    L.append('## 七、提示')
+    L.append('')
+    if r['warns']:
+        for w in r['warns']:
+            L.append('- %s' % w)
+    else:
+        L.append('- 结霜厚度与周期均在正常范围，保持现状')
+    L.append('')
+    L.append('## 八、需转专业维修的情形')
+    L.append('')
+    for p in r['professional']:
+        L.append('- %s' % p)
+    L.append('')
+    L.append('## 九、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 化霜前已断电，不是只调制冷开关')
+    L.append('- [ ] 未使用刀凿、热水浇淋或热风枪')
+    L.append('- [ ] 门下已垫毛巾或放接水盆，融水未流入电器')
+    L.append('- [ ] 化霜后已擦干内胆并疏通排水孔')
+    L.append('- [ ] 静置回温 1 至 2 小时后才通电')
+    L.append('- [ ] 通电后确认温度回落，才放回食品')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    # 1 厚度分档边界
+    k1, n1, l1, _, _ = tier_of(3)
+    ck(k1 == 'light' and l1 == '正常', '3 毫米应属轻度，实为 %s/%s' % (k1, l1))
+    k2, _, l2, _, _ = tier_of(5)
+    ck(k2 == 'moderate', '5 毫米应属中度，实为 %s' % k2)
+    ck(l2 == '开始影响', '中度应为开始影响，实为 %s' % l2)
+    k3, _, l3, _, _ = tier_of(15)
+    ck(k3 == 'heavy' and l3 == '明显影响', '15 毫米应属重度，实为 %s/%s' % (k3, l3))
+    k4, _, l4, _, _ = tier_of(25)
+    ck(k4 == 'severe' and l4 == '必须化霜', '25 毫米应属严重，实为 %s/%s' % (k4, l4))
+
+    # 2 恰好边界值
+    ck(tier_of(10)[0] == 'heavy', '10 毫米应进入重度区间，实为 %s' % tier_of(10)[0])
+    ck(tier_of(0)[0] == 'light', '0 毫米应属轻度，实为 %s' % tier_of(0)[0])
+
+    # 3 判定结论
+    ck(calc({'ice_mm': 3})['verdict'] == '无需化霜', '轻度应无需化霜')
+    ck(calc({'ice_mm': 7})['verdict'] == '建议安排化霜', '中度应建议化霜')
+    ck(calc({'ice_mm': 15})['verdict'] == '应尽快化霜', '重度应尽快化霜')
+    ck(calc({'ice_mm': 30})['verdict'] == '必须立即化霜', '严重应立即化霜')
+
+    # 4 5 毫米是影响制冷的关键阈值
+    r4 = calc({'ice_mm': 5})
+    ck('制冷' in r4['effect'], '中度应说明对制冷的影响，实为 %s' % r4['effect'])
+    ck(any('一周内' in w for w in r4['warns']),
+       '中度应给出一周内完成建议，实为 %s' % r4['warns'])
+
+    # 5 化霜周期按使用强度
+    ck(calc({'ice_mm': 1, 'usage': 'light_use'})['cycle_months'] == 12, '轻度使用应为 12 个月')
+    ck(calc({'ice_mm': 1, 'usage': 'normal_use'})['cycle_months'] == 6, '一般使用应为 6 个月')
+    ck(calc({'ice_mm': 1, 'usage': 'heavy_use'})['cycle_months'] == 3, '高频使用应为 3 个月')
+    ck(calc({'ice_mm': 1})['usage'] == 'normal_use',
+       '未填 usage 应默认一般使用，实为 %s' % calc({'ice_mm': 1})['usage'])
+
+    # 6 周期状态判定
+    r6 = calc({'ice_mm': 1, 'usage': 'normal_use', 'days_since': 30})
+    ck(r6['urgency'] == '尚在建议周期内', '30 天对 180 天应属周期内，实为 %s' % r6['urgency'])
+    r6b = calc({'ice_mm': 1, 'usage': 'normal_use', 'days_since': 130})
+    ck(r6b['urgency'] == '接近建议周期', '130 天对 180 天应接近周期，实为 %s' % r6b['urgency'])
+    r6c = calc({'ice_mm': 1, 'usage': 'normal_use', 'days_since': 200})
+    ck(r6c['urgency'] == '已超出建议周期', '200 天应超周期，实为 %s' % r6c['urgency'])
+    ck(r6c['verdict'] == '必须立即化霜', '超周期应立即化霜，实为 %s' % r6c['verdict'])
+
+    # 7 超周期即使厚度轻也要求化霜
+    ck(calc({'ice_mm': 2, 'usage': 'normal_use', 'days_since': 300})['verdict'] == '必须立即化霜',
+       '轻度但超周期也应立即化霜')
+
+    # 8 禁止操作齐全
+    ck(len(FORBIDDEN) >= 6, '禁止项至少 6 条，实为 %d' % len(FORBIDDEN))
+    fr = [f[1] for f in FORBIDDEN]
+    ck(any('严禁用刀凿' in x for x in fr), '必须含严禁用刀凿')
+    ck(any('严禁用热水浇淋' in x for x in fr), '必须含严禁热水浇淋冷冻室')
+    ck(any('内胆' in f[2] for f in FORBIDDEN), '应说明内胆破损风险')
+
+    # 9 正确步骤含断电与回温
+    s = ' '.join(CORRECT_STEPS)
+    ck('断电' in s, '正确做法必须含断电')
+    ck('回温' in s or '静置' in s, '正确做法必须含回温静置')
+    ck('确认温度' in s, '正确做法必须含确认温度恢复')
+    ck(len(CORRECT_STEPS) >= 8, '正确步骤至少 8 步，实为 %d' % len(CORRECT_STEPS))
+
+    # 10 食品处理规则
+    ft = ' '.join(FOOD_RULE)
+    ck('不要再次冷冻' in ft, '食品规则必须含不可再次冷冻')
+    ck('确认温度稳定回落' in WAIT_NOTE, '必须含确认温度稳定回落后再放回，实为 %s' % WAIT_NOTE)
+
+    # 11 BOM 两条路径
+    bom = '﻿{"ice_mm": 12, "usage": "heavy_use", "days_since": 100}'
+    r11 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r11['tier'] == 'heavy', 'BOM 输入应正确解析，实为 %s' % r11['tier'])
+    ck(r11['cycle_months'] == 3, '高频使用应 3 个月，实为 %s' % r11['cycle_months'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe7.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'ice_mm': 22}))
+    try:
+        r11b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r11b['verdict'] == '必须立即化霜', 'utf-8-sig 读取应正常，实为 %s' % r11b['verdict'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 12 非法输入
+    for bad, why in (
+        ({}, '缺少 ice_mm'),
+        ({'ice_mm': -3}, '负厚度'),
+        ({'ice_mm': 5, 'usage': '不存在的强度'}, '非法 usage'),
+        ({'ice_mm': 5, 'days_since': -10}, '负天数'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例12 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 13 输出结构
+    md = render_md(calc({'ice_mm': 15}))
+    for key in ('结霜厚度分档', '绝对禁止', '正确的化霜做法', '化霜期间的食品处理',
+                '回温与放回食品', '需转专业维修', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(ICE_TIERS) == 4, '厚度分档应 4 档，实为 %d' % len(ICE_TIERS))
+    ck(len(PROFESSIONAL) >= 7, '转专业情形至少 7 条，实为 %d' % len(PROFESSIONAL))
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 厚度分档与边界值/四级判定/5 毫米阈值/周期按使用强度/'
+        '周期状态三档/超周期强制化霜/禁止操作完整性/正确步骤含断电与回温/食品不可复冻/'
+        'BOM 两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='冰箱除霜与化霜周期核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

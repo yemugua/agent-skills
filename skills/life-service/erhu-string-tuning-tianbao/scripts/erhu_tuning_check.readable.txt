@@ -1,0 +1,404 @@
+# -*- coding: utf-8 -*-
+"""二胡定弦核验与音准偏差判定工具。
+
+用法:
+  python erhu_tuning_check.py --file case.json [--json]
+  python erhu_tuning_check.py --selftest
+
+判定顺序: 先看真实缺陷(弦序颠倒、五度超差、单弦超差、跑弦、千斤越界),
+再看信息是否完整; 信息不全只记为待确认, 不掩盖已查出的偏差。
+"""
+import argparse
+import io
+import json
+import math
+import os
+import sys
+import tempfile
+
+TUNINGS = {
+    "D/A": {"inner": 293.66, "outer": 440.00, "label": u"标准 D/A（内 d1 外 a1）"},
+    "G/D": {"inner": 196.00, "outer": 293.66, "label": u"低五度 G/D（内 g 外 d1）"},
+    "C/G": {"inner": 261.63, "outer": 392.00, "label": u"C/G（内 c1 外 g1）"},
+}
+TARGET_NAMES = {
+    "D/A": {"inner": u"内弦 d1", "outer": u"外弦 a1"},
+    "G/D": {"inner": u"内弦 g", "outer": u"外弦 d1"},
+    "C/G": {"inner": u"内弦 c1", "outer": u"外弦 g1"},
+}
+JUST_FIFTH = 1.5
+EQUAL_FIFTH = 2 ** (7.0 / 12.0)
+
+# 容差口径（音分）
+SINGLE_OK = 5.0
+SINGLE_FINE = 20.0
+FIFTH_OK = 8.0
+FIFTH_FINE = 20.0
+
+
+def cents(measured, target):
+    if not measured or not target:
+        return None
+    return 1200.0 * math.log(float(measured) / float(target), 2)
+
+
+def single_verdict(c):
+    if c is None:
+        return u"待确认"
+    a = abs(c)
+    if a <= SINGLE_OK:
+        return u"准"
+    if a <= SINGLE_FINE:
+        return u"需微调"
+    return u"不合格"
+
+
+def fifth_verdict(c):
+    if c is None:
+        return u"待确认"
+    a = abs(c)
+    if a <= FIFTH_OK:
+        return u"准"
+    if a <= FIFTH_FINE:
+        return u"需重定"
+    return u"不合格"
+
+
+def peg_advice(name, c):
+    if c is None:
+        return u"%s：未提供实测频率，无法判断拧弦方向" % name
+    if c > SINGLE_OK:
+        return u"%s：偏高 %+.1f 音分，松对应琴轴（音会下降）" % (name, c)
+    if c < -SINGLE_OK:
+        return u"%s：偏低 %+.1f 音分，紧对应琴轴（音会升高）" % (name, c)
+    return u"%s：偏差在容差内，保持不动" % name
+
+
+def qianjin_verdict(cm):
+    if cm is None:
+        return u"待确认", u"未提供千斤有效弦长"
+    v = float(cm)
+    if v < 38.0:
+        return u"不合格", u"千斤有效弦长 %g 厘米，低于 38 厘米，音色发闷且把位挤" % v
+    if v > 42.0:
+        return u"不合格", u"千斤有效弦长 %g 厘米，高于 42 厘米，按弦吃力且音域虚" % v
+    return u"合格", u"千斤有效弦长 %g 厘米，在 38-42 厘米范围" % v
+
+
+def temp_verdict(t):
+    if t is None:
+        return None
+    v = float(t)
+    if v < 5.0:
+        return u"环境温度 %g 摄氏度，过低，弦与蟒皮未稳定，需等琴体适应后重定" % v
+    if v > 30.0:
+        return u"环境温度 %g 摄氏度，过高，弦张力下降音易走低，需频繁复校" % v
+    return None
+
+
+def load_json(path):
+    with io.open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def build_report(data):
+    tuning = data.get("tuning", "D/A")
+    spec = TUNINGS.get(tuning)
+    names = TARGET_NAMES.get(tuning, TARGET_NAMES["D/A"])
+    inner = data.get("inner_freq")
+    outer = data.get("outer_freq")
+    peg_slip = bool(data.get("peg_slip", False))
+    temp = data.get("temperature_c")
+    qj = data.get("qianjin_cm")
+    temperament = data.get("temperament", "just")
+
+    fifth_target = EQUAL_FIFTH if temperament == "equal" else JUST_FIFTH
+
+    lines = []
+    lines.append("=" * 62)
+    lines.append(u"二胡定弦核验与音准偏差判定")
+    lines.append("=" * 62)
+    lines.append(u"定弦方案：%s" % (spec["label"] if spec else u"未识别（%s），按标准 D/A 基准提示" % tuning))
+    lines.append(u"五度基准：%s（%s）" % (
+        u"纯五度 3:2" if temperament != "equal" else u"平均律五度",
+        u"%.4f" % fifth_target))
+    lines.append("")
+
+    defects = []
+    pending = []
+    fine = []
+
+    if spec is None:
+        pending.append(u"定弦方案未识别，请确认使用的是标准 D/A、低五度 G/D 还是 C/G")
+
+    # 真实缺陷一：弦序颠倒
+    reversed_order = False
+    if inner and outer and float(inner) >= float(outer):
+        reversed_order = True
+        defects.append(u"内弦实测 %g 赫兹不低于外弦实测 %g 赫兹，弦序颠倒，内弦必须低于外弦" % (
+            float(inner), float(outer)))
+    elif not inner or not outer:
+        pending.append(u"内弦或外弦实测频率未提供，无法完成五度校验")
+
+    ci = cents(inner, spec["inner"]) if spec else None
+    co = cents(outer, spec["outer"]) if spec else None
+    cf = None
+    if inner and outer and float(inner) > 0:
+        cf = cents(float(outer) / float(inner), fifth_target)
+
+    # 真实缺陷二：单弦超差
+    if ci is not None:
+        v = single_verdict(ci)
+        if v == u"不合格":
+            defects.append(u"%s偏差 %+.1f 音分，超过 %g 音分容差" % (names["inner"], ci, SINGLE_FINE))
+        elif v == u"需微调":
+            fine.append(u"%s偏差 %+.1f 音分，需微调" % (names["inner"], ci))
+    if co is not None:
+        v = single_verdict(co)
+        if v == u"不合格":
+            defects.append(u"%s偏差 %+.1f 音分，超过 %g 音分容差" % (names["outer"], co, SINGLE_FINE))
+        elif v == u"需微调":
+            fine.append(u"%s偏差 %+.1f 音分，需微调" % (names["outer"], co))
+
+    # 真实缺陷三：五度超差
+    if cf is not None:
+        v = fifth_verdict(cf)
+        ratio = float(outer) / float(inner)
+        if v == u"不合格":
+            defects.append(u"五度比值 %.4f，偏差 %+.1f 音分，超过 %g 音分容差" % (ratio, cf, FIFTH_FINE))
+        elif v == u"需重定":
+            fine.append(u"五度比值 %.4f，偏差 %+.1f 音分，需重定" % (ratio, cf))
+
+    # 真实缺陷四：跑弦
+    if peg_slip:
+        defects.append(u"琴轴打滑，音定不住。禁止滴胶水、缠胶带、垫纸片，应退弦检查轴孔配合并送修")
+
+    # 真实缺陷五：千斤越界
+    qj_v, qj_msg = qianjin_verdict(qj)
+    if qj_v == u"不合格":
+        defects.append(qj_msg)
+    elif qj_v == u"待确认":
+        pending.append(qj_msg)
+
+    lines.append(u"[一] 偏差明细")
+    lines.append(u"%-14s %12s %12s %10s" % (u"项目", u"目标赫兹", u"实测赫兹", u"偏差音分"))
+    lines.append("-" * 62)
+    ti = spec["inner"] if spec else 0.0
+    to = spec["outer"] if spec else 0.0
+    lines.append(u"%-14s %12.2f %12s %10s" % (
+        names["inner"], ti, (u"%.2f" % float(inner)) if inner else u"--",
+        (u"%+.1f" % ci) if ci is not None else u"--"))
+    lines.append(u"%-14s %12.2f %12s %10s" % (
+        names["outer"], to, (u"%.2f" % float(outer)) if outer else u"--",
+        (u"%+.1f" % co) if co is not None else u"--"))
+    lines.append(u"%-14s %12s %12s %10s" % (
+        u"五度比值", u"%.4f" % fifth_target,
+        (u"%.4f" % (float(outer) / float(inner))) if (inner and outer and float(inner) > 0) else u"--",
+        (u"%+.1f" % cf) if cf is not None else u"--"))
+    lines.append("-" * 62)
+
+    lines.append("")
+    lines.append(u"[二] 不合格项与原因")
+    if defects:
+        for i, d in enumerate(defects, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+
+    lines.append("")
+    lines.append(u"[三] 需调整项")
+    if fine:
+        for i, d in enumerate(fine, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+
+    lines.append("")
+    lines.append(u"[四] 拧弦方向")
+    if reversed_order:
+        lines.append(u"  弦序已颠倒，先确认哪根是内弦哪根是外弦，再谈拧弦方向")
+    else:
+        lines.append(u"  " + peg_advice(names["inner"], ci))
+        lines.append(u"  " + peg_advice(names["outer"], co))
+    lines.append(u"  提示：定完内弦必须回校外弦，再复检五度，来回两到三轮")
+
+    lines.append("")
+    lines.append(u"[五] 待确认项")
+    if pending:
+        for i, d in enumerate(pending, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+
+    tv = temp_verdict(temp)
+    lines.append("")
+    lines.append(u"[六] 环境与其他提示")
+    if tv:
+        lines.append(u"  " + tv)
+    lines.append(u"  定完弦拉满 10 分钟再复测一次，两次差值超过 15 音分说明弦或轴有问题")
+    lines.append(u"  不推荐用胶水、胶带、纸片固定琴轴，这类做法会扩大轴孔损伤")
+
+    if defects:
+        overall = u"不合格"
+    elif fine:
+        overall = u"需调整"
+    elif pending:
+        overall = u"待确认"
+    else:
+        overall = u"合格"
+
+    lines.append("")
+    lines.append(u"总判定：%s" % overall)
+    lines.append(u"免责：本结果为定弦自查输出，不构成乐器维修结论。合奏以乐队基准音为准。")
+    lines.append("=" * 62)
+
+    summary = {
+        "tuning": tuning,
+        "tuning_known": spec is not None,
+        "inner_cents": ci,
+        "outer_cents": co,
+        "fifth_cents": cf,
+        "defects": defects,
+        "fine": fine,
+        "pending": pending,
+        "qianjin_verdict": qj_v,
+        "overall": overall,
+    }
+    return "\n".join(lines), summary
+
+
+def _run_checks():
+    r = []
+    r.append((u"同频偏差为 0", abs(cents(440.0, 440.0)) < 1e-9))
+    r.append((u"高八度为 1200 音分", abs(cents(880.0, 440.0) - 1200.0) < 1e-6))
+    r.append((u"平均律五度比 1.4983", abs(EQUAL_FIFTH - 1.498307) < 1e-5))
+    r.append((u"纯五度与平均律相差约 2 音分", abs(cents(EQUAL_FIFTH, JUST_FIFTH) + 1.955) < 0.01))
+
+    _, s = build_report({
+        "tuning": "D/A", "inner_freq": 293.7, "outer_freq": 440.1,
+        "peg_slip": False, "temperature_c": 24, "qianjin_cm": 40.0,
+        "temperament": "just",
+    })
+    r.append((u"标准定弦样例判定合格", s["overall"] == u"合格"))
+
+    _, s1 = build_report({
+        "tuning": "D/A", "inner_freq": 460.0, "outer_freq": 440.0,
+        "peg_slip": False, "temperature_c": 24, "qianjin_cm": 40.0,
+    })
+    r.append((u"反例：内弦高于外弦判不合格", s1["overall"] == u"不合格"))
+    r.append((u"反例：弦序颠倒进缺陷表", any(u"弦序颠倒" in d for d in s1["defects"])))
+
+    _, s2 = build_report({
+        "tuning": "D/A", "inner_freq": 314.0, "outer_freq": 440.0,
+        "peg_slip": False, "temperature_c": 24, "qianjin_cm": 40.0,
+    })
+    r.append((u"反例：五度太窄判不合格", s2["overall"] == u"不合格"))
+    r.append((u"反例：五度超差进缺陷表", any(u"五度比值" in d for d in s2["defects"])))
+
+    _, s3 = build_report({
+        "tuning": "D/A", "inner_freq": 287.0, "outer_freq": 440.0,
+        "peg_slip": False, "temperature_c": 24, "qianjin_cm": 40.0,
+    })
+    r.append((u"反例：内弦偏低 40 音分判不合格", s3["overall"] == u"不合格"))
+
+    _, s4 = build_report({
+        "tuning": "D/A", "inner_freq": 293.7, "outer_freq": 440.1,
+        "peg_slip": True, "temperature_c": 24, "qianjin_cm": 40.0,
+    })
+    r.append((u"反例：琴轴打滑判不合格", s4["overall"] == u"不合格"))
+    r.append((u"反例：打滑进缺陷表", any(u"琴轴打滑" in d for d in s4["defects"])))
+
+    _, s5 = build_report({
+        "tuning": "D/A", "inner_freq": 293.7, "outer_freq": 440.1,
+        "peg_slip": False, "temperature_c": 24, "qianjin_cm": 45.0,
+    })
+    r.append((u"反例：千斤 45 厘米判不合格", s5["overall"] == u"不合格"))
+
+    _, s6 = build_report({"tuning": "D/A", "peg_slip": False})
+    r.append((u"缺实测频率记为待确认而非合格", s6["overall"] == u"待确认"))
+    r.append((u"缺频率进待确认表", len(s6["pending"]) > 0))
+
+    _, s7 = build_report({
+        "tuning": "G/D", "inner_freq": 196.0, "outer_freq": 293.7,
+        "peg_slip": False, "temperature_c": 24, "qianjin_cm": 40.0,
+    })
+    r.append((u"低五度定弦按自身基准判定", s7["overall"] == u"合格"))
+
+    _, s8 = build_report({
+        "tuning": "D/A", "inner_freq": 296.0, "outer_freq": 440.0,
+        "peg_slip": False, "temperature_c": 24, "qianjin_cm": 40.0,
+    })
+    r.append((u"轻微偏差判需调整而非合格", s8["overall"] == u"需调整"))
+
+    _, s9 = build_report({
+        "tuning": "X/Y", "inner_freq": 293.66, "outer_freq": 440.0,
+        "peg_slip": False, "temperature_c": 24, "qianjin_cm": 40.0,
+    })
+    r.append((u"未识别定弦方案进待确认表", any(u"未识别" in p for p in s9["pending"])))
+
+    # UTF-8 BOM 输入必须能被正确解析
+    p = os.path.join(tempfile.gettempdir(), "_erhu_bom_case.json")
+    blob = b"\xef\xbb\xbf" + json.dumps({
+        "tuning": "D/A", "inner_freq": 293.66, "outer_freq": 440.0,
+        "peg_slip": False, "temperature_c": 24, "qianjin_cm": 40.0,
+    }, ensure_ascii=False).encode("utf-8")
+    with open(p, "wb") as f:
+        f.write(blob)
+    try:
+        d = load_json(p)
+        r.append((u"UTF-8 BOM 输入首键可读", d.get("tuning") == "D/A"))
+        r.append((u"UTF-8 BOM 输入数值可读", abs(d.get("inner_freq", 0) - 293.66) < 1e-9))
+    finally:
+        if os.path.exists(p):
+            os.remove(p)
+
+    return r
+
+
+def selftest():
+    results = _run_checks()
+    failed = [name for name, ok in results if not ok]
+    ok = len(failed) == 0
+    lines = ["SELFTEST %s" % ("OK" if ok else "FAILED")]
+    lines.append("checks=%d passed=%d failed=%d" % (len(results), len(results) - len(failed), len(failed)))
+    for name in failed:
+        lines.append("FAILED: %s" % name)
+    with io.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_selftest_result.txt"),
+                 "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+    return ok
+
+
+def main():
+    parser = argparse.ArgumentParser(description=u"二胡定弦核验工具")
+    parser.add_argument("--file", help=u"输入 JSON 文件路径（UTF-8）")
+    parser.add_argument("--json", action="store_true", help=u"以 JSON 输出")
+    parser.add_argument("--out", help=u"结果写入指定文件")
+    parser.add_argument("--selftest", action="store_true", help=u"运行自检")
+    args = parser.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        sys.exit(0 if selftest() else 1)
+
+    if not args.file:
+        parser.error(u"需要 --file 或 --selftest")
+
+    data = load_json(args.file)
+
+    report, summary = build_report(data)
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.json else report
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    with io.open(out_path, "w", encoding="utf-8") as f:
+        f.write(body)
+    print(body)
+    print("")
+    print(u"结果已写入：%s" % out_path)
+
+
+if __name__ == "__main__":
+    main()
+
+

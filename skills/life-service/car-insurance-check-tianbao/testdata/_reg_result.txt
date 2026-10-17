@@ -1,0 +1,60 @@
+PASS P01 norm
+PASS P02 is_ph 待填
+PASS P03 is_ph 分隔行
+PASS P04 is_ph 真值
+PASS P05 split_row
+PASS P06 parse_date
+PASS P07 parse_date 空
+PASS P08 get_int 带单位
+PASS P09 get_int 保费
+PASS P10 get_money 维修费
+PASS T01 车型
+PASS T02 使用性质
+PASS T03 责任比例
+PASS T04 空表
+PASS T05 标题不算
+PASS Y01 交强险是
+PASS Y02 座位险否
+PASS Y03 医保外否
+PASS Y04 车损是
+PASS Y05 过户否
+PASS Y06 空表 None
+PASS Y07 酒驾否
+PASS Y08 驾驶证有效
+PASS R01 生成
+PASS R02 九段
+PASS R03 结论摘要
+PASS R04 保障缺口
+PASS R05 保费与 NCD
+PASS R06 报不报
+PASS R07 拒赔扫描
+PASS R08 待办
+PASS R09 纪律
+PASS R10 两个缺口
+PASS R11 座位险缺
+PASS R12 无拒赔
+PASS R13 涨费估算 800
+PASS R14 结论报保险
+PASS R15 1500>800 文案
+PASS R16 未填不算通过
+PASS R17 三者 100 万不算低
+PASS R18 无【待填】泄漏
+PASS R19 无乱码
+PASS R21 48小时取到否
+PASS R22 材料区分有缺
+PASS R23 建议不嵌套加粗
+PASS R20 表格不裂
+PASS L01 低三者生成
+PASS L02 提示额度偏低
+PASS L03 300<1000 自费
+PASS L04 涨费 1000
+PASS D01 拒赔生成
+PASS D02 命中营运
+PASS D03 命中未年检
+PASS D04 命中超48
+PASS D05 人伤一律报
+PASS D06 denies>=3
+PASS E01 空表 None
+PASS E02 空表提示
+PASS E03 缺文件不崩
+== TOTAL PASS=59 FAIL=0 ==

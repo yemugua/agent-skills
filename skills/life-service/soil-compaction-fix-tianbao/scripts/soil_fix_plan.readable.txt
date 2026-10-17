@@ -1,0 +1,209 @@
+# -*- coding: utf-8 -*-
+"""土壤板结改良方案校验脚本。
+
+用法:
+  python soil_fix_plan.py --selftest
+  python soil_fix_plan.py --file soil.json
+
+输入为 JSON，字段见 SKILL.md 第五章。读取统一用 utf-8-sig 剥 BOM。
+农业类只做判断流程与记录核对，不处理农药浓度。
+"""
+import argparse
+import json
+import os
+import sys
+
+AREA_TYPES = ['花盆', '菜地', '庭院']
+CORRECT_ORDER = ['停践踏', '浅松土', '增施有机质', '覆盖', '轮作绿肥']
+RAW_MARK = ['生', '未腐熟', '没腐熟']
+
+
+def load_plan(path):
+    raw = open(path, 'rb').read()
+    text = raw.decode('utf-8-sig')
+    return json.loads(text)
+
+
+def validate(data):
+    findings = []
+
+    def add(level, item, why):
+        findings.append({'level': level, 'item': item, 'why': why})
+
+    area = data.get('area_type')
+    symptoms = data.get('symptoms') or []
+    cause_checked = data.get('cause_checked')
+    steps = data.get('steps') or []
+    organic_added = data.get('organic_added')
+    organic_type = data.get('organic_type')
+    till = data.get('till_depth_cm')
+    cover = data.get('cover_used')
+    record = data.get('record_kept')
+
+    if area not in AREA_TYPES:
+        add('先处理', '地块识别', 'area_type 不是花盆/菜地/庭院，无法校验')
+        valid = False
+    else:
+        valid = True
+
+    # 症状
+    if not symptoms:
+        add('待确认', '板结症状', '未描述板结症状，无法判断是不是板结')
+
+    # 成因排查（强调判断流程，信息缺口判待确认）
+    if cause_checked is not True:
+        add('待确认', '成因排查', '未排查成因，应先判断再改良')
+
+    # 操作顺序（按输入原序取索引，不重新排序）
+    norm_steps = [s for s in steps if s in CORRECT_ORDER]
+    idx = [CORRECT_ORDER.index(s) for s in norm_steps]
+    if idx != sorted(idx):
+        add('先处理', '操作顺序', '改良操作顺序错误：应先停践踏、浅松土，再增施有机质等')
+
+    # 增施有机质（根本措施）
+    if organic_added is not True:
+        add('先处理', '增施有机质', '未增施腐熟有机质，板结难根本改善')
+
+    # 生肥禁用（用 any 匹配，不能用 in RAW_MARK）
+    if organic_type and any(m in organic_type for m in RAW_MARK):
+        add('先处理', '有机质腐熟', '使用了未腐熟有机肥（%s），会烧根并加重板结' % organic_type)
+
+    # 花盆深翻
+    if area == '花盆' and isinstance(till, (int, float)) and till > 15:
+        add('先处理', '松土深度', '花盆松土 %s cm 过深，应浅松不伤根' % till)
+
+    # 覆盖（鼓励项，缺失判待确认）
+    if cover is not True:
+        add('待确认', '覆盖', '未做覆盖，表土易再次结皮')
+
+    # 记录核对
+    if record is not True:
+        add('待确认', '改良记录', '未做改良前后记录，无法核对效果')
+
+    real = [f for f in findings if f['level'] == '先处理']
+    if real:
+        overall = '先处理'
+    elif any(f['level'] == '待确认' for f in findings):
+        overall = '待确认'
+    else:
+        overall = '可照此执行'
+    return {'overall': overall, 'findings': findings}
+
+
+def render(result):
+    lines = ['结论：%s' % result['overall'], '']
+    if not result['findings']:
+        lines.append('未发现问题，可照此执行。')
+    for f in result['findings']:
+        lines.append('[%s] %s：%s' % (f['level'], f['item'], f['why']))
+    return '\n'.join(lines) + '\n'
+
+
+def selftest():
+    passed = 0
+    failed = 0
+
+    good = {
+        'area_type': '菜地', 'symptoms': ['浇水下渗慢', '土表结皮'],
+        'cause_checked': True,
+        'steps': ['停践踏', '浅松土', '增施有机质', '覆盖', '轮作绿肥'],
+        'organic_added': True, 'organic_type': '腐熟堆肥', 'till_depth_cm': 12,
+        'cover_used': True, 'record_kept': True,
+    }
+    r = validate(good)
+    assert r['overall'] == '可照此执行', '良好方案应判可照此执行，实际=%s' % r['overall']
+    passed += 1
+
+    # 反例1：花盆深翻
+    bad = dict(good); bad['area_type'] = '花盆'; bad['till_depth_cm'] = 25
+    r = validate(bad)
+    assert any(f['item'] == '松土深度' for f in r['findings']), '花盆深翻应判先处理'
+    assert r['overall'] == '先处理', '反例应判先处理'
+    passed += 1
+
+    # 反例2：生肥
+    bad = dict(good); bad['organic_type'] = '生鸡粪'
+    r = validate(bad)
+    assert any(f['item'] == '有机质腐熟' for f in r['findings']), '生肥应判先处理'
+    passed += 1
+
+    # 反例3：顺序错（先增施再停践踏）
+    bad = dict(good); bad['steps'] = ['增施有机质', '停践踏', '浅松土', '覆盖', '轮作绿肥']
+    r = validate(bad)
+    assert any(f['item'] == '操作顺序' for f in r['findings']), '操作顺序错应判先处理'
+    passed += 1
+
+    # 反例4：未增施有机质
+    bad = dict(good); bad['organic_added'] = False
+    r = validate(bad)
+    assert any(f['item'] == '增施有机质' for f in r['findings']), '未增施有机质应判先处理'
+    passed += 1
+
+    # 反例5：成因未排查 → 待确认
+    bad = dict(good); bad['cause_checked'] = False
+    r = validate(bad)
+    assert any(f['item'] == '成因排查' for f in r['findings']), '未排查成因应判待确认'
+    passed += 1
+
+    # 反例6：无记录 → 待确认
+    bad = dict(good); bad['record_kept'] = False
+    r = validate(bad)
+    assert any(f['item'] == '改良记录' for f in r['findings']), '无记录应判待确认'
+    passed += 1
+
+    # 反例护栏：用生肥的反例不得判可照此执行
+    bad = dict(good); bad['organic_type'] = '未腐熟堆肥'
+    r = validate(bad)
+    assert r['overall'] != '可照此执行', '用生肥的反例不得判可照此执行'
+    passed += 1
+
+    # 症状为空 → 待确认
+    bad = dict(good); bad['symptoms'] = []
+    r = validate(bad)
+    assert any(f['item'] == '板结症状' for f in r['findings']), '无症状应判待确认'
+    passed += 1
+
+    # BOM 处理
+    bom_json = ('﻿' + json.dumps(good, ensure_ascii=False)).encode('utf-8')
+    text = bom_json.decode('utf-8-sig')
+    assert '﻿' not in text, 'BOM 未被剥除'
+    data = json.loads(text)
+    assert data['organic_added'] is True, 'BOM 解析后字段错位'
+    r = validate(data)
+    assert r['overall'] == '可照此执行', 'BOM 输入经解析后校验应正常通过'
+    passed += 1
+
+    msg = 'SELFTEST OK (%d passed, %d failed)' % (passed, failed)
+    return msg, passed, failed
+
+
+def main():
+    ap = argparse.ArgumentParser(description='土壤板结改良方案校验')
+    ap.add_argument('--file', help='输入 JSON 配置文件路径')
+    ap.add_argument('--selftest', action='store_true', help='运行内置自检')
+    args = ap.parse_args()
+
+    if args.selftest:
+        msg, passed, failed = selftest()
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_selftest_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(msg + '\n')
+        print(msg)
+        sys.exit(1 if failed else 0)
+
+    if args.file:
+        data = load_plan(args.file)
+        result = validate(data)
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_last_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(render(result))
+        print(render(result))
+        sys.exit(0)
+
+    print('用法: python soil_fix_plan.py --selftest | --file soil.json')
+    sys.exit(2)
+
+
+if __name__ == '__main__':
+    main()
+

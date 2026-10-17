@@ -1,0 +1,67 @@
+PASS U01 parse_money 纯数字                            got=5000.0 want=5000.0
+PASS U02 parse_money 带千分位                           got=96800.0 want=96800.0
+PASS U03 parse_money 带元                             got=8800.0 want=8800.0
+PASS U04 parse_money 万                              got=12000.0 want=12000.0
+PASS U05 parse_money 空                              got=None want=None
+PASS U06 parse_pct                                  got=60.0 want=60.0
+PASS U07 parse_pct 带全角                              got=60.0 want=60.0
+PASS U08 parse_pct 越界                               got=None want=None
+PASS U09 fmt_money 整数                               got='96800' want='96800'
+PASS U10 fmt_money 小数                               got='1234.5' want='1234.5'
+PASS U11 fmt_money None                             got='—' want='—'
+PASS U12 norm 全角转半角                                 got='abc' want='abc'
+PASS U13 is_placeholder 空                           got=True want=True
+PASS U14 is_placeholder 填什么                         got=True want=True
+PASS U15 is_placeholder 有无                          got=True want=True
+PASS U16 is_placeholder 正常值                         got=False want=False
+PASS U17 is_sep 分隔行                                 got=True want=True
+PASS U18 is_sep 非分隔                                 
+PASS T01 split_row                                  got=['拆除费', '6800'] want=['拆除费', '6800']
+PASS T02 col_index 命中                               got=1 want=1
+PASS T03 col_index 未命中                              got=None want=None
+PASS S01 抓到报价条目                                     n=14
+PASS S02 条目含金额                                      
+PASS S03 有水电改造项                                     ['墙面铲除及基层处理', '新建轻质隔墙', '水电改造', '卫生间防水', '客厅卧室地砖铺贴']
+PASS S04 有防水项                                       
+PASS S05 工程量列被抓到                                    
+PASS S06 总价解析                                       got=96800.0 want=96800.0
+PASS S07 装修方式                                       got='半包' want='半包'
+PASS S08 工期                                         got=75 want=75
+PASS S09 面积取第一个（89）                                 got=89 want=89
+PASS S10 九项必看共 9 项                                  got=9 want=9
+PASS S11 缺拆除费                                       
+PASS S12 有防水                                        
+PASS S12b 有瓦工（地砖铺贴也算）                               {'拆除费': False, '垃圾清运': True, '水电改造': True, '防水': True, '瓦工': True, '木工': True, '油漆': True, '主材品牌型号': True, '工期与付款节点': False}
+PASS S12c 缺工期与付款节点                                  {'拆除费': False, '垃圾清运': True, '水电改造': True, '防水': True, '瓦工': True, '木工': True, '油漆': True, '主材品牌型号': True, '工期与付款节点': False}
+PASS S13 命中可疑表述                                     n=5
+PASS S14 含按实际                                       {'不含', '按实际结算', '按市价/按市场价'}
+PASS S15 含不含                                        {'不含', '按实际结算', '按市价/按市场价'}
+PASS S16 付款行抓到                                      [('开工', 60.0), ('水电验收后', 25.0), ('泥木验收后', 10.0), ('竣工验收后', 5.0), ('质保期满', 0.0), ('有没有要求开工前付 80% 以上', 60.0), ('尾款留了多少', 5.0)]
+PASS S17 开工前付比例                                     got=60.0 want=60.0
+PASS S18 一次付清                                       got=False want=False
+PASS S19 有尾款                                        got=True want=True
+PASS S20 抓到已发生增项                                    ['进场前说要拆两面旧隔墙，报 2800']
+PASS S20b 已发生增项不含问句                                 ['进场前说要拆两面旧隔墙，报 2800']
+PASS S20c 抓到另计声明                                    ['拆除费、垃圾清运、拼花、柜子都说另计', '垃圾清运写不含，水电按实际']
+PASS S21 口头增项                                       got=True want=True
+PASS S22 合同条款全判无（样例全填「无」）                           set()
+PASS R01 报告构建成功                                     None
+PASS R02 九段齐全                                       sections=9
+PASS R03 含摘要                                        
+PASS R04 含三段话                                       
+PASS R05 含六句话                                       
+PASS R06 含收手条件                                      
+PASS R07 无U盘残留                                      
+PASS R08 表格列数一致（各表列数自洽）                             []
+PASS R09 不写市场价                                      
+PASS R10 meta 有总价                                   
+PASS R11 meta 风险数>0                                 {'total': 96800.0, 'items': 14, 'risks': 4, 'missing': ['拆除费', '工期与付款节点'], 'mode': '半包'}
+PASS R12 合同六句多数判无                                   6
+PASS R13 隐蔽工程状态不出现半截模板语                             found 做没做
+PASS R14 增项段不重复                                     1
+PASS E01 空表 -> 返回提示串                                未能从文件里解析出报价信息。请确认填写了「二、报价单明细」表格或「报价单总价」。
+PASS E02 空表 body 为 None                             
+PASS E03 空表退出码                                      got=2 want=2
+PASS E04 样例 json 退出码                                got=0 want=0
+
+== TOTAL PASS=65 FAIL=0 ==

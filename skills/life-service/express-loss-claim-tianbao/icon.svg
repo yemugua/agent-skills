@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="快递丢件理赔流程核查">
+  <defs>
+    <linearGradient id="gI" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F2B24C"/>
+      <stop offset="1" stop-color="#B07A18"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#gI)"/>
+  <path d="M10 24 L32 13 L54 24 L54 44 L32 55 L10 44 Z" fill="#FFFFFF"/>
+  <path d="M10 24 L32 35 L54 24 L32 13 Z" fill="#FCE3B4"/>
+  <path d="M32 35 L32 55" stroke="#B07A18" stroke-width="2" stroke-linecap="round"/>
+  <rect x="15" y="27" width="11" height="7" rx="1.4" fill="#B07A18" opacity="0.35"/>
+  <circle cx="45" cy="46" r="10.5" fill="#E23D3D"/>
+  <path d="M45 40.5 v6.5" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="45" cy="51" r="1.9" fill="#FFFFFF"/>
+</svg>

@@ -1,0 +1,119 @@
+=== 快递丢失赔偿核算 回归结果 ===
+TOTAL PASS=117 FAIL=0
+PASS P01 norm 去空格
+PASS P02 norm 全角冒号括号转半角
+PASS P03 filled 空为假
+PASS P04 filled 斜杠提示串为假
+PASS P05 filled 待填开头为假
+PASS P06 filled 真值为真
+PASS P07 parse_num 整数
+PASS P08 parse_num 带符号千分位
+PASS P09 parse_num 文字取 None
+PASS P10 fmt_num 去 .0
+PASS P11 fmt_num None
+PASS P12 money 前缀与去零
+PASS P13 yes 是
+PASS P14 no 否
+PASS P15 no 未做
+PASS P16 yes 不认带竖条目的值
+PASS P17 parse_date ISO
+PASS P18 parse_date 中文
+PASS P19 parse_date 坏值取 None
+PASS P20 base_date 空取今天
+PASS P21 base_date 指定值
+PASS P22 build_kv 表格行
+PASS P23 build_kv 保留表头列
+PASS P24 build_kv 冒号行可解析
+PASS P25 get_text 最长别名优先
+PASS P26 get_text 未命中空串
+PASS P27 get_text 不被更短 key 抢先
+PASS S01 场景 代收点
+PASS S02 场景 驿站
+PASS S03 场景 冒领
+PASS S04 场景 违禁
+PASS S05 场景 生鲜
+PASS S06 场景 国际件
+PASS S07 场景 普通件
+PASS S08 场景 未填
+PASS S09 has_any 命中生鲜
+PASS S10 has_any 不误判普通内件
+PASS S11 has_any 命中邮政渠道
+PASS S12 has_any 不误判普通件
+PASS C01 未保价有资费：企业口径三倍资费
+PASS C02 未保价有资费：可主张按实际价值
+PASS C03 未保价时企业口径说明含三倍
+PASS C04 显式未保价也按三倍给企业口径
+PASS C05 保价件企业口径封顶到实际价值
+PASS C07 保价低于实际价值按保价额
+PASS C08 保价件缺保价金额算不出企业口径
+PASS C09 保价件缺金额说明提示补填
+PASS C10 未保价缺资费企业口径 None
+PASS C11 未保价缺资费可主张仍按价值
+PASS C12 无价值无资费两口径都 None
+PASS C13 有直接损失时加计
+PASS C14 加计说明含直接损失金额
+PASS C15 无价值时退到三倍资费兜底
+PASS T01 电商件第 0 步优先找卖家
+PASS T02 普通件无第 0 步
+PASS T03 含客服留单步骤
+PASS T04 含 12305 步骤
+PASS T05 含 12315 步骤
+PASS T06 含小额诉讼
+PASS T07 代收点场景给分支提示
+PASS T08 冒领场景要报警
+PASS T09 国际件给渠道提示
+PASS T10 待办含不通过与待补正项
+PASS T11 代收点未获同意进待办
+PASS T12 待办含一年期限
+PASS T13 待办去重复一项
+PASS V01 证据 运单 有
+PASS V02 证据 保价凭证 无
+PASS V03 证据 价值凭证 有
+PASS V04 证据 报警回执 无
+PASS V05 证据项共八项
+PASS V06 证据状态只四态
+PASS R01 样例退出码 0
+PASS R02 样例无异常输出
+PASS R03 样例段数 >= 9
+PASS R04 样例含企业口径 54
+PASS R05 样例含可主张口径 2900
+PASS R06 样例含差额 2846
+PASS R07 样例含三倍算式
+PASS R08 样例含可主张口径更优提示
+PASS R09 样例含一年期限
+PASS R10 样例含诉讼时效 3 年
+PASS R11 样例含 12305
+PASS R12 样例含代收点分支
+PASS R13 样例含未保价风险
+PASS R14 样例含举证责任提示
+PASS R15 样例含证据缺口段
+PASS R16 样例含待办补正动作段
+PASS R17 样例含边界与纪律段
+PASS R18 样例不替代律师意见
+PASS R19 样例未填不通过
+PASS R20 样例结论段给出判定
+PASS R21 样例报告以中文标题开头
+PASS R22 样例无乱码字符
+PASS J01 json 退出码 0
+PASS J02 json 可被 json.loads 解析
+PASS J03-结论 json 含 结论
+PASS J03-风险项 json 含 风险项
+PASS J03-待办 json 含 待办
+PASS J04 json 含企业口径
+PASS J05 json 含可主张口径
+PASS J06 json 标出可主张口径更优
+PASS J07 json 记录丢失场景
+PASS J08 json 待办为列表
+PASS J09 json 风险项为列表
+PASS E01 空输入退出码 2
+PASS E02 空输入不崩无 Traceback
+PASS E03 空输入不产生任何金额
+PASS E04 空输入段数 >= 5
+PASS E05 空输入提示关键信息缺失
+PASS E06 空输入算不出判定
+PASS E07 空输入有表格行
+PASS E08 空输入有边界与纪律
+PASS D01 落盘退出码 0
+PASS D02 落盘后打印已写出
+PASS D03 落盘文件非空
+PASS D04 落盘内容与 stdout 一致

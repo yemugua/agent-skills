@@ -1,0 +1,443 @@
+# -*- coding: utf-8 -*-
+"""尤克里里入门练习路径核查：gCEA 四弦标准音判定、九个入门和弦指法逐弦核对、练习路径四阶段顺序核查。
+
+用法:
+  python ukulele_practice_check.py --file plan.json [--out result.md] [--format json]
+  python ukulele_practice_check.py --selftest
+"""
+import argparse
+import json
+import math
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 四弦顺序固定为 四弦(g) / 三弦(C) / 二弦(E) / 一弦(A)
+STRING_KEYS = ['g', 'C', 'E', 'A']
+STRING_NAMES = {'g': '四弦(g)', 'C': '三弦(C)', 'E': '二弦(E)', 'A': '一弦(A)'}
+STRING_MIDI = {'g': 67, 'C': 60, 'E': 64, 'A': 69}
+
+# 九个入门和弦，指法顺序同 STRING_KEYS：[四弦, 三弦, 二弦, 一弦]，0=空弦，整数=品格
+CHORDS = {
+    'C': [0, 0, 0, 3],
+    'C7': [0, 0, 0, 1],
+    'Am': [2, 0, 0, 0],
+    'A': [2, 1, 0, 0],
+    'F': [2, 0, 1, 0],
+    'G': [0, 2, 3, 2],
+    'G7': [0, 2, 1, 0],
+    'D': [2, 2, 2, 0],
+    'Dm': [2, 2, 1, 0],
+    'Em': [0, 4, 3, 2],
+}
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+
+
+CHORDS_N = {norm(k): v for k, v in CHORDS.items()}
+
+# 练习路径四阶段（顺序不可跳）
+PLAN_STAGES = ['tuning', 'single_chord', 'transition', 'first_song']
+PLAN_LABELS = {
+    'tuning': '阶段1 调音持琴单音',
+    'single_chord': '阶段2 单和弦',
+    'transition': '阶段3 和弦转换',
+    'first_song': '阶段4 第一首弹唱',
+}
+
+TOL = {'ok': 5.0, 'minor': 10.0, 'bad': 20.0}
+
+
+def freq_of(midi):
+    return 440.0 * (2.0 ** ((midi - 69.0) / 12.0))
+
+
+def cents(freq, ref):
+    if freq is None or ref is None or freq <= 0 or ref <= 0:
+        return None
+    return 1200.0 * math.log(freq / ref, 2)
+
+
+def _f(v, key):
+    if v is None:
+        return None
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        raise ValueError('%s 必须是数字，实为 %s' % (key, v))
+    if f <= 0:
+        raise ValueError('%s 必须为正数，实为 %s' % (key, v))
+    return f
+
+
+def tuning_check(tuning):
+    """返回四弦逐弦判定列表。tuning 为 {g:频率, C:频率, ...}，可部分提供。"""
+    rows = []
+    for key in STRING_KEYS:
+        v = tuning.get(key) if isinstance(tuning, dict) else None
+        ref = freq_of(STRING_MIDI[key])
+        if v is None:
+            rows.append({'key': key, 'name': STRING_NAMES[key], 'freq': None,
+                         'ref': ref, 'cents': None, 'status': '未填写', 'sev': 0})
+            continue
+        f = _f(v, key)
+        dev = cents(f, ref)
+        a = abs(dev)
+        if a <= TOL['ok'] + 1e-9:
+            status, sev = '音准', 0
+        elif a <= TOL['minor']:
+            status, sev = '需微调', 2
+        elif a <= TOL['bad']:
+            status, sev = '明显跑调', 2
+        else:
+            status, sev = '严重跑调', 3
+        rows.append({'key': key, 'name': STRING_NAMES[key], 'freq': f,
+                     'ref': ref, 'cents': dev, 'status': status, 'sev': sev})
+    return rows
+
+
+def chord_check(item):
+    """单和弦指法核对。item: {'name': 'C', 'frets': [0,0,0,3]}。"""
+    if not isinstance(item, dict):
+        raise ValueError('chords 的每一项必须是对象')
+    orig = item.get('name')
+    name = norm(orig)
+    if name not in CHORDS_N:
+        raise ValueError('未知和弦: %s，可选 %s' % (orig, '/'.join(CHORDS.keys())))
+    frets = item.get('frets')
+    if not isinstance(frets, list) or len(frets) != 4:
+        raise ValueError('和弦 %s 的 frets 必须是 4 个元素的列表' % orig)
+    want = CHORDS_N[name]
+    wrong = []
+    for i, key in enumerate(STRING_KEYS):
+        got = frets[i]
+        if got != want[i]:
+            wrong.append('弦%s 应为 %s 品，实为 %s' % (STRING_NAMES[key], want[i], got))
+    if wrong:
+        return {'name': orig, 'ok': False, 'wrong': wrong, 'sev': 2}
+    return {'name': orig, 'ok': True, 'wrong': [], 'sev': 0}
+
+
+def plan_check(plan):
+    """练习路径顺序核查。plan 为阶段 key 列表（按顺序）。"""
+    issues = []
+    if plan is None:
+        return issues, ['练习路径']
+    if not isinstance(plan, list):
+        raise ValueError('plan 必须是列表')
+    seq = [norm(p) for p in plan]
+    # 缺阶段
+    missing = [s for s in PLAN_STAGES if s not in seq]
+    for s in missing:
+        issues.append({'sev': 2, 'item': '练习路径',
+                       'detail': '缺少%s' % PLAN_LABELS[s],
+                       'why': '跳过基础阶段会让后面的练习事倍功半，甚至一直卡在转换上'})
+    # 顺序错：在 seq 中四个阶段出现的位置是否单调递增
+    # 顺序错：任意两个已出现阶段，若计划在前的却排在序列的后面，即颠倒
+    rev = None
+    for a in PLAN_STAGES:
+        for b in PLAN_STAGES:
+            if PLAN_STAGES.index(a) < PLAN_STAGES.index(b) and \
+               a in seq and b in seq and seq.index(a) > seq.index(b):
+                rev = (a, b)
+                break
+        if rev:
+            break
+    if rev:
+        a, b = rev
+        issues.append({'sev': 2, 'item': '练习路径',
+                       'detail': '阶段顺序颠倒：%s 被排在 %s 之后，应先于它'
+                                 % (PLAN_LABELS[b], PLAN_LABELS[a]),
+                       'why': '阶段顺序应为 调音→单和弦→转换→弹唱，颠倒会基础不牢'})
+    return issues, []
+
+
+def calc(data):
+    tuning = data.get('tuning') or {}
+    rows = tuning_check(tuning) if isinstance(tuning, dict) else tuning_check({})
+
+    issues = []
+    n_chord_wrong = 0
+    chords = data.get('chords') or []
+    if chords is not None:
+        if not isinstance(chords, list):
+            raise ValueError('chords 必须是列表')
+        for c in chords:
+            rc = chord_check(c)
+            if not rc['ok']:
+                n_chord_wrong += 1
+                issues.append({'sev': rc['sev'], 'item': '%s 和弦' % rc['name'],
+                               'detail': '；'.join(rc['wrong']),
+                               'why': '按品错了和弦发声就不对，先照指法表逐弦核对'})
+
+    plan_issues, plan_miss = plan_check(data.get('plan'))
+    issues.extend(plan_issues)
+
+    # 调音偏差项
+    for r in rows:
+        if r['sev'] >= 3:
+            issues.append({'sev': 3, 'item': r['name'],
+                           'detail': '实测 %.2f 赫兹，标准 %.2f 赫兹，偏差 %+.1f 音分'
+                                     % (r['freq'], r['ref'], r['cents']),
+                           'why': '偏差超过 20 音分，可能调错弦或调错八度，整弦重调'})
+        elif r['sev'] == 2:
+            issues.append({'sev': 2, 'item': r['name'],
+                           'detail': '实测 %.2f 赫兹，标准 %.2f 赫兹，偏差 %+.1f 音分'
+                                     % (r['freq'], r['ref'], r['cents']),
+                           'why': '偏差 %s，往%s方向微调'
+                                  % ('较大' if abs(r['cents']) > 10 else '较小',
+                                     '低' if r['cents'] > 0 else '高')})
+
+    issues.sort(key=lambda r: -r['sev'])
+
+    n_bad = len([r for r in rows if r['sev'] >= 3])
+    if n_bad or any(i['sev'] == 3 for i in issues):
+        level = '有明显问题'
+    elif any(r['status'] == '明显跑调' for r in rows):
+        level = '有明显问题'
+    elif issues:
+        level = '有可改进项'
+    elif rows and all(r['cents'] is None for r in rows) and not chords and not plan_miss:
+        level = '待确认'
+    elif any(r['cents'] is None for r in rows):
+        level = '待确认'
+    else:
+        level = '合格'
+
+    worst = sorted([r for r in rows if r['cents'] is not None],
+                   key=lambda r: -abs(r['cents']))
+    return {
+        'level': level, 'rows': rows, 'issues': issues,
+        'n_chord_wrong': n_chord_wrong,
+        'worst': [r['name'] for r in worst[:3]],
+        'chords': CHORDS, 'plan_stages': PLAN_STAGES,
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 尤克里里入门练习核查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['level'])
+    if r['worst']:
+        L.append('- 偏差最大的先调：%s' % '、'.join(r['worst']))
+    L.append('')
+    L.append('## 二、四弦调音判定')
+    L.append('')
+    L.append('| 弦 | 标准频率 | 实测频率 | 偏差 | 判定 |')
+    L.append('|---|---|---|---|---|')
+    for row in r['rows']:
+        L.append('| %s | %.2f 赫兹 | %s | %s | %s |'
+                 % (row['name'], row['ref'],
+                    '%.2f 赫兹' % row['freq'] if row['freq'] else '未填写',
+                    '%+.1f 音分' % row['cents'] if row['cents'] is not None else '未填写',
+                    row['status']))
+    L.append('')
+    if r['issues']:
+        L.append('## 三、问题与整改')
+        L.append('')
+        L.append('| 严重度 | 项目 | 问题 | 为什么要在意 |')
+        L.append('|---|---|---|---|')
+        for i in r['issues']:
+            L.append('| %s | %s | %s | %s |'
+                     % ('严重' if i['sev'] == 3 else '可改进', i['item'], i['detail'], i['why']))
+        L.append('')
+    L.append('## 四、练习路径四阶段')
+    L.append('')
+    L.append('| 顺序 | 阶段 |')
+    L.append('|---|---|')
+    for s in r['plan_stages']:
+        L.append('| %s | %s |' % (PLAN_STAGES.index(s) + 1, PLAN_LABELS[s]))
+    L.append('')
+    L.append('## 五、人工确认清单')
+    L.append('')
+    L.append('- [ ] 四弦已调到 gCEA 标准音')
+    L.append('- [ ] 按品手指落在品丝后方一格')
+    L.append('- [ ] 换和弦先找共同指')
+    L.append('- [ ] 扫弦用手腕带动')
+    L.append('- [ ] 手指疼就停，每天 15 到 25 分钟')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    # 1 标准频率
+    ck(abs(freq_of(67) - 392.0) < 0.01, 'G4 应为 392.00，实为 %.4f' % freq_of(67))
+    ck(abs(freq_of(60) - 261.63) < 0.01, 'C4 应为 261.63，实为 %.4f' % freq_of(60))
+    ck(abs(freq_of(64) - 329.63) < 0.01, 'E4 应为 329.63，实为 %.4f' % freq_of(64))
+    ck(abs(freq_of(69) - 440.0) < 1e-9, 'A4 应为 440.00，实为 %.4f' % freq_of(69))
+
+    # 2 音分
+    ck(abs(cents(440 * 2, 440) - 1200) < 1e-9, '高八度 +1200 音分')
+    ck(abs(cents(440, 440)) < 1e-9, '同频 0 音分')
+
+    # 3 全标准正例（调音）
+    std = {k: freq_of(STRING_MIDI[k]) for k in STRING_KEYS}
+    r3 = calc({'tuning': std})
+    ck(r3['level'] == '合格', '全标准调音应合格，实为 %s' % r3['level'])
+
+    # 4 反例：四弦调成 370（严重跑调）
+    bad = dict(std)
+    bad['g'] = 370.0
+    r4 = calc({'tuning': bad})
+    ck(r4['level'] == '有明显问题', '四弦 370 应判严重，实为 %s' % r4['level'])
+    ck(r4['rows'][0]['sev'] == 3, '四弦应 sev3，实为 %s' % r4['rows'][0]['sev'])
+
+    # 5 分级边界
+    def tun(dev):
+        out = dict(std)
+        out['g'] = freq_of(67) * (2 ** (dev / 1200.0))
+        return out
+
+    ck(calc({'tuning': tun(5)})['level'] == '合格', '5 音分边界应合格')
+    ck(calc({'tuning': tun(8)})['level'] == '有可改进项', '8 音分应判需微调')
+    ck(calc({'tuning': tun(15)})['level'] == '有明显问题', '15 音分应判明显跑调')
+    ck(calc({'tuning': tun(40)})['level'] == '有明显问题', '40 音分应判严重跑调')
+
+    # 6 反例：C 和弦按成一弦 0 品
+    r6 = calc({'chords': [{'name': 'C', 'frets': [0, 0, 0, 0]}]})
+    ck(r6['n_chord_wrong'] == 1, 'C 错应记 1 个错和弦，实为 %d' % r6['n_chord_wrong'])
+    ck(any(i['item'] == 'C 和弦' for i in r6['issues']), '应点名 C 和弦')
+    ck('一弦' in r6['issues'][0]['detail'], '应指出一弦错，实为 %s' % r6['issues'][0]['detail'])
+
+    # 7 正确的 C 和弦
+    r7 = calc({'chords': [{'name': 'C', 'frets': [0, 0, 0, 3]}]})
+    ck(r7['n_chord_wrong'] == 0, '正确 C 不应有错和弦')
+
+    # 8 反例：F 和弦二弦按成 0 品
+    r8 = calc({'chords': [{'name': 'F', 'frets': [2, 0, 0, 0]}]})
+    ck(any(i['item'] == 'F 和弦' for i in r8['issues']), 'F 错应点名')
+    ck('二弦' in r8['issues'][0]['detail'], '应指出二弦错')
+
+    # 9 反例：练习路径缺阶段1、且顺序颠倒
+    r9 = calc({'plan': ['first_song', 'single_chord']})
+    ck(any('缺少阶段1' in i['detail'] for i in r9['issues']), '应指出缺阶段1')
+    ck(any('之后' in i['detail'] for i in r9['issues']), '应指出顺序颠倒')
+
+    # 10 正确的练习路径
+    r10 = calc({'plan': ['tuning', 'single_chord', 'transition', 'first_song']})
+    ck(r10['issues'] == [], '正确路径不应有问题，实为 %s' % r10['issues'])
+
+    # 11 判定顺序：调音严重跑调不应因缺 plan 判待确认
+    r11 = calc({'tuning': bad})
+    ck(r11['level'] == '有明显问题', '只填跑调调音不应判待确认，实为 %s' % r11['level'])
+
+    # 12 偏移排序方向：偏差最大的排最前
+    r12 = calc({'tuning': {k: freq_of(STRING_MIDI[k]) for k in STRING_KEYS},
+                'chords': [{'name': 'C', 'frets': [0, 0, 0, 0]}]})
+    ck(r12['worst'][0] == '四弦(g)', '最差应四弦，实为 %s' % r12['worst'])
+
+    # 13 非法输入
+    for bad_in, why in (
+        ({'tuning': {'g': 'x'}}, '频率非数字'),
+        ({'tuning': {'g': 0}}, '频率为 0'),
+        ({'chords': [{'name': 'X', 'frets': [0, 0, 0, 3]}]}, '未知和弦'),
+        ({'chords': [{'name': 'C', 'frets': [0, 0, 0]}]}, 'frets 长度错'),
+        ({'plan': 'tuning'}, 'plan 非列表'),
+    ):
+        try:
+            calc(bad_in)
+            ck(False, '用例13 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 14 BOM 两条路径
+    bom = '﻿' + json.dumps({'tuning': bad})
+    r14 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r14['level'] == '有明显问题', 'BOM 字符串应解析，实为 %s' % r14['level'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe_u.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'chords': [{'name': 'C', 'frets': [0, 0, 0, 0]}]}))
+    try:
+        r14b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r14b['n_chord_wrong'] == 1, 'BOM 文件应解析出错和弦，实为 %s' % r14b['n_chord_wrong'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 15 输出结构
+    md = render_md(r4)
+    for key in ('总体判定', '四弦调音判定', '练习路径四阶段', '人工确认清单'):
+        ck(key in md, 'Markdown 应含章节 %s' % key)
+    ck(len(CHORDS) == 10, '和弦应 10 个，实为 %d' % len(CHORDS))
+    ck(len(STRING_KEYS) == 4, '弦应 4 根')
+    ck(CHORDS['C'] == [0, 0, 0, 3], 'C 和弦指法应为 [0,0,0,3]')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 四弦标准频率/音分/全标准正例/四弦370反例/'
+        '分级边界(5,8,15,40)/C和弦错反例/正确C/F和弦错反例/路径缺阶段与颠倒/'
+        '正确路径/判定顺序/偏差排序/非法输入/BOM两条路径/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='尤克里里入门练习核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+
+
+
+
+

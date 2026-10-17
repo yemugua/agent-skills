@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="48" fill="#0f9d8b"/>
+  <circle cx="128" cy="118" r="64" fill="#ffffff" opacity="0.12"/>
+  <path d="M128 52c-30 0-54 24-54 54 0 38 54 78 54 78s54-40 54-78c0-30-24-54-54-54z" fill="#ffffff"/>
+  <path d="M128 78v52M102 104h52" stroke="#0f9d8b" stroke-width="12" stroke-linecap="round" fill="none"/>
+  <rect x="40" y="208" width="176" height="22" rx="11" fill="#ffffff" opacity="0.85"/>
+  <text x="128" y="224" font-size="13" fill="#0f9d8b" text-anchor="middle" font-family="sans-serif">医美退费</text>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#c0532b"/>
+  <rect x="16" y="36" width="32" height="6" rx="3" fill="#7a3318"/>
+  <path d="M20 36 q12 -16 24 0" fill="none" stroke="#f0c08a" stroke-width="3"/>
+  <text x="32" y="22" font-size="15" text-anchor="middle" fill="#fbe9d2">烧烤</text>
+</svg>

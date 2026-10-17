@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="演出门票">
+  <rect width="256" height="256" rx="40" fill="#fff5e6"/>
+  <rect x="44" y="70" width="168" height="116" rx="16" fill="#ff8f3c"/>
+  <rect x="44" y="70" width="168" height="26" rx="13" fill="#e0651f"/>
+  <circle cx="196" cy="128" r="30" fill="#fff5e6"/>
+  <circle cx="196" cy="128" r="20" fill="#ff8f3c"/>
+  <rect x="70" y="120" width="86" height="12" rx="6" fill="#fff5e6"/>
+  <rect x="70" y="146" width="56" height="12" rx="6" fill="#ffe0c2"/>
+  <path d="M44 150 v-8 a10 10 0 0 1 20 0 v8 a10 10 0 0 1 -20 0 z" fill="#e0651f"/>
+  <path d="M44 168 v-8 a10 10 0 0 1 20 0 v8 a10 10 0 0 1 -20 0 z" fill="#e0651f"/>
+</svg>

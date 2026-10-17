@@ -1,0 +1,216 @@
+# -*- coding: utf-8 -*-
+"""瓷砖空鼓记录校验脚本。
+
+用法:
+  python check.py --file 空鼓记录.json
+  python check.py --selftest
+
+JSON 字段:
+  total_tiles      总砖数 (整数)
+  hollow_tiles     整砖/空鼓砖数 (整数)
+  edge_hollow      是否存在边角空鼓 (true/false)
+  hollow_ratio     整体空鼓率百分比 (数字)
+  sampled          是否仅抽样未逐砖 (true/false)
+"""
+import argparse
+import json
+import os
+import sys
+
+SINGLE_LIMIT = 5.0
+OVERALL_LIMIT = 5.0
+
+
+def evaluate(data):
+    reasons = []
+    ok = True
+
+    sampled = data.get("sampled")
+    if sampled is True:
+        ok = False
+        reasons.append("仅抽样未逐砖敲击, 检查不完整, 不能判定合格")
+
+    edge = data.get("edge_hollow")
+    if edge is True:
+        ok = False
+        reasons.append("存在边角空鼓(边角禁空鼓), 易掉砖, 须处理")
+
+    total = data.get("total_tiles")
+    hollow = data.get("hollow_tiles")
+    if total is None or hollow is None:
+        ok = False
+        reasons.append("未填写总砖数或空鼓砖数, 无法算整体空鼓率")
+    else:
+        try:
+            t = int(total)
+            h = int(hollow)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("总砖数/空鼓砖数不是整数")
+        else:
+            if t <= 0:
+                ok = False
+                reasons.append("总砖数必须大于 0")
+            else:
+                ratio = h * 100.0 / t
+                if ratio > OVERALL_LIMIT:
+                    ok = False
+                    reasons.append("整体空鼓率 %.1f%% 超过 5%% 上限, 系统性问题须转专业整改" % ratio)
+
+    rr = data.get("hollow_ratio")
+    if rr is not None:
+        try:
+            r = float(rr)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("hollow_ratio 不是数字")
+        else:
+            if r > SINGLE_LIMIT:
+                ok = False
+                reasons.append("单砖/整体空鼓率 %.1f%% 超过 5%% 上限" % r)
+
+    if ok:
+        reasons.append("空鼓记录通过: 逐砖检查、无边角空鼓、空鼓率合规")
+    return ok, reasons
+
+
+def load_json(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def selftest():
+    passed = 0
+
+    # 1. 正例: 逐砖, 无边角, 100砖2空, 整体2% -> 通过
+    ok, rs = evaluate({
+        "total_tiles": 100, "hollow_tiles": 2, "edge_hollow": False,
+        "hollow_ratio": 2.0, "sampled": False,
+    })
+    assert ok is True, "正例应通过: %s" % rs
+    passed += 1
+
+    # 2. 反例: 边角空鼓 -> 必须不合格
+    ok, rs = evaluate({
+        "total_tiles": 100, "hollow_tiles": 2, "edge_hollow": True,
+        "hollow_ratio": 2.0, "sampled": False,
+    })
+    assert ok is False, "边角空鼓必须判不合格"
+    assert any("边角" in r for r in rs), "边角原因缺失: %s" % rs
+    passed += 1
+
+    # 3. 反例: 整体空鼓率 10% -> 必须不合格
+    ok, rs = evaluate({
+        "total_tiles": 100, "hollow_tiles": 10, "edge_hollow": False,
+        "hollow_ratio": 10.0, "sampled": False,
+    })
+    assert ok is False, "整体超率必须判不合格"
+    assert any("5%" in r for r in rs), "超率原因缺失: %s" % rs
+    passed += 1
+
+    # 4. 反例: 仅抽样 -> 必须不合格
+    ok, rs = evaluate({
+        "total_tiles": 100, "hollow_tiles": 2, "edge_hollow": False,
+        "hollow_ratio": 2.0, "sampled": True,
+    })
+    assert ok is False, "抽样必须判不合格"
+    assert any("抽样" in r for r in rs), "抽样原因缺失: %s" % rs
+    passed += 1
+
+    # 5. 反例: 缺总砖数 -> 必须不合格
+    ok, rs = evaluate({
+        "hollow_tiles": 2, "edge_hollow": False,
+        "hollow_ratio": 2.0, "sampled": False,
+    })
+    assert ok is False, "缺总砖数必须判不合格"
+    passed += 1
+
+    # 6. 反例: 单砖率 8% -> 必须不合格
+    ok, rs = evaluate({
+        "total_tiles": 100, "hollow_tiles": 2, "edge_hollow": False,
+        "hollow_ratio": 8.0, "sampled": False,
+    })
+    assert ok is False, "单砖超率必须判不合格"
+    passed += 1
+
+    # 7. 反例: 总砖数 0 -> 必须不合格
+    ok, rs = evaluate({
+        "total_tiles": 0, "hollow_tiles": 0, "edge_hollow": False,
+        "hollow_ratio": 0.0, "sampled": False,
+    })
+    assert ok is False, "总砖数0必须判不合格"
+    passed += 1
+
+    # 8. 反例: 边数空鼓+超率叠加 -> 必须不合格且含两项
+    ok, rs = evaluate({
+        "total_tiles": 100, "hollow_tiles": 10, "edge_hollow": True,
+        "hollow_ratio": 10.0, "sampled": False,
+    })
+    assert ok is False, "多重不合格必须判不合格"
+    assert any("边角" in r for r in rs) and any("5%" in r for r in rs), "应含两项: %s" % rs
+    passed += 1
+
+    # 9. BOM 处理
+    here = os.path.dirname(os.path.abspath(__file__))
+    bom_path = os.path.join(here, "_bom_sample.json")
+    payload = json.dumps({
+        "total_tiles": 100, "hollow_tiles": 2, "edge_hollow": False,
+        "hollow_ratio": 2.0, "sampled": False,
+    }, ensure_ascii=False)
+    with open(bom_path, "wb") as f:
+        f.write(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+    d = load_json(bom_path)
+    assert d.get("edge_hollow") is False, "BOM 输入 key 不应带 \﻿"
+    assert "total_tiles" in d, "BOM 输入 key 必须干净"
+    os.remove(bom_path)
+    passed += 1
+
+    # 10. 边界: 整体恰好 5% -> 通过(<=)
+    ok, rs = evaluate({
+        "total_tiles": 100, "hollow_tiles": 5, "edge_hollow": False,
+        "hollow_ratio": 5.0, "sampled": False,
+    })
+    assert ok is True, "5%边界应通过: %s" % rs
+    passed += 1
+
+    line = "SELFTEST OK (%d assertions)" % passed
+    return line, passed
+
+
+def main():
+    ap = argparse.ArgumentParser(description="瓷砖空鼓记录校验")
+    ap.add_argument("--file", help="空鼓记录 JSON")
+    ap.add_argument("--selftest", action="store_true", help="内置自检")
+    args = ap.parse_args()
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        line, total = selftest()
+        with open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        print(line)
+        return 0 if line.startswith("SELFTEST OK") else 1
+
+    if args.file:
+        try:
+            data = load_json(args.file)
+        except Exception as e:  # noqa: BLE001
+            msg = "读取失败: %s" % e
+            with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            print(msg)
+            return 1
+        ok, reasons = evaluate(data)
+        out = ("PASS " if ok else "FAIL ") + "；".join(reasons)
+        with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+            f.write(out + "\n")
+        print(out)
+        return 0 if ok else 1
+
+    print("需要 --file 或 --selftest")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

@@ -1,0 +1,384 @@
+# -*- coding: utf-8 -*-
+"""猫抓家具引导方案校验脚本。
+
+读入一份方案的 json，核对：
+  1. 抓具总数是否满足猫数加一
+  2. 按被抓对象判断所需形态（立面、平面、高立面）是否配齐
+  3. 立式抓具高度是否足够
+  4. 新抓具到原抓点的距离是否在转移有效范围内
+  5. 抓具是否稳固
+  6. 是否使用了禁止做法
+  7. 指甲修剪间隔是否在周期内
+
+结论分三档：先处理 / 待确认 / 可照此执行。
+判定顺序固定：先看真实缺陷，再看信息是否完整。
+
+用法:
+  python scratching_fix.py --selftest
+  python scratching_fix.py --file plan.json
+"""
+import argparse
+import json
+import os
+import sys
+
+HEREDIR = os.path.dirname(os.path.abspath(__file__))
+
+TARGET_FORM = {
+    "沙发扶手": "立面", "桌腿": "立面", "门框": "立面", "椅子腿": "立面",
+    "窗帘": "高立面", "墙面": "高立面", "书柜边": "高立面",
+    "地毯": "平面", "地垫": "平面", "床沿": "平面", "沙发坐面": "平面",
+    "纸箱": "平面", "被子": "平面",
+}
+FORM_NEED = {"立面": "立式", "高立面": "立式", "平面": "平放"}
+
+MATERIAL = ["剑麻", "瓦楞纸", "地毯面", "麻布面"]
+MATERIAL_ALIAS = {"剑麻绳": "剑麻", "麻绳": "剑麻", "纸质": "瓦楞纸",
+                  "纸箱抓板": "瓦楞纸", "地毯": "地毯面", "麻布": "麻布面"}
+PREFER_MATERIAL = {
+    "地毯": "地毯面", "地垫": "地毯面", "纸箱": "瓦楞纸", "被子": "瓦楞纸",
+    "窗帘": "剑麻", "墙面": "剑麻", "书柜边": "剑麻",
+}
+
+BAN_METHOD = ["体罚", "追打", "喷水", "喷雾", "恐吓", "防抓套", "除爪", "摇罐"]
+MILD_METHOD = ["气味引导", "临时遮挡", "当场奖励", "定期修剪", "渐进撤除"]
+
+HEIGHT_NEED = {"小猫": 40, "成猫": 60}
+MAX_DISTANCE = 50
+TRIM_MAX = 21
+TRIM_MIN = 7
+REQUIRED = ["cat_count", "total_posts", "damage_targets", "distance_cm", "methods"]
+
+
+def norm(s):
+    return str(s).strip().replace(" ", "").replace("　", "")
+
+
+def load_plan(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def canon_material(value):
+    n = norm(value)
+    if n in MATERIAL:
+        return n
+    return MATERIAL_ALIAS.get(n)
+
+
+def check(plan):
+    bad = []
+    warn = []
+    miss = []
+
+    for k in REQUIRED:
+        if k not in plan or plan[k] in ("", None):
+            miss.append("缺少必填字段 %s" % k)
+
+    try:
+        cats = int(plan.get("cat_count"))
+    except (TypeError, ValueError):
+        cats = None
+        miss.append("猫的数量无法解析为整数")
+
+    try:
+        total = int(plan.get("total_posts"))
+    except (TypeError, ValueError):
+        total = None
+        miss.append("抓具总数无法解析为整数")
+
+    targets = [norm(x) for x in (plan.get("damage_targets") or [])]
+    unknown = [t for t in targets if t not in TARGET_FORM]
+    if unknown:
+        miss.append("被抓对象 %s 无法识别，应在 %s 取值" % (
+            "/".join(unknown), "/".join(TARGET_FORM.keys())))
+
+    # 1 数量：猫数加一
+    if cats is not None and total is not None:
+        need = cats + 1
+        if total < need:
+            bad.append("抓具总数 %d 处少于猫数加一所需的 %d 处：猫没有任何别的选择，"
+                       "它只能继续抓家具；至少要加到 %d 处并分散在不同房间" % (total, need, need))
+
+    # 2 形态：按被抓对象反推需要哪些形态
+    need_form = set()
+    for t in targets:
+        if t in TARGET_FORM:
+            need_form.add(FORM_NEED[TARGET_FORM[t]])
+    if "立式" in need_form and not plan.get("vertical_exists"):
+        bad.append("被抓对象含立面形态（%s），但方案里没有立式抓具："
+                   "猫站立拉伸的需求无法被平放抓板满足，它会绕过抓板继续抓家具" % (
+                       "/".join([t for t in targets
+                                 if TARGET_FORM.get(t) in ("立面", "高立面")]) or "立面家具"))
+    if "平放" in need_form and not plan.get("flat_exists"):
+        bad.append("被抓对象含平面形态，但方案里没有平放抓板："
+                   "加立式抓柱对抓地毯完全没有作用，必须配平放抓板并压在被抓处")
+
+    # 3 立式高度
+    if plan.get("vertical_exists"):
+        try:
+            h = float(plan.get("vertical_height_cm"))
+        except (TypeError, ValueError):
+            miss.append("立式抓具高度缺失或无法解析")
+            h = None
+        if h is not None:
+            need_h = HEIGHT_NEED["小猫"] if (plan.get("cat_age") == "小猫") else HEIGHT_NEED["成猫"]
+            if h < need_h:
+                bad.append("立式抓具高度 %.0f 厘米低于 %d 厘米：高度不够时猫无法完成站立抓伸，"
+                           "它会跳过这个抓具；正确做法是让它站着抓一次，"
+                           "量前爪最高点到地面再加 10 厘米" % (h, need_h))
+
+    # 4 转移距离
+    try:
+        dist = float(plan.get("distance_cm"))
+        if dist > MAX_DISTANCE:
+            bad.append("新抓具到原抓点 %.0f 厘米超过 %d 厘米口径："
+                       "这是整套方案里最容易做错的一项，距离过远时转移基本失败，"
+                       "且常被误判成猫不喜欢新抓具" % (dist, MAX_DISTANCE))
+        elif dist < 0:
+            bad.append("转移距离为负数，数据无效")
+    except (TypeError, ValueError):
+        pass
+
+    # 5 稳定性
+    if plan.get("stable") is False:
+        bad.append("抓具不够稳固：猫站立拉伸时重心前移，晃过一次的抓具通常被永久放弃，"
+                   "这一项没有「再试试」的机会")
+
+    # 6 禁止做法
+    methods = [norm(m) for m in (plan.get("methods") or [])]
+    hit = []
+    for m in methods:
+        for b in BAN_METHOD:
+            if b in m:
+                hit.append(b)
+    for h in sorted(set(hit)):
+        if h in ("体罚", "追打", "喷水", "喷雾", "恐吓", "摇罐"):
+            bad.append("使用了禁止做法「%s」：只在人在时有效且制造对人的恐惧，一出门照抓不误；"
+                       "应改用临时遮挡加转移期保护" % h)
+        elif h == "防抓套":
+            bad.append("使用了「防抓套」：长期佩戴影响爪的正常伸缩与旧爪鞘脱落，"
+                       "且抓挠动作照做家具照损；应改为定期修剪加提供充足抓具，"
+                       "确有使用必要时请咨询兽医")
+        elif h == "除爪":
+            bad.append("方案涉及除爪手术：属手术性处置，涉及疼痛、行走改变与行为恶化风险，"
+                       "且多地已限制；请务必先向兽医充分咨询")
+
+    # 7 指甲修剪周期
+    trim = plan.get("nail_trim_days")
+    if trim is not None:
+        try:
+            td = int(trim)
+            if td > TRIM_MAX:
+                bad.append("指甲修剪间隔 %d 天超过 %d 天上限：室内猫打磨不足，"
+                           "指甲会长到扎进肉垫" % (td, TRIM_MAX))
+            elif td < TRIM_MIN:
+                bad.append("指甲修剪间隔 %d 天短于 %d 天：过于频繁容易引发抗拒且没有必要" % (
+                    td, TRIM_MIN))
+        except (TypeError, ValueError):
+            warn.append("修剪间隔无法解析为整数")
+
+    # 8 材质偏好是否大致匹配
+    mat = canon_material(plan.get("material", ""))
+    if mat is None and plan.get("material"):
+        miss.append("抓面材质「%s」无法识别，应在 %s 取值" % (
+            plan.get("material"), "/".join(MATERIAL)))
+    for t in targets:
+        want = PREFER_MATERIAL.get(t)
+        if want and mat and mat != want:
+            warn.append("被抓对象「%s」通常对应偏好材质「%s」，当前选的是「%s」："
+                        "建议按它现在抓的东西反推，而不是按外观挑" % (t, want, mat))
+            break
+
+    if bad:
+        verdict = "先处理"
+    elif miss:
+        verdict = "待确认"
+    else:
+        verdict = "可照此执行"
+    return {"verdict": verdict, "bad": bad, "warn": warn, "miss": miss}
+
+
+def render(plan, res):
+    lines = []
+    lines.append("# 猫抓家具引导方案核对结果")
+    lines.append("")
+    lines.append("猫数：%s ｜ 抓具：%s 处 ｜ 被抓对象：%s" % (
+        plan.get("cat_count", "-"), plan.get("total_posts", "-"),
+        "/".join(plan.get("damage_targets") or []) or "-"))
+    lines.append("")
+    lines.append("结论：**%s**" % res["verdict"])
+    lines.append("")
+    if res["bad"]:
+        lines.append("## 不合格项（必须改方案后再实施）")
+        for x in res["bad"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if res["miss"]:
+        lines.append("## 待确认项（信息不足）")
+        for x in res["miss"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if res["warn"]:
+        lines.append("## 提示项")
+        for x in res["warn"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if not res["bad"] and not res["miss"]:
+        lines.append("数量、形态、高度、距离、稳定性与手段均在口径内。"
+                     "按四步转移流程执行，四周零改善时回头复查这四项，不要只加一个抓板。")
+    lines.append("")
+    lines.append("注：本结果为家庭引导方案核对，不构成兽医诊疗意见。")
+    return "\n".join(lines) + "\n"
+
+
+def write_out(text, name="_last_result.txt"):
+    p = os.path.join(HEREDIR, name)
+    with open(p, "w", encoding="utf-8") as f:
+        f.write(text)
+    return p
+
+
+def selftest():
+    ok = 0
+    fail = []
+
+    def check_case(name, cond, extra=""):
+        nonlocal ok
+        if cond:
+            ok += 1
+        else:
+            fail.append(name + (" -> " + extra if extra else ""))
+
+    base = {
+        "cat_count": 2, "total_posts": 3, "vertical_exists": True,
+        "vertical_height_cm": 70, "flat_exists": True,
+        "damage_targets": ["沙发扶手", "地毯"], "distance_cm": 40,
+        "material": "剑麻", "stable": True, "nail_trim_days": 14,
+        "methods": ["气味引导", "临时遮挡", "当场奖励"], "cat_age": "成猫",
+    }
+
+    # 1 正例
+    r = check(dict(base))
+    check_case("正例应判可照此执行", r["verdict"] == "可照此执行", str(r))
+
+    # 2 反例：数量不足（猫数加一都不到）
+    bad_cnt = dict(base, cat_count=3, total_posts=2)
+    r = check(bad_cnt)
+    check_case("反例-抓具数量不足应为先处理", r["verdict"] == "先处理", str(r))
+    check_case("反例-数量不足应点名需要几处", any("4" in x and "猫数加一" in x for x in r["bad"]))
+
+    # 3 反例：缺立式但有立面被抓对象
+    bad_form = dict(base, vertical_exists=False)
+    r = check(bad_form)
+    check_case("反例-缺立式抓具应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 4 反例：缺平放但有地毯被抓
+    bad_flat = dict(base, flat_exists=False, damage_targets=["地毯"])
+    r = check(bad_flat)
+    check_case("反例-缺平放抓板应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 5 反例：立式高度不足
+    bad_h = dict(base, vertical_height_cm=35)
+    r = check(bad_h)
+    check_case("反例-高度35厘米应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 6 反例：转移距离过远
+    bad_d = dict(base, distance_cm=180)
+    r = check(bad_d)
+    check_case("反例-距离180厘米应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 7 反例：使用了禁止做法喷水
+    bad_spray = dict(base, methods=["气味引导", "喷水"])
+    r = check(bad_spray)
+    check_case("反例-喷水应为先处理", r["verdict"] == "先处理", str(r))
+    check_case("反例-喷水应给替代做法", any("临时遮挡" in x for x in r["bad"]))
+
+    # 8 反例：涉及除爪手术
+    bad_dec = dict(base, methods=["气味引导", "除爪手术"])
+    r = check(bad_dec)
+    check_case("反例-除爪手术应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 9 反例：修剪间隔过长
+    bad_trim = dict(base, nail_trim_days=45)
+    r = check(bad_trim)
+    check_case("反例-修剪间隔45天应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 10 反例：抓具不稳
+    bad_stable = dict(base, stable=False)
+    r = check(bad_stable)
+    check_case("反例-抓具不稳固应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 11 缺项 -> 待确认
+    incom = dict(base)
+    del incom["distance_cm"]
+    r = check(incom)
+    check_case("缺距离应判待确认", r["verdict"] == "待确认", str(r))
+
+    # 12 无法识别的被抓对象 -> 待确认
+    unknown = dict(base, damage_targets=["冰箱门"])
+    r = check(unknown)
+    check_case("未知被抓对象应出现在待确认", any("无法识别" in x for x in r["miss"]), str(r))
+
+    # 13 判定顺序：既有缺项又有缺陷时必须先处理
+    both = dict(base, distance_cm=200)
+    del both["material"]
+    r = check(both)
+    check_case("缺陷优先于缺项", r["verdict"] == "先处理", str(r))
+
+    # 14 UTF-8 BOM 输入必须能被正确处理
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        p = os.path.join(td, "plan.json")
+        with open(p, "w", encoding="utf-8-sig") as f:
+            json.dump(dict(base), f, ensure_ascii=False)
+        with open(p, "rb") as f:
+            head = f.read(3)
+        check_case("样例文件确实带BOM", head == b"\xef\xbb\xbf")
+        r = check(load_plan(p))
+        check_case("带BOM文件应正常解析并判可照此执行", r["verdict"] == "可照此执行", str(r))
+
+        # 15 BOM + 反例仍必须判不合格
+        p2 = os.path.join(td, "bad.json")
+        with open(p2, "w", encoding="utf-8-sig") as f:
+            json.dump(dict(bad_spray), f, ensure_ascii=False)
+        r = check(load_plan(p2))
+        check_case("带BOM反例仍判先处理", r["verdict"] == "先处理", str(r))
+
+    # 16 材质别名解析
+    check_case("材质别名应能解析", canon_material("剑麻绳") == "剑麻")
+
+    # 17 排序方向锁定：高度需求中成猫必须高于小猫
+    check_case("成猫高度需求应高于小猫", HEIGHT_NEED["成猫"] > HEIGHT_NEED["小猫"])
+
+    lines = ["SELFTEST OK (%d passed, 0 failed)" % ok]
+    if fail:
+        lines = ["SELFTEST FAILED (%d passed, %d failed)" % (ok, len(fail))]
+        lines += ["- " + x for x in fail]
+    write_out("\n".join(lines) + "\n", "_selftest_result.txt")
+    print("\n".join(lines))
+    return 0 if not fail else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description="猫抓家具引导方案校验")
+    ap.add_argument("--file", help="方案 json 文件路径")
+    ap.add_argument("--selftest", action="store_true", help="运行自检")
+    a = ap.parse_args()
+    if a.selftest:
+        return selftest()
+    if not a.file:
+        ap.print_help()
+        return 2
+    plan = load_plan(a.file)
+    res = check(plan)
+    p = write_out(render(plan, res))
+    print("结果已写入: %s" % p)
+    print("结论: %s" % res["verdict"])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+

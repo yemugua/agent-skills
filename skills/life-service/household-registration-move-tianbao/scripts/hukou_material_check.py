@@ -1,0 +1,343 @@
+# -*- coding: utf-8 -*-
+"""\u6237\u53e3\u8fc1\u79fb\u529e\u7406\u4e0e\u6750\u6599\u6838\u67e5\u3002
+
+\u7528\u6cd5:
+  python hukou_material_check.py --selftest
+  python hukou_material_check.py --file \u60c5\u51b5.txt --type \u8d2d\u623f\u843d\u6237 --as-of 2026-10-08
+  python hukou_material_check.py --file \u60c5\u51b5.txt --permit-date 2026-09-20 --out \u7ed3\u679c.md
+"""
+import argparse
+import datetime
+import io
+import json
+import os
+import re
+import sys
+
+FAILS = []
+
+# \u7c7b\u578b\u5224\u5b9a\u4f18\u5148\u7ea7\uff1a\u5de5\u4f5c\u8c03\u52a8 > \u5927\u4e2d\u4e13\u5b66\u751f > \u96c6\u4f53\u6237\u8f6c\u5bb6\u5ead\u6237 > \u4eba\u624d\u5f15\u8fdb > \u52a1\u5de5\u7ecf\u5546 > \u8d2d\u623f\u843d\u6237 > \u592b\u59bb\u6295\u9760 > \u7236\u6bcd\u5b50\u5973\u6295\u9760
+TYPE_PATTERNS = [
+    ("\u5de5\u4f5c\u8c03\u52a8", r"(\u8c03\u52a8|\u7ec4\u7ec7\u4eba\u4e8b|\u8c03\u4ee4|\u8c03\u52a8\u51fd|\u63a5\u6536\u5355\u4f4d|\u5de5\u4f5c\u8c03\u52a8)"),
+    ("\u5927\u4e2d\u4e13\u5b66\u751f", r"(\u5165\u5b66|\u5f55\u53d6|\u5f55\u53d6\u901a\u77e5\u4e66|\u5927\u5b66\u6bd5\u4e1a|\u6bd5\u4e1a\u8fc1\u51fa|\u5b66\u6821\u96c6\u4f53\u6237|\u9ad8\u6821|\u5927\u5b66)"),
+    ("\u96c6\u4f53\u6237\u8f6c\u5bb6\u5ead\u6237", r"(\u96c6\u4f53\u6237|\u96c6\u4f53\u6237\u53e3|\u4eba\u624d\u5e02\u573a|\u4eba\u624d\u4e2d\u5fc3|\u5355\u4f4d\u96c6\u4f53\u6237|\u8fc1\u51fa\u96c6\u4f53\u6237)"),
+    ("\u4eba\u624d\u5f15\u8fdb", r"(\u4eba\u624d\u5f15\u8fdb|\u4eba\u624d\u843d\u6237|\u5b66\u5386\u843d\u6237|\u672c\u79d1|\u7855\u58eb|\u7814\u7a76\u751f|\u535a\u58eb|\u804c\u79f0|\u6280\u80fd\u7b49\u7ea7|\u6d77\u5f52|\u7559\u5b66\u751f)"),
+    ("\u52a1\u5de5\u7ecf\u5546", r"(\u52a1\u5de5|\u52b3\u52a8\u5408\u540c|\u8425\u4e1a\u6267\u7167|\u7ecf\u5546|\u4e2a\u4f53\u6237|\u5c31\u4e1a\u843d\u6237|\u793e\u4fdd\u7f34\u7eb3\u6ee1|\u8fde\u7eed\u7f34\u7eb3\u793e\u4fdd)"),
+    ("\u8d2d\u623f\u843d\u6237", r"(\u4e70\u623f|\u8d2d\u623f|\u623f\u4ea7|\u4e0d\u52a8\u4ea7\u6743\u8bc1|\u623f\u4ea7\u8bc1|\u81ea\u6709\u4f4f\u623f|\u8d2d\u623f\u843d\u6237|\u843d\u6237\u4e70\u623f)"),
+    ("\u592b\u59bb\u6295\u9760", r"(\u592b\u59bb|\u914d\u5076|\u7ed3\u5a5a|\u6295\u9760|\u968f\u914d\u5076|\u5a5a\u8fc1)"),
+    ("\u7236\u6bcd\u5b50\u5973\u6295\u9760", r"(\u5b50\u5973\u968f\u8fc1|\u968f\u8fc1|\u7236\u6bcd\u6295\u9760|\u672a\u6210\u5e74|\u629a\u517b|\u5b69\u5b50\u6237\u53e3|\u968f\u7236|\u968f\u6bcd)"),
+]
+
+TYPE_ORDER = [t for t, _ in TYPE_PATTERNS]
+
+# \u6750\u6599\u8868\uff1a(\u540d\u79f0, \u6b63\u5219, \u6bb5\u4f4d\u8981\u6c42)
+MATERIAL_PATTERNS = [
+    ("\u5c45\u6c11\u8eab\u4efd\u8bc1", r"(\u8eab\u4efd\u8bc1|\u5c45\u6c11\u8eab\u4efd\u8bc1|\u4e34\u65f6\u8eab\u4efd\u8bc1)", "123"),
+    ("\u5c45\u6c11\u6237\u53e3\u7c3f", r"(\u6237\u53e3\u7c3f|\u6237\u53e3\u672c|\u6237\u7c4d(?:\u8bc1\u660e|\u6750\u6599)|\u5e38\u4f4f\u4eba\u53e3\u767b\u8bb0\u5361)", "123"),
+    ("\u51c6\u4e88\u8fc1\u5165\u8bc1\u660e", r"(\u51c6\u4e88\u8fc1\u5165\u8bc1\u660e|\u51c6\u8fc1\u8bc1|\u8fc1\u5165\u8bc1\u660e|\u51c6\u8fc1)", "23"),
+    ("\u6237\u53e3\u8fc1\u79fb\u8bc1", r"(\u6237\u53e3\u8fc1\u79fb\u8bc1|\u8fc1\u79fb\u8bc1)", "3"),
+    ("\u51c6\u5165\u6761\u4ef6\u8bc1\u660e", r"(\u4e0d\u52a8\u4ea7\u6743\u8bc1|\u623f\u4ea7\u8bc1|\u7ed3\u5a5a\u8bc1|\u5b66\u5386\u8bc1\u4e66|\u5b66\u4f4d|\u793e\u4fdd(?:\u8bb0\u5f55|\u7f34\u7eb3)|\u52b3\u52a8\u5408\u540c|\u8425\u4e1a\u6267\u7167|\u804c\u79f0\u8bc1\u4e66)", "1"),
+    ("\u4eb2\u5c5e\u5173\u7cfb\u8bc1\u660e", r"(\u4eb2\u5c5e\u5173\u7cfb|\u51fa\u751f\u533b\u5b66\u8bc1\u660e|\u51fa\u751f\u8bc1|\u5173\u7cfb\u8bc1\u660e|\u6237\u53e3\u7c3f.*\u4eb2\u5c5e)", "1"),
+    ("\u8fc1\u5165\u5730\u63a5\u6536\u8bc1\u660e", r"(\u63a5\u6536\u8bc1\u660e|\u63a5\u6536\u51fd|\u540c\u610f\u63a5\u6536|\u5355\u4f4d\u63a5\u6536|\u4eba\u624d\u4e2d\u5fc3\u540c\u610f)", "1"),
+    ("\u7533\u8bf7\u8868\u4e0e\u627f\u8bfa\u4e66", r"(\u7533\u8bf7\u8868|\u7533\u8bf7\u4e66|\u627f\u8bfa\u4e66|\u9884\u586b|\u73b0\u573a\u586b\u5199)", "123"),
+]
+
+BLOCK_PATTERNS = [
+    ("\u51c6\u5165\u6761\u4ef6\u4e0d\u6ee1\u8db3", r"(\u6761\u4ef6\u4e0d\u591f|\u4e0d\u7b26\u5408\u6761\u4ef6|\u5e74\u9650\u4e0d\u8db3|\u5dee\u51e0\u4e2a\u6708|\u5b66\u5386\u672a\u8ba4\u8bc1|\u5e74\u9f84\u8d85)"),
+    ("\u623f\u4ea7\u6027\u8d28\u4e0d\u7b26", r"(\u5546\u4f4f|\u5546\u4f4f\u4e24\u7528|\u5c0f\u4ea7\u6743|\u67e5\u5c01|\u62b5\u62bc|\u5171\u6709\u4ea7\u6743|\u516c\u5bd3)"),
+    ("\u8bc1\u4ef6\u8fc7\u671f", r"(\u8fc7\u671f|\u903e\u671f|\u8d85\u671f|\u5931\u6548|\u8d85\u8fc7\u6709\u6548\u671f)"),
+    ("\u4fe1\u606f\u4e0d\u4e00\u81f4", r"(\u4e0d\u4e00\u81f4|\u59d3\u540d\u4e0d\u7b26|\u8bc1\u4ef6\u53f7\u4e0d\u7b26|\u4fe1\u606f\u6709\u8bef|\u540d\u5b57\u5199\u9519)"),
+    ("\u793e\u4fdd\u95ee\u9898", r"(\u65ad\u7f34|\u8865\u7f34|\u793e\u4fdd\u4e0d\u4e00\u81f4|\u7f34\u7eb3\u5355\u4f4d\u4e0d\u4e00\u81f4|\u6ca1\u4ea4\u793e\u4fdd|\u6f0f\u7f34)"),
+    ("\u96c6\u4f53\u6237\u4e0d\u914d\u5408", r"(\u4e0d\u7ed9\u5f00|\u4e0d\u914d\u5408|\u4fdd\u7ba1\u65b9|\u4eba\u624d\u4e2d\u5fc3\u4e0d\u7ed9|\u5355\u4f4d\u4e0d\u7ed9)"),
+    ("\u5730\u5740\u4e0d\u53ef\u7528", r"(\u6ca1\u6709\u95e8\u724c|\u65e0\u6cd5\u843d\u6237|\u51bb\u7ed3|\u7ba1\u63a7|\u5730\u5740\u4e0d\u53ef\u7528|\u4e0d\u80fd\u843d)"),
+]
+
+NEGATIVE_WATCH = [
+    (r"\u672a\u53d6\u5f97\u51c6\u4e88\u8fc1\u5165\u8bc1\u660e", "\u300c\u672a\u53d6\u5f97\u51c6\u4e88\u8fc1\u5165\u8bc1\u660e\u300d\u4e0d\u7b49\u4e8e\u300c\u5df2\u51c6\u4e88\u8fc1\u5165\u300d"),
+    (r"\u4e0d\u4e88\u53d7\u7406", "\u300c\u4e0d\u4e88\u53d7\u7406\u300d\u4e0d\u7b49\u4e8e\u300c\u6682\u7f13\u529e\u7406\u300d"),
+    (r"\u8fc1\u79fb\u8bc1\u903e\u671f", "\u300c\u8fc1\u79fb\u8bc1\u903e\u671f\u300d\u4e0d\u7b49\u4e8e\u300c\u8fc1\u79fb\u8bc1\u6709\u6548\u300d"),
+    (r"\u793e\u4fdd\u65ad\u7f34", "\u300c\u793e\u4fdd\u65ad\u7f34\u300d\u4e0d\u7b49\u4e8e\u300c\u793e\u4fdd\u5df2\u7f34\u7eb3\u300d"),
+    (r"\u672a\u53d6\u5f97\u4e0d\u52a8\u4ea7\u6743\u8bc1", "\u300c\u672a\u53d6\u5f97\u4e0d\u52a8\u4ea7\u6743\u8bc1\u300d\u4e0d\u7b49\u4e8e\u300c\u5df2\u53d6\u5f97\u4e0d\u52a8\u4ea7\u6743\u8bc1\u300d"),
+    (r"\u6761\u4ef6\u4e0d\u7b26", "\u300c\u6761\u4ef6\u4e0d\u7b26\u300d\u4e0d\u7b49\u4e8e\u300c\u6750\u6599\u4e0d\u9f50\u300d"),
+]
+
+DATE_RE = re.compile(r"(\d{4})[-/.\u5e74](\d{1,2})[-/.\u6708](\d{1,2})")
+
+# \u8bc1\u4ef6\u6709\u6548\u671f\u9ed8\u8ba4\u5929\u6570\uff08\u4ee5\u5f53\u5730\u5b9e\u9645\u7b7e\u53d1\u7684\u6709\u6548\u671f\u4e3a\u51c6\uff0c\u6b64\u5904\u4ec5\u7528\u4e8e\u9884\u8b66\u6362\u7b97\uff09
+PERMIT_VALID_DAYS = 40
+MOVE_VALID_DAYS = 30
+
+
+def ck(label, cond):
+    if not cond:
+        FAILS.append(label)
+    return bool(cond)
+
+
+def write_result(path):
+    lines = ["SELFTEST %s" % ("OK" if not FAILS else "FAILED")]
+    for f in FAILS:
+        lines.append("  FAILED: %s" % f)
+    io.open(path, "w", encoding="utf-8").write("\n".join(lines) + "\n")
+    print("\n".join(lines))
+
+
+def parse_date(text):
+    if not text:
+        return None
+    m = DATE_RE.search(str(text).strip())
+    if not m:
+        return None
+    try:
+        return datetime.date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    except ValueError:
+        return None
+
+
+def detect_types(text, override=None):
+    """\u8fd4\u56de (\u4e3b\u7c7b\u578b, \u5019\u9009\u7c7b\u578b\u5217\u8868)\u3002"""
+    hits = [t for t, pat in TYPE_PATTERNS if re.search(pat, text)]
+    if override:
+        for t in TYPE_ORDER:
+            if override in t or t.startswith(override):
+                return t, [t] + [x for x in hits if x != t]
+        return override, [override] + hits
+    if not hits:
+        return "\u672a\u5224\u5b9a", []
+    main = min(hits, key=lambda x: TYPE_ORDER.index(x))
+    return main, hits
+
+
+NEG_WORDS = r"(\u6ca1\u586b|\u6ca1\u4ea4|\u6ca1\u5e26|\u6ca1\u529e|\u6ca1\u6709|\u672a\u586b|\u672a\u4ea4|\u672a\u5e26|\u672a\u529e|\u672a\u63d0\u4ea4|\u672a\u53d6\u5f97|\u672a\u5f00|\u5c1a\u672a|\u8fd8\u6ca1|\u7f3a\u5c11|\u7f3a\u5931|\u5fd8\u8bb0|\u6f0f\u4e86)"
+
+
+def hit_with_negation(text, pat):
+    """\u5173\u952e\u8bcd\u547d\u4e2d\u4f46\u9644\u8fd1\u6709\u5426\u5b9a\u8bcd\u65f6\uff0c\u89c6\u4e3a\u672a\u5907\u9f50\uff08\u9632\u8bef\u4f24\uff1a\u4e0d\u80fd\u628a\u6ca1\u5e26\u5f53\u6210\u5e26\u4e86\uff09\u3002"""
+    found = False
+    for m in re.finditer(pat, text):
+        s = max(0, m.start() - 4)
+        e = min(len(text), m.end() + 6)
+        if re.search(NEG_WORDS, text[s:e]):
+            continue
+        found = True
+    return found
+
+
+def check_materials(text, stage):
+    rows = []
+    for name, pat, stages in MATERIAL_PATTERNS:
+        hit = hit_with_negation(text, pat)
+        required = stage in stages
+        if not required:
+            status = "\u4e0d\u6d89\u53ca"
+        else:
+            status = "\u9f50\u5907" if hit else "\u7f3a\u5931"
+        rows.append({"\u6750\u6599": name, "\u72b6\u6001": status, "\u547d\u4e2d": hit})
+    return rows
+
+
+def detect_stage(text):
+    """\u6309\u6587\u672c\u63a8\u65ad\u5f53\u524d\u6bb5\u4f4d\uff1a1=\u7533\u8bf7\u51c6\u8fc1 2=\u529e\u7406\u8fc1\u51fa 3=\u529e\u7406\u843d\u6237\u3002"""
+    if re.search(r"(\u6237\u53e3\u8fc1\u79fb\u8bc1|\u8fc1\u79fb\u8bc1\u5df2|\u5df2\u5f00\u8fc1\u79fb\u8bc1|\u62ff\u7740\u8fc1\u79fb\u8bc1)", text):
+        return "3", "\u6587\u672c\u4e2d\u63d0\u5230\u5df2\u6301\u6709\u6237\u53e3\u8fc1\u79fb\u8bc1"
+    if re.search(r"(\u51c6\u8fc1\u8bc1|\u51c6\u4e88\u8fc1\u5165\u8bc1\u660e|\u8fc1\u5165\u8bc1\u660e\u5df2|\u5df2\u5f00\u51c6\u8fc1)", text) and \
+            re.search(r"(\u8fc1\u51fa|\u529e\u7406\u8fc1\u51fa|\u53bb\u539f\u7c4d|\u56de\u6237\u7c4d\u5730\u529e)", text):
+        return "2", "\u5df2\u53d6\u5f97\u51c6\u8fc1\u8bc1\u4e14\u6b63\u5728\u529e\u7406\u8fc1\u51fa"
+    if re.search(r"(\u51c6\u8fc1\u8bc1|\u51c6\u4e88\u8fc1\u5165\u8bc1\u660e)", text):
+        return "2", "\u5df2\u53d6\u5f97\u51c6\u8fc1\u8bc1\uff0c\u4e0b\u4e00\u6b65\u529e\u7406\u8fc1\u51fa"
+    return "1", "\u5c1a\u672a\u53d6\u5f97\u51c6\u8fc1\u8bc1\uff0c\u5e94\u5148\u5411\u8fc1\u5165\u5730\u7533\u8bf7"
+
+
+def valid_days(issue_date, as_of, total):
+    if issue_date is None or as_of is None:
+        return None
+    left = (issue_date + datetime.timedelta(days=total) - as_of).days
+    if left < 0:
+        level = "\u5df2\u903e\u671f"
+    elif left <= 7:
+        level = "\u5373\u5c06\u5230\u671f"
+    else:
+        level = "\u6709\u6548"
+    return {"\u5f00\u5177\u65e5": issue_date.isoformat(), "\u6709\u6548\u671f\u5929\u6570": total,
+            "\u5230\u671f\u65e5": (issue_date + datetime.timedelta(days=total)).isoformat(),
+            "\u5269\u4f59\u5929\u6570": left, "\u72b6\u6001": level}
+
+
+def block_scan(text):
+    return [n for n, pat in BLOCK_PATTERNS if re.search(pat, text)]
+
+
+def negative_watch(text):
+    return [tip for pat, tip in NEGATIVE_WATCH if re.search(pat, text)]
+
+
+def build_report(text, type_arg, as_of_str, permit_str, move_str):
+    as_of = parse_date(as_of_str) or datetime.date.today()
+    main, cand = detect_types(text, type_arg)
+    stage, why = detect_stage(text)
+    materials = check_materials(text, stage)
+    blocks = block_scan(text)
+    negs = negative_watch(text)
+    permit = valid_days(parse_date(permit_str), as_of, PERMIT_VALID_DAYS)
+    move = valid_days(parse_date(move_str), as_of, MOVE_VALID_DAYS)
+
+    lines = []
+    lines.append("=" * 62)
+    lines.append("\u6237\u53e3\u8fc1\u79fb\u529e\u7406\u4e0e\u6750\u6599\u6838\u67e5\u62a5\u544a")
+    lines.append("=" * 62)
+    lines.append("")
+    lines.append("[\u8fc1\u79fb\u7c7b\u578b] %s" % main)
+    if len(cand) > 1:
+        lines.append("  \u5019\u9009\u7c7b\u578b\uff1a%s\uff08\u53d6\u4f18\u5148\u7ea7\u6700\u9ad8\u7684\u4e00\u9879\uff0c\u5176\u4f59\u4f9b\u4eba\u5de5\u786e\u8ba4\uff09" % "\u3001".join(cand))
+    if main == "\u672a\u5224\u5b9a":
+        lines.append("  [\u63d0\u793a] \u7c7b\u578b\u672a\u5224\u5b9a\u524d\u4e0d\u8981\u6309\u63a8\u6d4b\u5907\u6750\u6599\uff0c\u5148\u5411\u8fc1\u5165\u5730\u786e\u8ba4\u9002\u7528\u7c7b\u578b")
+    lines.append("")
+    lines.append("[\u5f53\u524d\u6bb5\u4f4d] \u7b2c %s \u6bb5  \uff08\u4f9d\u636e\uff1a%s\uff09" % (stage, why))
+    lines.append("")
+    lines.append("[\u6750\u6599\u6e05\u5355\u6838\u67e5]  \u5f53\u524d\u6bb5\u4f4d\u4e3a\u7b2c %s \u6bb5" % stage)
+    for r in materials:
+        lines.append("  %-8s %s" % (r["\u6750\u6599"], r["\u72b6\u6001"]))
+    missing = [r["\u6750\u6599"] for r in materials if r["\u72b6\u6001"] == "\u7f3a\u5931"]
+    lines.append("  \u7f3a\u5931\u9879\uff1a%s" % ("\u3001".join(missing) if missing else "\u65e0"))
+    lines.append("")
+    lines.append("[\u8bc1\u4ef6\u6709\u6548\u671f]")
+    if permit:
+        lines.append("  \u51c6\u4e88\u8fc1\u5165\u8bc1\u660e\uff1a\u5f00\u5177\u65e5 %s\uff0c\u6309 %d \u5929\u8ba1\u5230\u671f\u65e5 %s\uff0c\u5269\u4f59 %d \u5929\uff08%s\uff09" % (
+            permit["\u5f00\u5177\u65e5"], permit["\u6709\u6548\u671f\u5929\u6570"], permit["\u5230\u671f\u65e5"],
+            permit["\u5269\u4f59\u5929\u6570"], permit["\u72b6\u6001"]))
+        if permit["\u72b6\u6001"] != "\u6709\u6548":
+            lines.append("  [\u63d0\u793a] \u51c6\u8fc1\u8bc1\u903e\u671f\u901a\u5e38\u9700\u91cd\u65b0\u7533\u8bf7\uff0c\u4e0d\u8981\u6301\u8fc7\u671f\u8bc1\u4ef6\u529e\u7406")
+    else:
+        lines.append("  \u51c6\u4e88\u8fc1\u5165\u8bc1\u660e\uff1a\u672a\u63d0\u4f9b --permit-date\uff0c\u8df3\u8fc7")
+    if move:
+        lines.append("  \u6237\u53e3\u8fc1\u79fb\u8bc1\uff1a\u5f00\u5177\u65e5 %s\uff0c\u6309 %d \u5929\u8ba1\u5230\u671f\u65e5 %s\uff0c\u5269\u4f59 %d \u5929\uff08%s\uff09" % (
+            move["\u5f00\u5177\u65e5"], move["\u6709\u6548\u671f\u5929\u6570"], move["\u5230\u671f\u65e5"],
+            move["\u5269\u4f59\u5929\u6570"], move["\u72b6\u6001"]))
+        if move["\u72b6\u6001"] != "\u6709\u6548":
+            lines.append("  [\u63d0\u793a] \u8fc1\u79fb\u8bc1\u903e\u671f\u901a\u5e38\u9700\u91cd\u65b0\u7533\u8bf7\uff0c\u4e0d\u8981\u6301\u8fc7\u671f\u8bc1\u4ef6\u529e\u7406")
+    else:
+        lines.append("  \u6237\u53e3\u8fc1\u79fb\u8bc1\uff1a\u672a\u63d0\u4f9b --move-date\uff0c\u8df3\u8fc7")
+    lines.append("  [\u6ce8\u610f] \u8bc1\u4ef6\u5b9e\u9645\u6709\u6548\u671f\u4ee5\u7b7e\u53d1\u8bc1\u4ef6\u4e0a\u8f7d\u660e\u7684\u671f\u9650\u4e3a\u51c6\uff0c\u6b64\u5904\u4ec5\u6309\u7ecf\u9a8c\u5929\u6570\u9884\u8b66")
+    lines.append("")
+    lines.append("[\u88ab\u5361\u98ce\u9669] %s" % ("\u3001".join(blocks) if blocks else "\u672a\u547d\u4e2d"))
+    if blocks:
+        lines.append("  [\u63d0\u793a] \u547d\u4e2d\u88ab\u5361\u539f\u56e0\u5e94\u5148\u5411\u6237\u7c4d\u7a97\u53e3\u95ee\u6e05\u5177\u4f53\u8981\u6c42\uff0c\u4e0d\u8981\u53cd\u590d\u91cd\u590d\u63d0\u4ea4")
+    lines.append("")
+    if negs:
+        lines.append("[\u5426\u5b9a\u8bcd\u63d0\u9192]")
+        for n in negs:
+            lines.append("  - %s" % n)
+    lines.append("")
+    lines.append("\u514d\u8d23\uff1a\u672c\u811a\u672c\u53ea\u505a\u5173\u952e\u8bcd\u5339\u914d\uff0c\u4e0d\u4ee3\u8868\u53d7\u7406\u7ed3\u8bba\u3002")
+    lines.append("      \u51c6\u5165\u6761\u4ef6\u3001\u6750\u6599\u3001\u65f6\u9650\u4ee5\u73b0\u884c\u89c4\u5b9a\u548c\u8fc1\u5165\u5730\u3001\u8fc1\u51fa\u5730\u6237\u7c4d\u7a97\u53e3\u8981\u6c42\u4e3a\u51c6\u3002")
+    lines.append("=" * 62)
+
+    summary = {"\u8fc1\u79fb\u7c7b\u578b": main, "\u5019\u9009\u7c7b\u578b": cand, "\u6bb5\u4f4d": stage, "\u6bb5\u4f4d\u4f9d\u636e": why,
+               "\u6750\u6599": materials, "\u7f3a\u5931\u9879": missing, "\u88ab\u5361\u98ce\u9669": blocks,
+               "\u5426\u5b9a\u8bcd\u63d0\u9192": negs, "\u51c6\u8fc1\u8bc1": permit, "\u8fc1\u79fb\u8bc1": move}
+    return "\n".join(lines), summary
+
+
+SAMPLE = """\u6211\u5728\u5357\u4eac\u4e70\u4e86\u623f\uff0c\u5df2\u7ecf\u62ff\u5230\u4e0d\u52a8\u4ea7\u6743\u8bc1\uff0c\u60f3\u628a\u6237\u53e3\u4ece\u8001\u5bb6\u8fc1\u8fc7\u6765\u3002
+\u8eab\u4efd\u8bc1\u3001\u6237\u53e3\u7c3f\u3001\u623f\u4ea7\u8bc1\u3001\u7ed3\u5a5a\u8bc1\u90fd\u6709\uff0c\u7533\u8bf7\u8868\u8fd8\u6ca1\u586b\u3002\u793e\u4fdd\u4e00\u76f4\u5728\u8fd9\u8fb9\u4ea4\u3002"""
+
+
+def selftest():
+    ck("\u5e94\u89e3\u6790\u6807\u51c6\u65e5\u671f", parse_date("2026-10-08") == datetime.date(2026, 10, 8))
+    ck("\u5e94\u89e3\u6790\u4e2d\u6587\u65e5\u671f", parse_date("2026\u5e749\u670820\u65e5") == datetime.date(2026, 9, 20))
+    ck("\u7a7a\u503c\u5e94\u8fd4\u56de None", parse_date(None) is None)
+
+    t1, _ = detect_types("\u4e70\u623f\u4e86\u60f3\u843d\u6237\uff0c\u6709\u623f\u4ea7\u8bc1")
+    ck("\u4e70\u623f\u5e94\u5224\u4e3a\u8d2d\u623f\u843d\u6237", t1 == "\u8d2d\u623f\u843d\u6237")
+    t2, _ = detect_types("\u7ed3\u5a5a\u4e86\u60f3\u968f\u914d\u5076\u8fc1\u6237\u53e3")
+    ck("\u914d\u5076\u5e94\u5224\u4e3a\u592b\u59bb\u6295\u9760", t2 == "\u592b\u59bb\u6295\u9760")
+    t3, _ = detect_types("\u7855\u58eb\u7814\u7a76\u751f\uff0c\u8d70\u4eba\u624d\u5f15\u8fdb\u843d\u6237")
+    ck("\u7855\u58eb\u5e94\u5224\u4e3a\u4eba\u624d\u5f15\u8fdb", t3 == "\u4eba\u624d\u5f15\u8fdb")
+    t4, _ = detect_types("\u5927\u5b66\u6bd5\u4e1a\u8981\u628a\u6237\u53e3\u4ece\u5b66\u6821\u96c6\u4f53\u6237\u8fc1\u8d70")
+    ck("\u6bd5\u4e1a+\u96c6\u4f53\u6237\u5e94\u6309\u4f18\u5148\u7ea7\u5224\u4e3a\u5927\u4e2d\u4e13\u5b66\u751f", t4 == "\u5927\u4e2d\u4e13\u5b66\u751f")
+    t5, _ = detect_types("\u60f3\u54a8\u8be2\u8fc1\u6237\u53e3")
+    ck("\u65e0\u5173\u952e\u8bcd\u5e94\u5224\u4e3a\u672a\u5224\u5b9a", t5 == "\u672a\u5224\u5b9a")
+    t6, c6 = detect_types("\u5927\u5b66\u6bd5\u4e1a\uff0c\u8d70\u4eba\u624d\u5f15\u8fdb", override="\u4eba\u624d\u5f15\u8fdb")
+    ck("\u53c2\u6570\u6307\u5b9a\u5e94\u4f18\u5148\u751f\u6548", t6 == "\u4eba\u624d\u5f15\u8fdb")
+    ck("\u5019\u9009\u7c7b\u578b\u5e94\u4fdd\u7559\u5176\u4ed6\u547d\u4e2d\u9879", "\u5927\u4e2d\u4e13\u5b66\u751f" in c6)
+
+    s1, _ = detect_stage("\u5df2\u7ecf\u62ff\u5230\u51c6\u8fc1\u8bc1\uff0c\u51c6\u5907\u56de\u8001\u5bb6\u529e\u8fc1\u51fa")
+    ck("\u6709\u51c6\u8fc1\u8bc1\u5e94\u5224\u4e3a\u7b2c\u4e8c\u6bb5", s1 == "2")
+    s2, _ = detect_stage("\u6237\u53e3\u8fc1\u79fb\u8bc1\u5df2\u7ecf\u5f00\u51fa\u6765\u4e86")
+    ck("\u6709\u8fc1\u79fb\u8bc1\u5e94\u5224\u4e3a\u7b2c\u4e09\u6bb5", s2 == "3")
+    s3, _ = detect_stage("\u60f3\u628a\u6237\u53e3\u8fc1\u8fc7\u53bb\uff0c\u8fd8\u6ca1\u529e\u4efb\u4f55\u624b\u7eed")
+    ck("\u65e0\u8bc1\u5e94\u5224\u4e3a\u7b2c\u4e00\u6bb5", s3 == "1")
+
+    m = check_materials("\u5e26\u4e86\u8eab\u4efd\u8bc1\u3001\u6237\u53e3\u7c3f\u3001\u623f\u4ea7\u8bc1\u3001\u7ed3\u5a5a\u8bc1", "1")
+    d = dict((x["\u6750\u6599"], x["\u72b6\u6001"]) for x in m)
+    ck("\u7b2c\u4e00\u6bb5\u8eab\u4efd\u8bc1\u5e94\u5224\u9f50\u5907", d["\u5c45\u6c11\u8eab\u4efd\u8bc1"] == "\u9f50\u5907")
+    ck("\u7b2c\u4e00\u6bb5\u51c6\u5165\u6761\u4ef6\u8bc1\u660e\u5e94\u5224\u9f50\u5907", d["\u51c6\u5165\u6761\u4ef6\u8bc1\u660e"] == "\u9f50\u5907")
+    ck("\u7b2c\u4e00\u6bb5\u6237\u53e3\u8fc1\u79fb\u8bc1\u5e94\u4e0d\u6d89\u53ca", d["\u6237\u53e3\u8fc1\u79fb\u8bc1"] == "\u4e0d\u6d89\u53ca")
+    ck("\u7b2c\u4e00\u6bb5\u7f3a\u5931\u7533\u8bf7\u8868\u5e94\u5224\u7f3a\u5931", d["\u7533\u8bf7\u8868\u4e0e\u627f\u8bfa\u4e66"] == "\u7f3a\u5931")
+
+    v1 = valid_days(datetime.date(2026, 9, 20), datetime.date(2026, 10, 8), 40)
+    ck("\u51c6\u8fc1\u8bc1\u5269\u4f59\u5929\u6570\u5e94\u6b63\u786e", v1["\u5269\u4f59\u5929\u6570"] == 22)
+    ck("\u51c6\u8fc1\u8bc1\u5e94\u5224\u4e3a\u6709\u6548", v1["\u72b6\u6001"] == "\u6709\u6548")
+    v2 = valid_days(datetime.date(2026, 8, 1), datetime.date(2026, 10, 8), 30)
+    ck("\u8fc1\u79fb\u8bc1\u5e94\u5224\u4e3a\u5df2\u903e\u671f", v2["\u72b6\u6001"] == "\u5df2\u903e\u671f")
+    v3 = valid_days(datetime.date(2026, 9, 13), datetime.date(2026, 10, 8), 30)
+    ck("\u4e34\u8fd1\u5230\u671f\u5e94\u5224\u4e3a\u5373\u5c06\u5230\u671f", v3["\u72b6\u6001"] == "\u5373\u5c06\u5230\u671f")
+    ck("\u9644\u8fd1\u65e0\u5426\u5b9a\u8bcd\u65f6\u5e94\u5224\u9f50\u5907", hit_with_negation("\u8eab\u4efd\u8bc1\u3001\u6237\u53e3\u7c3f\u90fd\u5e26\u4e86", r"(\u8eab\u4efd\u8bc1)"))
+    ck("\u9644\u8fd1\u6709\u5426\u5b9a\u8bcd\u65f6\u5e94\u5224\u672a\u5907\u9f50", not hit_with_negation("\u7533\u8bf7\u8868\u8fd8\u6ca1\u586b", r"(\u7533\u8bf7\u8868)"))
+    ck("\u672a\u53d6\u5f97\u8bc1\u660e\u5e94\u5224\u672a\u5907\u9f50", not hit_with_negation("\u5c1a\u672a\u53d6\u5f97\u51c6\u4e88\u8fc1\u5165\u8bc1\u660e", r"(\u51c6\u4e88\u8fc1\u5165\u8bc1\u660e)"))
+    ck("\u672a\u63d0\u4f9b\u65e5\u671f\u5e94\u8fd4\u56de None", valid_days(None, datetime.date(2026, 10, 8), 30) is None)
+
+    b = block_scan("\u793e\u4fdd\u65ad\u7f34\u8fc7\uff0c\u5f53\u65f6\u529e\u7406\u65f6\u8bf4\u6761\u4ef6\u4e0d\u591f")
+    ck("\u5e94\u547d\u4e2d\u793e\u4fdd\u95ee\u9898", "\u793e\u4fdd\u95ee\u9898" in b)
+    ck("\u5e94\u547d\u4e2d\u51c6\u5165\u6761\u4ef6\u4e0d\u6ee1\u8db3", "\u51c6\u5165\u6761\u4ef6\u4e0d\u6ee1\u8db3" in b)
+    ck("\u666e\u901a\u6587\u672c\u4e0d\u5e94\u547d\u4e2d\u88ab\u5361\u539f\u56e0", block_scan("\u60f3\u8fc1\u6237\u53e3") == [])
+
+    n = negative_watch("\u8bf4\u4e0d\u4e88\u53d7\u7406\uff0c\u793e\u4fdd\u65ad\u7f34\uff0c\u6761\u4ef6\u4e0d\u7b26")
+    ck("\u5e94\u7ed9\u51fa\u4e09\u6761\u5426\u5b9a\u8bcd\u63d0\u9192", len(n) == 3)
+
+    rep, sm = build_report(SAMPLE, None, "2026-10-08", None, None)
+    ck("\u62a5\u544a\u5e94\u542b\u6807\u9898", "\u6237\u53e3\u8fc1\u79fb\u529e\u7406\u4e0e\u6750\u6599\u6838\u67e5\u62a5\u544a" in rep)
+    ck("\u6837\u4f8b\u5e94\u5224\u4e3a\u8d2d\u623f\u843d\u6237", sm["\u8fc1\u79fb\u7c7b\u578b"] == "\u8d2d\u623f\u843d\u6237")
+    ck("\u6837\u4f8b\u5e94\u5904\u4e8e\u7b2c\u4e00\u6bb5", sm["\u6bb5\u4f4d"] == "1")
+    ck("\u6837\u4f8b\u5e94\u7f3a\u5931\u7533\u8bf7\u8868", "\u7533\u8bf7\u8868\u4e0e\u627f\u8bfa\u4e66" in sm["\u7f3a\u5931\u9879"])
+    return not FAILS
+
+
+def main():
+    ap = argparse.ArgumentParser(description="\u6237\u53e3\u8fc1\u79fb\u529e\u7406\u4e0e\u6750\u6599\u6838\u67e5")
+    ap.add_argument("--file", help="\u5f85\u6838\u67e5\u6587\u672c\uff1a\u60c5\u51b5\u8bf4\u660e\u3001\u6750\u6599\u6e05\u5355\u6216\u804a\u5929\u8bb0\u5f55\u5bfc\u51fa\uff08.txt/.md\uff09")
+    ap.add_argument("--text", help="\u76f4\u63a5\u7ed9\u4e00\u6bb5\u60c5\u51b5\u63cf\u8ff0")
+    ap.add_argument("--type", default=None, help="\u8fc1\u79fb\u7c7b\u578b\uff1a\u8d2d\u623f/\u592b\u59bb\u6295\u9760/\u4eba\u624d\u5f15\u8fdb/\u5b66\u751f/\u96c6\u4f53\u6237/\u52a1\u5de5\u7ecf\u5546\u7b49")
+    ap.add_argument("--as-of", default=None, help="\u6838\u67e5\u57fa\u51c6\u65e5\uff0c\u5982 2026-10-08")
+    ap.add_argument("--permit-date", default=None, help="\u51c6\u4e88\u8fc1\u5165\u8bc1\u660e\u5f00\u5177\u65e5")
+    ap.add_argument("--move-date", default=None, help="\u6237\u53e3\u8fc1\u79fb\u8bc1\u5f00\u5177\u65e5")
+    ap.add_argument("--out", help="\u7ed3\u679c\u5199\u5165\u6587\u4ef6")
+    ap.add_argument("--format", default="md", choices=["md", "json"])
+    ap.add_argument("--selftest", action="store_true")
+    args = ap.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+    if args.selftest:
+        ok = selftest()
+        write_result(os.path.join(here, "_selftest_result.txt"))
+        sys.exit(0 if ok else 1)
+
+    if args.file:
+        text = io.open(args.file, "r", encoding="utf-8", errors="ignore").read()
+    elif args.text:
+        text = args.text
+    else:
+        ap.error("\u9700\u8981 --file\u3001--text \u6216 --selftest")
+
+    report, summary = build_report(text, args.type, args.as_of,
+                                   args.permit_date, args.move_date)
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.format == "json" else report
+    io.open(out_path, "w", encoding="utf-8").write(body)
+    print(body)
+    print("")
+    print("\u7ed3\u679c\u5df2\u5199\u5165: %s" % out_path)
+
+
+if __name__ == "__main__":
+    main()

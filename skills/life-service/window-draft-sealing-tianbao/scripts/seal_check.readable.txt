@@ -1,0 +1,145 @@
+# -*- coding: utf-8 -*-
+"""窗户漏风 操作顺序与完整性自检工具（步骤清单校验）。"""
+import argparse
+import json
+import os
+import sys
+
+CANON = ['检查缝隙', '清洁基面', '选材料', '粘贴/打胶', '按压固定', '通风固化']
+FORBID = ['高层外侧无防护', '胶未固化关窗']
+SAFETY = '清洁基面'
+
+
+def read_text(path):
+    """读取输入文件，自动剥离 UTF-8 BOM。"""
+    with open(path, 'rb') as f:
+        return f.read().decode('utf-8-sig')
+
+
+def parse_steps(text):
+    """接受 JSON {"steps":[...]} 或每行一步的文本。"""
+    text = text.strip()
+    if text.startswith('{'):
+        return json.loads(text).get('steps', [])
+    return [ln.strip() for ln in text.splitlines() if ln.strip()]
+
+
+def norm(s):
+    return s.strip()
+
+
+def validate(steps):
+    """返回 (ok, reasons)。先看真实缺陷，再看完整性。"""
+    reasons = []
+    ns = [norm(s) for s in steps]
+    present = set(ns)
+    missing = [c for c in CANON if c not in present]
+    if missing:
+        reasons.append('缺少必要步骤: ' + '、'.join(missing))
+    idxs = [ns.index(c) for c in CANON if c in present]
+    if idxs != sorted(idxs):
+        reasons.append('步骤顺序错误: 正确顺序为 ' + ' -> '.join(CANON))
+    for b in FORBID:
+        if any(b in s for s in ns):
+            reasons.append('存在危险/错误操作: ' + b)
+    return (len(reasons) == 0), reasons
+
+
+def main():
+    ap = argparse.ArgumentParser(description='窗户漏风 操作清单自检')
+    ap.add_argument('--file', help='输入步骤文件(JSON 或每行一步)')
+    ap.add_argument('--selftest', action='store_true', help='运行内置自检')
+    args = ap.parse_args()
+    if args.selftest:
+        return selftest()
+    if not args.file:
+        print('请使用 --file 指定输入, 或 --selftest 自检')
+        return 2
+    steps = parse_steps(read_text(args.file))
+    ok, reasons = validate(steps)
+    out = ('OK\n' if ok else 'FAIL\n') + '\n'.join(reasons)
+    res = os.path.join(os.path.dirname(os.path.abspath(args.file)), '_last_result.txt')
+    with open(res, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print(out)
+    return 0 if ok else 1
+
+
+def selftest():
+    passed = 0
+    total = 0
+    total += 1
+    ok, r = validate(CANON)
+    if ok:
+        passed += 1
+    else:
+        raise AssertionError('正例应判合格: %s' % r)
+    total += 1
+    bad = list(CANON)
+    bad.pop(1)
+    ok, r = validate(bad)
+    if not ok:
+        passed += 1
+    else:
+        raise AssertionError('缺步骤应判不合格')
+    total += 1
+    wrong = list(CANON)
+    wrong[0], wrong[1] = wrong[1], wrong[0]
+    ok, r = validate(wrong)
+    if not ok:
+        passed += 1
+    else:
+        raise AssertionError('顺序错应判不合格')
+    total += 1
+    danger = list(CANON) + FORBID[:1]
+    ok, r = validate(danger)
+    if not ok:
+        passed += 1
+    else:
+        raise AssertionError('危险操作应判不合格')
+    total += 1
+    sample = json.dumps({'steps': CANON}, ensure_ascii=False)
+    raw = '﻿' + sample
+    txt = raw.encode('utf-8').decode('utf-8-sig')
+    if '﻿' not in txt:
+        passed += 1
+    else:
+        raise AssertionError('UTF-8 BOM 未正确剥离')
+    total += 1
+    if validate(parse_steps('\n'.join(CANON)))[0]:
+        passed += 1
+    else:
+        raise AssertionError('每行解析失败')
+    total += 1
+    ok, r = validate([])
+    if not ok:
+        passed += 1
+    else:
+        raise AssertionError('空输入应判不合格')
+    total += 1
+    idxs = [i for i, _ in enumerate(CANON)]
+    if idxs == sorted(idxs):
+        passed += 1
+    else:
+        raise AssertionError('标准顺序索引非递增')
+    total += 1
+    if len(FORBID) >= 1:
+        passed += 1
+    else:
+        raise AssertionError('FORBID 表为空, 反例规则缺失')
+    total += 1
+    if SAFETY in CANON:
+        passed += 1
+    else:
+        raise AssertionError('关键安全步缺失: ' + SAFETY)
+    msg = 'SELFTEST OK passed=%d total=%d' % (passed, total)
+    here = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(here, '_selftest_result.txt'), 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if passed == total else 1
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

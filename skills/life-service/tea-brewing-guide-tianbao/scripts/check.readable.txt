@@ -1,0 +1,225 @@
+# -*- coding: utf-8 -*-
+"""茶艺冲泡参数校验脚本。
+
+用法:
+  python check.py --file 冲泡参数.json
+  python check.py --selftest
+
+JSON 字段:
+  tea_type      茶类: green/yellow/white_new/white_old/oolong/black_tea/dark
+  water_temp    水温摄氏度 (数字)
+  tea_g         茶叶克数 (数字)
+  water_ml      水量毫升 (数字)
+  steep_seconds 首泡出汤秒数 (数字)
+"""
+import argparse
+import json
+import os
+import sys
+
+# 各茶类水温区间
+TEMP_RANGE = {
+    "green": (80, 85), "yellow": (80, 85), "white_new": (85, 90),
+    "white_old": (95, 100), "oolong": (95, 100), "black_tea": (90, 95),
+    "dark": (95, 100),
+}
+VALID_TYPES = list(TEMP_RANGE.keys())
+GREEN_OVER_TEMP = 90
+OOLONG_UNDER_TEMP = 85
+
+
+def evaluate(data):
+    reasons = []
+    ok = True
+
+    ttype = data.get("tea_type")
+    if ttype is None:
+        ok = False
+        reasons.append("未填写茶类(tea_type), 无法匹配水温区间")
+    elif ttype not in VALID_TYPES:
+        ok = False
+        reasons.append("tea_type 取值非法(应为 green/yellow/white_new/white_old/oolong/black_tea/dark)")
+
+    temp = data.get("water_temp")
+    if temp is None:
+        ok = False
+        reasons.append("未填写水温(water_temp)")
+    else:
+        try:
+            t = float(temp)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("water_temp 不是数字")
+        else:
+            if ttype in TEMP_RANGE:
+                lo, hi = TEMP_RANGE[ttype]
+                if t < lo or t > hi:
+                    ok = False
+                    reasons.append("%s 水温 %.0f℃ 不在区间 %d–%d℃, 易烫熟或泡不开" % (
+                        ttype, t, lo, hi))
+
+    tea = data.get("tea_g")
+    water = data.get("water_ml")
+    if tea is None or water is None:
+        ok = False
+        reasons.append("未填写茶叶克数或水量, 无法算茶水比")
+    else:
+        try:
+            ratio = float(water) / float(tea)
+        except (TypeError, ValueError, ZeroDivisionError):
+            ok = False
+            reasons.append("茶水比参数非法")
+        else:
+            if ratio < 10:
+                ok = False
+                reasons.append("茶水比 1:%.0f 过浓(茶多水少), 易苦涩" % ratio)
+            elif ratio > 60:
+                ok = False
+                reasons.append("茶水比 1:%.0f 过淡(茶少水多), 滋味寡淡" % ratio)
+
+    steep = data.get("steep_seconds")
+    if steep is not None and ttype == "green":
+        try:
+            s = float(steep)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("steep_seconds 不是数字")
+        else:
+            if s > 180:
+                ok = False
+                reasons.append("绿茶首泡出汤 %.0f 秒超过 3 分钟, 闷坏汤暗苦" % s)
+
+    if ok:
+        reasons.append("冲泡参数通过: 水温/茶水比/出汤均合规")
+    return ok, reasons
+
+
+def load_json(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def selftest():
+    passed = 0
+
+    # 1. 正例: 绿茶 85℃, 3g/150ml, 40s -> 通过
+    ok, rs = evaluate({
+        "tea_type": "green", "water_temp": 85, "tea_g": 3, "water_ml": 150, "steep_seconds": 40,
+    })
+    assert ok is True, "正例应通过: %s" % rs
+    passed += 1
+
+    # 2. 反例: 绿茶 100℃ 烫熟 -> 必须不合格
+    ok, rs = evaluate({
+        "tea_type": "green", "water_temp": 100, "tea_g": 3, "water_ml": 150, "steep_seconds": 40,
+    })
+    assert ok is False, "绿茶沸水必须判不合格"
+    assert any("烫熟" in r for r in rs), "烫熟原因缺失: %s" % rs
+    passed += 1
+
+    # 3. 反例: 乌龙 80℃ 泡不开 -> 必须不合格
+    ok, rs = evaluate({
+        "tea_type": "oolong", "water_temp": 80, "tea_g": 5, "water_ml": 100, "steep_seconds": 15,
+    })
+    assert ok is False, "乌龙低温必须判不合格"
+    assert any("泡不开" in r for r in rs), "泡不开原因缺失: %s" % rs
+    passed += 1
+
+    # 4. 反例: 茶水比过浓 1:5 -> 必须不合格
+    ok, rs = evaluate({
+        "tea_type": "green", "water_temp": 85, "tea_g": 10, "water_ml": 50, "steep_seconds": 40,
+    })
+    assert ok is False, "过浓必须判不合格"
+    assert any("过浓" in r for r in rs), "过浓原因缺失: %s" % rs
+    passed += 1
+
+    # 5. 反例: 缺 tea_type -> 必须不合格
+    ok, rs = evaluate({
+        "water_temp": 85, "tea_g": 3, "water_ml": 150, "steep_seconds": 40,
+    })
+    assert ok is False, "缺茶类必须判不合格"
+    passed += 1
+
+    # 6. 反例: 绿茶闷 300 秒 -> 必须不合格
+    ok, rs = evaluate({
+        "tea_type": "green", "water_temp": 85, "tea_g": 3, "water_ml": 150, "steep_seconds": 300,
+    })
+    assert ok is False, "闷坏必须判不合格"
+    passed += 1
+
+    # 7. 反例: tea_type 非法 -> 必须不合格
+    ok, rs = evaluate({
+        "tea_type": "herbal", "water_temp": 85, "tea_g": 3, "water_ml": 150, "steep_seconds": 40,
+    })
+    assert ok is False, "非法茶类必须判不合格"
+    passed += 1
+
+    # 8. 反例: 茶水比过淡 1:80 -> 必须不合格
+    ok, rs = evaluate({
+        "tea_type": "green", "water_temp": 85, "tea_g": 2, "water_ml": 160, "steep_seconds": 40,
+    })
+    assert ok is False, "过淡必须判不合格"
+    passed += 1
+
+    # 9. BOM 处理
+    here = os.path.dirname(os.path.abspath(__file__))
+    bom_path = os.path.join(here, "_bom_sample.json")
+    payload = json.dumps({
+        "tea_type": "green", "water_temp": 85, "tea_g": 3, "water_ml": 150, "steep_seconds": 40,
+    }, ensure_ascii=False)
+    with open(bom_path, "wb") as f:
+        f.write(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+    d = load_json(bom_path)
+    assert d.get("tea_type") == "green", "BOM 输入 key 不应带 \﻿"
+    assert "water_temp" in d, "BOM 输入 key 必须干净"
+    os.remove(bom_path)
+    passed += 1
+
+    # 10. 边界: 乌龙 100℃, 5g/100ml, 15s -> 通过
+    ok, rs = evaluate({
+        "tea_type": "oolong", "water_temp": 100, "tea_g": 5, "water_ml": 100, "steep_seconds": 15,
+    })
+    assert ok is True, "乌龙合规应通过: %s" % rs
+    passed += 1
+
+    line = "SELFTEST OK (%d assertions)" % passed
+    return line, passed
+
+
+def main():
+    ap = argparse.ArgumentParser(description="茶艺冲泡参数校验")
+    ap.add_argument("--file", help="冲泡参数 JSON")
+    ap.add_argument("--selftest", action="store_true", help="内置自检")
+    args = ap.parse_args()
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        line, total = selftest()
+        with open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        print(line)
+        return 0 if line.startswith("SELFTEST OK") else 1
+
+    if args.file:
+        try:
+            data = load_json(args.file)
+        except Exception as e:  # noqa: BLE001
+            msg = "读取失败: %s" % e
+            with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            print(msg)
+            return 1
+        ok, reasons = evaluate(data)
+        out = ("PASS " if ok else "FAIL ") + "；".join(reasons)
+        with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+            f.write(out + "\n")
+        print(out)
+        return 0 if ok else 1
+
+    print("需要 --file 或 --selftest")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

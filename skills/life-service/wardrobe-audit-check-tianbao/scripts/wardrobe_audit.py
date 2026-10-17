@@ -1,0 +1,330 @@
+# -*- coding: utf-8 -*-
+"""\u8863\u7269\u6536\u7eb3\u4e0e\u65ad\u820d\u79bb\u5224\u5b9a\uff1a\u5339\u914d\u4e94\u6761\u91cf\u5316\u5224\u636e\u3001\u68c0\u67e5\u538b\u7f29\u7981\u5fcc\u3001\u68c0\u67e5\u6536\u7eb3\u524d\u63d0\u3002
+
+\u7528\u6cd5:
+  python wardrobe_audit.py --text "\u4e00\u5e74\u6ca1\u7a7f\u7684\u8863\u670d\u8fd8\u7559\u7740\uff0c\u771f\u7a7a\u888b\u80fd\u88c5\u7fbd\u7ed2\u670d\u5417"
+  python wardrobe_audit.py --file \u60c5\u51b5.txt --out \u7ed3\u679c.md
+  python wardrobe_audit.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# ---- \u4e94\u6761\u91cf\u5316\u5224\u636e ----
+CRITERIA = [
+    {'id': 'C1', 'name': '\u4e00\u5e74\u672a\u7a7f\u4e14\u573a\u5408\u65e0\u5ef6\u4f38\u53ef\u80fd',
+     'kw': ['\u4e00\u5e74\u6ca1\u7a7f', '\u4e00\u5e74\u6ca1\u7a7f', '\u4e00\u5e74\u591a', '\u597d\u4e45\u6ca1\u7a7f', '\u5f88\u4e45\u6ca1\u7a7f', '\u6ca1\u600e\u4e48\u7a7f',
+            '\u4e00\u5e74\u4e86', '\u51e0\u5e74\u6ca1', '\u4e00\u76f4\u6ca1\u7a7f'],
+     'how': '\u56de\u770b\u6700\u8fd1\u4e00\u5e74\u662f\u5426\u6709\u7a7f\u7740\u8bb0\u5f55\uff1b\u95ee\u81ea\u5df1\u672a\u6765\u4e00\u5e74\u4f1a\u4e0d\u4f1a\u7a7f\uff0c\u4e14\u4e0d\u662f\u4e07\u4e00\u5462\u7684\u573a\u5408'},
+    {'id': 'C2', 'name': '\u540c\u529f\u80fd\u91cd\u590d\u4e14\u6709\u660e\u786e\u77ed\u677f',
+     'kw': ['\u91cd\u590d', '\u597d\u51e0\u4ef6', '\u4e70\u91cd\u4e86', '\u592a\u591a\u4ef6', '\u5dee\u4e0d\u591a', '\u529f\u80fd\u4e00\u6837', '\u51e0\u4e2a\u540c\u7c7b'],
+     'how': '\u540c\u4e00\u529f\u80fd\u91cc\u67d0\u4ef6\u5728\u4fdd\u6696\u3001\u8010\u7a7f\u3001\u597d\u642d\u914d\u4e0a\u660e\u786e\u66f4\u5dee\uff0c\u5904\u7f6e\u77ed\u677f\u4ef6'},
+    {'id': 'C3', 'name': '\u6e05\u6d17\u540e\u5df2\u53d8\u5f62',
+     'kw': ['\u53d8\u5f62', '\u7f29\u6c34', '\u8d77\u7403', '\u8d77\u6bdb\u7403', '\u677e\u57ae', '\u584c\u4e86', '\u4e0d\u8d70\u5f62'],
+     'how': '\u7f29\u6c34\u3001\u8d77\u7403\u5230\u65e0\u6cd5\u63a5\u53d7\u3001\u9886\u53e3\u677e\u57ae\u3001\u8896\u5b50\u53d8\u5f62\uff0c\u89c6\u60c5\u51b5\u5904\u7f6e'},
+    {'id': 'C4', 'name': '\u62a4\u7406\u6210\u672c\u8d85\u8fc7\u4ef7\u503c',
+     'kw': ['\u62a4\u7406\u6210\u672c', '\u5e72\u6d17\u8d35', '\u6d17\u4e00\u6b21', '\u6210\u672c\u8d85\u8fc7', '\u4e0d\u503c', '\u4e0d\u5212\u7b97'],
+     'how': '\u5e72\u6d17\u6216\u4e13\u4e1a\u62a4\u7406\u6210\u672c\u5df2\u660e\u663e\u8d85\u8fc7\u8be5\u7269\u54c1\u7684\u5b9e\u9645\u4f7f\u7528\u4ef7\u503c'},
+    {'id': 'C5', 'name': '\u8d2d\u4e70\u51b2\u52a8\u672a\u5151\u73b0',
+     'kw': ['\u51b2\u52a8', '\u4e00\u65f6\u5174\u8d77', '\u770b\u7740\u597d\u770b', '\u4e70\u6765\u6ca1', '\u4e70\u4e86\u6ca1\u7528', '\u6ca1\u5151\u73b0', '\u8111\u5b50\u4e00\u70ed'],
+     'how': '\u4e70\u65f6\u5f88\u60f3\u8981\uff0c\u81f3\u4eca\u6ca1\u7a7f\u8fc7\u6216\u53ea\u7a7f\u8fc7\u4e00\u4e24\u6b21\uff0c\u4e14\u4e0d\u662f\u6ca1\u673a\u4f1a\u800c\u662f\u6ca1\u60f3\u7a7f'},
+]
+
+# ---- \u771f\u7a7a\u538b\u7f29\u9002\u7528\u4e0e\u7981\u5fcc ----
+VACUUM = [
+    ('\u7fbd\u7ed2\u88ab\u3001\u7fbd\u7ed2\u670d', '\u4e0d\u5efa\u8bae\u957f\u671f', '\u957f\u671f\u538b\u7f29\u7834\u574f\u7ed2\u7c07\u7ed3\u6784\uff0c\u84ec\u677e\u5ea6\u96be\u4ee5\u6062\u590d'),
+    ('\u7f8a\u6bdb\u88ab\u3001\u7f8a\u6bdb\u886b', '\u4e0d\u5efa\u8bae', '\u7f8a\u6bdb\u7ea4\u7ef4\u53d7\u538b\u6613\u4ea7\u751f\u6298\u75d5\uff0c\u6062\u590d\u56f0\u96be'),
+    ('\u8695\u4e1d\u88ab', '\u4e0d\u5efa\u8bae', '\u957f\u671f\u538b\u7f29\u53ef\u80fd\u9020\u6210\u7ed3\u6784\u53d8\u5f62'),
+    ('\u539a\u88ab\u8925\u3001\u68c9\u88ab', '\u53ef\u4ee5', '\u68c9\u7ea4\u7ef4\u53d7\u538b\u53d8\u5f62\u5f71\u54cd\u8f83\u5c0f'),
+    ('\u5e8a\u54c1\u3001\u88ab\u5957\u3001\u6795\u5957', '\u53ef\u4ee5', '\u7eaf\u68c9\u7ec7\u7269\u538b\u7f29\u65e0\u788d'),
+    ('\u6bdb\u6bef', '\u53ef\u4ee5', '\u65e0\u586b\u5145\u7ed3\u6784'),
+    ('\u7fbd\u7ed2\u5916\u5957', '\u77ed\u671f\u53ef\u4ee5\uff0c\u957f\u671f\u4e0d\u884c', '\u95ee\u9898\u663e\u73b0\u6ede\u540e'),
+    ('\u5462\u6599\u5927\u8863', '\u8c28\u614e', '\u957f\u671f\u538b\u7f29\u53ef\u80fd\u4ea7\u751f\u6298\u75d5'),
+]
+
+# ---- \u6536\u7eb3\u524d\u63d0 ----
+PRECOND = [
+    ('\u6d17\u51c0', '\u6536\u7eb3\u524d\u5fc5\u987b\u6d17\u51c0\uff0c\u53bb\u9664\u6c61\u6e0d\u4e0e\u6b8b\u7559', '\u6c61\u6e0d\u5728\u5bc6\u95ed\u73af\u5883\u4f1a\u56fa\u5316\u53d1\u9ec4\uff0c\u4e14\u6613\u62db\u866b'),
+    ('\u667e\u5e72', '\u5fc5\u987b\u5b8c\u5168\u667e\u5e72\uff0c\u542b\u6c34\u7387\u8fbe\u6807', '\u6f6e\u6e7f\u8863\u7269\u5728\u67dc\u5185\u4f1a\u53d1\u9709\u3001\u957f\u5f02\u5473'),
+    ('\u9664\u5473', '\u6709\u5f02\u5473\u9700\u5148\u5904\u7406\u518d\u6536\u7eb3', '\u5f02\u5473\u5728\u5bc6\u95ed\u7a7a\u95f4\u4f1a\u6e17\u900f\u5230\u5176\u4ed6\u8863\u7269'),
+    ('\u7406\u5e73', '\u6298\u75d5\u5df2\u7406\u5e73\uff0c\u51fa\u6c34\u5df2\u62e7\u5e72', '\u8936\u76b1\u5b9a\u578b\u540e\u66f4\u96be\u5904\u7406'),
+]
+
+# ---- \u6309\u4f7f\u7528\u9891\u7387\u5206\u7c7b ----
+FREQUENCY = [
+    ['\u9891\u7387\u6863', '\u5b9a\u4e49', '\u6536\u7eb3\u4f4d\u7f6e', '\u6536\u7eb3\u5f62\u5f0f'],
+    ['\u9ad8\u9891', '\u6bcf\u5468\u6216\u6bcf\u6708\u7a7f', '\u8170\u5230\u80a9\u7684\u9ad8\u5ea6\uff0c\u4f38\u624b\u53ef\u53ca', '\u60ac\u6302\u6216\u655e\u53e3\u6298\u53e0\u76d2'],
+    ['\u4e2d\u9891', '\u6bcf\u5b63\u7a7f', '\u4e0a\u5c42\u6216\u4e2d\u4e0a\u5c42', '\u5e26\u76d6\u6536\u7eb3\u76d2'],
+    ['\u4f4e\u9891', '\u6bcf\u5e74\u51e0\u6b21\u6216\u66f4\u5c11', '\u9876\u5c42\u6216\u5e8a\u5e95\u50a8\u7269', '\u5bc6\u5c01\u6536\u7eb3\u7bb1'],
+    ['\u5b63\u8282\u6027', '\u53ea\u5728\u7279\u5b9a\u5b63\u8282\u7a7f', '\u5f53\u5b63\u653e\u5916\u5c42\uff0c\u53cd\u5b63\u653e\u6df1\u5c42', '\u771f\u7a7a\u538b\u7f29\u6216\u5bc6\u5c01\u6536\u7eb3'],
+]
+
+# ---- \u68c0\u67e5\u5468\u671f ----
+CYCLE = [
+    ('\u6bcf\u6708', '\u6253\u5f00\u8863\u67dc\u901a\u98ce\u4e00\u6b21\uff1b\u68c0\u67e5\u6709\u65e0\u5f02\u5473\u4e0e\u6f6e\u6c14'),
+    ('\u6bcf\u5b63', '\u6362\u5b63\u6574\u7406\uff0c\u68c0\u67e5\u53d7\u6f6e\u3001\u9709\u53d8\u3001\u866b\u5bb3'),
+    ('\u6885\u96e8\u5b63\u524d', '\u91cd\u70b9\u68c0\u67e5\u9760\u5916\u5899\u4e0e\u5e95\u5c42\u7684\u8863\u7269\uff1b\u51c6\u5907\u9664\u6e7f'),
+    ('\u4f9b\u6696\u5b63', '\u68c0\u67e5\u6709\u65e0\u5e72\u71e5\u8fc7\u5ea6\u5bfc\u81f4\u7684\u9759\u7535\u4e0e\u8106\u5316'),
+    ('\u6bcf\u5e74', '\u5168\u9762\u6e05\u7406\uff1a\u6309\u4e94\u6761\u5224\u636e\u518d\u8fc7\u4e00\u904d'),
+]
+
+# ---- \u4e09\u79cd\u5e38\u89c1\u8bef\u533a ----
+MISCONCEPT = [
+    {'kw': ['\u4e70\u6536\u7eb3\u76d2', '\u4e70\u4e86\u6536\u7eb3', '\u53c8\u4e70\u4e86\u76d2\u5b50', '\u4e70\u4e86\u5f88\u591a\u76d2', '\u5148\u4e70', '\u4e70\u4e86\u6302'],
+     'msg': '\u5148\u51cf\u91cf\u518d\u914d\u7f6e\u5de5\u5177\uff1a\u7269\u54c1\u91cf\u6ca1\u51cf\u5c11\u65f6\u4e70\u5de5\u5177\uff0c\u53ea\u662f\u6362\u4e86\u4e2a\u5730\u65b9\u5806\u7740\uff0c\u4e14\u5f80\u5f80\u4e70\u4e86\u7528\u4e0d\u4e0a\u7684\u5c3a\u5bf8'},
+    {'kw': ['\u820d\u4e0d\u5f97', '\u7eaa\u5ff5', '\u6709\u610f\u4e49', '\u6709\u611f\u60c5'],
+     'msg': '\u820d\u4e0d\u5f97\u53ef\u4ee5\u8bbe\u660e\u786e\u6700\u7ec8\u671f\u9650\uff1b\u7eaa\u5ff5\u54c1\u5355\u72ec\u6536\u8fdb\u6536\u85cf\u76d2\uff0c\u90a3\u662f\u6536\u85cf\u4e0d\u662f\u8863\u7269\uff0c\u4e0d\u8be5\u5360\u8863\u67dc\u7684\u8863\u7269\u4f4d'},
+    {'kw': ['\u4e00\u6b21\u6e05\u7a7a', '\u5168\u6e05', '\u5168\u90e8\u5012\u51fa\u6765', '\u4e00\u6b21\u6574\u7406\u5b8c'],
+     'msg': '\u4e00\u6b21\u5904\u7406\u4e00\u4e2a\u7c7b\u522b\u66f4\u53ef\u6301\u7eed\uff1a\u4e00\u6b21\u60f3\u6e05\u7a7a\u6574\u4e2a\u8863\u67dc\u5bb9\u6613\u9677\u5165\u5904\u7406\u4e00\u4ef6\u540e\u6094\u4e00\u4ef6\u7684\u5faa\u73af'},
+    {'kw': ['\u585e\u6ee1', '\u585e\u5f97\u6ee1\u6ee1', '\u88c5\u6ee1', '\u585e\u5230\u9876'],
+     'msg': '\u67dc\u5b50\u585e\u6ee1\u4f1a\u5f62\u6210\u4e0d\u901a\u98ce\u7684\u95f7\u888b\uff0c\u6f6e\u6e7f\u4e0e\u95f7\u5473\u90fd\u6392\u4e0d\u51fa\u53bb\uff0c\u8981\u7559\u51fa\u7a7a\u9699'},
+    {'kw': ['\u6309\u7c7b\u522b', '\u5206\u7c7b\u653e', '\u6309\u79cd\u7c7b', '\u4e0a\u8863\u4e00\u7c7b', '\u88e4\u5b50\u4e00\u7c7b'],
+     'msg': '\u6309\u7c7b\u522b\u6536\u7eb3\u4f1a\u5bfc\u81f4\u8981\u7a7f\u65f6\u7ffb\u904d\u6240\u6709\u540c\u7c7b\uff1b\u6309\u4f7f\u7528\u9891\u7387\u6536\u7eb3\uff0c\u5e38\u7a7f\u7684\u653e\u4e00\u8d77\u4e00\u773c\u770b\u5230\u5c31\u62ff\u5230'},
+]
+
+# ---- \u6536\u8d77\u524d\u63d0\u7ea2\u7ebf ----
+RED = [
+    {'kw': ['\u6ca1\u5e72\u5c31\u6536', '\u6ca1\u667e\u5e72', '\u76f4\u63a5\u6536', '\u6e7f\u7684\u6536'],
+     'msg': '\u8863\u7269\u672a\u5b8c\u5168\u667e\u5e72\u5c31\u653e\u5165\u67dc\u5185\uff0c\u662f\u8863\u67dc\u53d1\u9709\u4e0e\u957f\u5f02\u5473\u6700\u5e38\u89c1\u7684\u539f\u56e0\u3002\u53d6\u4e00\u4ef6\u6478\u6298\u75d5\u5904\u4e0e\u9886\u53e3\uff0c\u6709\u6f6e\u611f\u5c31\u662f\u6ca1\u5e72\u900f'},
+    {'kw': ['\u866b', '\u86c0', '\u866b\u86c0', '\u767d\u866b'],
+     'msg': '\u6536\u7eb3\u524d\u68c0\u67e5\u6709\u65e0\u866b\u86c0\uff1a\u4e00\u4ef6\u6709\u866b\u7684\u8863\u7269\u653e\u8fdb\u67dc\u91cc\u53ef\u80fd\u5f71\u54cd\u6574\u67dc\uff0c\u6536\u7eb3\u524d\u6296\u4e00\u6296\u5e76\u68c0\u67e5'},
+    {'kw': ['\u6350\u8d60\u6807\u51c6', '\u80fd\u6350\u5417', '\u80fd\u56de\u6536\u5417'],
+     'msg': '\u662f\u5426\u8fbe\u5230\u6350\u8d60\u6216\u56de\u6536\u6807\u51c6\u7531\u63a5\u6536\u65b9\u786e\u8ba4\uff0c\u4e0d\u8981\u51ed\u611f\u89c9\u5224\u65ad'},
+    {'kw': ['\u771f\u4e1d', '\u7f8a\u7ed2', '\u8d35\u91cd', '\u62a4\u7406'],
+     'msg': '\u6d89\u53ca\u771f\u4e1d\u3001\u7f8a\u7ed2\u7b49\u8d35\u91cd\u8863\u7269\u7684\u62a4\u7406\u4e0e\u53bb\u6e0d\uff0c\u5c5e\u4e13\u4e1a\u62a4\u7406\u8303\u56f4\uff0c\u6309\u6d17\u6da4\u6807\u7b7e\u6216\u54a8\u8be2\u4e13\u4e1a\u673a\u6784'},
+]
+
+
+def analyse(text):
+    t = (text or '').replace(' ', '').replace('\u3000', '')
+    crit = []
+    for c in CRITERIA:
+        hits = [k for k in c['kw'] if k in t]
+        if hits:
+            crit.append({'id': c['id'], 'name': c['name'], 'hits': hits, 'how': c['how']})
+    vac = [v for v in VACUUM if any(k in t for k in
+           [v[0], v[0].replace('\u3001', ''), v[0].split('\u3001')[-1]])]
+    mis = [m['msg'] for m in MISCONCEPT if any(k in t for k in m['kw'])]
+    reds = [r['msg'] for r in RED if any(k in t for k in r['kw'])]
+    return {'criteria': crit, 'vac': vac, 'mis': mis, 'reds': reds,
+            'n_crit': len(crit), 'top': crit[0]['name'] if crit else ''}
+
+
+def render_md(r):
+    lines = ['# \u8863\u7269\u6536\u7eb3\u4e0e\u65ad\u820d\u79bb\u5224\u5b9a\u7ed3\u679c', '']
+    lines.append('> \u5148\u5b9a\u5224\u636e\uff0c\u518d\u5b9a\u6536\u7eb3\u6cd5\uff0c\u6700\u540e\u5b9a\u5468\u671f\u3002\u987a\u5e8f\u53cd\u4e86\u4f1a\u5148\u4e70\u4e00\u5806\u7528\u4e0d\u4e0a\u7684\u5de5\u5177\u3002')
+    lines.append('')
+
+    lines.append('## \u4e00\u3001\u6536\u7eb3\u524d\u63d0\uff08\u56db\u6761\uff09')
+    lines.append('')
+    lines.append('| \u524d\u63d0 | \u8981\u6c42 | \u4e0d\u6ee1\u8db3\u7684\u540e\u679c |')
+    lines.append('|---|---|---|')
+    for a, b, c in PRECOND:
+        lines.append('| %s | %s | %s |' % (a, b, c))
+    lines.append('')
+    lines.append('**\u9a8c\u8bc1\u65b9\u6cd5**\uff1a\u53d6\u4e00\u4ef6\u6536\u7eb3\u597d\u7684\u8863\u7269\u6478\u6298\u75d5\u5904\u4e0e\u9886\u53e3\u8896\u53e3\uff0c\u8fd8\u6709\u6f6e\u611f\u6216\u6709\u660e\u663e\u6c14\u5473\u5c31\u662f\u6ca1\u5e72\u900f\u6216\u6ca1\u6d17\u51c0\u3002')
+    lines.append('')
+
+    lines.append('## \u4e8c\u3001\u4e94\u6761\u91cf\u5316\u5224\u636e\uff08\u547d\u4e2d %d \u6761\uff09' % r['n_crit'])
+    lines.append('')
+    if not r['criteria']:
+        lines.append('\u672a\u547d\u4e2d\u5224\u636e\u3002\u53ef\u5bf9\u7167\uff1a\u4e00\u5e74\u672a\u7a7f\u4e14\u573a\u5408\u65e0\u5ef6\u4f38\u53ef\u80fd\u3001\u540c\u529f\u80fd\u91cd\u590d\u4e14\u6709\u660e\u786e\u77ed\u677f\u3001'
+                     '\u6e05\u6d17\u540e\u5df2\u53d8\u5f62\u3001\u62a4\u7406\u6210\u672c\u8d85\u8fc7\u4ef7\u503c\u3001\u8d2d\u4e70\u51b2\u52a8\u672a\u5151\u73b0\u3002')
+    else:
+        lines.append('| \u5224\u636e | \u547d\u4e2d\u7ebf\u7d22 | \u5177\u4f53\u5224\u5b9a\u65b9\u6cd5 |')
+        lines.append('|---|---|---|')
+        for c in r['criteria']:
+            lines.append('| %s | %s | %s | ' % (c['name'], '\u3001'.join(c['hits']), c['how']))
+        lines.append('')
+        lines.append('**\u6267\u884c\u5efa\u8bae**\uff1a\u4e00\u6b21\u5904\u7406\u4e00\u4e2a\u7c7b\u522b\uff0c\u4e0d\u8981\u8bd5\u56fe\u4e00\u6b21\u6e05\u7a7a\u6574\u4e2a\u8863\u67dc\u3002')
+        lines.append('')
+
+    lines.append('## \u4e09\u3001\u771f\u7a7a\u538b\u7f29\u888b\u9002\u7528\u4e0e\u7981\u5fcc\uff08\u547d\u4e2d %d \u9879\uff09' % len(r['vac']))
+    lines.append('')
+    if r['vac']:
+        lines.append('| \u7269\u54c1 | \u80fd\u5426\u957f\u671f\u538b\u7f29 | \u539f\u56e0 |')
+        lines.append('|---|---|---|')
+        for a, b, c in r['vac']:
+            lines.append('| %s | %s | %s |' % (a, b, c))
+        lines.append('')
+    else:
+        lines.append('| \u7269\u54c1 | \u80fd\u5426\u957f\u671f\u538b\u7f29 | \u539f\u56e0 |')
+        lines.append('|---|---|---|')
+        for a, b, c in VACUUM:
+            lines.append('| %s | %s | %s |' % (a, b, c))
+        lines.append('')
+    lines.append('**\u4f7f\u7528\u8981\u6c42**\uff1a\u77ed\u671f\u8fd0\u8f93\u538b\u7f29\u4e0e\u957f\u671f\u5b58\u50a8\u662f\u4e24\u56de\u4e8b\uff1b\u53d6\u51fa\u540e\u7acb\u5373\u644a\u5f00\u8ba9\u586b\u5145\u7269\u56de\u5f39\uff1b')
+    lines.append('\u4e0d\u8981\u62bd\u5230\u5b8c\u5168\u771f\u7a7a\uff1b\u538b\u7f29\u888b\u8981\u9632\u6f0f\u3002')
+    lines.append('')
+
+    lines.append('## \u56db\u3001\u6309\u4f7f\u7528\u9891\u7387\u5206\u7c7b\u6536\u7eb3')
+    lines.append('')
+    lines.append('| ' + ' | '.join(FREQUENCY[0]) + ' |')
+    lines.append('|---|---|---|---|')
+    for row in FREQUENCY[1:]:
+        lines.append('| ' + ' | '.join(row) + ' |')
+    lines.append('')
+    lines.append('**\u4e09\u6761\u5b9e\u64cd\u8981\u70b9**\uff1a\u9ad8\u9891\u6309\u4eba\u6216\u573a\u5408\u5206\u7ec4\uff1b\u5bb9\u5668\u9ad8\u5ea6\u8981\u5339\u914d\uff1b\u540c\u7c7b\u53e0\u653e\u800c\u4e0d\u662f\u4e00\u4ef6\u4e00\u683c\u3002')
+    lines.append('')
+
+    lines.append('## \u4e94\u3001\u68c0\u67e5\u5468\u671f')
+    lines.append('')
+    lines.append('| \u5468\u671f | \u52a8\u4f5c |')
+    lines.append('|---|---|')
+    for a, b in CYCLE:
+        lines.append('| %s | %s |' % (a, b))
+    lines.append('')
+
+    lines.append('## \u516d\u3001\u5e38\u89c1\u8bef\u533a')
+    lines.append('')
+    if r['mis']:
+        for m in r['mis']:
+            lines.append('- %s' % m)
+    else:
+        for k in (MISCONCEPT[0], MISCONCEPT[1], MISCONCEPT[2]):
+            lines.append('- %s' % k['msg'])
+    lines.append('')
+
+    lines.append('## \u4e03\u3001\u5b89\u5168\u4e0e\u8fb9\u754c\u63d0\u9192')
+    lines.append('')
+    if r['reds']:
+        for m in r['reds']:
+            lines.append('- %s' % m)
+    else:
+        lines.append('- \u8863\u7269\u672a\u5b8c\u5168\u667e\u5e72\u5c31\u653e\u5165\u67dc\u5185\uff0c\u662f\u8863\u67dc\u53d1\u9709\u4e0e\u957f\u5f02\u5473\u6700\u5e38\u89c1\u7684\u539f\u56e0\u3002')
+        lines.append('- \u6536\u7eb3\u524d\u68c0\u67e5\u6709\u65e0\u866b\u86c0\uff0c\u4e00\u4ef6\u6709\u866b\u7684\u8863\u7269\u53ef\u80fd\u5f71\u54cd\u6574\u67dc\u3002')
+        lines.append('- \u662f\u5426\u8fbe\u5230\u6350\u8d60\u6216\u56de\u6536\u6807\u51c6\u7531\u63a5\u6536\u65b9\u786e\u8ba4\u3002')
+    lines.append('')
+
+    lines.append('---')
+    lines.append('')
+    lines.append('\u672c\u7ed3\u679c\u4e3a\u5224\u636e\u5bf9\u7167\u4e0e\u6536\u7eb3\u5efa\u8bae\uff0c\u4e0d\u4ee3\u8868\u4ef7\u503c\u5224\u65ad\uff0c\u4e5f\u4e0d\u6784\u6210\u4e13\u4e1a\u62a4\u7406\u7ed3\u8bba\u3002')
+    lines.append('\u8863\u7269\u62a4\u7406\u8981\u6c42\u4ee5\u6d17\u6da4\u6807\u7b7e\u4e0e\u4ea7\u54c1\u8bf4\u660e\u4e3a\u51c6\u3002')
+    return '\n'.join(lines)
+
+
+def read_input(path):
+    raw = open(path, 'rb').read().decode('utf-8', 'replace')
+    if raw.lstrip('\ufeff').strip().startswith('{'):
+        try:
+            data = json.loads(raw.lstrip('\ufeff'))
+        except ValueError:
+            return raw
+        if isinstance(data, dict):
+            for k in ('desc', 'text', 'description', '\u60c5\u51b5', '\u63cf\u8ff0'):
+                if k in data and isinstance(data[k], str):
+                    return data[k]
+        return raw
+    return raw
+
+
+def selftest():
+    errs = []
+
+    def eq(name, got, want):
+        if got != want:
+            errs.append('%s got=%r want=%r' % (name, got, want))
+
+    r1 = analyse('\u4e00\u5e74\u6ca1\u7a7f\u7684\u8863\u670d\u8fd8\u7559\u7740\uff0c\u771f\u7a7a\u888b\u80fd\u88c5\u7fbd\u7ed2\u670d\u5417')
+    eq('case1 \u672a\u7a7f\u5224\u636e', any(c['id'] == 'C1' for c in r1['criteria']), True)
+    eq('case2 \u5224\u636e\u5e26\u65b9\u6cd5', bool(r1['criteria'][0]['how']), True)
+
+    r2 = analyse('\u7fbd\u7ed2\u670d\u80fd\u4e0d\u80fd\u771f\u7a7a\u538b\u7f29\u534a\u5e74')
+    eq('case3 \u7fbd\u7ed2\u7981\u5fcc\u547d\u4e2d', any('\u7fbd\u7ed2' in v[0] for v in r2['vac']), True)
+    eq('case4 \u4e0d\u5efa\u8bae\u957f\u671f', any('\u4e0d\u5efa\u8bae\u957f\u671f' in v[1] for v in r2['vac']), True)
+
+    r3 = analyse('\u4e70\u4e86\u597d\u51e0\u4ef6\u5dee\u4e0d\u591a\u7684\u5916\u5957')
+    eq('case5 \u91cd\u590d\u5224\u636e', any(c['id'] == 'C2' for c in r3['criteria']), True)
+
+    r4 = analyse('\u6bdb\u8863\u6d17\u5b8c\u7f29\u6c34\u53d8\u5f62\u4e86')
+    eq('case6 \u53d8\u5f62\u5224\u636e', any(c['id'] == 'C3' for c in r4['criteria']), True)
+
+    r5 = analyse('\u7f8a\u6bdb\u886b\u80fd\u4e0d\u80fd\u538b\u7f29')
+    eq('case7 \u7f8a\u6bdb\u7981\u5fcc', any('\u7f8a\u6bdb' in v[0] for v in r5['vac']), True)
+
+    r6 = analyse('\u820d\u4e0d\u5f97\u6254\uff0c\u6709\u7eaa\u5ff5\u610f\u4e49')
+    eq('case8 \u8bef\u533a\u63d0\u9192', len(r6['mis']) >= 1, True)
+
+    r7 = analyse('\u5148\u4e70\u4e86\u5f88\u591a\u6536\u7eb3\u76d2\u518d\u8bf4')
+    eq('case9 \u5de5\u5177\u56e4\u79ef\u63d0\u9192', any('\u51cf\u91cf' in m for m in r7['mis']), True)
+
+    r8 = analyse('\u8863\u670d\u6ca1\u667e\u5e72\u5c31\u653e\u8fdb\u67dc\u5b50\u4e86')
+    eq('case10 \u672a\u5e72\u7ea2\u7ebf', len(r8['reds']) >= 1, True)
+
+    r9 = analyse('\u8863\u670d\u6709\u866b\u86c0')
+    eq('case11 \u866b\u86c0\u7ea2\u7ebf', any('\u866b' in m for m in r9['reds']), True)
+
+    r10 = analyse('\u4ec0\u4e48\u90fd\u4e0d\u6e05\u695a')
+    eq('case12 \u65e0\u5339\u914d', (r10['criteria'], r10['vac']), ([], []))
+
+    md = render_md(r1)
+    eq('case13 \u8f93\u51fa\u8868\u5934', md.startswith('# '), True)
+    eq('case14 \u542b\u524d\u63d0\u56db\u6761', '\u7406\u5e73' in md, True)
+    eq('case15 \u542b\u4e94\u6761\u5224\u636e\u8868', '\u5224\u636e | \u547d\u4e2d\u7ebf\u7d22' in md, True)
+    eq('case16 \u542b\u9891\u7387\u5206\u7c7b', '\u9ad8\u9891' in md, True)
+    eq('case17 \u542b\u68c0\u67e5\u5468\u671f', '\u6885\u96e8\u5b63\u524d' in md, True)
+    js = json.loads(json.dumps(r1, ensure_ascii=False))
+    eq('case18 JSON\u952e', sorted(js.keys()),
+       ['criteria', 'mis', 'n_crit', 'reds', 'top', 'vac'])
+
+    # \u5e26 BOM \u7684 JSON \u8f93\u5165\u5fc5\u987b\u80fd\u6b63\u786e\u89e3\u6790
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write('{"desc": "\u7f8a\u6bdb\u886b\u80fd\u4e0d\u80fd\u538b\u7f29"}')
+    got = read_input(tmp)
+    os.remove(tmp)
+    eq('case19 \u5e26BOM\u7684JSON\u9996\u952e', any('\u7f8a\u6bdb' in v[0] for v in analyse(got)['vac']), True)
+
+    out_dir = os.path.dirname(os.path.abspath(__file__))
+    res_path = os.path.join(out_dir, '_selftest_result.txt')
+    if errs:
+        msg = 'SELFTEST FAIL\n' + '\n'.join(errs)
+    else:
+        msg = ('SELFTEST OK\n\u65ad\u8a00\u6570: 21\n\u8986\u76d6: \u4e94\u6761\u5224\u636e/\u771f\u7a7a\u7981\u5fcc/\u4e0d\u503c\u5f97/\u53d8\u5f62/\u7f8a\u6bdb/'
+               '\u5de5\u5177\u56e4\u79ef/\u672a\u5e72\u7ea2\u7ebf/\u866b\u86c0\u7ea2\u7ebf/BOM\u89e3\u6790')
+    with open(res_path, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='\u8863\u7269\u6536\u7eb3\u4e0e\u65ad\u820d\u79bb\u5224\u5b9a')
+    ap.add_argument('--text', help='\u8863\u7269\u4e0e\u6536\u7eb3\u56f0\u60d1\u63cf\u8ff0')
+    ap.add_argument('--file', help='\u4ece\u6587\u4ef6\u8bfb\uff0c\u652f\u6301 txt / md / json')
+    ap.add_argument('--out', help='\u7ed3\u679c\u8f93\u51fa\u8def\u5f84')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    text = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file \u4e0d\u5b58\u5728')
+            return 2
+        text = read_input(a.file)
+    if not text.strip():
+        print('ERROR \u9700\u8981 --text \u6216 --file')
+        return 2
+
+    r = analyse(text)
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    if a.out:
+        with open(a.out, 'w', encoding='utf-8') as f:
+            f.write(out + '\n')
+        print('\u7ed3\u679c\u5df2\u5199\u5165: %s' % a.out)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

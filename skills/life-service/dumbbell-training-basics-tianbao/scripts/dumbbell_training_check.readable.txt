@@ -1,0 +1,432 @@
+# -*- coding: utf-8 -*-
+"""哑铃训练动作与剂量核对工具。
+
+用法:
+  python dumbbell_training_check.py --file case.json [--json]
+  python dumbbell_training_check.py --selftest
+
+判定顺序: 先看真实缺陷(代偿信号、组间休息严重不足、憋气发力、
+同一肌群每周过量、连续停滞), 再看信息是否完整; 只填了代偿信号
+却没填重量时, 直接判不合格而不是待确认。
+"""
+import argparse
+import io
+import json
+import os
+import sys
+import tempfile
+
+GOAL_SPECS = {
+    "strength": {"reps": (3, 6), "sets": (3, 5), "rest": (120, 180)},
+    "hypertrophy": {"reps": (8, 12), "sets": (3, 4), "rest": (60, 120)},
+    "endurance": {"reps": (15, 20), "sets": (2, 3), "rest": (30, 60)},
+}
+GOAL_LABEL = {
+    "strength": u"力量",
+    "hypertrophy": u"增肌",
+    "endurance": u"耐力",
+}
+
+COMP_ITEMS = [
+    ("shrug", u"耸肩", u"斜方肌代偿，目标肌没吃到力：沉肩并减重量"),
+    ("lumbar", u"腰部反弓", u"核心没收住或重量过大：减重量、缩小幅度或改支撑位"),
+    ("elbow_flare", u"肘部过度外翻", u"肩关节受力不良：把肘角调到 45-60 度并减重量"),
+    ("swing", u"借力甩动", u"重量远超控制能力：立即减重量"),
+    ("neck_forward", u"颈部前伸", u"核心与肩胛失稳：收下巴、减重量、重建支撑"),
+]
+
+REST_HARD_MIN = 45.0
+SAME_MUSCLE_MAX = 3.0
+STALL_BAD = 3.0
+STALL_WARN = 2.0
+SESSIONS_MIN = 2.0
+SESSIONS_MAX = 5.0
+
+
+def num(v):
+    if v is None or v == "":
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def comp_list(ex):
+    comp = ex.get("compensation", {}) or {}
+    hit = []
+    for key, name, why in COMP_ITEMS:
+        if comp.get(key) is True:
+            hit.append((name, why))
+    return hit
+
+
+def rank_exercises(exs):
+    """按代偿数量降序排, 代偿最多的排最前, 用负号锁住方向。"""
+    ranked = sorted(exs, key=lambda e: (-len(comp_list(e)), str(e.get("name", ""))))
+    return [(str(e.get("name", u"未命名")), len(comp_list(e))) for e in ranked]
+
+
+def rest_verdict(goal, rest):
+    if rest is None:
+        return u"待确认", u"未提供组间休息时长"
+    v = float(rest)
+    if v < REST_HARD_MIN:
+        return u"不合格", u"组间休息 %g 秒，低于 %g 秒：下一组几乎必然动作变形，等于用错误姿势练" % (
+            v, REST_HARD_MIN)
+    spec = GOAL_SPECS.get(goal)
+    if spec is None:
+        return u"待确认", u"训练目标未识别，无法核对休息区间"
+    lo, hi = spec["rest"]
+    if v < lo:
+        return u"需改进", u"组间休息 %g 秒，低于该目标建议的 %g 秒下限" % (v, lo)
+    if v > hi + 60:
+        return u"需改进", u"组间休息 %g 秒偏长，可压到 %g-%g 秒" % (v, lo, hi)
+    return u"合格", u"组间休息 %g 秒，在 %g-%g 秒区间" % (v, lo, hi)
+
+
+def reps_verdict(goal, reps):
+    if reps is None:
+        return u"待确认", u"未提供每组次数"
+    v = float(reps)
+    spec = GOAL_SPECS.get(goal)
+    if spec is None:
+        return u"待确认", u"训练目标未识别，无法核对次数区间"
+    lo, hi = spec["reps"]
+    if v < lo:
+        return u"需改进", u"每组 %g 次，低于该目标建议的 %g 次下限" % (v, lo)
+    if v > hi:
+        return u"需改进", u"每组 %g 次，高于该目标建议的 %g 次上限" % (v, hi)
+    return u"合格", u"每组 %g 次，在 %g-%g 次区间" % (v, lo, hi)
+
+
+def sets_verdict(goal, sets):
+    if sets is None:
+        return u"待确认", u"未提供组数"
+    v = float(sets)
+    spec = GOAL_SPECS.get(goal)
+    if spec is None:
+        return u"待确认", u"训练目标未识别，无法核对组数区间"
+    lo, hi = spec["sets"]
+    if v < lo:
+        return u"需改进", u"只做 %g 组，低于该目标建议的 %g 组下限" % (v, lo)
+    if v > hi:
+        return u"需改进", u"做 %g 组，高于该目标建议的 %g 组上限，注意总训练量" % (v, hi)
+    return u"合格", u"%g 组，在 %g-%g 组区间" % (v, lo, hi)
+
+
+def rir_verdict(rir):
+    if rir is None:
+        return u"待确认", u"未提供保留次数"
+    v = float(rir)
+    if v <= 1.0:
+        return u"需改进", u"保留次数 %g，接近力竭：恢复时间长且后续组别容易变形，建议留 2-3 次" % v
+    if v >= 4.0:
+        return u"需改进", u"保留次数 %g，强度不足：可加重量或加次数" % v
+    return u"合格", u"保留次数 %g，在 2-3 次的合适区间" % v
+
+
+def load_json(path):
+    with io.open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def build_report(data):
+    goal = data.get("goal")
+    exs = data.get("exercises", []) or []
+    sessions = num(data.get("weekly_sessions"))
+    same = num(data.get("same_muscle_per_week"))
+    stalled = num(data.get("stalled_weeks"))
+    breath = data.get("breath_holding")
+
+    defects = []
+    fine = []
+    pending = []
+
+    if goal not in GOAL_SPECS:
+        pending.append(u"训练目标未识别，应为力量、增肌或耐力")
+
+    if not exs:
+        pending.append(u"未提供动作清单，无法做动作与剂量核对")
+
+    if breath is True:
+        defects.append(u"憋气发力：大重量时憋气会明显升高血压，头晕眼黑就是信号，应改为发力呼气还原吸气")
+
+    for i, ex in enumerate(exs, 1):
+        name = str(ex.get("name", u"第 %d 个动作" % i))
+        hit = comp_list(ex)
+        for cname, why in hit:
+            defects.append(u"动作「%s」出现代偿：%s —— %s" % (name, cname, why))
+        if not ex.get("compensation"):
+            pending.append(u"动作「%s」未填代偿核对" % name)
+        rv, rm = rest_verdict(goal, ex.get("rest_sec"))
+        if rv == u"不合格":
+            defects.append(u"动作「%s」：%s" % (name, rm))
+        elif rv == u"需改进":
+            fine.append(u"动作「%s」：%s" % (name, rm))
+        elif rv == u"待确认":
+            pending.append(u"动作「%s」：%s" % (name, rm))
+        pvr, pvm = reps_verdict(goal, ex.get("reps"))
+        if pvr == u"需改进":
+            fine.append(u"动作「%s」：%s" % (name, pvm))
+        elif pvr == u"待确认":
+            pending.append(u"动作「%s」：%s" % (name, pvm))
+        svr, svm = sets_verdict(goal, ex.get("sets"))
+        if svr == u"需改进":
+            fine.append(u"动作「%s」：%s" % (name, svm))
+        rvr, rvm = rir_verdict(ex.get("rir"))
+        if rvr == u"需改进":
+            fine.append(u"动作「%s」：%s" % (name, rvm))
+
+    if same is None:
+        pending.append(u"未提供同一肌群每周训练次数")
+    elif same > SAME_MUSCLE_MAX:
+        defects.append(u"同一肌群每周练 %g 次，超过 %g 次上限：肌肉在休息时恢复，练得越勤不等于长得越快" % (
+            same, SAME_MUSCLE_MAX))
+
+    if stalled is None:
+        pending.append(u"未提供连续无变化周数")
+    elif stalled >= STALL_BAD:
+        defects.append(u"连续 %g 周重量、次数、组数都无变化：应系统检查训练量、恢复与睡眠饮食，而不是继续硬加" % stalled)
+    elif stalled >= STALL_WARN:
+        fine.append(u"连续 %g 周无变化，说明计划需要调整" % stalled)
+
+    if sessions is None:
+        pending.append(u"未提供每周训练频次")
+    elif sessions < SESSIONS_MIN:
+        fine.append(u"每周训练 %g 次偏少，初学者建议 2-3 次" % sessions)
+    elif sessions > SESSIONS_MAX:
+        fine.append(u"每周训练 %g 次偏多，注意安排减量周" % sessions)
+
+    ranked = rank_exercises(exs)
+
+    lines = []
+    lines.append("=" * 62)
+    lines.append(u"哑铃训练动作与剂量核对")
+    lines.append("=" * 62)
+    lines.append(u"训练目标：%s    动作数：%d" % (GOAL_LABEL.get(goal, u"未识别"), len(exs)))
+    lines.append("")
+    lines.append(u"[一] 逐动作概览")
+    lines.append(u"%-14s %8s %8s %6s %6s %8s" % (u"动作", u"重量kg", u"次数", u"组数", u"RIR", u"休息秒"))
+    lines.append("-" * 62)
+    for ex in exs:
+        lines.append(u"%-14s %8s %8s %6s %6s %8s" % (
+            str(ex.get("name", u"--")),
+            (u"%g" % float(ex["weight_kg"])) if num(ex.get("weight_kg")) is not None else u"--",
+            (u"%g" % float(ex["reps"])) if num(ex.get("reps")) is not None else u"--",
+            (u"%g" % float(ex["sets"])) if num(ex.get("sets")) is not None else u"--",
+            (u"%g" % float(ex["rir"])) if num(ex.get("rir")) is not None else u"--",
+            (u"%g" % float(ex["rest_sec"])) if num(ex.get("rest_sec")) is not None else u"--"))
+    lines.append("-" * 62)
+    lines.append("")
+    lines.append(u"[二] 需优先处理的动作（按代偿数量降序）")
+    if ranked and ranked[0][1] > 0:
+        for name, cnt in ranked:
+            if cnt > 0:
+                lines.append(u"  %s：%d 项代偿" % (name, cnt))
+    else:
+        lines.append(u"  无代偿信号")
+    lines.append("")
+    lines.append(u"[三] 不合格项与原因")
+    if defects:
+        for i, d in enumerate(defects, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[四] 需改进项")
+    if fine:
+        for i, d in enumerate(fine, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[五] 待确认项")
+    if pending:
+        for i, d in enumerate(pending, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[六] 处方")
+    lines.append(u"  1. 出现代偿的第一动作永远是降重量或退阶，不是继续加重量")
+    lines.append(u"  2. 重量选择：能标准完成目标次数且还剩 2-3 次余力")
+    if breath is True:
+        lines.append(u"  3. 立即改掉憋气：发力呼气、还原吸气、2-3 秒控制下落")
+    else:
+        lines.append(u"  3. 呼吸：发力呼气、还原吸气、2-3 秒控制下落，全程不憋气")
+    lines.append(u"  4. 渐进顺序：先加次数（在目标区间内加满）→ 再加重量 → 最后考虑加组数")
+    lines.append(u"  5. 同一肌群每周 2-3 次，间隔至少 48 小时，每 4-6 周安排减量周")
+    lines.append(u"  6. 每次记录重量、次数、组数、RIR，没有记录就无法判断有没有渐进")
+
+    if defects:
+        overall = u"不合格"
+    elif fine:
+        overall = u"需改进"
+    elif pending:
+        overall = u"待确认"
+    else:
+        overall = u"合格"
+
+    lines.append("")
+    lines.append(u"总判定：%s" % overall)
+    lines.append(u"提示：关节锐痛、放射痛、肿胀、夜间痛、训练中头晕胸闷时立即停练并就医。")
+    lines.append(u"免责：本结果为训练自查输出，不构成医学诊断或康复方案。")
+    lines.append("=" * 62)
+
+    summary = {
+        "goal": goal,
+        "exercise_count": len(exs),
+        "ranked": ranked,
+        "defects": defects,
+        "fine": fine,
+        "pending": pending,
+        "overall": overall,
+    }
+    return "\n".join(lines), summary
+
+
+def _run_checks():
+    r = []
+    r.append((u"增肌休息 90 秒判合格", rest_verdict("hypertrophy", 90)[0] == u"合格"))
+    r.append((u"反例：休息 30 秒判不合格", rest_verdict("hypertrophy", 30)[0] == u"不合格"))
+    r.append((u"反例：力量目标增肌次数判需改进", reps_verdict("strength", 10)[0] == u"需改进"))
+    r.append((u"增肌次数 10 判合格", reps_verdict("hypertrophy", 10)[0] == u"合格"))
+    r.append((u"反例：RIR 0 判需改进", rir_verdict(0)[0] == u"需改进"))
+    r.append((u"RIR 2 判合格", rir_verdict(2)[0] == u"合格"))
+    r.append((u"反例：组数 6 判需改进", sets_verdict("hypertrophy", 6)[0] == u"需改进"))
+    r.append((u"未知目标时次数判待确认", reps_verdict("xxx", 10)[0] == u"待确认"))
+
+    exs = [
+        {"name": u"A", "compensation": {"shrug": True}},
+        {"name": u"B", "compensation": {"shrug": True, "lumbar": True, "swing": True}},
+        {"name": u"C", "compensation": {}},
+    ]
+    ranked = rank_exercises(exs)
+    r.append((u"排序方向：代偿最多的排最前", ranked[0][0] == u"B" and ranked[0][1] == 3))
+    r.append((u"排序方向：无代偿的排最后", ranked[-1][0] == u"C" and ranked[-1][1] == 0))
+
+    _, s = build_report({
+        "goal": "hypertrophy",
+        "exercises": [
+            {"name": u"哑铃卧推", "weight_kg": 16, "reps": 10, "sets": 3, "rir": 2, "rest_sec": 100,
+             "compensation": {"shrug": False, "lumbar": False, "elbow_flare": False, "swing": False}},
+            {"name": u"单臂哑铃划船", "weight_kg": 14, "reps": 10, "sets": 3, "rir": 2, "rest_sec": 90,
+             "compensation": {"shrug": False, "lumbar": False, "elbow_flare": False, "swing": False}},
+        ],
+        "weekly_sessions": 3, "same_muscle_per_week": 2, "stalled_weeks": 0,
+        "breath_holding": False,
+    })
+    r.append((u"标准样例判定合格", s["overall"] == u"合格"))
+
+    _, s1 = build_report({
+        "goal": "hypertrophy",
+        "exercises": [
+            {"name": u"哑铃肩推", "weight_kg": 20, "reps": 8, "sets": 4, "rir": 1, "rest_sec": 30,
+             "compensation": {"shrug": True, "lumbar": True, "elbow_flare": False, "swing": False}},
+        ],
+        "weekly_sessions": 3, "same_muscle_per_week": 2, "stalled_weeks": 0,
+        "breath_holding": False,
+    })
+    r.append((u"反例：代偿加休息不足判不合格", s1["overall"] == u"不合格"))
+    r.append((u"反例：耸肩进缺陷表", any(u"耸肩" in d for d in s1["defects"])))
+    r.append((u"反例：腰部反弓进缺陷表", any(u"腰部反弓" in d for d in s1["defects"])))
+
+    _, s2 = build_report({
+        "goal": "hypertrophy",
+        "exercises": [{"name": u"哑铃卧推", "reps": 10, "sets": 3, "rir": 2, "rest_sec": 90,
+                       "compensation": {"shrug": False, "lumbar": False,
+                                        "elbow_flare": False, "swing": False}}],
+        "weekly_sessions": 3, "same_muscle_per_week": 2, "stalled_weeks": 0,
+        "breath_holding": True,
+    })
+    r.append((u"反例：憋气发力判不合格", s2["overall"] == u"不合格"))
+
+    _, s3 = build_report({
+        "goal": "hypertrophy",
+        "exercises": [{"name": u"哑铃卧推", "reps": 10, "sets": 3, "rir": 2, "rest_sec": 90,
+                       "compensation": {}}],
+        "weekly_sessions": 3, "same_muscle_per_week": 5, "stalled_weeks": 0,
+    })
+    r.append((u"反例：同一肌群每周 5 次判不合格", s3["overall"] == u"不合格"))
+
+    _, s4 = build_report({
+        "goal": "hypertrophy",
+        "exercises": [{"name": u"哑铃卧推", "reps": 10, "sets": 3, "rir": 2, "rest_sec": 90,
+                       "compensation": {}}],
+        "weekly_sessions": 3, "same_muscle_per_week": 2, "stalled_weeks": 4,
+    })
+    r.append((u"反例：连续停滞 4 周判不合格", s4["overall"] == u"不合格"))
+
+    _, s5 = build_report({"goal": "hypertrophy", "exercises": [{"name": u"X", "compensation": {"shrug": True}}]})
+    r.append((u"缺剂量但有代偿不得判待确认", s5["overall"] == u"不合格"))
+
+    _, s6 = build_report({"goal": "xxx"})
+    r.append((u"未知目标记为待确认", s6["overall"] == u"待确认"))
+
+    p = os.path.join(tempfile.gettempdir(), "_dumbbell_bom_case.json")
+    blob = b"\xef\xbb\xbf" + json.dumps({
+        "goal": "hypertrophy",
+        "exercises": [{"name": u"哑铃卧推", "reps": 10, "sets": 3, "rir": 2,
+                       "rest_sec": 90, "compensation": {}}],
+        "weekly_sessions": 3, "same_muscle_per_week": 2, "stalled_weeks": 0,
+    }, ensure_ascii=False).encode("utf-8")
+    with open(p, "wb") as f:
+        f.write(blob)
+    try:
+        d = load_json(p)
+        r.append((u"UTF-8 BOM 输入首键可读", d.get("goal") == "hypertrophy"))
+        r.append((u"UTF-8 BOM 输入嵌套结构可读", d["exercises"][0]["name"] == u"哑铃卧推"))
+    finally:
+        if os.path.exists(p):
+            os.remove(p)
+
+    return r
+
+
+def selftest():
+    results = _run_checks()
+    failed = [name for name, ok in results if not ok]
+    ok = len(failed) == 0
+    lines = ["SELFTEST %s" % ("OK" if ok else "FAILED")]
+    lines.append("checks=%d passed=%d failed=%d" % (len(results), len(results) - len(failed), len(failed)))
+    for name in failed:
+        lines.append("FAILED: %s" % name)
+    with io.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_selftest_result.txt"),
+                 "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+    return ok
+
+
+def main():
+    parser = argparse.ArgumentParser(description=u"哑铃训练动作与剂量核对工具")
+    parser.add_argument("--file", help=u"输入 JSON 文件路径（UTF-8）")
+    parser.add_argument("--json", action="store_true", help=u"以 JSON 输出")
+    parser.add_argument("--out", help=u"结果写入指定文件")
+    parser.add_argument("--selftest", action="store_true", help=u"运行自检")
+    args = parser.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        sys.exit(0 if selftest() else 1)
+
+    if not args.file:
+        parser.error(u"需要 --file 或 --selftest")
+
+    data = load_json(args.file)
+
+    report, summary = build_report(data)
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.json else report
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    with io.open(out_path, "w", encoding="utf-8") as f:
+        f.write(body)
+    print(body)
+    print("")
+    print(u"结果已写入：%s" % out_path)
+
+
+if __name__ == "__main__":
+    main()
+

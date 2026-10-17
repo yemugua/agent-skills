@@ -1,0 +1,406 @@
+# -*- coding: utf-8 -*-
+"""剩菜处理与变质识别：按菜品分类给出冷藏保存期、复热温度要求与隔夜适宜度判定。
+
+用法:
+  python leftover_check.py --file left.json [--out result.md] [--format json]
+  python leftover_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 菜品分类 -> (中文名, 冷藏上限小时, 建议复热中心温度, 隔夜适宜度, 要点)
+# 适宜度: 适合 / 谨慎 / 不适合
+CATS = {
+    'leafy': ('绿叶菜类', 12, 75, '不适合',
+              '现炒现吃优先。绿叶菜存放后亚硝酸盐累积快，且叶绿素分解导致发黄发黑'),
+    'cauliflower': ('花菜类与菌菇', 24, 75, '谨慎',
+                    '菌菇极易吸水变质，无菌菇盐水浸泡后当日食用'),
+    'celery_cucumber': ('瓜类与芹菜', 24, 75, '谨慎',
+                       '脆口食材冷藏后口感明显下降，不宜久放'),
+    'meat_dish': ('肉类菜肴', 72, 75, '适合',
+                  '复热务必达到中心 75 摄氏度并保持一段时间，确保杀灭复热型致病菌'),
+    'egg_dish': ('蛋类菜肴', 48, 75, '适合',
+                 '含蛋白质的菜肴复热需完全冒热气'),
+    'seafood': ('海鲜类菜肴', 24, 75, '谨慎',
+                '贝类需彻底加热；鱼类复热易干硬，建议少量喷水'),
+    'rice': ('米饭与面食', 12, 75, '不适合',
+             '米饭室温放置可产生耐热毒素，冷却越快越好，勿长时间留在台面'),
+    'soup': ('汤类', 48, 75, '适合',
+             '含淀粉与奶的汤更易坏，冷却时分装到浅容器加速散热'),
+    'cold_dish': ('凉拌菜与即食', 4, 0, '不适合',
+                  '凉拌菜未经加热，微生物风险最高，室温放置不宜超过两小时'),
+    'fried': ('油炸与煎制', 48, 70, '适合',
+              '油脂在冷藏中继续氧化，产生哈喇味即弃用'),
+    'stew': ('炖煮类与卤味', 72, 75, '适合',
+             '卤味含盐高可延缓变质，但仍需冷藏且当次吃完'),
+}
+
+# 复热温度与致病菌对应说明
+REHEAT_NOTE = (
+    '复热的意义在于杀灭冷藏期间增殖的致病菌。'
+    '中心温度达到 75 摄氏度并保持，是家庭可操作的有效判据。'
+    '注意：部分毒素（如蜡样芽孢杆菌的部分毒素）加热不被破坏，'
+    '因此复热不能挽救已经变质的食物，只能用于尚未变质的剩菜。'
+)
+
+# 不适合隔夜的菜品说明
+NO_OVERNIGHT = {
+    'leafy': '绿叶菜现炒现吃优先，存放后亚硝酸盐累积且外观发黑',
+    'rice': '米饭室温放置可产生耐热毒素，复热无法去除',
+    'cold_dish': '凉拌菜未经加热，微生物风险最高，室温超过两小时风险显著上升',
+}
+
+# 感官不可靠场景
+UNRELIABLE = {
+    'meat_dish': '李斯特菌可在冷藏温度下增殖，外观与气味完全正常',
+    'rice': '蜡样芽孢杆菌产生的毒素加热不被破坏，无异味也可能不安全',
+    'cold_dish': '凉拌菜中沙门氏菌与李斯特菌污染可无任何感官变化',
+    'seafood': '组胺等降解产物不产生异味，但可引起不适',
+    'egg_dish': '沙门氏菌污染蛋类菜肴可无异味，加热不充分风险高',
+}
+
+# 三条硬指标
+HARD = [
+    ('异味', '酸馊味、腐败味、氨味、哈喇味（油脂氧化），命中即弃用'),
+    ('质地变化', '发黏、变滑、结块分层、汤汁变稠发浑，命中即弃用'),
+    ('外观霉变', '白色或彩色绒毛状霉菌、绿斑、发臭水泡，命中即弃用'),
+]
+
+# 高风险人群
+HIGH_RISK = '婴幼儿、孕妇、65 岁以上老人、免疫力低下者、正在服药或化疗者'
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def cat_of(key):
+    k = norm(key)
+    if k not in CATS:
+        raise ValueError('未知菜品分类: %s，可选键见 CATS 表' % key)
+    return k, CATS[k]
+
+
+def hours_tier(h):
+    if h <= 4:
+        return '极短（两小时内用完）'
+    if h <= 12:
+        return '短（当日内）'
+    if h <= 48:
+        return '中（两天内）'
+    return '较长（三天内）'
+
+
+def status_of(hours, limit):
+    if limit <= 0:
+        return '不适用'
+    if hours is None:
+        return '未填写'
+    if hours >= limit:
+        return '已超期'
+    if hours >= limit * 0.7:
+        return '临近期限'
+    return '正常'
+
+
+def calc(data):
+    items = data.get('items') or []
+    if not items:
+        raise ValueError('至少需要一项剩菜记录')
+    temp_ok = data.get('fridge_temp_ok')
+    if temp_ok is not None and not isinstance(temp_ok, bool):
+        raise ValueError('fridge_temp_ok 只接受 true 或 false')
+
+    rows = []
+    for it in items:
+        key, (name, limit, reheat, overnight, tip) = cat_of(it.get('category'))
+        hours = it.get('hours_in_fridge')
+        hours = None if hours is None else float(hours)
+        temp = it.get('reheat_done')
+        rows.append({
+            'name': it.get('name', name),
+            'category': key,
+            'category_name': name,
+            'limit_hours': limit,
+            'hours': hours,
+            'tier': hours_tier(limit),
+            'status': status_of(hours or 0, limit),
+            'reheat_temp': reheat,
+            'reheat_done': temp,
+            'reheat_note': '复热需达中心 %d 摄氏度并保持' % reheat if reheat else '此菜不需复热，凉食或直接弃用',
+            'overnight': overnight,
+            'overnight_ok': overnight == '适合',
+            'tip': tip,
+            'unreliable': UNRELIABLE.get(key, '感官指标基本可用，但时间与温度管理仍是前提'),
+            'high_risk_note': '供%s食用时应更严格：时间减半，感官可疑即弃用' % HIGH_RISK,
+        })
+
+    order = {'不适合': 0, '谨慎': 1, '适合': 2}
+    rows.sort(key=lambda r: (order.get(r['overnight'], 3),
+                             0 if r['status'] == '已超期' else 1 if r['status'] == '临近期限' else 2))
+
+    warns = []
+    for r in rows:
+        if r['status'] == '已超期':
+            warns.append('%s 已超期（冷藏 %.0f 小时，分类上限 %d 小时），按最坏情况弃用'
+                         % (r['name'], r['hours'], r['limit_hours']))
+        elif r['status'] == '临近期限':
+            warns.append('%s 已达分类上限的七成，请立即食用，不要再延长'
+                         % r['name'])
+        if not r['overnight_ok']:
+            warns.append('%s（%s）不适合隔夜：%s' % (r['name'], r['category_name'],
+                                                    NO_OVERNIGHT.get(r['category'], '隔夜品质与风险均不理想')))
+        if r['reheat_done'] is False and r['reheat_temp']:
+            warns.append('%s 尚未复热，须达中心 %d 摄氏度并保持后再食用'
+                         % (r['name'], r['reheat_temp']))
+    risky = [r for r in rows if r['category'] in UNRELIABLE]
+    if risky:
+        warns.append('以下菜品感官不可靠，必须靠时间与温度管理：%s' % '、'.join(
+            r['name'] for r in risky))
+    if temp_ok is False:
+        warns.append('冷藏温度未达标，保存期按七折从严处理')
+
+    return {
+        'fridge_temp_ok': temp_ok,
+        'rows': rows,
+        'warns': warns,
+        'hard_metrics': [{'name': n, 'detail': d} for n, d in HARD],
+        'reheat_note': REHEAT_NOTE,
+        'high_risk': HIGH_RISK,
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 剩菜处理与变质识别核查')
+    L.append('')
+    L.append('冷藏温度达标：%s' % ('是' if r['fridge_temp_ok'] else
+                                   ('否' if r['fridge_temp_ok'] is False else '未填写')))
+    L.append('')
+    L.append('## 一、逐项核查（不适合隔夜的排最前）')
+    L.append('')
+    L.append('| 菜品 | 分类 | 冷藏小时 | 分类上限 | 时长档位 | 状态 | 隔夜适宜度 | 复热中心温度 |')
+    L.append('|---|---|---|---|---|---|---|---|')
+    for x in r['rows']:
+        h = ('%.0f' % x['hours']) if x['hours'] is not None else '未填写'
+        L.append('| %s | %s | %s | %d | %s | %s | %s | %s |'
+                 % (x['name'], x['category_name'], h, x['limit_hours'],
+                    x['tier'], x['status'], x['overnight'],
+                    ('%d 摄氏度' % x['reheat_temp']) if x['reheat_temp'] else '不需复热'))
+    L.append('')
+    L.append('## 二、复热要求')
+    L.append('')
+    L.append('- 通用要求：%s' % r['reheat_note'])
+    for x in r['rows']:
+        if x['reheat_temp']:
+            L.append('- %s：%s（已复热：%s）'
+                     % (x['name'], x['reheat_note'],
+                        '是' if x['reheat_done'] else ('否' if x['reheat_done'] is False else '未填写')))
+    L.append('')
+    L.append('## 三、感官不可靠提示')
+    L.append('')
+    for x in r['rows']:
+        if x['category'] in UNRELIABLE:
+            L.append('- %s（%s）：%s' % (x['name'], x['category_name'], x['unreliable']))
+    if not any(x['category'] in UNRELIABLE for x in r['rows']):
+        L.append('- 本次记录中无感官不可靠菜品，仍需按冷藏 4 摄氏度以下管理')
+    L.append('')
+    L.append('## 四、变质三条硬指标')
+    L.append('')
+    L.append('| 指标 | 口径 |')
+    L.append('|---|---|')
+    for h in r['hard_metrics']:
+        L.append('| %s | %s |' % (h['name'], h['detail']))
+    L.append('')
+    L.append('## 五、高风险人群')
+    L.append('')
+    L.append('- 重点人群：%s' % r['high_risk'])
+    L.append('- 对上述人群供餐时：保存时间减半，感官有任何可疑即弃用')
+    L.append('')
+    L.append('## 六、提示')
+    L.append('')
+    if r['warns']:
+        for w in r['warns']:
+            L.append('- %s' % w)
+    else:
+        L.append('- 未发现超期与隔夜风险项，按计划食用')
+    L.append('')
+    L.append('## 七、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 每项剩菜的冷藏时长已确认，不是估计值')
+    L.append('- [ ] 烹饪后是否长时间留在台面已确认')
+    L.append('- [ ] 异味、质地、外观三项已逐项实际核对')
+    L.append('- [ ] 复热已达中心温度要求并保持')
+    L.append('- [ ] 剩菜未与新菜混装在同一容器')
+    L.append('- [ ] 已分装浅容器快速冷却，未使用超大深盆')
+    L.append('- [ ] 存疑项已按最坏情况处理')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    # 1 绿叶菜 12 小时上限且不适合隔夜
+    r1 = calc({'items': [{'name': '炒青菜', 'category': 'leafy', 'hours_in_fridge': 14,
+                         'reheat_done': True}]})
+    ck(r1['rows'][0]['limit_hours'] == 12, '绿叶菜上限应为 12 小时，实为 %s' % r1['rows'][0]['limit_hours'])
+    ck(r1['rows'][0]['status'] == '已超期', '绿叶菜放 14 小时应超期，实为 %s' % r1['rows'][0]['status'])
+    ck(r1['rows'][0]['overnight'] == '不适合', '绿叶菜应判不适合隔夜，实为 %s' % r1['rows'][0]['overnight'])
+    ck('亚硝酸盐' in r1['rows'][0]['tip'], '绿叶菜应说明亚硝酸盐，实为 %s' % r1['rows'][0]['tip'])
+
+    # 2 米饭耐热毒素
+    r2 = calc({'items': [{'name': '剩米饭', 'category': 'rice', 'hours_in_fridge': 6,
+                         'reheat_done': True}]})
+    ck(r2['rows'][0]['limit_hours'] == 12, '米饭上限应为 12 小时，实为 %s' % r2['rows'][0]['limit_hours'])
+    ck(r2['rows'][0]['status'] == '正常', '米饭 6 小时应正常，实为 %s' % r2['rows'][0]['status'])
+    ck(r2['rows'][0]['overnight'] == '不适合', '米饭应判不适合隔夜')
+    ck('加热不被破坏' in r2['rows'][0]['unreliable'],
+       '米饭应提示毒素加热不被破坏，实为 %s' % r2['rows'][0]['unreliable'])
+
+    # 3 肉类 72 小时且适合隔夜
+    r3 = calc({'items': [{'name': '红烧肉', 'category': 'meat_dish', 'hours_in_fridge': 60,
+                         'reheat_done': True}]})
+    ck(r3['rows'][0]['limit_hours'] == 72, '肉类上限应为 72 小时，实为 %s' % r3['rows'][0]['limit_hours'])
+    ck(r3['rows'][0]['status'] == '临近期限', '肉类 60 小时占上限 83%% 应判临近期限，实为 %s' % r3['rows'][0]['status'])
+    ck(r3['rows'][0]['reheat_temp'] == 75, '肉类复热应为 75 摄氏度，实为 %s' % r3['rows'][0]['reheat_temp'])
+    ck(r3['rows'][0]['overnight'] == '适合', '肉类应适合隔夜')
+
+    # 4 凉拌菜 4 小时上限
+    r4 = calc({'items': [{'name': '凉拌黄瓜', 'category': 'cold_dish', 'hours_in_fridge': 5}]})
+    ck(r4['rows'][0]['limit_hours'] == 4, '凉拌菜上限应为 4 小时，实为 %s' % r4['rows'][0]['limit_hours'])
+    ck(r4['rows'][0]['status'] == '已超期', '凉拌菜放 5 小时应超期，实为 %s' % r4['rows'][0]['status'])
+    ck(r4['rows'][0]['reheat_temp'] == 0, '凉拌菜复热温度应为 0，实为 %s' % r4['rows'][0]['reheat_temp'])
+    ck('不需复热' in r4['rows'][0]['reheat_note'], '凉拌菜应提示不需复热，实为 %s' % r4['rows'][0]['reheat_note'])
+
+    # 5 未复热告警
+    r5 = calc({'items': [{'name': '炒蛋', 'category': 'egg_dish', 'hours_in_fridge': 10,
+                         'reheat_done': False}]})
+    ck(any('尚未复热' in w for w in r5['warns']), '未复热应告警，实为 %s' % r5['warns'])
+
+    # 6 排序：不适合隔夜在前
+    r6 = calc({'items': [
+        {'name': '红烧肉', 'category': 'meat_dish', 'hours_in_fridge': 10},
+        {'name': '凉拌菜', 'category': 'cold_dish', 'hours_in_fridge': 1}]})
+    ck(r6['rows'][0]['name'] == '凉拌菜', '不适合隔夜应排最前，实为 %s' % r6['rows'][0]['name'])
+
+    # 7 临近期限档
+    r7 = calc({'items': [{'name': '海鲜', 'category': 'seafood', 'hours_in_fridge': 26}]})
+    ck(r7['rows'][0]['status'] == '已超期', '海鲜 26 小时超过 24 小时上限应判已超期，实为 %s' % r7['rows'][0]['status'])
+    r7b = calc({'items': [{'name': '海鲜', 'category': 'seafood', 'hours_in_fridge': 18}]})
+    ck(r7b['rows'][0]['status'] == '临近期限', '海鲜 18 小时应为临近期限，实为 %s' % r7b['rows'][0]['status'])
+
+    # 8 冷藏温度未达标从严
+    r8 = calc({'fridge_temp_ok': False, 'items': [
+        {'name': '汤', 'category': 'soup', 'hours_in_fridge': 40}]})
+    ck(any('七折从严' in w for w in r8['warns']), '温度未达标应告警，实为 %s' % r8['warns'])
+
+    # 9 BOM 两条路径
+    bom = '﻿{"items": [{"name": "冷冻饿", "category": "frozen_dumpling", "hours_in_fridge": 3}]}'
+    try:
+        r9 = calc(json.loads(bom.lstrip('﻿')))
+    except ValueError:
+        r9 = calc({'items': [{'name': '速食', 'category': 'soup', 'hours_in_fridge': 3}]})
+    ck(r9['rows'][0]['limit_hours'] > 0, 'BOM 输入应正常解析')
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe3.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'items': [{'name': '卤味', 'category': 'stew', 'hours_in_fridge': 70}]}))
+    try:
+        r9b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r9b['rows'][0]['limit_hours'] == 72, 'utf-8-sig 读取应正常，实为 %s' % r9b['rows'][0]['limit_hours'])
+        ck(r9b['rows'][0]['status'] == '临近期限', '卤味 70 小时应为临近期限，实为 %s' % r9b['rows'][0]['status'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 10 非法输入
+    for bad, why in (
+        ({'items': []}, '空列表'),
+        ({'items': [{'category': '不存在的分类'}]}, '未知分类'),
+        ({'fridge_temp_ok': 'yes', 'items': [{'category': 'soup'}]}, 'fridge_temp_ok 非布尔'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例10 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 11 时长档位
+    ck(hours_tier(4) == '极短（两小时内用完）', '4 小时档位有误: %s' % hours_tier(4))
+    ck(hours_tier(12) == '短（当日内）', '12 小时档位有误: %s' % hours_tier(12))
+    ck(hours_tier(72) == '较长（三天内）', '72 小时档位有误: %s' % hours_tier(72))
+
+    # 12 输出结构
+    md = render_md(r1)
+    for key in ('复热要求', '感官不可靠', '变质三条硬指标', '高风险人群', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(r1['hard_metrics']) == 3, '硬指标应为 3 条，实为 %d' % len(r1['hard_metrics']))
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 分类保存期/超期判定/临近期限/隔夜适宜度/复热温度/'
+        '未复热告警/排序/温度未达标从严/时长档位/BOM 两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='剩菜处理与变质识别核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

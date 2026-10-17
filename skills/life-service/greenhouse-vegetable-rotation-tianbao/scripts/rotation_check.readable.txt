@@ -1,0 +1,373 @@
+# -*- coding: utf-8 -*-
+"""大棚蔬菜茬口排期与连作障碍校验工具。
+
+用法:
+  python rotation_check.py --file plan.json [--json]
+  python rotation_check.py --selftest
+
+本工具不做测土, 不给土壤养分与盐分的精确数值, 不推荐任何农药商品。
+"""
+import argparse
+import io
+import json
+import os
+import sys
+
+# 科属表: 作物 -> 科名
+FAMILY = {
+    "黄瓜": "葫芦科", "西瓜": "葫芦科", "南瓜": "葫芦科", "丝瓜": "葫芦科",
+    "甜瓜": "葫芦科", "苦瓜": "葫芦科", "西葫芦": "葫芦科",
+    "番茄": "茄科", "茄子": "茄科", "辣椒": "茄科", "柿子椒": "茄科",
+    "马铃薯": "茄科",
+    "白菜": "十字花科", "萝卜": "十字花科", "青菜": "十字花科",
+    "甘蓝": "十字花科", "花椰菜": "十字花科", "芥蓝": "十字花科",
+    "菠菜": "藜科", "芹菜": "伞形科", "胡萝卜": "伞形科",
+    "生菜": "菊科", "莴苣": "菊科",
+    "菜豆": "豆科", "豇豆": "豆科", "豌豆": "豆科", "蚕豆": "豆科",
+    "玉米": "禾本科", "小麦": "禾本科",
+    "大蒜": "百合科", "洋葱": "百合科", "韭菜": "百合科",
+    "苜蓿": "豆科",
+}
+
+# 根深: 浅 / 中 / 深
+ROOT_DEPTH = {
+    "生菜": "浅", "菠菜": "浅", "小白菜": "浅", "空心菜": "浅", "苋菜": "浅",
+    "青菜": "浅", "蒜苗": "浅",
+    "黄瓜": "浅", "番茄": "中", "茄子": "中", "辣椒": "中", "西葫芦": "中",
+    "菜豆": "中", "豇豆": "中", "芹菜": "浅", "韭菜": "浅",
+    "萝卜": "深", "胡萝卜": "深", "甘蓝": "中", "白菜": "浅", "甜瓜": "深",
+    "西瓜": "深", "南瓜": "深", "丝瓜": "中", "苦瓜": "中", "马铃薯": "中",
+    "玉米": "深", "小麦": "浅", "苜蓿": "深", "豌豆": "中", "蚕豆": "中",
+}
+
+# 生育期参考天数 (播种到采收)
+GROW_DAYS = {
+    "黄瓜": 65, "西瓜": 95, "南瓜": 90, "丝瓜": 80, "甜瓜": 85, "苦瓜": 80,
+    "西葫芦": 60, "番茄": 105, "茄子": 115, "辣椒": 95, "马铃薯": 90,
+    "白菜": 65, "萝卜": 55, "青菜": 40, "甘蓝": 80, "花椰菜": 90,
+    "芥蓝": 75, "菠菜": 38, "生菜": 50, "莴苣": 55, "菜豆": 60, "豇豆": 70,
+    "豌豆": 75, "蚕豆": 90, "玉米": 100, "小麦": 230, "大蒜": 240,
+    "洋葱": 250, "韭菜": 90, "胡萝卜": 100, "芹菜": 100, "苜蓿": 90,
+    "空心菜": 35, "苋菜": 35, "小白菜": 32, "蒜苗": 60,
+}
+
+# 缓苗期天数
+TRANSPLANT_RECOVERY = {
+    "叶菜": 4, "果菜": 8,
+}
+
+# 按区域给茬次模板: (名称, 定植月, 采收月, 代表作物, 生育期天数)
+REGION_TEMPLATES = {
+    "north": [
+        ("春茬", 2, 5, "黄瓜", 100),
+        ("夏茬", 6, 7, "空心菜", 45),
+        ("秋茬", 8, 10, "番茄", 80),
+        ("冬茬", 11, 1, "西葫芦", 110),
+    ],
+    "south": [
+        ("冬春茬", 12, 3, "番茄", 100),
+        ("春末夏初茬", 3, 5, "丝瓜", 70),
+        ("夏季休整期", 7, 8, "苜蓿", 60),
+        ("秋冬茬", 9, 11, "白菜", 75),
+    ],
+}
+
+RISK_TEXT = {0: "低", 1: "中", 2: "高", 3: "极高"}
+
+ADVICE_BY_RISK = {
+    "低": "正常安排，保持轮科记录",
+    "中": "换科或休耕一茬, 同棚改种不同科作物",
+    "高": "必须休耕或换棚安排, 同棚不再种该科",
+    "极高": "视为已发生连作障碍, 需专业诊断与改良方案",
+}
+
+
+def family_of(crop):
+    return FAMILY.get(crop, "未登记")
+
+
+def root_depth_of(crop):
+    return ROOT_DEPTH.get(crop, "未登记")
+
+
+def grow_days_of(crop, default=60):
+    return GROW_DAYS.get(crop, default)
+
+
+def classify_kind(crop):
+    if crop in ("生菜", "菠菜", "小白菜", "空心菜", "苋菜", "青菜", "蒜苗"):
+        return "叶菜"
+    return "果菜"
+
+
+def plant_date_offset(crop):
+    """定植日往前推的育苗期天数 = 生育期 - 采收到定植的采前期, 简化为缓苗+苗期."""
+    kind = classify_kind(crop)
+    base = TRANSPLANT_RECOVERY[kind]
+    if kind == "果菜":
+        base = base + 25  # 果菜苗龄 25-35 天
+    else:
+        base = base + 10  # 叶菜多直播或小苗移栽
+    return base
+
+
+def rotation_risk(history, planned_crop):
+    """同科连作年限 -> 风险等级 0/1/2/3"""
+    target = family_of(planned_crop)
+    years = 0
+    for h in history:
+        if not isinstance(h, dict):
+            continue
+        crop = h.get("crop")
+        if not crop:
+            continue
+        if family_of(crop) == target:
+            years += 1
+    if years <= 1:
+        return 0
+    if years == 2:
+        return 1
+    if years == 3:
+        return 2
+    return 3
+
+
+def combo_score(prev_crop, next_crop):
+    """搭配评分: 换科+1 换根深+1, 满分 2"""
+    score = 0
+    if family_of(prev_crop) != family_of(next_crop):
+        score += 1
+    if root_depth_of(prev_crop) != root_depth_of(next_crop):
+        score += 1
+    return score
+
+
+def build_plan(region, history, planned, months_available):
+    region = (region or "north").strip().lower()
+    if region not in REGION_TEMPLATES:
+        region = "north"
+    tpl = REGION_TEMPLATES[region]
+    history = history or []
+    planned = planned or []
+    lines = []
+    summary = {
+        "region": region,
+        "crop_count": len(planned),
+        "months_available": months_available,
+        "items": [],
+        "warnings": [],
+    }
+
+    lines.append("=" * 68)
+    lines.append("大棚蔬菜茬口排期与连作障碍校验")
+    lines.append("=" * 68)
+    region_name = "北方日光温室" if region == "north" else "南方冬春棚"
+    lines.append("区域模板: %s (通用参考)" % region_name)
+    lines.append("可用茬期数: %s" % (months_available if months_available else "未指定"))
+    lines.append("")
+
+    lines.append("[一] 区域茬次模板 (可参考的全年节奏)")
+    lines.append("-" * 68)
+    lines.append("  %-12s %-10s %-10s %-10s" % ("茬次", "定植期", "采收期", "生育期"))
+    for name, pm, cm, crop, days in tpl:
+        lines.append("  %-12s %-10s %-10s %-10s" % (
+            name,
+            "%d 月" % pm if pm <= 12 else "%d 月" % pm,
+            "%d 月" % cm,
+            "%d 天" % days))
+    lines.append("")
+    lines.append("提示: 实际定植日须同时满足地温 12-15℃ 以上、苗龄达标、上市窗口三个约束")
+    lines.append("")
+
+    lines.append("[二] 拟排茬次逐项校验")
+    lines.append("-" * 68)
+    if not planned:
+        lines.append("  未提供 planned 茬次, 仅输出模板与连作台账核对结果")
+    prev_crop = None
+    for idx, item in enumerate(planned):
+        crop = item.get("crop") if isinstance(item, dict) else str(item)
+        if not crop:
+            continue
+        fam = family_of(crop)
+        depth = root_depth_of(crop)
+        days = grow_days_of(crop)
+        risk = rotation_risk(history, crop)
+        risk_name = RISK_TEXT[risk]
+        combo = combo_score(prev_crop, crop) if prev_crop else None
+        if risk >= 2:
+            summary["warnings"].append("%s 同科连作 %d 年, 风险 %s" % (crop, risk, risk_name))
+        lines.append("  第 %d 茬  作物: %s" % (idx + 1, crop))
+        lines.append("    科属: %s   根深: %s   生育期参考: %d 天" % (fam, depth, days))
+        lines.append("    同科连作: %d 年 -> 风险等级 %s" % (risk, risk_name))
+        lines.append("    处置: %s" % ADVICE_BY_RISK[risk_name])
+        if combo is not None:
+            verdict = "满足换科换根深" if combo >= 2 else ("部分满足, 需加休耕或绿肥" if combo == 1 else "未换科换根深, 风险高")
+            lines.append("    与前茬搭配: %d/2 分 -> %s" % (combo, verdict))
+        lines.append("    育苗日倒推: 定植日往前推 %d 天 (缓苗+苗期)" % plant_date_offset(crop))
+        summary["items"].append({
+            "index": idx + 1,
+            "crop": crop,
+            "family": fam,
+            "root_depth": depth,
+            "grow_days": days,
+            "rotation_years": risk,
+            "risk": risk_name,
+            "advice": ADVICE_BY_RISK[risk_name],
+            "combo_score": combo,
+        })
+        prev_crop = crop
+    lines.append("")
+
+    lines.append("[三] 历史台账核对 (以台账为准, 不靠现场猜测)")
+    lines.append("-" * 68)
+    if not history:
+        lines.append("  未提供 history, 连作年限按 0 计; 排茬口前请先翻出近三年台账")
+    else:
+        seen = {}
+        for h in history:
+            crop = h.get("crop") if isinstance(h, dict) else str(h)
+            if not crop:
+                continue
+            seen.setdefault(family_of(crop), []).append(crop)
+        if not seen:
+            lines.append("  台账为空")
+        for fam in sorted(seen):
+            lines.append("  %-10s 出现 %d 次: %s" % (fam, len(seen[fam]), "、".join(seen[fam])))
+    lines.append("")
+
+    lines.append("[四] 结论")
+    lines.append("-" * 68)
+    if summary["warnings"]:
+        for w in summary["warnings"]:
+            lines.append("  [注意] %s" % w)
+    else:
+        lines.append("  未检出同科连作 3 年及以上的高风险茬次")
+    lines.append("  一年两茬 + 一次认真休耕, 通常优于硬撑四茬")
+    lines.append("")
+    lines.append("免责: 本结果为茬口编排与连作年限自查, 不代替测土报告与农技推广部门指导。")
+    lines.append("免责: 土壤盐分、养分、病原与线虫的确认须以检测结论为准。")
+    lines.append("免责: 农药的品种、用量与安全间隔期以产品登记标签和当地植保部门要求为准。")
+    lines.append("=" * 68)
+    return "\n".join(lines), summary
+
+
+def load_json(path):
+    with io.open(path, "r", encoding="utf-8", errors="ignore") as f:
+        raw = f.read()
+    # PowerShell 写出的 UTF-8 文件可能带 BOM, 不剥掉会让首个 key 取不到值且不报错
+    raw = raw.lstrip("﻿")
+    return json.loads(raw)
+
+
+def _run_checks():
+    r = []
+    r.append(("番茄属茄科", family_of("番茄") == "茄科"))
+    r.append(("茄子属茄科", family_of("茄子") == "茄科"))
+    r.append(("黄瓜属葫芦科", family_of("黄瓜") == "葫芦科"))
+    r.append(("白菜属十字花科", family_of("白菜") == "十字花科"))
+    r.append(("生菜属菊科", family_of("生菜") == "菊科"))
+    r.append(("生菜为浅根", root_depth_of("生菜") == "浅"))
+    r.append(("胡萝卜为深根", root_depth_of("胡萝卜") == "深"))
+    r.append(("番茄与茄子同科风险高", family_of("番茄") == family_of("茄子")))
+    r.append(("黄瓜与番茄不同科", family_of("黄瓜") != family_of("番茄")))
+
+    hist3 = [{"crop": "番茄"}, {"crop": "茄子"}, {"crop": "辣椒"}]
+    r.append(("茄科连作 3 年为高风险", rotation_risk(hist3, "番茄") == 2))
+    hist4 = [{"crop": "番茄"}, {"crop": "茄子"}, {"crop": "辣椒"}, {"crop": "马铃薯"}]
+    r.append(("茄科连作 4 年为极高", rotation_risk(hist4, "番茄") == 3))
+    r.append(("无历史为低风险", rotation_risk([], "番茄") == 0))
+    r.append(("换科后风险归零", rotation_risk(hist3, "黄瓜") == 0))
+
+    r.append(("番茄接黄瓜换科换根深得 2 分", combo_score("番茄", "黄瓜") == 2))
+    r.append(("番茄接茄子得 0 分", combo_score("番茄", "茄子") == 0))
+    r.append(("黄瓜接甜瓜换科未换根深得 1 分", combo_score("黄瓜", "甜瓜") == 1))
+    r.append(("2 分判为满足", combo_score("番茄", "黄瓜") >= 2))
+    r.append(("1 分判为部分满足", combo_score("黄瓜", "甜瓜") == 1))
+
+    r.append(("叶菜缓苗 4 天", TRANSPLANT_RECOVERY["叶菜"] == 4))
+    r.append(("果菜缓苗 8 天", TRANSPLANT_RECOVERY["果菜"] == 8))
+    r.append(("番茄倒推天数大于 25", plant_date_offset("番茄") > 25))
+    r.append(("生菜倒推天数小于番茄", plant_date_offset("生菜") < plant_date_offset("番茄")))
+
+    txt, s = build_plan("north", hist3,
+                        [{"crop": "黄瓜"}, {"crop": "番茄"}], 4)
+    r.append(("样例产出两条茬次", s["crop_count"] == 2))
+    r.append(("样例第二条为高风险", s["items"][1]["risk"] == "高"))
+    r.append(("样例有无科连作", s["items"][0]["risk"] == "低"))
+    r.append(("样例首条无搭配分", s["items"][0]["combo_score"] is None))
+    r.append(("样例产出告警", len(s["warnings"]) >= 1))
+    r.append(("样例文本含区域名", "北方日光温室" in txt))
+
+    txt2, s2 = build_plan("south", [], [], 4)
+    r.append(("南方模板生效", s2["region"] == "south"))
+    r.append(("空计划不报错", s2["crop_count"] == 0))
+    r.append(("空计划无告警", len(s2["warnings"]) == 0))
+
+    r.append(("BOM 输入被正确剥离",
+               load_json(_write_bom_sample())["region"] == "north"))
+    r.append(("非法区域回落北方", build_plan("west", [], [], 2)[1]["region"] == "north"))
+    r.append(("字符串形式的 planned 可解析",
+               build_plan("north", [], ["黄瓜"], 2)[1]["crop_count"] == 1))
+    return r
+
+
+def _write_bom_sample():
+    here = os.path.dirname(os.path.abspath(__file__))
+    p = os.path.join(here, "_selftest_bom_sample.json")
+    with io.open(p, "w", encoding="utf-8") as f:
+        f.write("﻿{\"region\": \"north\", \"history\": [], "
+                "\"planned\": [], \"months_available\": 4}")
+    return p
+
+
+def selftest():
+    results = _run_checks()
+    failed = [name for name, ok in results if not ok]
+    ok = len(failed) == 0
+    lines = ["SELFTEST %s" % ("OK" if ok else "FAILED")]
+    lines.append("checks=%d passed=%d failed=%d" % (
+        len(results), len(results) - len(failed), len(failed)))
+    for name in failed:
+        lines.append("FAILED: %s" % name)
+    here = os.path.dirname(os.path.abspath(__file__))
+    with io.open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+    return ok
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="大棚蔬菜茬口排期与连作障碍校验工具")
+    parser.add_argument("--file", help="输入 JSON 文件路径 (UTF-8)")
+    parser.add_argument("--json", action="store_true", help="以 JSON 输出")
+    parser.add_argument("--out", help="结果写入指定文件")
+    parser.add_argument("--selftest", action="store_true", help="运行自检")
+    args = parser.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        sys.exit(0 if selftest() else 1)
+
+    if not args.file:
+        parser.error("需要 --file 或 --selftest")
+
+    data = load_json(args.file)
+    report, summary = build_plan(
+        data.get("region", "north"),
+        data.get("history", []),
+        data.get("planned", []),
+        data.get("months_available", 0),
+    )
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.json else report
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    with io.open(out_path, "w", encoding="utf-8") as f:
+        f.write(body)
+    print(body)
+    print("结果已写入: %s" % out_path)
+
+
+if __name__ == "__main__":
+    main()
+

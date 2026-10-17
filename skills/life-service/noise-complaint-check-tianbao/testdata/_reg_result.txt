@@ -1,0 +1,116 @@
+PASS P01 norm 去空格
+PASS P02 norm 去竖线
+PASS P03 is_ph 待填
+PASS P04 is_ph 是/否
+PASS P05 is_ph 真值
+PASS P06 is_ph 单有
+PASS P07 is_ph 分隔
+PASS P08 表头不算字段
+PASS P09 样例字段数
+PASS F01 城市
+PASS F02 噪声类型
+PASS F03 具体来源
+PASS F04 时长
+PASS F05 每周天数
+PASS F06 分贝
+PASS F07 日记天数
+PASS F08 金额
+PASS F09 空表城市
+PASS F10 空表分贝
+PASS F11 最长别名优先
+PASS F12 冒号行解析
+PASS Y01 有录音
+PASS Y02 无水印
+PASS Y03 无检测报告
+PASS Y04 有邻居证人
+PASS Y05 沟通留痕否
+PASS Y06 装修是
+PASS Y07 空表 None
+PASS Y08 没有判否
+PASS C01 样例类别
+PASS C02 样例含多类源
+PASS C03 装修归口提示
+PASS C04 多类源提示
+PASS C05 社会生活部门
+PASS C06 施工部门
+PASS C07 工业部门
+PASS C08 交通部门
+PASS C09 装修归公安
+PASS C10 工地判施工
+PASS C11 功能区2类
+PASS C12 厂房判工业
+PASS C13 车流判交通
+PASS C14 装修歧义提示
+PASS S01 时段识别
+PASS S02 按夜间判
+PASS S03 昼间不是夜间
+PASS S04 空时段未识别
+PASS S05 1类昼限
+PASS S06 1类夜限
+PASS S07 3类夜限
+PASS S08 0类夜限
+PASS N01 fmt_num 去点零
+PASS N02 fmt_num 一位
+PASS N03 fmt_num None
+PASS N04 fmt_money
+PASS N05 fmt_flag 否
+PASS N06 fmt_yes 无
+PASS N07 日期解析
+PASS N08 中文日期
+PASS N09 坏日期
+PASS R01 报告生成
+PASS R02 九段
+PASS R03 结论摘要
+PASS R04 归哪个部门管
+PASS R05 时段限值
+PASS R06 取证缺口
+PASS R07 投诉阶梯
+PASS R08 话术卡
+PASS R09 诉讼要点
+PASS R10 待办
+PASS R11 纪律
+PASS R12 类别
+PASS R13 主管部门
+PASS R14 超标
+PASS R15 取证分
+PASS R16 未完成阶梯
+PASS R17 结论态
+PASS R18 公安出警话术
+PASS R19 装修禁限提示
+PASS R20 APP 初步证据
+PASS R21 检测报告缺口
+PASS R22 无水印被抓
+PASS R23 沟通留痕重做
+PASS R24 夜间突发15
+PASS R25 未填不算通过
+PASS R26 无待填泄漏
+PASS R27 无乱码
+PASS R28 风险项非空
+PASS R29 待办非空
+PASS R30 金额格式
+PASS R31 持续天数
+PASS R32 GB3096 引用
+PASS R33 噪声法引用
+PASS R34 当地口径提示
+PASS R35 混合源提示入正文
+PASS R36 表格不裂
+PASS W01 施工报告
+PASS W02 施工类别
+PASS W03 生态环境
+PASS W04 施工超标
+PASS W05 环保投诉话术
+PASS W06 工业类别
+PASS W07 工业超标
+PASS E01 空表 None
+PASS E02 空表提示
+PASS E03 缺文件不崩
+PASS E04 缺文件提示
+PASS X01 空输入退出码
+PASS X02 空输入有提示
+PASS X03 json 可解析
+PASS X04 json 含结论
+PASS X05 json 含风险项
+PASS X06 json 含待办
+PASS X07 样例退出码
+PASS X08 样例多段
+== TOTAL PASS=115 FAIL=0 ==

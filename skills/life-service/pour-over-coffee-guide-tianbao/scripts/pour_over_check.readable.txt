@@ -1,0 +1,421 @@
+# -*- coding: utf-8 -*-
+"""手冲咖啡参数核对与风味归因工具。
+
+用法:
+  python pour_over_check.py --file case.json [--json]
+  python pour_over_check.py --selftest
+
+判定顺序: 先看真实缺陷(粉水比越界、水温严重偏离、时长严重偏离、
+研磨度严重偏离、闷蒸不足), 再看信息是否完整; 只填了水温却严重超标时,
+直接判不合格而不是待确认。
+"""
+import argparse
+import io
+import json
+import os
+import sys
+import tempfile
+
+RATIO_OK = (15.0, 17.0)
+RATIO_BAD = (13.0, 19.0)
+
+TEMP_RANGE = {
+    "light": (90.0, 94.0),
+    "medium": (88.0, 92.0),
+    "dark": (85.0, 90.0),
+}
+ROAST_LABEL = {"light": u"浅烘", "medium": u"中烘", "dark": u"深烘"}
+
+GRIND_INDEX = {"fine": 1, "medium_fine": 2, "medium": 3, "medium_coarse": 4, "coarse": 5}
+GRIND_LABEL = {
+    "fine": u"细", "medium_fine": u"中细", "medium": u"中",
+    "medium_coarse": u"中粗", "coarse": u"粗",
+}
+GRIND_IDEAL = {"light": 2, "medium": 3, "dark": 4}
+
+TIME_RATE = (9.0, 12.0)
+TIME_SHORT = 0.75
+TIME_LONG = 1.30
+BLOOM_RATE = (2.0, 3.0)
+BLOOM_SEC = (25.0, 45.0)
+
+
+def num(v):
+    if v is None or v == "":
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def ratio_verdict(dose, water):
+    if dose is None or water is None or dose <= 0:
+        return u"待确认", u"粉量或水量未提供，无法算粉水比"
+    r = water / dose
+    if r < RATIO_BAD[0]:
+        return u"不合格", u"粉水比 1:%.1f 过浓（低于 1:%.0f），浓度过高会掩盖风味层次" % (r, RATIO_BAD[0])
+    if r > RATIO_BAD[1]:
+        return u"不合格", u"粉水比 1:%.1f 过淡（高于 1:%.0f），水太多会导致水薄寡淡" % (r, RATIO_BAD[1])
+    if r < RATIO_OK[0]:
+        return u"需改进", u"粉水比 1:%.1f 偏浓，常用区间为 1:%.0f-1:%.0f" % (r, RATIO_OK[0], RATIO_OK[1])
+    if r > RATIO_OK[1]:
+        return u"需改进", u"粉水比 1:%.1f 偏淡，常用区间为 1:%.0f-1:%.0f" % (r, RATIO_OK[0], RATIO_OK[1])
+    return u"合格", u"粉水比 1:%.1f，在常用区间内" % r
+
+
+def temp_verdict(roast, temp):
+    if roast not in TEMP_RANGE:
+        return u"待确认", u"烘焙度未识别，无法核对水温"
+    if temp is None:
+        return u"待确认", u"未提供水温"
+    lo, hi = TEMP_RANGE[roast]
+    v = float(temp)
+    if v < lo - 3.0:
+        return u"不合格", u"%s用 %g 摄氏度，低于 %g-%.0f 区间下限太多：萃取不足，尖酸水薄" % (
+            ROAST_LABEL[roast], v, lo, hi)
+    if v > hi + 3.0:
+        return u"不合格", u"%s用 %g 摄氏度，高于 %g-%.0f 区间上限太多：萃取过度，苦涩喉干" % (
+            ROAST_LABEL[roast], v, lo, hi)
+    if v < lo:
+        return u"需改进", u"%s用 %g 摄氏度，略低于 %g 度下限，可提高 2 摄氏度" % (ROAST_LABEL[roast], v, lo)
+    if v > hi:
+        return u"需改进", u"%s用 %g 摄氏度，略高于 %.0f 度上限，可降低 2 摄氏度" % (ROAST_LABEL[roast], v, hi)
+    return u"合格", u"%s用 %g 摄氏度，在 %g-%.0f 区间" % (ROAST_LABEL[roast], v, lo, hi)
+
+
+def time_verdict(dose, total):
+    if dose is None or dose <= 0:
+        return u"待确认", u"未提供粉量，无法推算目标时长"
+    if total is None:
+        return u"待确认", u"未提供总时长"
+    lo = TIME_RATE[0] * dose
+    hi = TIME_RATE[1] * dose
+    v = float(total)
+    if v < lo * TIME_SHORT:
+        return u"不合格", u"总时长 %g 秒，远低于 %g 秒下限：萃取不足，酸薄且水感重" % (v, lo)
+    if v > hi * TIME_LONG:
+        return u"不合格", u"总时长 %g 秒，远高于 %g 秒上限：萃取过度，苦涩发干" % (v, hi)
+    if v < lo:
+        return u"需改进", u"总时长 %g 秒，低于 %g 秒下限，可延长 15-20 秒" % (v, lo)
+    if v > hi:
+        return u"需改进", u"总时长 %g 秒，高于 %g 秒上限，可缩短 15-20 秒" % (v, hi)
+    return u"合格", u"总时长 %g 秒，在 %g-%g 秒区间" % (v, lo, hi)
+
+
+def grind_verdict(roast, grind):
+    if roast not in GRIND_IDEAL:
+        return u"待确认", u"烘焙度未识别，无法核对研磨度"
+    if grind not in GRIND_INDEX:
+        return u"待确认", u"研磨度取值未识别，应为细、中细、中、中粗或粗"
+    d = abs(GRIND_INDEX[grind] - GRIND_IDEAL[roast])
+    if d >= 2:
+        return u"不合格", u"%s用%s研磨，偏离建议档位 %d 档：明显影响萃取均匀度" % (
+            ROAST_LABEL[roast], GRIND_LABEL[grind], d)
+    if d == 1:
+        return u"需改进", u"%s用%s研磨，偏离建议档位 1 档，属可调整范围" % (
+            ROAST_LABEL[roast], GRIND_LABEL[grind])
+    return u"合格", u"%s用%s研磨，与建议档位一致" % (ROAST_LABEL[roast], GRIND_LABEL[grind])
+
+
+def bloom_verdict(dose, bloom_water, bloom_sec):
+    if dose is None or bloom_water is None:
+        return u"待确认", u"粉量或闷蒸水量未提供"
+    lo = BLOOM_RATE[0] * dose
+    hi = BLOOM_RATE[1] * dose
+    v = float(bloom_water)
+    if v < lo:
+        return u"不合格", u"闷蒸水量 %g 克，低于粉量 2 倍的 %g 克：粉层残留干粉，风味薄且杂" % (v, lo)
+    if v > hi:
+        return u"需改进", u"闷蒸水量 %g 克，高于粉量 3 倍的 %g 克，可适当减少" % (v, hi)
+    if bloom_sec is None:
+        return u"合格", u"闷蒸水量 %g 克合适，未提供闷蒸时长" % v
+    s = float(bloom_sec)
+    if s < BLOOM_SEC[0]:
+        return u"需改进", u"闷蒸 %g 秒偏短，建议 %g-%g 秒" % (s, BLOOM_SEC[0], BLOOM_SEC[1])
+    if s > BLOOM_SEC[1]:
+        return u"需改进", u"闷蒸 %g 秒偏长，建议 %g-%g 秒" % (s, BLOOM_SEC[0], BLOOM_SEC[1])
+    return u"合格", u"闷蒸 %g 克水、%g 秒，均在区间内" % (v, s)
+
+
+def taste_advice(taste, temp_v, grind_v, time_v, ratio_v):
+    """风味归因: 返回 (归因判定, 建议列表)。"""
+    if taste is None or taste == "none":
+        return u"未评价", []
+    if taste == "sour_thin":
+        causes = [n for n, v in ((u"水温", temp_v), (u"研磨", grind_v),
+                                 (u"时长", time_v), (u"粉水比", ratio_v)) if v == u"需改进" or v == u"不合格"]
+        tips = [u"萃取不足（尖酸水薄）：研磨调细一档"]
+        tips.append(u"第二改：水温提高 2 摄氏度")
+        tips.append(u"第三改：总时长延长 15-20 秒")
+        if causes:
+            return u"萃取不足，参数命中：%s" % u"、".join(causes), tips
+        return u"萃取不足，但参数基本在区间内，先查注水方式是否冲穿粉壁", tips
+    if taste == "bitter_dry":
+        causes = [n for n, v in ((u"水温", temp_v), (u"研磨", grind_v),
+                                 (u"时长", time_v), (u"粉水比", ratio_v)) if v == u"需改进" or v == u"不合格"]
+        tips = [u"萃取过度（苦涩喉干）：研磨调粗一档"]
+        tips.append(u"第二改：水温降低 2 摄氏度")
+        tips.append(u"第三改：总时长缩短 15-20 秒")
+        if causes:
+            return u"萃取过度，参数命中：%s" % u"、".join(causes), tips
+        return u"萃取过度，但参数基本在区间内，先查是否未撤滤杯导致尾段过萃", tips
+    if taste == "mixed":
+        return u"萃取不均（又酸又苦）：先规范注水与闷蒸，再查磨豆机出粉均匀度", [
+            u"闷蒸水量取粉量 2-3 倍、闷蒸 25-45 秒",
+            u"中心向外画圈注水，避开滤纸边缘，不要冲穿粉壁",
+            u"检查磨豆机出粉是否粗细不均"]
+    return u"未识别的风味描述", []
+
+
+def load_json(path):
+    with io.open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def build_report(data):
+    dose = num(data.get("dose_g"))
+    water = num(data.get("water_g"))
+    temp = num(data.get("water_temp_c"))
+    roast = data.get("roast")
+    grind = data.get("grind")
+    total = num(data.get("total_seconds"))
+    bloom_w = num(data.get("bloom_water_g"))
+    bloom_s = num(data.get("bloom_seconds"))
+    segments = num(data.get("segments"))
+    preheat = data.get("preheat")
+    rinse = data.get("rinse_filter")
+    taste = data.get("taste")
+
+    rv, rm = ratio_verdict(dose, water)
+    tv, tm = temp_verdict(roast, temp)
+    gv, gm = grind_verdict(roast, grind)
+    tiv, tim = time_verdict(dose, total)
+    bv, bm = bloom_verdict(dose, bloom_w, bloom_s)
+
+    defects = []
+    fine = []
+    pending = []
+
+    if dose is None:
+        pending.append(u"未提供粉量")
+    if water is None:
+        pending.append(u"未提供注水总量")
+    if roast not in TEMP_RANGE:
+        pending.append(u"烘焙度未填或取值未识别，应为浅烘、中烘或深烘")
+
+    for v, m in ((rv, rm), (tv, tm), (gv, gm), (tiv, tim), (bv, bm)):
+        if v == u"不合格":
+            defects.append(m)
+        elif v == u"需改进":
+            fine.append(m)
+        elif v == u"待确认":
+            pending.append(m)
+
+    if preheat is False:
+        fine.append(u"未预热分享壶与滤杯：最初几十秒水温会骤降")
+    if rinse is False:
+        fine.append(u"未润洗滤纸：会有纸味残留")
+    if segments is None:
+        pending.append(u"未提供分段注水次数")
+    elif segments < 2.0:
+        fine.append(u"只分 %g 段注水，建议闷蒸后分 2-4 段" % segments)
+    elif segments > 5.0:
+        fine.append(u"分 %g 段注水偏多，水位波动大，建议 2-4 段" % segments)
+
+    tlabel, ttips = taste_advice(taste, tv, gv, tiv, rv)
+
+    lines = []
+    lines.append("=" * 62)
+    lines.append(u"手冲咖啡参数核对与风味归因")
+    lines.append("=" * 62)
+    lines.append(u"粉量：%s 克    水量：%s 克    烘焙度：%s" % (
+        (u"%g" % dose) if dose is not None else u"--",
+        (u"%g" % water) if water is not None else u"--",
+        ROAST_LABEL.get(roast, u"未识别")))
+    lines.append("")
+    lines.append(u"[一] 参数判定")
+    lines.append(u"  %-8s %s —— %s" % (u"粉水比", rv, rm))
+    lines.append(u"  %-8s %s —— %s" % (u"水温", tv, tm))
+    lines.append(u"  %-8s %s —— %s" % (u"研磨度", gv, gm))
+    lines.append(u"  %-8s %s —— %s" % (u"总时长", tiv, tim))
+    lines.append(u"  %-8s %s —— %s" % (u"闷蒸", bv, bm))
+    lines.append("")
+    lines.append(u"[二] 风味归因")
+    lines.append(u"  %s" % tlabel)
+    for t in ttips:
+        lines.append(u"    - %s" % t)
+    lines.append("")
+    lines.append(u"[三] 不合格项与原因")
+    if defects:
+        for i, d in enumerate(defects, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[四] 需改进项")
+    if fine:
+        for i, d in enumerate(fine, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[五] 待确认项")
+    if pending:
+        for i, d in enumerate(pending, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[六] 调整处方")
+    lines.append(u"  1. 一次只改一个变量，改完连冲两杯确认，再改下一个")
+    lines.append(u"  2. 顺序：先改研磨 → 再改水温 → 再改时长 → 最后才动粉水比")
+    lines.append(u"  3. 调整幅度：研磨一档、水温 2 摄氏度、时长 15-20 秒")
+    lines.append(u"  4. 注水：中心向外画圈，避开滤纸边缘，不要冲穿粉壁")
+    lines.append(u"  5. 水快滴完即撤走滤杯，避免尾段过度萃取")
+    lines.append(u"  6. 排查顺序先看豆子新鲜度、出粉均匀度、实际出水温度")
+
+    if defects:
+        overall = u"不合格"
+    elif fine:
+        overall = u"需改进"
+    elif pending:
+        overall = u"待确认"
+    else:
+        overall = u"合格"
+
+    lines.append("")
+    lines.append(u"总判定：%s" % overall)
+    lines.append(u"提示：豆子不新鲜、出粉不均、水质有异味时，调参数无效，先解决前提。")
+    lines.append(u"免责：本结果为参数自查输出，不构成豆子或器具的品质评价。")
+    lines.append("=" * 62)
+
+    summary = {
+        "ratio_verdict": rv,
+        "temp_verdict": tv,
+        "grind_verdict": gv,
+        "time_verdict": tiv,
+        "bloom_verdict": bv,
+        "taste_label": tlabel,
+        "defects": defects,
+        "fine": fine,
+        "pending": pending,
+        "overall": overall,
+    }
+    return "\n".join(lines), summary
+
+
+def _run_checks():
+    r = []
+    r.append((u"粉水比 1:16 判合格", ratio_verdict(15, 240)[0] == u"合格"))
+    r.append((u"反例：粉水比 1:25 判不合格", ratio_verdict(15, 375)[0] == u"不合格"))
+    r.append((u"反例：粉水比 1:10 判不合格", ratio_verdict(15, 150)[0] == u"不合格"))
+    r.append((u"粉水比 1:14 判需改进", ratio_verdict(15, 210)[0] == u"需改进"))
+    r.append((u"浅烘 92 度判合格", temp_verdict("light", 92)[0] == u"合格"))
+    r.append((u"反例：浅烘 78 度判不合格", temp_verdict("light", 78)[0] == u"不合格"))
+    r.append((u"反例：深烘 96 度判不合格", temp_verdict("dark", 96)[0] == u"不合格"))
+    r.append((u"深烘 88 度判合格", temp_verdict("dark", 88)[0] == u"合格"))
+    r.append((u"未知烘焙度判待确认", temp_verdict("xxx", 90)[0] == u"待确认"))
+    r.append((u"时长 150 秒判合格", time_verdict(15, 150)[0] == u"合格"))
+    r.append((u"反例：时长 70 秒判不合格", time_verdict(15, 70)[0] == u"不合格"))
+    r.append((u"反例：时长 400 秒判不合格", time_verdict(15, 400)[0] == u"不合格"))
+    r.append((u"浅烘中细判合格", grind_verdict("light", "medium_fine")[0] == u"合格"))
+    r.append((u"反例：深烘细磨判不合格", grind_verdict("dark", "fine")[0] == u"不合格"))
+    r.append((u"中烘中细判需改进", grind_verdict("medium", "medium_fine")[0] == u"需改进"))
+    r.append((u"反例：闷蒸水 10 克判不合格", bloom_verdict(15, 10, 30)[0] == u"不合格"))
+    r.append((u"闷蒸 30 克 30 秒判合格", bloom_verdict(15, 30, 30)[0] == u"合格"))
+    lab, tips = taste_advice("sour_thin", u"不合格", u"合格", u"合格", u"合格")
+    r.append((u"酸薄判萃取不足", u"萃取不足" in lab))
+    r.append((u"酸薄处方含调细研磨", any(u"调细" in t for t in tips)))
+    lab2, tips2 = taste_advice("bitter_dry", u"合格", u"合格", u"合格", u"合格")
+    r.append((u"苦干判萃取过度", u"萃取过度" in lab2))
+    r.append((u"苦干处方含调粗研磨", any(u"调粗" in t for t in tips2)))
+
+    _, s = build_report({
+        "dose_g": 15, "water_g": 240, "water_temp_c": 92, "roast": "light",
+        "grind": "medium_fine", "total_seconds": 150, "bloom_water_g": 35,
+        "bloom_seconds": 30, "segments": 3, "preheat": True, "rinse_filter": True,
+        "taste": "none",
+    })
+    r.append((u"标准样例判定合格", s["overall"] == u"合格"))
+
+    _, s1 = build_report({
+        "dose_g": 15, "water_g": 375, "water_temp_c": 96, "roast": "dark",
+        "grind": "fine", "total_seconds": 70, "bloom_water_g": 10,
+        "bloom_seconds": 10, "segments": 1, "preheat": False, "rinse_filter": False,
+        "taste": "sour_thin",
+    })
+    r.append((u"反例：多项参数越界判不合格", s1["overall"] == u"不合格"))
+    r.append((u"反例：粉水比进缺陷表", any(u"粉水比" in d for d in s1["defects"])))
+    r.append((u"反例：闷蒸不足进缺陷表", any(u"闷蒸水量" in d for d in s1["defects"])))
+
+    _, s2 = build_report({"roast": "dark", "water_temp_c": 96})
+    r.append((u"缺粉量但水温严重超标不得判待确认", s2["overall"] == u"不合格"))
+
+    _, s3 = build_report({})
+    r.append((u"全未填记为待确认", s3["overall"] == u"待确认"))
+
+    p = os.path.join(tempfile.gettempdir(), "_coffee_bom_case.json")
+    blob = b"\xef\xbb\xbf" + json.dumps({
+        "dose_g": 15, "water_g": 240, "water_temp_c": 92, "roast": "light",
+        "grind": "medium_fine", "total_seconds": 150,
+    }, ensure_ascii=False).encode("utf-8")
+    with open(p, "wb") as f:
+        f.write(blob)
+    try:
+        d = load_json(p)
+        r.append((u"UTF-8 BOM 输入首键可读", abs(d.get("dose_g", 0) - 15.0) < 1e-9))
+        r.append((u"UTF-8 BOM 输入字符串键可读", d.get("roast") == "light"))
+    finally:
+        if os.path.exists(p):
+            os.remove(p)
+
+    return r
+
+
+def selftest():
+    results = _run_checks()
+    failed = [name for name, ok in results if not ok]
+    ok = len(failed) == 0
+    lines = ["SELFTEST %s" % ("OK" if ok else "FAILED")]
+    lines.append("checks=%d passed=%d failed=%d" % (len(results), len(results) - len(failed), len(failed)))
+    for name in failed:
+        lines.append("FAILED: %s" % name)
+    with io.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_selftest_result.txt"),
+                 "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+    return ok
+
+
+def main():
+    parser = argparse.ArgumentParser(description=u"手冲咖啡参数核对工具")
+    parser.add_argument("--file", help=u"输入 JSON 文件路径（UTF-8）")
+    parser.add_argument("--json", action="store_true", help=u"以 JSON 输出")
+    parser.add_argument("--out", help=u"结果写入指定文件")
+    parser.add_argument("--selftest", action="store_true", help=u"运行自检")
+    args = parser.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        sys.exit(0 if selftest() else 1)
+
+    if not args.file:
+        parser.error(u"需要 --file 或 --selftest")
+
+    data = load_json(args.file)
+
+    report, summary = build_report(data)
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.json else report
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    with io.open(out_path, "w", encoding="utf-8") as f:
+        f.write(body)
+    print(body)
+    print("")
+    print(u"结果已写入：%s" % out_path)
+
+
+if __name__ == "__main__":
+    main()
+

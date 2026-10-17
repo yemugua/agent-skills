@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "base_date": "2026-06-10",
+  "visit": "住院",
+  "total": 26800.0,
+  "self_pay": 4800.0,
+  "inner": 22000.0,
+  "pre_ratio": 10.0,
+  "pre": 2200.0,
+  "deductible": 1500.0,
+  "base_amount": 18300.0,
+  "rate": 70.0,
+  "cap": 300000.0,
+  "estimate": 12810.0,
+  "paid": 0.0,
+  "gap": 12810.0,
+  "materials": {
+    "have": 5,
+    "total": 10,
+    "lack": [
+      "费用明细清单（已盖章）",
+      "病历首页 / 入院记录",
+      "转诊转院单",
+      "异地就医备案凭证",
+      "已医保结算的盖章复印件"
+    ]
+  },
+  "hard_deny": [],
+  "soft_issues": [
+    "费用清单未盖章 / 发票缺失"
+  ],
+  "direct_settled": true,
+  "manual_done": false
+}

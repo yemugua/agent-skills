@@ -1,0 +1,233 @@
+# -*- coding: utf-8 -*-
+"""水电验收记录校验脚本。
+
+用法:
+  python check.py --file 水电验收.json
+  python check.py --selftest
+
+JSON 字段:
+  pressure_mpa      打压试验压力 (数字)
+  pressure_drop      稳压30分钟压降 MPa (数字)
+  insulation_mohm    绝缘电阻 MΩ (数字)
+  grounded           接地可靠 (true/false)
+  circuits_ok        回路标识正确 (true/false)
+  wire_ok            线径符合要求 (true/false)
+"""
+import argparse
+import json
+import os
+import sys
+
+PRESSURE_TARGET = 0.8
+DROP_LIMIT = 0.05
+INSULATION_MIN = 0.5
+
+
+def evaluate(data):
+    reasons = []
+    ok = True
+
+    pressure = data.get("pressure_mpa")
+    if pressure is None:
+        ok = False
+        reasons.append("未填写打压压力(pressure_mpa), 无法确认试验是否到位")
+    else:
+        try:
+            p = float(pressure)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("pressure_mpa 不是数字")
+        else:
+            if p < PRESSURE_TARGET:
+                ok = False
+                reasons.append("打压压力 %.2fMPa 低于 0.8MPa 标准, 试验不充分" % p)
+
+    drop = data.get("pressure_drop")
+    if drop is None:
+        ok = False
+        reasons.append("未填写压降(pressure_drop), 无法判断是否渗漏")
+    else:
+        try:
+            d = float(drop)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("pressure_drop 不是数字")
+        else:
+            if d > DROP_LIMIT:
+                ok = False
+                reasons.append("压降 %.3fMPa 超过 0.05MPa 上限, 疑渗漏或接口不实, 须整改" % d)
+
+    ins = data.get("insulation_mohm")
+    if ins is None:
+        ok = False
+        reasons.append("未填写绝缘电阻(insulation_mohm)")
+    else:
+        try:
+            i = float(ins)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("insulation_mohm 不是数字")
+        else:
+            if i < INSULATION_MIN:
+                ok = False
+                reasons.append("绝缘电阻 %.2fMΩ 低于 0.5MΩ 合格线, 触电/短路隐患, 须转专业" % i)
+
+    grounded = data.get("grounded")
+    if grounded is not True:
+        ok = False
+        reasons.append("接地不可靠(grounded 非 true), 漏保可能不跳, 须转专业确认")
+
+    circuits = data.get("circuits_ok")
+    if circuits is not True:
+        ok = False
+        reasons.append("回路标识不正确或未确认(circuits_ok 非 true), 维修隐患")
+
+    wire = data.get("wire_ok")
+    if wire is not True:
+        ok = False
+        reasons.append("线径不符合要求(wire_ok 非 true), 发热风险")
+
+    if ok:
+        reasons.append("水电验收通过: 打压/绝缘/接地/回路/线径均合规")
+    return ok, reasons
+
+
+def load_json(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def selftest():
+    passed = 0
+
+    # 1. 正例: 全合规 -> 通过
+    ok, rs = evaluate({
+        "pressure_mpa": 0.8, "pressure_drop": 0.02, "insulation_mohm": 1.2,
+        "grounded": True, "circuits_ok": True, "wire_ok": True,
+    })
+    assert ok is True, "正例应通过: %s" % rs
+    passed += 1
+
+    # 2. 反例: 压降 0.1 超上限 -> 必须不合格
+    ok, rs = evaluate({
+        "pressure_mpa": 0.8, "pressure_drop": 0.1, "insulation_mohm": 1.2,
+        "grounded": True, "circuits_ok": True, "wire_ok": True,
+    })
+    assert ok is False, "压降超标必须判不合格"
+    assert any("渗漏" in r for r in rs), "压降原因缺失: %s" % rs
+    passed += 1
+
+    # 3. 反例: 绝缘 0.3 不合格 -> 必须不合格
+    ok, rs = evaluate({
+        "pressure_mpa": 0.8, "pressure_drop": 0.02, "insulation_mohm": 0.3,
+        "grounded": True, "circuits_ok": True, "wire_ok": True,
+    })
+    assert ok is False, "绝缘不合格必须判不合格"
+    assert any("0.5MΩ" in r for r in rs), "绝缘原因缺失: %s" % rs
+    passed += 1
+
+    # 4. 反例: 接地不可靠 -> 必须不合格
+    ok, rs = evaluate({
+        "pressure_mpa": 0.8, "pressure_drop": 0.02, "insulation_mohm": 1.2,
+        "grounded": False, "circuits_ok": True, "wire_ok": True,
+    })
+    assert ok is False, "接地不可靠必须判不合格"
+    assert any("接地" in r for r in rs), "接地原因缺失: %s" % rs
+    passed += 1
+
+    # 5. 反例: 缺压力 -> 必须不合格
+    ok, rs = evaluate({
+        "pressure_drop": 0.02, "insulation_mohm": 1.2,
+        "grounded": True, "circuits_ok": True, "wire_ok": True,
+    })
+    assert ok is False, "缺压力必须判不合格"
+    passed += 1
+
+    # 6. 反例: 回路标识错 -> 必须不合格
+    ok, rs = evaluate({
+        "pressure_mpa": 0.8, "pressure_drop": 0.02, "insulation_mohm": 1.2,
+        "grounded": True, "circuits_ok": False, "wire_ok": True,
+    })
+    assert ok is False, "回路错必须判不合格"
+    passed += 1
+
+    # 7. 反例: 线径不符 -> 必须不合格
+    ok, rs = evaluate({
+        "pressure_mpa": 0.8, "pressure_drop": 0.02, "insulation_mohm": 1.2,
+        "grounded": True, "circuits_ok": True, "wire_ok": False,
+    })
+    assert ok is False, "线径不符必须判不合格"
+    passed += 1
+
+    # 8. 反例: 压力 0.5 不足 -> 必须不合格
+    ok, rs = evaluate({
+        "pressure_mpa": 0.5, "pressure_drop": 0.02, "insulation_mohm": 1.2,
+        "grounded": True, "circuits_ok": True, "wire_ok": True,
+    })
+    assert ok is False, "压力不足必须判不合格"
+    passed += 1
+
+    # 9. BOM 处理
+    here = os.path.dirname(os.path.abspath(__file__))
+    bom_path = os.path.join(here, "_bom_sample.json")
+    payload = json.dumps({
+        "pressure_mpa": 0.8, "pressure_drop": 0.02, "insulation_mohm": 1.2,
+        "grounded": True, "circuits_ok": True, "wire_ok": True,
+    }, ensure_ascii=False)
+    with open(bom_path, "wb") as f:
+        f.write(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+    d = load_json(bom_path)
+    assert d.get("grounded") is True, "BOM 输入 key 不应带 \﻿"
+    assert "insulation_mohm" in d, "BOM 输入 key 必须干净"
+    os.remove(bom_path)
+    passed += 1
+
+    # 10. 边界: 绝缘恰好 0.5 合格线 -> 通过(>=)
+    ok, rs = evaluate({
+        "pressure_mpa": 0.8, "pressure_drop": 0.05, "insulation_mohm": 0.5,
+        "grounded": True, "circuits_ok": True, "wire_ok": True,
+    })
+    assert ok is True, "合格线边界应通过: %s" % rs
+    passed += 1
+
+    line = "SELFTEST OK (%d assertions)" % passed
+    return line, passed
+
+
+def main():
+    ap = argparse.ArgumentParser(description="水电验收记录校验")
+    ap.add_argument("--file", help="水电验收 JSON")
+    ap.add_argument("--selftest", action="store_true", help="内置自检")
+    args = ap.parse_args()
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        line, total = selftest()
+        with open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        print(line)
+        return 0 if line.startswith("SELFTEST OK") else 1
+
+    if args.file:
+        try:
+            data = load_json(args.file)
+        except Exception as e:  # noqa: BLE001
+            msg = "读取失败: %s" % e
+            with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            print(msg)
+            return 1
+        ok, reasons = evaluate(data)
+        out = ("PASS " if ok else "FAIL ") + "；".join(reasons)
+        with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+            f.write(out + "\n")
+        print(out)
+        return 0 if ok else 1
+
+    print("需要 --file 或 --selftest")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

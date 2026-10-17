@@ -1,0 +1,89 @@
+PASS P01 norm 去空格
+PASS P02 norm 全角括号
+PASS P03 norm 竖线转空格防串列
+PASS P04 is_ph 待填
+PASS P05 is_ph 有/无 提示串
+PASS P06 is_ph 真值
+PASS P07 is_row 表格行
+PASS P08 is_row 普通行
+PASS P09 split_row 拆两列
+PASS P10 parse_fields 表格行
+PASS P11 parse_fields 冒号行
+PASS P12 parse_fields 保留表头行
+PASS P13 get_text 最长别名优先
+PASS P14 get_text 未命中空串
+PASS P15 get_text 过滤占位
+PASS P16 get_int 取数字
+PASS P17 get_int 无数字 None
+PASS P18 parse_num 去符号
+PASS P19 parse_num 文字取 None
+PASS P20 parse_date ISO
+PASS P21 parse_date 中文
+PASS P22 parse_date 短写法补年份
+PASS P23 parse_date 空 None
+PASS P24 yes 是
+PASS P25 yes 否返回 False
+PASS P26 yes 未填返回 None
+PASS P27 has_cat 定制命中
+PASS P28 has_cat 非定制不命中
+PASS P29 ovr 显式优先
+PASS P30 ovr 显式缺省用推断
+PASS P31 fmt_num 去 .0
+PASS P32 fmt_num None
+PASS P33 money 前缀
+PASS P34 fmt_flag True
+PASS P35 fmt_flag False
+PASS P36 fmt_flag None
+PASS P37 add_days
+PASS P38 days_left
+PASS R01 样例生成报告
+PASS R02 样例 meta 结论
+PASS R03 样例无理由路径
+PASS R04 样例质量路径
+PASS R05 样例举证倒置适用
+PASS R06 样例运费归属经营者
+PASS R07 样例待承担运费=2
+PASS R08 样例九个章节
+PASS R09 样例含结论摘要
+PASS R10 样例含待办补正动作
+PASS R12 样例含拆封段
+PASS R13 样例含运费段
+PASS R14 样例含证据缺口段
+PASS R15 样例标注购买时确认不成立
+PASS R16 样例点出拆封不能退是错的
+PASS R17 样例点出激活不是法定除外
+PASS R17b 样例列出激活拒退风险点
+PASS R18 样例提示未申请平台介入
+PASS R19 样例运费算式
+PASS R20 样例无【待填】泄漏
+PASS R21 样例无乱码
+PASS R22 样例表格不裂
+PASS R23 样例结尾免责
+PASS R24 样例时效 3 年
+PASS R25 样例金额无 .0 尾巴
+PASS R26 样例距窗口剩 6 天
+PASS R27 样例举证倒置期日期
+PASS R28 样例证据缺口列出两项
+PASS R29 样例边界纪律含不替代律师意见
+PASS R30 样例第九段待办条数>=5
+PASS B01 空输入返回 None
+PASS B02 空输入给提示串
+PASS B03 缺文件不崩
+PASS S01 样例 rc=0
+PASS S02 样例无异常
+PASS S03 样例章节数>=9
+PASS S04 空输入 rc=2
+PASS S05 空输入不崩
+PASS S06 空输入有输出
+PASS S07 json 可解析
+PASS S08 json 含结论
+PASS S09 json 含风险项
+PASS S10 json 含待办
+PASS S11 json 无理由路径=通过
+PASS S12 json 举证倒置
+PASS S13 json 待办非空
+PASS T01 --out 落盘
+PASS T02 落盘含九段
+PASS T03 落盘无乱码
+PASS T04 落盘无【待填】
+== TOTAL PASS=88 FAIL=0 ==

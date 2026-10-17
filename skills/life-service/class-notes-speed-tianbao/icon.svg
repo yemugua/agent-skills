@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="课堂笔记速记与整理">
+  <defs>
+    <linearGradient id="gE" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4FC3E8"/>
+      <stop offset="1" stop-color="#1C6E96"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#gE)"/>
+  <path d="M14 12 h26 l10 10 v30 a2 2 0 0 1 -2 2 H14 a2 2 0 0 1 -2 -2 V14 a2 2 0 0 1 2 -2 Z" fill="#FFFFFF"/>
+  <path d="M40 12 l10 10 h-10 Z" fill="#BFE6F5"/>
+  <path d="M28 20 l-5 12 h4 l-2 9 l7 -13 h-4 Z" fill="#1C6E96"/>
+  <rect x="36" y="26" width="11" height="2.4" rx="1.2" fill="#1C6E96" opacity="0.5"/>
+  <rect x="36" y="32" width="9" height="2.4" rx="1.2" fill="#1C6E96" opacity="0.4"/>
+  <rect x="18" y="45" width="26" height="2.4" rx="1.2" fill="#1C6E96" opacity="0.35"/>
+  <path d="M43 44 l8 8 M51 44 l-8 8" stroke="#FF7043" stroke-width="3" stroke-linecap="round"/>
+</svg>

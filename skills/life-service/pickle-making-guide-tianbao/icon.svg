@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#6f9a3a"/>
+  <path d="M22 26 h20 v22 a4 4 0 0 1 -4 4 h-12 a4 4 0 0 1 -4 -4 z" fill="#cfe0a0"/>
+  <rect x="26" y="18" width="12" height="8" rx="2" fill="#4d6b22"/>
+  <text x="32" y="46" font-size="13" text-anchor="middle" fill="#3a521a">腌菜</text>
+</svg>

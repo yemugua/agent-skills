@@ -1,0 +1,64 @@
+PASS P01 norm 去空格
+PASS P02 is_ph 待填
+PASS P03 is_ph 真实值
+PASS P04 is_ph 选项串
+PASS P05 is_ph 空
+PASS P06 split_row
+PASS P07 is_row
+PASS P08 is_row 非表
+PASS P09 parse_year 年份月
+PASS P10 parse_year 城市串
+PASS P11 parse_year 四位数
+PASS T01 性别
+PASS T02 出生年月
+PASS T03 户籍地
+PASS T04 原参保地
+PASS T05 新参保地
+PASS T06 参保身份
+PASS T07 空表取不到
+PASS T08 标题行不算
+PASS Y01 是
+PASS Y02 否
+PASS Y03 有
+PASS Y04 无
+PASS Y05 空表 None
+PASS N01 断缴月数
+PASS N02 距退休
+PASS N03 空表 None
+PASS S01 年限条数
+PASS S02 首条城市
+PASS S03 首条年限
+PASS S04 首条首次参保
+PASS S05 户籍地行
+PASS S06 空表无年限
+PASS R01 报告生成
+PASS R02 meta 有版本
+PASS R03 十段
+PASS R04 结论摘要
+PASS R05 账户性质
+PASS R06 待遇领取地推演
+PASS R07 45 工作日
+PASS R08 待办动作
+PASS R09 输出纪律
+PASS R10 推演出深圳
+PASS R11 非临时账户
+PASS R12 年龄 43
+PASS R13 有一个卡点
+PASS R14 重复缴费进阻断
+PASS R15 工伤不转
+PASS R19 户籍地年限0不算参保→推到深圳
+PASS R20 未命中的说明不吓人
+PASS R21 无错字郣
+PASS A01 临时账户生成
+PASS A02 判为临时账户
+PASS A03 报告写临时账户
+PASS A04 说明转不进
+PASS A05 待遇地推到郑州
+PASS A06 无硬性阻断之外
+PASS E01 空表返回 None
+PASS E02 空表给提示串
+PASS E03 缺文件不崩
+PASS R16 表格不裂
+PASS R17 无【待填】泄漏
+PASS R18 无乱码
+== TOTAL PASS=63 FAIL=0 ==

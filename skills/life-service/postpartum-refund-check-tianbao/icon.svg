@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#fff0f4"/>
+  <path d="M32 12c6 0 10 4 10 10 0 6-5 10-10 14-5-4-10-8-10-14 0-6 4-10 10-10z" fill="#ff6b8a"/>
+  <text x="32" y="40" font-size="16" text-anchor="middle" fill="#fff" font-family="sans-serif">¥</text>
+  <rect x="14" y="46" width="36" height="6" rx="3" fill="#ff6b8a" opacity="0.6"/>
+</svg>

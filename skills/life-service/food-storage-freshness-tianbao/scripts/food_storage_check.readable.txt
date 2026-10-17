@@ -1,0 +1,420 @@
+# -*- coding: utf-8 -*-
+"""食材储存保鲜与期限核查：按品类给出冷藏/冷冻保存期、变质硬指标与处置建议。
+
+用法:
+  python food_storage_check.py --file store.json [--out result.md] [--format json]
+  python food_storage_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 品类 -> (冷藏天数上限, 冷冻天数上限, 保存要点)
+# 天数上限为家庭冷藏条件下的参考值，0 表示不适冷冻
+SHELF = {
+    'leafy': (3, 0, '叶菜类，洗净后极易吸水烂根，宜擦干或垫吸水纸，装透气袋留缝隙'),
+    'root': (14, 120, '根茎类（土豆洋葱红薯山药），阴凉通风亦可存放，冷藏延缓发芽'),
+    'cabbage': (20, 60, '结球类与瓜类，完整状态耐存，切开后按叶菜口径处理'),
+    'mushroom': (3, 30, '菌菇类极易吸水，食用前才清洗，勿与塑料膜长时间密封'),
+    'meat': (3, 90, '生肉禽，冷藏不超过两天更稳，冷冻分装到用完为止'),
+    'poultry': (2, 90, '生禽肉，冷藏口径比畜肉更短，务必与即食食品分格'),
+    'seafood_fish': (1, 90, '生鱼，冷藏一天内用完为宜，冷冻前尽量去内脏血水'),
+    'seafood_shell': (1, 60, '贝类海鲜，带壳鲜活优先冷藏，吐沙后再烹调'),
+    'egg': (30, 0, '带壳冷藏，尖端朝下，不洗不擦，冷冻带壳会碎裂'),
+    'milk': (7, 30, '巴氏奶开封后按标签，一般三到七天，异味立即弃'),
+    'yogurt': (10, 60, '酸奶与奶制品，开封后尽快吃完，发酸气泡是变质信号'),
+    'leftover': (3, 60, '熟食剩菜，绿叶菜类现炒现吃优先，详见剩菜处理口径'),
+    'rice_noodle': (3, 60, '米饭面条，凉透后尽快冷藏，室温放置风险高'),
+    'soup': (2, 60, '汤类，含奶与淀粉的汤更易坏，冷却要分浅容器'),
+    'opened_sauce': (30, 0, '开封酱料，按标签开封期，冷藏避光，开封后不返冷藏室'),
+    'opened_oil': (180, 0, '开封食用油，避光常温，远离灶台，出现哈喇味弃用'),
+    'bakery': (5, 60, '面包糕点，含奶油的更短，密封保存减缓氧化'),
+    'frozen_dumpling': (0, 120, '冷冻面点与速食，生熟分开包装，防止串味与破损'),
+    'ice_cream': (0, 0, '冰淇淋，按包装标注，融化后不得再冻'),
+    'cut_fruit': (2, 0, '切开的水果与果盘，氧化快且易被二次污染'),
+}
+
+# 品类中文名, 与 SHELF 的键一一对应
+CATS = {
+    'leafy': '叶菜类',
+    'root': '根茎类',
+    'cabbage': '结球与瓜类',
+    'mushroom': '菌菇类',
+    'meat': '畜肉类',
+    'poultry': '禽肉类',
+    'seafood_fish': '鱼类海鲜',
+    'seafood_shell': '贝类海鲜',
+    'egg': '蛋类',
+    'milk': '牛奶',
+    'yogurt': '酸奶与奶制品',
+    'leftover': '熟食剩菜',
+    'rice_noodle': '米饭面条',
+    'soup': '汤类',
+    'opened_sauce': '开封酱料',
+    'opened_oil': '开封食用油',
+    'bakery': '面包糕点',
+    'frozen_dumpling': '冷冻面点速食',
+    'ice_cream': '冰淇淋',
+    'cut_fruit': '切开的水果',
+}
+
+# 感官不可靠的场景：这些必须靠时间与温度管理，不能靠闻、看、尝
+UNRELIABLE = {
+    'poultry': '沙门氏菌与弯曲菌在冻藏期内可增殖，肉眼与嗅觉均无异常，必须靠时间与温度控制',
+    'meat': '李斯特菌可在冷藏温度下缓慢增殖，外观与气味完全正常，加热时须确保中心熟透',
+    'seafood_fish': '组胺等降解产物不产生明显异味，但可引起不适，只能靠低温与时限管理',
+    'leftover': '蜡样芽孢杆菌毒素加热不被破坏，若已变质仅复热不能消除风险',
+    'rice_noodle': '米饭在室温放置可产生耐热毒素，复热无法去除，必须尽快冷却',
+}
+
+# 三条硬指标
+HARD = [
+    ('异味', '出现酸馊味、腐败味、氨味、哈喇味（油脂氧化）或任何不该有的味道，立即弃用'),
+    ('质地变化', '发黏、变滑、拉丝异常、结块分层、汤汁变稠发浑，均视为变质'),
+    ('外观霉变', '出现白色或彩色绒毛状霉菌、绿斑、发臭水泡、鼓包胀气（罐头类），立即弃用'),
+]
+
+# 不建议冷冻的品类
+NO_FREEZE = {
+    'leafy': '叶菜冷冻后解冻成糊状，不可逆',
+    'milk': '牛奶冷冻后分层，蛋白变性，风味与质地不可接受',
+    'egg': '带壳鸡蛋冷冻会爆裂',
+    'cut_fruit': '切开的水果冷冻后质地崩坏，只适合榨汁',
+    'ice_cream': '融化后不可复冻，结晶且口感不可接受',
+    'opened_oil': '低温会使油脂凝固结块，影响使用与风味',
+}
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def shelf_of(cat):
+    c = norm(cat)
+    if c not in SHELF:
+        raise ValueError('未知品类: %s，可选品类见 SHELF 表' % cat)
+    return SHELF[c]
+
+
+def days_tier(d):
+    if d is None:
+        return '未填写'
+    if d <= 1:
+        return '极短（当天或次日用完）'
+    if d <= 3:
+        return '短（不宜过夜存放）'
+    if d <= 7:
+        return '中（一周内）'
+    if d <= 30:
+        return '较长（两周到一月）'
+    return '长（一月以上）'
+
+
+def grade(fresh_days, limit, mode):
+    """fresh_days: 已在该冷藏/冷冻条件存放的天数; limit: 该条件保存期上限"""
+    if limit <= 0:
+        return '不适用'
+    if fresh_days < 0:
+        return '未填写'
+    pct = fresh_days / float(limit) * 100.0
+    if pct >= 100:
+        return '已超期'
+    if pct >= 70:
+        return '临近期限'
+    return '正常'
+
+
+def calc(data):
+    today = data.get('today')
+    if not today:
+        raise ValueError('缺少 today（核查日期，格式 YYYY-MM-DD）')
+    items = data.get('items') or []
+    if not items:
+        raise ValueError('至少需要一项食材记录')
+
+    rows = []
+    for it in items:
+        cat = it.get('category')
+        key = norm(cat)
+        if key not in SHELF:
+            raise ValueError('未知品类: %s，可选品类见 CATS 表' % cat)
+        cool, freeze, tip = shelf_of(cat)
+        mode = norm(it.get('mode') or '冷藏')
+        if mode not in ('冷藏', '冷冻'):
+            raise ValueError('mode 只能填 冷藏 或 冷冻，实为: %s' % mode)
+        limit = cool if mode == '冷藏' else freeze
+        if limit == 0:
+            limit = None
+        fd = it.get('fresh_days')
+        fd = None if fd is None else float(fd)
+        st = grade(fd, limit or 0, mode)
+        q = it.get('quantity')
+        rows.append({
+            'name': it.get('name', '未命名食材'),
+            'category': cat,
+            'category_name': CATS[key],
+            'mode': mode,
+            'cool_days': cool,
+            'freeze_days': freeze,
+            'limit_days': limit,
+            'fresh_days': fd,
+            'tier': days_tier(limit),
+            'status': st,
+            'tip': tip,
+            'reliable_note': UNRELIABLE.get(norm(cat), '感官指标基本可用，但时间与温度管理仍是前提'),
+            'no_freeze': NO_FREEZE.get(norm(cat), ''),
+            'quantity': q,
+        })
+
+    rows.sort(key=lambda r: (0 if r['status'] == '已超期' else 1 if r['status'] == '临近期限' else 2))
+    warns = []
+    for r in rows:
+        if r['status'] == '已超期':
+            warns.append('%s 已超期（%s条件下存放 %.0f 天，期限为 %s），按最坏情况弃用，不建议继续食用'
+                         % (r['name'], r['mode'], r['fresh_days'],
+                            ('%d 天' % r['limit_days']) if r['limit_days'] else '不可存放'))
+        elif r['status'] == '临近期限':
+            warns.append('%s 已达期限的 %.0f%%，请优先安排食用或转冷冻，不要再延长存放'
+                         % (r['name'], r['fresh_days'] / float(r['limit_days'] or 1) * 100))
+    hi = [r for r in rows if r['category'] in ('leafy', 'mushroom', 'cut_fruit')]
+    if hi:
+        warns.append('叶菜、菌菇、切开的水果易腐且感官滞后，建议现买现吃，超过一天按最坏情况处理')
+    risky = [r for r in rows if r['category'] in UNRELIABLE]
+    if risky:
+        warns.append('以下品类感官不可靠，必须靠时间与温度管理：%s' % '、'.join(
+            r['name'] for r in risky))
+
+    return {
+        'today': today,
+        'fridge_temp_ok': data.get('fridge_temp_ok'),
+        'freezer_temp_ok': data.get('freezer_temp_ok'),
+        'rows': rows,
+        'warns': warns,
+        'hard_metrics': [{'name': n, 'detail': d} for n, d in HARD],
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 食材储存保鲜与期限核查')
+    L.append('')
+    L.append('核查日期：%s' % r['today'])
+    L.append('')
+    L.append('冷藏温度达标情况：%s　　冷冻温度达标情况：%s'
+             % (r['fridge_temp_ok'] if r['fridge_temp_ok'] is not None else '未填写',
+                r['freezer_temp_ok'] if r['freezer_temp_ok'] is not None else '未填写'))
+    L.append('')
+    L.append('## 一、逐项核查（按紧急度排序）')
+    L.append('')
+    L.append('| 食材 | 品类 | 存放条件 | 已放天数 | 保存期上限 | 时长档位 | 状态 | 保存要点 |')
+    L.append('|---|---|---|---|---|---|---|---|')
+    for row in r['rows']:
+        lim = ('%d 天' % row['limit_days']) if row['limit_days'] else '不适用'
+        fd = ('%.0f 天' % row['fresh_days']) if row['fresh_days'] is not None else '未填写'
+        L.append('| %s | %s | %s | %s | %s | %s | %s | %s |'
+                 % (row['name'], row['category_name'], row['mode'], fd, lim,
+                    row['tier'], row['status'], row['tip']))
+    L.append('')
+    L.append('## 二、感官不可靠提示')
+    L.append('')
+    for row in r['rows']:
+        if row['category'] in UNRELIABLE:
+            L.append('- %s（%s）：%s' % (row['name'], row['category_name'], row['reliable_note']))
+    if not any(row['category'] in UNRELIABLE for row in r['rows']):
+        L.append('- 本次记录中无感官不可靠品类，仍需按冷藏 4 摄氏度以下、冷冻负 18 摄氏度以下管理')
+    L.append('')
+    L.append('## 三、变质三条硬指标')
+    L.append('')
+    L.append('| 指标 | 口径 |')
+    L.append('|---|---|')
+    for h in r['hard_metrics']:
+        L.append('| %s | %s |' % (h['name'], h['detail']))
+    L.append('')
+    L.append('## 四、不建议冷冻的品类')
+    L.append('')
+    has_nf = False
+    for row in r['rows']:
+        if row['no_freeze']:
+            L.append('- %s：%s' % (row['name'], row['no_freeze']))
+            has_nf = True
+    if not has_nf:
+        L.append('- 本次记录中无不可冷冻品类')
+    L.append('')
+    L.append('## 五、处置提示')
+    L.append('')
+    if r['warns']:
+        for w in r['warns']:
+            L.append('- %s' % w)
+    else:
+        L.append('- 未发现超期项，按计划食用并保持温度')
+    L.append('')
+    L.append('## 六、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 逐项完成异味、质地、外观三项感官核对')
+    L.append('- [ ] 冷藏室温度不高于 4 摄氏度，冷冻室不高于负 18 摄氏度')
+    L.append('- [ ] 生肉生禽与即食食品分格存放，包装未破损')
+    L.append('- [ ] 叶菜已沥干，未堆压，未与高水分果蔬同袋')
+    L.append('- [ ] 开封酱料已标注开封日期')
+    L.append('- [ ] 存疑项已按最坏情况处理，未以「看起来还行」放行')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    # 1 叶菜冷藏 3 天，超期
+    r1 = calc({'today': '2026-05-10', 'items': [
+        {'name': '小白菜', 'category': 'leafy', 'mode': '冷藏', 'fresh_days': 4}]})
+    ck(r1['rows'][0]['limit_days'] == 3, '叶菜冷藏期限应为 3 天，实为 %s' % r1['rows'][0]['limit_days'])
+    ck(r1['rows'][0]['status'] == '已超期', '叶菜放 4 天应判超期，实为 %s' % r1['rows'][0]['status'])
+    ck(any('已超期' in w for w in r1['warns']), '叶菜超期应产生提示，实为 %s' % r1['warns'])
+
+    # 2 根茎类长档 + 冷冻
+    r2 = calc({'today': '2026-05-10', 'items': [
+        {'name': '土豆', 'category': 'root', 'mode': '冷冻', 'fresh_days': 100}]})
+    ck(r2['rows'][0]['limit_days'] == 120, '根茎冷冻期限应为 120 天，实为 %s' % r2['rows'][0]['limit_days'])
+    ck(r2['rows'][0]['tier'] == '长（一月以上）', '100 天应落长档，实为 %s' % r2['rows'][0]['tier'])
+    ck(r2['rows'][0]['status'] == '临近期限', '根茎冷冻 100 天为长档但进度 83%% 应临近期限，实为 %s' % r2['rows'][0]['status'])
+
+    # 3 禽肉冷藏 2 天上限
+    r3 = calc({'today': '2026-05-10', 'items': [
+        {'name': '鸡胸肉', 'category': 'poultry', 'mode': '冷藏', 'fresh_days': 2}]})
+    ck(r3['rows'][0]['limit_days'] == 2, '禽肉冷藏期限应为 2 天，实为 %s' % r3['rows'][0]['limit_days'])
+    ck(r3['rows'][0]['status'] == '已超期', '禽肉放满 2 天应判超期，实为 %s' % r3['rows'][0]['status'])
+    ck('弯曲菌' in r3['rows'][0]['reliable_note'], '禽肉应带感官不可靠提示，实为 %s' % r3['rows'][0]['reliable_note'])
+
+    # 4 鸡蛋冷藏 30 天
+    r4 = calc({'today': '2026-05-10', 'items': [
+        {'name': '鸡蛋', 'category': 'egg', 'mode': '冷藏', 'fresh_days': 20}]})
+    ck(r4['rows'][0]['limit_days'] == 30, '鸡蛋冷藏期限应为 30 天，实为 %s' % r4['rows'][0]['limit_days'])
+    ck(r4['rows'][0]['no_freeze'] != '', '鸡蛋应标注不可冷冻')
+    ck(NO_FREEZE['egg'].startswith('带壳鸡蛋'), '鸡蛋不可冷冻原因描述有误: %s' % NO_FREEZE['egg'])
+
+    # 5 临近期限档（70%）
+    r5 = calc({'today': '2026-05-10', 'items': [
+        {'name': '牛奶', 'category': 'milk', 'mode': '冷藏', 'fresh_days': 6}]})
+    ck(r5['rows'][0]['limit_days'] == 7, '牛奶冷藏期限应为 7 天，实为 %s' % r5['rows'][0]['limit_days'])
+    ck(r5['rows'][0]['status'] == '临近期限', '牛奶放 6 天应判临近期限，实为 %s' % r5['rows'][0]['status'])
+
+    # 6 不可存放品类：冰淇淋冷冻期限为 0
+    r6 = calc({'today': '2026-05-10', 'items': [
+        {'name': '冰淇淋', 'category': 'ice_cream', 'mode': '冷冻', 'fresh_days': 5}]})
+    ck(r6['rows'][0]['limit_days'] is None, '冰淇淋无统一期限应为空，实为 %s' % r6['rows'][0]['limit_days'])
+    ck(r6['rows'][0]['status'] == '不适用', '无期限品类状态应为不适用，实为 %s' % r6['rows'][0]['status'])
+
+    # 7 排序：超期在前
+    r7 = calc({'today': '2026-05-10', 'items': [
+        {'name': '正常菜', 'category': 'root', 'mode': '冷藏', 'fresh_days': 2},
+        {'name': '过期肉', 'category': 'meat', 'mode': '冷藏', 'fresh_days': 9}]})
+    ck(r7['rows'][0]['name'] == '过期肉', '超期项应排最前，实为 %s' % r7['rows'][0]['name'])
+
+    # 8 BOM 输入：带 BOM 的 JSON 首个 key 不应变成乱码
+    bom_raw = '﻿{"today": "2026-05-10", "items": [{"name": "米饭", "category": "rice_noodle", "mode": "冷藏", "fresh_days": 1}]}'
+    d8 = json.loads(bom_raw.lstrip('﻿'))
+    r8 = calc(d8)
+    ck(r8['rows'][0]['name'] == '米饭', 'BOM 输入应正确解析，实为 %s' % r8['rows'][0]['name'])
+    ck(r8['rows'][0]['limit_days'] == 3, '米饭冷藏期限应为 3 天，实为 %s' % r8['rows'][0]['limit_days'])
+
+    # 9 utf-8-sig 读取路径
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'today': '2026-05-10', 'items': [
+            {'name': '酸奶', 'category': 'yogurt', 'mode': '冷藏', 'fresh_days': 9}]}))
+    try:
+        d9 = json.loads(open(tmp, 'r', encoding='utf-8-sig').read())
+        r9 = calc(d9)
+        ck(r9['rows'][0]['name'] == '酸奶', 'utf-8-sig 读取应正常，实为 %s' % r9['rows'][0]['name'])
+        ck(r9['rows'][0]['status'] == '临近期限', '酸奶放 9 天应临近期限，实为 %s' % r9['rows'][0]['status'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 10 非法输入
+    for bad, why in (
+        ({'today': '2026-05-10', 'items': []}, '空列表'),
+        ({'items': [{'name': 'x', 'category': 'leafy'}]}, '缺 today'),
+        ({'today': '2026-05-10', 'items': [{'category': '不存在的品类'}]}, '未知品类'),
+        ({'today': '2026-05-10', 'items': [{'category': 'leafy', 'mode': '常温'}]}, '非法 mode'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例10 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 11 输出结构
+    md = render_md(r1)
+    for key in ('变质三条硬指标', '感官不可靠', '人工确认清单', '不建议冷冻'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(r1['hard_metrics']) == 3, '硬指标应为 3 条，实为 %d' % len(r1['hard_metrics']))
+
+    out_dir = os.path.dirname(os.path.abspath(__file__))
+    res = os.path.join(out_dir, '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 品类期限/超期判定/临近期限档/不可存放/感官不可靠提示/'
+        '排序/BOM 输入(lstrip)/BOM 输入(utf-8-sig)/非法输入/输出结构/三条硬指标' % n)
+    with open(res, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='食材储存保鲜与期限核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

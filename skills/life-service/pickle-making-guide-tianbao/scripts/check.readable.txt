@@ -1,0 +1,248 @@
+# -*- coding: utf-8 -*-
+"""腌菜记录校验脚本。
+
+用法:
+  python check.py --file 腌菜记录.json
+  python check.py --selftest
+
+JSON 字段:
+  salt_percent        盐占菜重百分比 (数字)
+  fully_submerged     盐水是否完全没过菜 (true/false)
+  oil_free_container  容器是否无油无生水 (true/false)
+  temp_c              发酵温度摄氏度 (数字)
+  ferment_days        已腌天数 (数字)
+  signs               异常信号列表, 如 ["sticky","smelly","mold"]
+"""
+import argparse
+import json
+import os
+import sys
+
+SALT_MIN = 2.0
+SALT_MAX_PICKLE = 5.0
+SALT_MAX_SALTED = 15.0
+TEMP_LOW = 10.0
+TEMP_HIGH = 25.0
+SAFE_DAYS = 20
+PEAK_LOW = 3
+PEAK_HIGH = 8
+
+# 致命信号: 出现任一项整坛废弃
+FATAL_SIGNS = ["sticky", "smelly", "rot"]
+
+
+def evaluate(data):
+    reasons = []
+    ok = True
+
+    signs = data.get("signs") or []
+    for s in signs:
+        if s in FATAL_SIGNS:
+            ok = False
+            reasons.append("检测到致命信号(%s), 腌菜已腐败, 必须整坛废弃" % s)
+    if not ok:
+        return ok, reasons
+
+    salt = data.get("salt_percent")
+    if salt is None:
+        ok = False
+        reasons.append("未填写盐占菜重百分比(salt_percent), 无法判断防腐是否足够")
+    else:
+        try:
+            sp = float(salt)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("salt_percent 不是数字")
+        else:
+            if sp < SALT_MIN:
+                ok = False
+                reasons.append("盐占菜重 %.1f%% 低于 2%% 下限, 杂菌抑制不足易臭坛软烂" % sp)
+
+    submerged = data.get("fully_submerged")
+    if submerged is not True:
+        ok = False
+        reasons.append("盐水未完全没过菜, 露空部分接触空气易发霉长白毛")
+
+    oil_free = data.get("oil_free_container")
+    if oil_free is not True:
+        ok = False
+        reasons.append("容器未做到无油无生水, 易整坛污染")
+
+    temp = data.get("temp_c")
+    if temp is None:
+        ok = False
+        reasons.append("未填写发酵温度(temp_c)")
+    else:
+        try:
+            t = float(temp)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("temp_c 不是数字")
+        else:
+            if t > TEMP_HIGH:
+                ok = False
+                reasons.append("发酵温度 %.1f℃ 超过 25℃ 上限, 过快产酸菜易软" % t)
+            elif t < TEMP_LOW:
+                ok = False
+                reasons.append("发酵温度 %.1f℃ 低于 10℃, 过慢易生花" % t)
+
+    days = data.get("ferment_days")
+    if days is not None:
+        try:
+            d = float(days)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("ferment_days 不是数字")
+        else:
+            if PEAK_LOW <= d <= PEAK_HIGH:
+                ok = False
+                reasons.append("已腌 %.0f 天正处于亚硝酸盐峰值期(3–8天), 建议延至 20 天后食用" % d)
+            elif d < SAFE_DAYS and d > PEAK_HIGH:
+                reasons.append("提示: 未到 20 天安全线, 仍在下降期, 建议再等等")
+
+    if ok:
+        reasons.append("腌菜记录通过: 盐量/没过/容器/温度/天数均合规")
+    return ok, reasons
+
+
+def load_json(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def selftest():
+    passed = 0
+
+    # 1. 正例: 盐 3%, 没过, 无油, 18℃, 25 天 -> 通过
+    ok, rs = evaluate({
+        "salt_percent": 3.0, "fully_submerged": True, "oil_free_container": True,
+        "temp_c": 18.0, "ferment_days": 25, "signs": [],
+    })
+    assert ok is True, "正例应通过: %s" % rs
+    passed += 1
+
+    # 2. 反例: 致命信号 smelly -> 必须不合格
+    ok, rs = evaluate({
+        "salt_percent": 3.0, "fully_submerged": True, "oil_free_container": True,
+        "temp_c": 18.0, "ferment_days": 25, "signs": ["smelly"],
+    })
+    assert ok is False, "发臭必须判不合格"
+    assert any("废弃" in r for r in rs), "废弃原因缺失: %s" % rs
+    passed += 1
+
+    # 3. 反例: 盐 1% 不足 -> 必须不合格
+    ok, rs = evaluate({
+        "salt_percent": 1.0, "fully_submerged": True, "oil_free_container": True,
+        "temp_c": 18.0, "ferment_days": 25, "signs": [],
+    })
+    assert ok is False, "盐不足必须判不合格"
+    assert any("2%" in r for r in rs), "盐原因缺失: %s" % rs
+    passed += 1
+
+    # 4. 反例: 未没过 -> 必须不合格
+    ok, rs = evaluate({
+        "salt_percent": 3.0, "fully_submerged": False, "oil_free_container": True,
+        "temp_c": 18.0, "ferment_days": 25, "signs": [],
+    })
+    assert ok is False, "未没过必须判不合格"
+    assert any("没过" in r for r in rs), "没过原因缺失: %s" % rs
+    passed += 1
+
+    # 5. 反例: 峰值期第 5 天 -> 必须不合格
+    ok, rs = evaluate({
+        "salt_percent": 3.0, "fully_submerged": True, "oil_free_container": True,
+        "temp_c": 18.0, "ferment_days": 5, "signs": [],
+    })
+    assert ok is False, "峰值期必须判不合格"
+    assert any("峰值" in r for r in rs), "峰值原因缺失: %s" % rs
+    passed += 1
+
+    # 6. 反例: 温度 30℃ 超上限 -> 必须不合格
+    ok, rs = evaluate({
+        "salt_percent": 3.0, "fully_submerged": True, "oil_free_container": True,
+        "temp_c": 30.0, "ferment_days": 25, "signs": [],
+    })
+    assert ok is False, "超温必须判不合格"
+    passed += 1
+
+    # 7. 反例: 容器带油 -> 必须不合格
+    ok, rs = evaluate({
+        "salt_percent": 3.0, "fully_submerged": True, "oil_free_container": False,
+        "temp_c": 18.0, "ferment_days": 25, "signs": [],
+    })
+    assert ok is False, "带油必须判不合格"
+    passed += 1
+
+    # 8. 反例: 致命信号 sticky -> 必须不合格
+    ok, rs = evaluate({
+        "salt_percent": 3.0, "fully_submerged": True, "oil_free_container": True,
+        "temp_c": 18.0, "ferment_days": 25, "signs": ["sticky"],
+    })
+    assert ok is False, "变黏必须判不合格"
+    passed += 1
+
+    # 9. BOM 处理
+    here = os.path.dirname(os.path.abspath(__file__))
+    bom_path = os.path.join(here, "_bom_sample.json")
+    payload = json.dumps({
+        "salt_percent": 3.0, "fully_submerged": True, "oil_free_container": True,
+        "temp_c": 18.0, "ferment_days": 25, "signs": [],
+    }, ensure_ascii=False)
+    with open(bom_path, "wb") as f:
+        f.write(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+    d = load_json(bom_path)
+    assert d.get("salt_percent") == 3.0, "BOM 输入 key 不应带 \﻿"
+    assert "fully_submerged" in d, "BOM 输入 key 必须干净"
+    os.remove(bom_path)
+    passed += 1
+
+    # 10. 边界: 变黏信号优先于其他 -> 致命信号先返回
+    ok, rs = evaluate({
+        "salt_percent": 1.0, "fully_submerged": False, "oil_free_container": False,
+        "temp_c": 30.0, "ferment_days": 5, "signs": ["sticky"],
+    })
+    assert ok is False, "致命信号必须判不合格"
+    assert any("废弃" in r for r in rs), "致命信号应优先: %s" % rs
+    passed += 1
+
+    line = "SELFTEST OK (%d assertions)" % passed
+    return line, passed
+
+
+def main():
+    ap = argparse.ArgumentParser(description="腌菜记录校验")
+    ap.add_argument("--file", help="腌菜记录 JSON")
+    ap.add_argument("--selftest", action="store_true", help="内置自检")
+    args = ap.parse_args()
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        line, total = selftest()
+        with open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        print(line)
+        return 0 if line.startswith("SELFTEST OK") else 1
+
+    if args.file:
+        try:
+            data = load_json(args.file)
+        except Exception as e:  # noqa: BLE001
+            msg = "读取失败: %s" % e
+            with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            print(msg)
+            return 1
+        ok, reasons = evaluate(data)
+        out = ("PASS " if ok else "FAIL ") + "；".join(reasons)
+        with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+            f.write(out + "\n")
+        print(out)
+        return 0 if ok else 1
+
+    print("需要 --file 或 --selftest")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

@@ -1,0 +1,223 @@
+# -*- coding: utf-8 -*-
+"""红酒醒酒方案校验脚本。
+
+用法:
+  python check.py --file 醒酒方案.json
+  python check.py --selftest
+
+JSON 字段:
+  wine_age_years  酒龄年数 (数字)
+  tannin_level    单宁: heavy/medium/light
+  decant_method   方式: decanter(醒酒器)/bottle(瓶醒)/none
+  decant_minutes  醒酒分钟数 (数字)
+  already_oxidized 是否已氧化(有醋味) (true/false)
+"""
+import argparse
+import json
+import os
+import sys
+
+DECANTER_MAX_YOUNG = 120
+DECANTER_MAX_OLD = 60
+BOTTLE_MAX = 180
+VALID_TANNIN = ["heavy", "medium", "light"]
+VALID_METHOD = ["decanter", "bottle", "none"]
+
+
+def evaluate(data):
+    reasons = []
+    ok = True
+
+    oxidized = data.get("already_oxidized")
+    if oxidized is True:
+        ok = False
+        reasons.append("酒已出现氧化/醋味, 不再醒酒, 继续醒会雪上加霜")
+        return ok, reasons
+
+    tmethod = data.get("decant_method")
+    if tmethod is None:
+        ok = False
+        reasons.append("未填写醒酒方式(decant_method)")
+    elif tmethod not in VALID_METHOD:
+        ok = False
+        reasons.append("decant_method 取值非法(应为 decanter/bottle/none)")
+
+    tannin = data.get("tannin_level")
+    if tannin is None:
+        ok = False
+        reasons.append("未填写单宁水平(tannin_level)")
+    elif tannin not in VALID_TANNIN:
+        ok = False
+        reasons.append("tannin_level 取值非法(应为 heavy/medium/light)")
+
+    age = data.get("wine_age_years")
+    minutes = data.get("decant_minutes")
+
+    if age is not None and minutes is not None:
+        try:
+            a = float(age)
+            m = float(minutes)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("酒龄或时长不是数字")
+        else:
+            if tmethod == "decanter":
+                cap = DECANTER_MAX_OLD if a > 15 else DECANTER_MAX_YOUNG
+                if m > cap:
+                    ok = False
+                    reasons.append("醒酒器醒 %.0f 分钟超过%s酒上限 %d 分钟, 易氧化过头出醋味" % (
+                        m, "老" if a > 15 else "年轻", cap))
+            elif tmethod == "bottle":
+                if m > BOTTLE_MAX:
+                    ok = False
+                    reasons.append("瓶醒 %.0f 分钟超过上限 %d 分钟" % (m, BOTTLE_MAX))
+
+    # 老酒用醒酒器且超 60 分钟已在上面覆盖; 这里补: 清淡酒不该猛醒
+    if tannin == "light" and tmethod == "decanter":
+        ok = False
+        reasons.append("清淡型酒用醒酒器猛醒, 香气更淡寡, 建议不醒或短时瓶醒")
+
+    if ok:
+        reasons.append("醒酒方案通过: 方式/时长/酒龄/单宁均匹配")
+    return ok, reasons
+
+
+def load_json(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def selftest():
+    passed = 0
+
+    # 1. 正例: 年轻重单宁, 醒酒器 90 分钟 -> 通过
+    ok, rs = evaluate({
+        "wine_age_years": 3, "tannin_level": "heavy",
+        "decant_method": "decanter", "decant_minutes": 90, "already_oxidized": False,
+    })
+    assert ok is True, "正例应通过: %s" % rs
+    passed += 1
+
+    # 2. 反例: 已氧化还醒 -> 必须不合格
+    ok, rs = evaluate({
+        "wine_age_years": 3, "tannin_level": "heavy",
+        "decant_method": "decanter", "decant_minutes": 90, "already_oxidized": True,
+    })
+    assert ok is False, "已氧化必须判不合格"
+    assert any("不再醒" in r for r in rs), "氧化原因缺失: %s" % rs
+    passed += 1
+
+    # 3. 反例: 老酒醒酒器 120 分钟超上限 -> 必须不合格
+    ok, rs = evaluate({
+        "wine_age_years": 20, "tannin_level": "medium",
+        "decant_method": "decanter", "decant_minutes": 120, "already_oxidized": False,
+    })
+    assert ok is False, "老酒超时必须判不合格"
+    assert any("氧化" in r for r in rs), "老酒超时原因缺失: %s" % rs
+    passed += 1
+
+    # 4. 反例: 清淡酒用醒酒器 -> 必须不合格
+    ok, rs = evaluate({
+        "wine_age_years": 4, "tannin_level": "light",
+        "decant_method": "decanter", "decant_minutes": 30, "already_oxidized": False,
+    })
+    assert ok is False, "清淡酒猛醒必须判不合格"
+    assert any("淡寡" in r for r in rs), "清淡原因缺失: %s" % rs
+    passed += 1
+
+    # 5. 反例: 缺方式 -> 必须不合格
+    ok, rs = evaluate({
+        "wine_age_years": 3, "tannin_level": "heavy",
+        "decant_minutes": 90, "already_oxidized": False,
+    })
+    assert ok is False, "缺方式必须判不合格"
+    passed += 1
+
+    # 6. 反例: 缺单宁 -> 必须不合格
+    ok, rs = evaluate({
+        "wine_age_years": 3, "decant_method": "decanter",
+        "decant_minutes": 90, "already_oxidized": False,
+    })
+    assert ok is False, "缺单宁必须判不合格"
+    passed += 1
+
+    # 7. 反例: 瓶醒 300 分钟超上限 -> 必须不合格
+    ok, rs = evaluate({
+        "wine_age_years": 3, "tannin_level": "heavy",
+        "decant_method": "bottle", "decant_minutes": 300, "already_oxidized": False,
+    })
+    assert ok is False, "瓶醒超时必须判不合格"
+    passed += 1
+
+    # 8. 反例: 方式非法 -> 必须不合格
+    ok, rs = evaluate({
+        "wine_age_years": 3, "tannin_level": "heavy",
+        "decant_method": "cup", "decant_minutes": 90, "already_oxidized": False,
+    })
+    assert ok is False, "非法方式必须判不合格"
+    passed += 1
+
+    # 9. BOM 处理
+    here = os.path.dirname(os.path.abspath(__file__))
+    bom_path = os.path.join(here, "_bom_sample.json")
+    payload = json.dumps({
+        "wine_age_years": 3, "tannin_level": "heavy",
+        "decant_method": "decanter", "decant_minutes": 90, "already_oxidized": False,
+    }, ensure_ascii=False)
+    with open(bom_path, "wb") as f:
+        f.write(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+    d = load_json(bom_path)
+    assert d.get("decant_method") == "decanter", "BOM 输入 key 不应带 \﻿"
+    assert "wine_age_years" in d, "BOM 输入 key 必须干净"
+    os.remove(bom_path)
+    passed += 1
+
+    # 10. 边界: 老酒瓶醒 60 分钟 -> 通过
+    ok, rs = evaluate({
+        "wine_age_years": 20, "tannin_level": "medium",
+        "decant_method": "bottle", "decant_minutes": 60, "already_oxidized": False,
+    })
+    assert ok is True, "老酒瓶醒合规应通过: %s" % rs
+    passed += 1
+
+    line = "SELFTEST OK (%d assertions)" % passed
+    return line, passed
+
+
+def main():
+    ap = argparse.ArgumentParser(description="红酒醒酒方案校验")
+    ap.add_argument("--file", help="醒酒方案 JSON")
+    ap.add_argument("--selftest", action="store_true", help="内置自检")
+    args = ap.parse_args()
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        line, total = selftest()
+        with open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        print(line)
+        return 0 if line.startswith("SELFTEST OK") else 1
+
+    if args.file:
+        try:
+            data = load_json(args.file)
+        except Exception as e:  # noqa: BLE001
+            msg = "读取失败: %s" % e
+            with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            print(msg)
+            return 1
+        ok, reasons = evaluate(data)
+        out = ("PASS " if ok else "FAIL ") + "；".join(reasons)
+        with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+            f.write(out + "\n")
+        print(out)
+        return 0 if ok else 1
+
+    print("需要 --file 或 --selftest")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

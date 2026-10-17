@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#FAF5FF" stroke="#7E22CE" stroke-width="2"/>
+  <text x="32" y="43" font-family="'Microsoft YaHei','PingFang SC','Noto Sans SC',sans-serif" font-size="30" font-weight="700" fill="#581C87" text-anchor="middle">招</text>
+  <path d="M16 52 L26 52" stroke="#7E22CE" stroke-width="3" stroke-linecap="round"/>
+  <path d="M38 52 L48 52" stroke="#7E22CE" stroke-width="3" stroke-linecap="round"/>
+</svg>

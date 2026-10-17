@@ -1,0 +1,17 @@
+icon.svg  921
+overview.md  2207
+rules  0
+rules\identify-and-scam.md  3486
+rules\stop-and-report.md  4148
+scripts  0
+scripts\parttime_scam_check.py  39249
+SKILL.md  4503
+templates  4096
+templates\兼职刷单被骗信息采集表.md  1013
+templates\核查报告模板.md  2751
+templates\止损与报警操作卡.md  2470
+testdata  4096
+testdata\_reg_result.txt  18
+testdata\回归测试.py  18464
+testdata\样例.md  2490
+testdata\空输入.md  1013

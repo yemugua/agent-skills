@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="微信证据链助手">
+  <rect width="256" height="256" rx="58" fill="#2F5FD0"/>
+  <rect x="48" y="60" width="152" height="114" rx="26" fill="#FFFFFF"/>
+  <path d="M78 170 L78 200 L106 170 Z" fill="#FFFFFF"/>
+  <rect x="76" y="88" width="96" height="12" rx="6" fill="#2F5FD0"/>
+  <rect x="76" y="112" width="96" height="12" rx="6" fill="#2F5FD0"/>
+  <rect x="76" y="136" width="62" height="12" rx="6" fill="#2F5FD0"/>
+  <circle cx="184" cy="182" r="32" fill="#F5B942"/>
+  <polyline points="167,182 179,194 201,171" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

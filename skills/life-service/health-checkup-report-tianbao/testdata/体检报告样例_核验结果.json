@@ -1,0 +1,322 @@
+{
+  "version": "1.0.0",
+  "sex": "男",
+  "age": "43",
+  "parsed": 21,
+  "red_flags": 0,
+  "normal": 12,
+  "critical": 5,
+  "light": 4,
+  "mild": 0,
+  "fallback_ref": 0,
+  "items": [
+    {
+      "name": "丙氨酸氨基转移酶",
+      "value": 62.0,
+      "unit": "U/L",
+      "lo": 9.0,
+      "hi": 50.0,
+      "grade": "轻度偏高",
+      "direction": "偏高",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.24
+    },
+    {
+      "name": "低密度脂蛋白胆固醇",
+      "value": 3.8,
+      "unit": "mmol/L",
+      "lo": 0.0,
+      "hi": 3.4,
+      "grade": "轻度偏高",
+      "direction": "偏高",
+      "reds": [],
+      "tip": "心血管风险关联项，结合 HDL 与血压一起看",
+      "ref_src": "报告自带",
+      "ratio": 0.118
+    },
+    {
+      "name": "总胆固醇",
+      "value": 5.9,
+      "unit": "mmol/L",
+      "lo": 0.0,
+      "hi": 5.2,
+      "grade": "轻度偏高",
+      "direction": "偏高",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.135
+    },
+    {
+      "name": "甘油三酯",
+      "value": 2.1,
+      "unit": "mmol/L",
+      "lo": 0.0,
+      "hi": 1.7,
+      "grade": "轻度偏高",
+      "direction": "偏高",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.235
+    },
+    {
+      "name": "天门冬氨酸氨基转移酶",
+      "value": 44.0,
+      "unit": "U/L",
+      "lo": 15.0,
+      "hi": 40.0,
+      "grade": "临界",
+      "direction": "偏高",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.1
+    },
+    {
+      "name": "尿酸",
+      "value": 452.0,
+      "unit": "umol/L",
+      "lo": 208.0,
+      "hi": 428.0,
+      "grade": "临界",
+      "direction": "偏高",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.056
+    },
+    {
+      "name": "空腹血糖",
+      "value": 6.4,
+      "unit": "mmol/L",
+      "lo": 3.9,
+      "hi": 6.1,
+      "grade": "临界",
+      "direction": "偏高",
+      "reds": [],
+      "tip": "在空腹血糖受损区间（6.1-7.0 之间），先做糖化血红蛋白看近 3 个月",
+      "ref_src": "报告自带",
+      "ratio": 0.049
+    },
+    {
+      "name": "腰围",
+      "value": 92.0,
+      "unit": "cm",
+      "lo": 0.0,
+      "hi": 90.0,
+      "grade": "临界",
+      "direction": "偏高",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.022
+    },
+    {
+      "name": "高密度脂蛋白胆固醇",
+      "value": 1.05,
+      "unit": "mmol/L",
+      "lo": 1.0,
+      "hi": 1.0,
+      "grade": "临界",
+      "direction": "偏高",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.05
+    },
+    {
+      "name": "促甲状腺激素",
+      "value": 2.1,
+      "unit": "mIU/L",
+      "lo": 0.27,
+      "hi": 4.2,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "尿糖",
+      "value": "阴性",
+      "unit": "",
+      "lo": null,
+      "hi": null,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "尿蛋白",
+      "value": "阴性",
+      "unit": "",
+      "lo": null,
+      "hi": null,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "尿酮体",
+      "value": "阴性",
+      "unit": "",
+      "lo": null,
+      "hi": null,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "总胆红素",
+      "value": 14.2,
+      "unit": "umol/L",
+      "lo": 3.4,
+      "hi": 20.5,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "收缩压",
+      "value": 128.0,
+      "unit": "mmHg",
+      "lo": 90.0,
+      "hi": 139.0,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "白细胞",
+      "value": 6.2,
+      "unit": "10^9/L",
+      "lo": 3.5,
+      "hi": 9.5,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "肌酐",
+      "value": 98.0,
+      "unit": "umol/L",
+      "lo": 57.0,
+      "hi": 111.0,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "舒张压",
+      "value": 84.0,
+      "unit": "mmHg",
+      "lo": 60.0,
+      "hi": 89.0,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "血小板",
+      "value": 210.0,
+      "unit": "10^9/L",
+      "lo": 125.0,
+      "hi": 350.0,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "血红蛋白",
+      "value": 138.0,
+      "unit": "g/L",
+      "lo": 130.0,
+      "hi": 175.0,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    },
+    {
+      "name": "谷氨酰转肽酶",
+      "value": 58.0,
+      "unit": "U/L",
+      "lo": 10.0,
+      "hi": 60.0,
+      "grade": "正常",
+      "direction": "正常",
+      "reds": [],
+      "tip": "",
+      "ref_src": "报告自带",
+      "ratio": 0.0
+    }
+  ],
+  "categories": [
+    "建议 6 个月后复查肝脏超声",
+    "甲状腺超声 左侧叶结节 0.8cm，TI-RADS 3 类，建议定期随访",
+    "胸部 CT 右肺上叶少许炎性灶，建议抗感染治疗后复查",
+    "建议低脂饮食、规律运动、戒酒，3 个月后复查血脂与肝功能"
+  ],
+  "images": [
+    {
+      "category": "腹部超声",
+      "conclusion": "轻度脂肪肝，肝实质回声增强。建议 6 个月后复查肝脏超声",
+      "suggest": [
+        "建议 6 个月后复查肝脏超声"
+      ]
+    },
+    {
+      "category": "甲状腺超声",
+      "conclusion": "左侧叶结节 0.8cm，TI-RADS 3 类，建议定期随访",
+      "suggest": [
+        "左侧叶结节 0.8cm，TI-RADS 3 类，建议定期随访"
+      ]
+    },
+    {
+      "category": "胸部 CT",
+      "conclusion": "右肺上叶少许炎性灶，建议抗感染治疗后复查",
+      "suggest": [
+        "右肺上叶少许炎性灶，建议抗感染治疗后复查"
+      ]
+    },
+    {
+      "category": "心电图",
+      "conclusion": "窦性心律，大致正常",
+      "suggest": []
+    }
+  ],
+  "unresolved": []
+}

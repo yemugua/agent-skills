@@ -1,0 +1,13 @@
+selftest cases: 11, passed: 11, failed: 0
+PASS avg is 145
+PASS annual is 1940
+PASS unit cost is 3.625
+PASS missing months fall back to plan fee
+PASS no data means zero unit cost
+PASS contract obstacle detected
+PASS broadband obstacle detected
+PASS bound broadband is flagged even when positive
+PASS clean case reports no obstacle
+PASS clean case has no sub card line
+PASS report file written
+SELFTEST OK

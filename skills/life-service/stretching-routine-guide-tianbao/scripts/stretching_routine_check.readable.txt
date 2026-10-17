@@ -1,0 +1,402 @@
+# -*- coding: utf-8 -*-
+"""运动前后拉伸流程顺序核对与剂量判定工具。
+
+用法:
+  python stretching_routine_check.py --file case.json [--json]
+  python stretching_routine_check.py --selftest
+
+顺序核对按输入原序取索引, 不按正确顺序重新排列后比对,
+否则「先静态拉伸再主运动」会被误判成正确。
+判定顺序: 先看真实缺陷(顺序错误、运动前长时间静态拉伸、弹震式、强度过痛、
+急性损伤期拉伸、麻木放射痛), 再看信息是否完整。
+"""
+import argparse
+import io
+import json
+import os
+import sys
+import tempfile
+
+CORRECT_ORDER = [u"动态热身", u"主运动", u"静态拉伸"]
+
+ALIAS = {
+    u"动态热身": u"动态热身",
+    u"热身": u"动态热身",
+    u"动态拉伸": u"动态热身",
+    u"动态活动": u"动态热身",
+    u"主运动": u"主运动",
+    u"主训练": u"主运动",
+    u"正式训练": u"主运动",
+    u"训练": u"主运动",
+    u"静态拉伸": u"静态拉伸",
+    u"静态伸展": u"静态拉伸",
+    u"拉伸": u"静态拉伸",
+}
+
+HOLD_MIN = 15.0
+HOLD_MAX = 30.0
+HOLD_SHORT = 10.0
+HOLD_LONG = 60.0
+PRE_STATIC_BAD = 30.0
+PAIN_BAD = 6.0
+TARGET_MIN = 4
+WARMUP_MIN = 5.0
+
+
+def normalize(step):
+    s = str(step).strip()
+    return ALIAS.get(s)
+
+
+def take_order(steps):
+    """按输入原序取索引, 不做任何重排。"""
+    order = []
+    for s in steps or []:
+        n = normalize(s)
+        if n is not None:
+            order.append(n)
+    return order
+
+
+def order_verdict(steps):
+    order = take_order(steps)
+    if len(order) < 2:
+        return None, order, u"可识别的流程环节不足两个，无法核对顺序"
+    idx = [CORRECT_ORDER.index(x) for x in order]
+    if idx == sorted(idx):
+        return True, order, u"顺序正确（%s）" % u" → ".join(order)
+    wrong = []
+    for i in range(1, len(idx)):
+        if idx[i] < idx[i - 1]:
+            wrong.append((order[i - 1], order[i]))
+    return False, order, u"顺序错误：%s。正确顺序应为 %s" % (
+        u"、".join(u"%s 之后做了 %s" % (a, b) for a, b in wrong),
+        u" → ".join(CORRECT_ORDER))
+
+
+def hold_verdict(phase, hold):
+    if hold is None:
+        return u"待确认", u"未提供静态拉伸保持时长"
+    v = float(hold)
+    if phase == "pre":
+        if v >= PRE_STATIC_BAD:
+            return u"不合格", u"运动前静态拉伸保持 %g 秒，超过 %g 秒会暂时降低力量与爆发输出，运动前应做动态热身" % (
+                v, PRE_STATIC_BAD)
+        return u"合格", u"运动前拉伸保持 %g 秒，未超过 %g 秒" % (v, PRE_STATIC_BAD)
+    if v < HOLD_SHORT:
+        return u"需改进", u"保持 %g 秒偏短，低于 %g 秒效果不足" % (v, HOLD_SHORT)
+    if v > HOLD_LONG:
+        return u"需改进", u"保持 %g 秒偏长，超过 %g 秒不必要且易过度" % (v, HOLD_LONG)
+    if v < HOLD_MIN:
+        return u"需改进", u"保持 %g 秒，建议拉到 %g-%g 秒" % (v, HOLD_MIN, HOLD_MAX)
+    if v > HOLD_MAX:
+        return u"需改进", u"保持 %g 秒，建议控制在 %g-%g 秒" % (v, HOLD_MIN, HOLD_MAX)
+    return u"合格", u"保持 %g 秒，在 %g-%g 秒区间" % (v, HOLD_MIN, HOLD_MAX)
+
+
+def pain_verdict(p):
+    if p is None:
+        return u"待确认", u"未提供拉伸强度评分"
+    v = float(p)
+    if v > PAIN_BAD:
+        return u"不合格", u"强度评分 %g 分，超过 %g 分即属于疼痛范围，疼痛是停止信号不是有效信号" % (v, PAIN_BAD)
+    if v < 3.0:
+        return u"需改进", u"强度评分 %g 分，几乎没感觉，可加大幅度到轻微紧绷" % v
+    return u"合格", u"强度评分 %g 分，在轻微紧绷区间" % v
+
+
+def load_json(path):
+    with io.open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def build_report(data):
+    phase = data.get("phase")
+    steps = data.get("steps", []) or []
+    hold = data.get("hold_seconds")
+    sets = data.get("sets")
+    pain = data.get("pain_score")
+    ballistic = data.get("ballistic")
+    warmup = data.get("warmup_minutes")
+    targets = data.get("targets", []) or []
+    acute = data.get("acute_injury")
+    numb = data.get("numbness_or_radiating")
+    breath_hold = data.get("breath_holding")
+
+    defects = []
+    fine = []
+    pending = []
+
+    if phase not in ("pre", "post"):
+        pending.append(u"阶段未填或取值未识别，应为运动前或运动后")
+
+    ok, order, omsg = order_verdict(steps)
+    if ok is False:
+        defects.append(omsg)
+    elif ok is None:
+        pending.append(omsg)
+
+    if acute is True:
+        defects.append(u"急性损伤期（48 小时内）拉伸：会加重出血与肿胀，这阶段不做拉伸")
+    if numb is True:
+        defects.append(u"拉伸部位有麻木或放射痛：可能涉及神经，停止拉伸并就医评估")
+    if ballistic is True:
+        defects.append(u"使用弹震式拉伸：靠惯性一弹一弹会触发牵张反射导致肌肉对抗性收缩，反而更容易拉伤")
+    if data.get("forced_by_other") is True:
+        defects.append(u"由他人强行加压或扳拉：无法感知实际耐受，容易超过组织承受范围")
+
+    pv, pm = pain_verdict(pain)
+    if pv == u"不合格":
+        defects.append(pm)
+    elif pv == u"需改进":
+        fine.append(pm)
+    elif pv == u"待确认":
+        pending.append(pm)
+
+    hv, hm = hold_verdict(phase, hold)
+    if hv == u"不合格":
+        defects.append(hm)
+    elif hv == u"需改进":
+        fine.append(hm)
+    elif hv == u"待确认":
+        pending.append(hm)
+
+    if phase == "pre":
+        if u"动态热身" not in order and order:
+            fine.append(u"运动前流程里没有动态热身，应安排 5-10 分钟动态活动")
+        if warmup is None:
+            pending.append(u"未提供运动前热身时长")
+        elif float(warmup) < WARMUP_MIN:
+            fine.append(u"热身 %.0f 分钟偏短，建议 5-10 分钟到微微出汗" % float(warmup))
+    elif phase == "post":
+        if u"静态拉伸" not in order and order:
+            fine.append(u"运动后流程里没有静态拉伸，放松环节缺失")
+
+    if sets is None:
+        pending.append(u"未提供每个肌群的拉伸组数")
+    elif float(sets) < 2.0:
+        fine.append(u"每组只做 %g 组，建议 2-3 组" % float(sets))
+
+    if not targets:
+        pending.append(u"未提供拉伸肌群清单")
+    elif len(targets) < TARGET_MIN:
+        fine.append(u"只覆盖 %d 个肌群，建议覆盖 4-6 个，不要只拉最酸的一处" % len(targets))
+
+    if breath_hold is True:
+        fine.append(u"拉伸时憋气：会升高腹压并降低效果，全程保持缓慢呼吸")
+
+    lines = []
+    lines.append("=" * 62)
+    lines.append(u"拉伸流程顺序核对与剂量判定")
+    lines.append("=" * 62)
+    lines.append(u"阶段：%s" % (u"运动前" if phase == "pre" else (u"运动后" if phase == "post" else u"未填")))
+    lines.append(u"用户填写的流程（原序）：%s" % (u" → ".join(str(s) for s in steps) if steps else u"未填"))
+    lines.append(u"识别出的环节（原序）：%s" % (u" → ".join(order) if order else u"无"))
+    lines.append("")
+    lines.append(u"[一] 顺序核对")
+    lines.append(u"  %s" % omsg)
+    lines.append("")
+    lines.append(u"[二] 剂量与强度")
+    lines.append(u"  保持时长：%s —— %s" % (hv, hm))
+    lines.append(u"  强度评分：%s —— %s" % (pv, pm))
+    lines.append(u"  覆盖肌群：%s" % (u"、".join(str(t) for t in targets) if targets else u"未填"))
+    lines.append("")
+    lines.append(u"[三] 不合格项与原因")
+    if defects:
+        for i, d in enumerate(defects, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[四] 需改进项")
+    if fine:
+        for i, d in enumerate(fine, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[五] 待确认项")
+    if pending:
+        for i, d in enumerate(pending, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[六] 流程处方")
+    lines.append(u"  1. 正确顺序：动态热身 → 主运动 → 静态拉伸")
+    if phase == "pre":
+        lines.append(u"  2. 运动前以动态活动为主：慢跑、动态腿摆、动态弓步转体、肩绕环，5-10 分钟")
+        lines.append(u"  3. 运动前不做保持 30 秒以上的静态拉伸")
+    else:
+        lines.append(u"  2. 运动后静态拉伸：缓慢到位后保持 15-30 秒，每个肌群 2-3 组")
+        lines.append(u"  3. 覆盖 4-6 个肌群：小腿、股四头、腘绳、臀、髂腰、胸大")
+    lines.append(u"  4. 强度控制在轻微紧绷，0-10 分不超过 6 分，出现刺痛立即停止")
+    lines.append(u"  5. 全程缓慢呼吸，不憋气，不弹震，不让他人强行加压")
+
+    if defects:
+        overall = u"不合格"
+    elif fine:
+        overall = u"需改进"
+    elif pending:
+        overall = u"待确认"
+    else:
+        overall = u"合格"
+
+    lines.append("")
+    lines.append(u"总判定：%s" % overall)
+    lines.append(u"提示：急性损伤 48 小时内不拉伸；麻木放射痛、关节肿胀、疑似撕裂时就医。")
+    lines.append(u"免责：本结果为流程自查输出，不构成医学诊断或康复方案。")
+    lines.append("=" * 62)
+
+    summary = {
+        "order_ok": ok,
+        "order_recognized": order,
+        "hold_verdict": hv,
+        "pain_verdict": pv,
+        "defects": defects,
+        "fine": fine,
+        "pending": pending,
+        "overall": overall,
+    }
+    return "\n".join(lines), summary
+
+
+def _run_checks():
+    r = []
+    ok, _, _ = order_verdict([u"动态热身", u"主运动", u"静态拉伸"])
+    r.append((u"正序流程判正确", ok is True))
+    ok1, _, _ = order_verdict([u"动态热身", u"静态拉伸"])
+    r.append((u"子集保持相对顺序判正确", ok1 is True))
+    ok2, o2, m2 = order_verdict([u"静态拉伸", u"动态热身", u"主运动"])
+    r.append((u"反例：先静态再主运动判顺序错误", ok2 is False))
+    r.append((u"反例：顺序错误提示含正确顺序", u"正确顺序应为" in m2))
+    r.append((u"反例：识别顺序保持输入原序", o2 == [u"静态拉伸", u"动态热身", u"主运动"]))
+    ok3, _, _ = order_verdict([u"静态拉伸", u"主运动"])
+    r.append((u"反例：缺少动态热身且静态在前判错误", ok3 is False))
+    r.append((u"环节不足两个无法核对顺序", order_verdict([u"静态拉伸"])[0] is None))
+    r.append((u"别名归一化", normalize(u"热身") == u"动态热身"))
+
+    r.append((u"反例：运动前静态拉伸 60 秒判不合格", hold_verdict("pre", 60)[0] == u"不合格"))
+    r.append((u"运动后保持 20 秒判合格", hold_verdict("post", 20)[0] == u"合格"))
+    r.append((u"反例：保持 5 秒判需改进", hold_verdict("post", 5)[0] == u"需改进"))
+    r.append((u"反例：强度 8 分判不合格", pain_verdict(8)[0] == u"不合格"))
+    r.append((u"强度 4 分判合格", pain_verdict(4)[0] == u"合格"))
+
+    _, s = build_report({
+        "phase": "post",
+        "steps": [u"动态热身", u"主运动", u"静态拉伸"],
+        "hold_seconds": 20, "sets": 2, "pain_score": 4,
+        "ballistic": False, "warmup_minutes": 10,
+        "targets": [u"小腿三头肌", u"股四头肌", u"腘绳肌", u"臀肌"],
+        "acute_injury": False, "numbness_or_radiating": False, "breath_holding": False,
+    })
+    r.append((u"标准运动后样例判定合格", s["overall"] == u"合格"))
+
+    _, s1 = build_report({
+        "phase": "post",
+        "steps": [u"静态拉伸", u"动态热身", u"主运动"],
+        "hold_seconds": 20, "sets": 2, "pain_score": 4,
+        "ballistic": False, "warmup_minutes": 10,
+        "targets": [u"小腿三头肌", u"股四头肌", u"腘绳肌", u"臀肌"],
+        "acute_injury": False, "numbness_or_radiating": False,
+    })
+    r.append((u"反例：顺序颠倒判不合格", s1["overall"] == u"不合格"))
+    r.append((u"反例：顺序错误进缺陷表", any(u"顺序错误" in d for d in s1["defects"])))
+
+    _, s2 = build_report({
+        "phase": "pre",
+        "steps": [u"静态拉伸", u"主运动"],
+        "hold_seconds": 60, "sets": 2, "pain_score": 3,
+        "ballistic": False, "warmup_minutes": 8,
+        "targets": [u"股四头肌", u"腘绳肌", u"小腿三头肌", u"臀肌"],
+        "acute_injury": False,
+    })
+    r.append((u"反例：运动前长时间静态拉伸判不合格", s2["overall"] == u"不合格"))
+
+    _, s3 = build_report({
+        "phase": "post", "steps": [u"主运动", u"静态拉伸"],
+        "hold_seconds": 20, "sets": 2, "pain_score": 4, "ballistic": True,
+        "targets": [u"股四头肌", u"腘绳肌", u"小腿三头肌", u"臀肌"],
+    })
+    r.append((u"反例：弹震式拉伸判不合格", s3["overall"] == u"不合格"))
+    r.append((u"反例：弹震式进缺陷表", any(u"弹震式" in d for d in s3["defects"])))
+
+    _, s4 = build_report({"phase": "post", "ballistic": True})
+    r.append((u"缺流程但有弹震式不得判待确认", s4["overall"] == u"不合格"))
+
+    _, s5 = build_report({
+        "phase": "post", "steps": [u"主运动", u"静态拉伸"],
+        "hold_seconds": 20, "sets": 2, "pain_score": 4,
+        "acute_injury": True,
+        "targets": [u"股四头肌", u"腘绳肌", u"小腿三头肌", u"臀肌"],
+    })
+    r.append((u"反例：急性损伤期拉伸判不合格", s5["overall"] == u"不合格"))
+
+    _, s6 = build_report({"phase": "post"})
+    r.append((u"仅填阶段记为待确认", s6["overall"] == u"待确认"))
+
+    p = os.path.join(tempfile.gettempdir(), "_stretch_bom_case.json")
+    blob = b"\xef\xbb\xbf" + json.dumps({
+        "phase": "post", "steps": [u"主运动", u"静态拉伸"],
+        "hold_seconds": 20, "sets": 2, "pain_score": 4,
+    }, ensure_ascii=False).encode("utf-8")
+    with open(p, "wb") as f:
+        f.write(blob)
+    try:
+        d = load_json(p)
+        r.append((u"UTF-8 BOM 输入首键可读", d.get("phase") == "post"))
+        r.append((u"UTF-8 BOM 输入列表可读", d.get("steps")[0] == u"主运动"))
+    finally:
+        if os.path.exists(p):
+            os.remove(p)
+
+    return r
+
+
+def selftest():
+    results = _run_checks()
+    failed = [name for name, ok in results if not ok]
+    ok = len(failed) == 0
+    lines = ["SELFTEST %s" % ("OK" if ok else "FAILED")]
+    lines.append("checks=%d passed=%d failed=%d" % (len(results), len(results) - len(failed), len(failed)))
+    for name in failed:
+        lines.append("FAILED: %s" % name)
+    with io.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_selftest_result.txt"),
+                 "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+    return ok
+
+
+def main():
+    parser = argparse.ArgumentParser(description=u"拉伸流程顺序核对工具")
+    parser.add_argument("--file", help=u"输入 JSON 文件路径（UTF-8）")
+    parser.add_argument("--json", action="store_true", help=u"以 JSON 输出")
+    parser.add_argument("--out", help=u"结果写入指定文件")
+    parser.add_argument("--selftest", action="store_true", help=u"运行自检")
+    args = parser.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        sys.exit(0 if selftest() else 1)
+
+    if not args.file:
+        parser.error(u"需要 --file 或 --selftest")
+
+    data = load_json(args.file)
+
+    report, summary = build_report(data)
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.json else report
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    with io.open(out_path, "w", encoding="utf-8") as f:
+        f.write(body)
+    print(body)
+    print("")
+    print(u"结果已写入：%s" % out_path)
+
+
+if __name__ == "__main__":
+    main()
+
+

@@ -1,0 +1,210 @@
+# -*- coding: utf-8 -*-
+"""月季修剪方案校验脚本。
+
+用法:
+  python rose_prune_plan.py --selftest
+  python rose_prune_plan.py --file rose.json
+
+输入为 JSON，字段见 SKILL.md 第五章。读取统一用 utf-8-sig 剥 BOM。
+"""
+import argparse
+import json
+import os
+import sys
+
+PLANT_TYPES = ['灌木月季', '微型月季', '藤本月季', '老桩月季']
+CORRECT_ORDER = ['清病枝枯枝', '疏删过密枝', '短截壮枝', '抹砧木芽', '伤口处理']
+
+
+def load_plan(path):
+    raw = open(path, 'rb').read()
+    text = raw.decode('utf-8-sig')
+    return json.loads(text)
+
+
+def validate(data):
+    findings = []
+
+    def add(level, item, why):
+        findings.append({'level': level, 'item': item, 'why': why})
+
+    ptype = data.get('plant_type')
+    ptime = data.get('pruning_time')
+    strength = data.get('prune_strength')
+    sanitized = data.get('tool_sanitized')
+    angle = data.get('cut_angle')
+    bud = data.get('bud_direction')
+    has_disease = data.get('has_disease')
+    dispose = data.get('dispose_diseased')
+    steps = data.get('steps') or []
+
+    if ptype not in PLANT_TYPES:
+        add('先处理', '品种识别', 'plant_type 不是已知品种，无法校验强度')
+        valid = False
+    else:
+        valid = True
+
+    # 强度错配（藤本冬季重剪、微型重剪）
+    if valid and ptime == '冬季休眠期' and strength == '重剪':
+        if ptype == '藤本月季':
+            add('先处理', '修剪强度', '藤本月季冬季重剪会剪掉花芽，应轻剪只疏老枝')
+        elif ptype == '微型月季':
+            add('先处理', '修剪强度', '微型月季株小，重剪易伤，应轻剪')
+
+    # 工具消毒
+    if sanitized is not True:
+        add('先处理', '工具消毒', '工具未消毒，剪病枝易传播病害')
+
+    # 剪口角度
+    if isinstance(angle, (int, float)):
+        if angle < 30 or angle > 60:
+            add('先处理', '剪口角度', '剪口角度 %s 度不在 30-60 度区间（常用 45）' % angle)
+    else:
+        add('待确认', '剪口角度', '未提供剪口角度')
+
+    # 留芽方向
+    if bud == '内芽':
+        add('先处理', '留芽方向', '剪口留内芽会使新枝向内交叉，应留外芽')
+    elif bud not in ('外芽',):
+        add('待确认', '留芽方向', '未明确留外芽')
+
+    # 病枝处置
+    if has_disease is True and dispose is not True:
+        add('先处理', '病枝处置', '有病枝但未销毁，不得进堆肥')
+
+    # 操作顺序（按输入原序取索引，不重新排序）
+    norm_steps = [s for s in steps if s in CORRECT_ORDER]
+    idx = [CORRECT_ORDER.index(s) for s in norm_steps]
+    if idx != sorted(idx):
+        add('先处理', '操作顺序', '操作顺序错误：应先清病枝枯枝再整形短截')
+
+    # 完整性
+    if ptime is None:
+        add('待确认', '修剪时机', '未提供修剪时机')
+
+    real = [f for f in findings if f['level'] == '先处理']
+    if real:
+        overall = '先处理'
+    elif any(f['level'] == '待确认' for f in findings):
+        overall = '待确认'
+    else:
+        overall = '可照此执行'
+    return {'overall': overall, 'findings': findings}
+
+
+def render(result):
+    lines = ['结论：%s' % result['overall'], '']
+    if not result['findings']:
+        lines.append('未发现问题，可照此执行。')
+    for f in result['findings']:
+        lines.append('[%s] %s：%s' % (f['level'], f['item'], f['why']))
+    return '\n'.join(lines) + '\n'
+
+
+def selftest():
+    passed = 0
+    failed = 0
+
+    good = {
+        'plant_type': '灌木月季', 'pruning_time': '冬季休眠期', 'prune_strength': '中剪',
+        'tool_sanitized': True, 'cut_angle': 45, 'bud_direction': '外芽',
+        'has_disease': False, 'dispose_diseased': True,
+        'steps': ['清病枝枯枝', '疏删过密枝', '短截壮枝', '抹砧木芽', '伤口处理'],
+    }
+    r = validate(good)
+    assert r['overall'] == '可照此执行', '良好方案应判可照此执行，实际=%s' % r['overall']
+    passed += 1
+
+    # 反例1：藤本冬季重剪
+    bad = dict(good); bad['plant_type'] = '藤本月季'; bad['prune_strength'] = '重剪'
+    r = validate(bad)
+    assert any(f['item'] == '修剪强度' for f in r['findings']), '藤本重剪应判先处理'
+    assert r['overall'] == '先处理', '反例应判先处理'
+    passed += 1
+
+    # 反例2：未消毒
+    bad = dict(good); bad['tool_sanitized'] = False
+    r = validate(bad)
+    assert any(f['item'] == '工具消毒' for f in r['findings']), '未消毒应判先处理'
+    passed += 1
+
+    # 反例3：角度错
+    bad = dict(good); bad['cut_angle'] = 90
+    r = validate(bad)
+    assert any(f['item'] == '剪口角度' for f in r['findings']), '剪口角度错应判先处理'
+    passed += 1
+
+    # 反例4：留内芽
+    bad = dict(good); bad['bud_direction'] = '内芽'
+    r = validate(bad)
+    assert any(f['item'] == '留芽方向' for f in r['findings']), '留内芽应判先处理'
+    passed += 1
+
+    # 反例5：顺序错（先短截再清病枝）
+    bad = dict(good); bad['steps'] = ['短截壮枝', '清病枝枯枝', '疏删过密枝']
+    r = validate(bad)
+    assert any(f['item'] == '操作顺序' for f in r['findings']), '操作顺序错应判先处理'
+    passed += 1
+
+    # 反例6：病枝未销毁
+    bad = dict(good); bad['has_disease'] = True; bad['dispose_diseased'] = False
+    r = validate(bad)
+    assert any(f['item'] == '病枝处置' for f in r['findings']), '病枝未销毁应判先处理'
+    passed += 1
+
+    # 反例7：微型重剪
+    bad = dict(good); bad['plant_type'] = '微型月季'; bad['prune_strength'] = '重剪'
+    r = validate(bad)
+    assert any(f['item'] == '修剪强度' for f in r['findings']), '微型重剪应判先处理'
+    passed += 1
+
+    # 反例护栏：未消毒的反例不得判可照此执行
+    bad = dict(good); bad['tool_sanitized'] = False
+    r = validate(bad)
+    assert r['overall'] != '可照此执行', '未消毒的反例不得判可照此执行'
+    passed += 1
+
+    # BOM 处理
+    bom_json = ('﻿' + json.dumps(good, ensure_ascii=False)).encode('utf-8')
+    text = bom_json.decode('utf-8-sig')
+    assert '﻿' not in text, 'BOM 未被剥除'
+    data = json.loads(text)
+    assert data['cut_angle'] == 45, 'BOM 解析后字段错位'
+    r = validate(data)
+    assert r['overall'] == '可照此执行', 'BOM 输入经解析后校验应正常通过'
+    passed += 1
+
+    msg = 'SELFTEST OK (%d passed, %d failed)' % (passed, failed)
+    return msg, passed, failed
+
+
+def main():
+    ap = argparse.ArgumentParser(description='月季修剪方案校验')
+    ap.add_argument('--file', help='输入 JSON 配置文件路径')
+    ap.add_argument('--selftest', action='store_true', help='运行内置自检')
+    args = ap.parse_args()
+
+    if args.selftest:
+        msg, passed, failed = selftest()
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_selftest_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(msg + '\n')
+        print(msg)
+        sys.exit(1 if failed else 0)
+
+    if args.file:
+        data = load_plan(args.file)
+        result = validate(data)
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_last_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(render(result))
+        print(render(result))
+        sys.exit(0)
+
+    print('用法: python rose_prune_plan.py --selftest | --file rose.json')
+    sys.exit(2)
+
+
+if __name__ == '__main__':
+    main()
+

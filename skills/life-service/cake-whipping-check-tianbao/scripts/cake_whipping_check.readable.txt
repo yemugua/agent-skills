@@ -1,0 +1,487 @@
+# -*- coding: utf-8 -*-
+"""蛋糕打发状态核对与补救工具。
+
+用法:
+  python cake_whipping_check.py --file case.json [--json]
+  python cake_whipping_check.py --selftest
+
+判定顺序: 先看真实缺陷(器具带油带水、混入蛋黄、温度越界、乳脂不足、
+打过头、油水分离), 再看信息是否完整; 只填了「已油水分离」这一个字段时,
+直接判不合格并给出补救, 不是待确认。
+"""
+import argparse
+import io
+import json
+import os
+import sys
+import tempfile
+
+TYPE_LABEL = {
+    "meringue": u"蛋白",
+    "cream": u"淡奶油",
+    "sponge": u"全蛋",
+    "butter": u"黄油",
+}
+
+STATE_ORDER = ["soft_peak", "medium_peak", "stiff_peak"]
+STATE_LABEL = {
+    "meringue": {
+        "soft_peak": u"湿性发泡（提起有大弯钩）",
+        "medium_peak": u"中性发泡（提起有小弯钩）",
+        "stiff_peak": u"干性发泡（提起是直立尖角）",
+    },
+    "cream": {
+        "soft_peak": u"六七发（浓稠可缓慢流动）",
+        "medium_peak": u"八发（纹路清晰、尖峰弯钩）",
+        "stiff_peak": u"九十发（硬挺、尖峰直立）",
+    },
+    "sponge": {
+        "soft_peak": u"粗泡阶段（气泡大而粗）",
+        "medium_peak": u"细腻阶段（气泡细密）",
+        "stiff_peak": u"画八字阶段（痕迹可保持数秒）",
+    },
+    "butter": {
+        "soft_peak": u"打发不足（颜色未变浅、体积未膨大）",
+        "medium_peak": u"打发合适（颜色变浅、体积膨大）",
+        "stiff_peak": u"打过头（呈油状或已化开）",
+    },
+}
+
+TEMP_OK = {
+    "meringue": (17.0, 22.0),
+    "cream": (0.0, 10.0),
+    "sponge": (38.0, 42.0),
+    "butter": (20.0, 22.0),
+}
+TEMP_HARD = {
+    "meringue": (8.0, 30.0),
+    "cream": (0.0, 15.0),
+    "sponge": (30.0, 50.0),
+    "butter": (15.0, 26.0),
+}
+FAT_MIN = 30.0
+SUGAR_OK = (8.0, 10.0)
+SUGAR_HARD = (5.0, 13.0)
+
+
+def num(v):
+    if v is None or v == "":
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def temp_verdict(wtype, temp):
+    if wtype not in TEMP_OK:
+        return u"待确认", u"打发类型未识别，无法核对温度"
+    if temp is None:
+        return u"待确认", u"未提供材料温度"
+    v = float(temp)
+    olo, ohi = TEMP_OK[wtype]
+    hlo, hhi = TEMP_HARD[wtype]
+    label = TYPE_LABEL[wtype]
+    if v < hlo or v > hhi:
+        if wtype == "cream":
+            return u"不合格", u"%s温度 %g 摄氏度，超过 %.0f 摄氏度上限：温度不够低时怎么打都是稀的，连同盆与打蛋头一起冷藏并垫冰水" % (
+                label, v, hhi)
+        return u"不合格", u"%s温度 %g 摄氏度，超出 %.0f-%.0f 的可操作范围，无法稳定打发" % (label, v, hlo, hhi)
+    if v < olo or v > ohi:
+        return u"需改进", u"%s温度 %g 摄氏度，在 %.0f-%.0f 之外，建议调到该区间" % (label, v, olo, ohi)
+    return u"合格", u"%s温度 %g 摄氏度，在 %.0f-%.0f 区间" % (label, v, olo, ohi)
+
+
+def state_verdict(wtype, target, observed):
+    if wtype not in STATE_LABEL:
+        return u"待确认", u"打发类型未识别，无法核对状态"
+    if target not in STATE_ORDER or observed not in STATE_ORDER:
+        return u"待确认", u"目标状态或观察到的状态未提供或取值未识别"
+    ti = STATE_ORDER.index(target)
+    oi = STATE_ORDER.index(observed)
+    tlab = STATE_LABEL[wtype][target]
+    olab = STATE_LABEL[wtype][observed]
+    if oi > ti:
+        return u"不合格", u"%s打过头：目标为%s，实际已到%s。%s" % (
+            TYPE_LABEL[wtype], tlab, olab, u"打过头比打不够更难救")
+    if oi < ti:
+        return u"需改进", u"%s打发不足：目标为%s，当前只到%s，继续打到目标状态就停" % (
+            TYPE_LABEL[wtype], tlab, olab)
+    return u"合格", u"%s达到目标状态：%s" % (TYPE_LABEL[wtype], olab)
+
+
+def fat_verdict(wtype, fat):
+    if wtype != "cream":
+        return None, None
+    if fat is None:
+        return u"待确认", u"淡奶油未提供乳脂含量"
+    v = float(fat)
+    if v < FAT_MIN:
+        return u"不合格", u"淡奶油乳脂含量 %.0f%%，低于 %.0f%%：基本打不发，需换乳脂含量更高的产品" % (v, FAT_MIN)
+    return u"合格", u"淡奶油乳脂含量 %.0f%%，满足 %.0f%% 以上要求" % (v, FAT_MIN)
+
+
+def sugar_verdict(wtype, ratio):
+    if wtype != "cream":
+        return None, None
+    if ratio is None:
+        return u"待确认", u"淡奶油未提供糖量占比"
+    v = float(ratio)
+    if v < SUGAR_HARD[0] or v > SUGAR_HARD[1]:
+        return u"需改进", u"糖量占比 %.0f%% 偏离 %.0f%%-%.0f%% 太多，影响打发与稳定性" % (
+            v, SUGAR_OK[0], SUGAR_OK[1])
+    if v < SUGAR_OK[0] or v > SUGAR_OK[1]:
+        return u"需改进", u"糖量占比 %.0f%%，常用区间为 %.0f%%-%.0f%%" % (v, SUGAR_OK[0], SUGAR_OK[1])
+    return u"合格", u"糖量占比 %.0f%%，在 %.0f%%-%.0f%% 区间" % (v, SUGAR_OK[0], SUGAR_OK[1])
+
+
+def stage_verdict(wtype, stages):
+    if wtype != "meringue":
+        return None, None
+    if stages is None:
+        return u"待确认", u"蛋白未提供加糖次数"
+    v = float(stages)
+    if v >= 3.0:
+        return u"合格", u"蛋白分 %g 次加糖，符合分三次加糖的要求" % v
+    if v >= 1.0:
+        return u"需改进", u"蛋白只加 %g 次糖：一次性加糖会拖慢打发并降低稳定性，应在粗泡、细泡、出现纹路时各加一次" % v
+    return u"需改进", u"蛋白未加糖：糖不只是调味，也参与稳定气泡结构"
+
+
+def speed_verdict(profile):
+    if profile is None:
+        return u"待确认", u"未提供打蛋速度方式"
+    if profile == "low_finish":
+        return u"合格", u"最后转低速整理，气泡细腻稳定"
+    if profile == "high_throughout":
+        return u"需改进", u"全程高速：打出的气泡粗大不稳定，成品易塌陷，最后应转低速整理 30 秒到 1 分钟"
+    return u"待确认", u"打蛋速度方式取值未识别"
+
+
+def rescue_steps(wtype, separated, over_whipped, state_v):
+    steps = []
+    if separated:
+        if wtype == "cream":
+            steps.append(u"严重油水分离：无法用于裱花抹面")
+            steps.append(u"固体部分可继续搅打分离出黄油用于烘焙，液体部分可另作他用")
+            steps.append(u"或加入大量未打发液体奶油（约原量 30% 以上）低速重打，仅能部分挽回")
+        else:
+            steps.append(u"已析出水分：沥掉析出的水，加新蛋白低速重打，成品稳定性会下降")
+            steps.append(u"严重分离时改做蛋白霜脆饼类，或直接重做")
+        return steps
+    if over_whipped or state_v == u"不合格":
+        if wtype == "cream":
+            steps.append(u"轻微：立即停止，加入少量未打发液体淡奶油，低速搅至重新顺滑")
+            steps.append(u"中度：倒出液体，加入未打发奶油约原量 20-30%，低速重打，仅适合作夹馅")
+            steps.append(u"严重：按油水分离处理")
+        elif wtype == "meringue":
+            steps.append(u"轻微：加少量新蛋白（原量 10-15%），低速重新拌匀打发，可部分恢复")
+            steps.append(u"中度：沥掉析水，加新蛋白低速重打，体积与细腻度会打折")
+            steps.append(u"严重：棉絮状大量析水时基本无法用于蛋糕，建议重做")
+        elif wtype == "butter":
+            steps.append(u"黄油呈油状：冷藏回硬后重新软化到 20-22 摄氏度再打")
+        else:
+            steps.append(u"全蛋过头：气泡已破裂，建议重新打发")
+        return steps
+    return steps
+
+
+def load_json(path):
+    with io.open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def build_report(data):
+    wtype = data.get("type")
+    bowl = data.get("bowl_clean_dry")
+    yolk = data.get("yolk_mixed")
+    temp = num(data.get("temp_c"))
+    stages = num(data.get("sugar_stages"))
+    profile = data.get("speed_profile")
+    target = data.get("target_state")
+    observed = data.get("observed_state")
+    over = data.get("over_whipped")
+    separated = data.get("separated")
+    fat = num(data.get("cream_fat_pct"))
+    sugar = num(data.get("sugar_ratio_pct"))
+
+    tv, tm = temp_verdict(wtype, temp)
+    sv, sm = state_verdict(wtype, target, observed)
+    fv, fm = fat_verdict(wtype, fat)
+    suv, sum_ = sugar_verdict(wtype, sugar)
+    stv, stm = stage_verdict(wtype, stages)
+    spv, spm = speed_verdict(profile)
+
+    defects = []
+    fine = []
+    pending = []
+
+    if wtype not in TYPE_LABEL:
+        pending.append(u"打发类型未填或取值未识别，应为蛋白、淡奶油、全蛋或黄油")
+
+    if bowl is False:
+        defects.append(u"盆或打蛋头带油带水：哪怕一点点油脂蛋白也基本打不起来，这是清洁问题不是技术问题")
+    elif bowl is None:
+        pending.append(u"未填盆与打蛋头是否无水无油")
+
+    if yolk is True:
+        defects.append(u"蛋白混入蛋黄：蛋黄含脂肪会阻止打发，混入的蛋白应改做其他用途")
+    elif yolk is None:
+        pending.append(u"未填是否混入蛋黄")
+
+    if separated is True:
+        defects.append(u"已油水分离：按分级补救处理，无法恢复到理想状态")
+
+    if over is True:
+        defects.append(u"已打过头：打过头比打不够更难救，按分级补救处理")
+
+    if tv == u"不合格":
+        defects.append(tm)
+    elif tv == u"需改进":
+        fine.append(tm)
+    elif tv == u"待确认":
+        pending.append(tm)
+
+    if sv == u"不合格":
+        defects.append(sm)
+    elif sv == u"需改进":
+        fine.append(sm)
+    elif sv == u"待确认":
+        pending.append(sm)
+
+    if fv == u"不合格":
+        defects.append(fm)
+    elif fv == u"需改进":
+        fine.append(fm)
+    elif fv == u"待确认":
+        pending.append(fm)
+
+    if suv == u"需改进":
+        fine.append(sum_)
+    elif suv == u"待确认":
+        pending.append(sum_)
+
+    if stv == u"需改进":
+        fine.append(stm)
+    elif stv == u"待确认":
+        pending.append(stm)
+
+    if spv == u"需改进":
+        fine.append(spm)
+    elif spv == u"待确认":
+        pending.append(spm)
+
+    steps = rescue_steps(wtype, separated is True, over is True, sv)
+
+    lines = []
+    lines.append("=" * 62)
+    lines.append(u"蛋糕打发状态核对与补救")
+    lines.append("=" * 62)
+    lines.append(u"打发对象：%s" % TYPE_LABEL.get(wtype, u"未识别"))
+    lines.append("")
+    lines.append(u"[一] 逐项判定")
+    lines.append(u"  器具无水无油：%s" % (u"是" if bowl is True else (u"否" if bowl is False else u"未填")))
+    lines.append(u"  混入蛋黄：%s" % (u"是" if yolk is True else (u"否" if yolk is False else u"未填")))
+    lines.append(u"  温度：%s —— %s" % (tv, tm))
+    lines.append(u"  状态：%s —— %s" % (sv, sm))
+    if fv:
+        lines.append(u"  乳脂：%s —— %s" % (fv, fm))
+    if suv:
+        lines.append(u"  糖量：%s —— %s" % (suv, sum_))
+    if stv:
+        lines.append(u"  加糖次数：%s —— %s" % (stv, stm))
+    lines.append(u"  速度：%s —— %s" % (spv, spm))
+    lines.append(u"  打过头：%s    油水分离：%s" % (
+        u"是" if over is True else u"否", u"是" if separated is True else u"否"))
+    lines.append("")
+    lines.append(u"[二] 不合格项与原因")
+    if defects:
+        for i, d in enumerate(defects, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[三] 需改进项")
+    if fine:
+        for i, d in enumerate(fine, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[四] 待确认项")
+    if pending:
+        for i, d in enumerate(pending, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[五] 补救步骤")
+    if steps:
+        for i, s in enumerate(steps, 1):
+            lines.append(u"  %d. %s" % (i, s))
+        lines.append(u"  提示：补救只能部分挽回，不保证恢复如初")
+    else:
+        lines.append(u"  无需补救")
+    lines.append("")
+    lines.append(u"[六] 操作要点")
+    lines.append(u"  1. 排查顺序：器具 → 混入蛋黄 → 温度 → 乳脂 → 加糖 → 新鲜度")
+    lines.append(u"  2. 到目标状态就停，不要「再打一会儿保险」")
+    lines.append(u"  3. 蛋白分三次加糖：粗泡、细泡、出现纹路")
+    lines.append(u"  4. 最后转低速整理 30 秒到 1 分钟，气泡更细腻")
+    lines.append(u"  5. 淡奶油全程盯着，从八发到油水分离往往只有十几秒")
+    lines.append(u"  6. 出现酸味、异味、变色属于变质，不食用也不补救")
+
+    if defects:
+        overall = u"不合格"
+    elif fine:
+        overall = u"需改进"
+    elif pending:
+        overall = u"待确认"
+    else:
+        overall = u"合格"
+
+    lines.append("")
+    lines.append(u"总判定：%s" % overall)
+    lines.append(u"提示：补救只能部分挽回；材料变质时不要食用。")
+    lines.append(u"免责：本结果为打发自查输出，不构成配方或原料的品质评价。")
+    lines.append("=" * 62)
+
+    summary = {
+        "type": wtype,
+        "temp_verdict": tv,
+        "state_verdict": sv,
+        "fat_verdict": fv,
+        "defects": defects,
+        "fine": fine,
+        "pending": pending,
+        "rescue_steps": steps,
+        "overall": overall,
+    }
+    return "\n".join(lines), summary
+
+
+def _run_checks():
+    r = []
+    r.append((u"蛋白 20 度判合格", temp_verdict("meringue", 20)[0] == u"合格"))
+    r.append((u"反例：淡奶油 22 度判不合格", temp_verdict("cream", 22)[0] == u"不合格"))
+    r.append((u"淡奶油 8 度判合格", temp_verdict("cream", 8)[0] == u"合格"))
+    r.append((u"黄油 21 度判合格", temp_verdict("butter", 21)[0] == u"合格"))
+    r.append((u"未知类型温度判待确认", temp_verdict("xxx", 20)[0] == u"待确认"))
+    r.append((u"状态一致判合格", state_verdict("meringue", "medium_peak", "medium_peak")[0] == u"合格"))
+    r.append((u"反例：打过头判不合格", state_verdict("meringue", "soft_peak", "stiff_peak")[0] == u"不合格"))
+    r.append((u"打发不足判需改进", state_verdict("meringue", "stiff_peak", "soft_peak")[0] == u"需改进"))
+    r.append((u"状态缺失判待确认", state_verdict("meringue", "soft_peak", None)[0] == u"待确认"))
+    r.append((u"反例：乳脂 28% 判不合格", fat_verdict("cream", 28)[0] == u"不合格"))
+    r.append((u"乳脂 35% 判合格", fat_verdict("cream", 35)[0] == u"合格"))
+    r.append((u"非淡奶油不查乳脂", fat_verdict("meringue", 28) == (None, None)))
+    r.append((u"糖量 9% 判合格", sugar_verdict("cream", 9)[0] == u"合格"))
+    r.append((u"反例：糖量 20% 判需改进", sugar_verdict("cream", 20)[0] == u"需改进"))
+    r.append((u"加糖 3 次判合格", stage_verdict("meringue", 3)[0] == u"合格"))
+    r.append((u"反例：加糖 1 次判需改进", stage_verdict("meringue", 1)[0] == u"需改进"))
+    r.append((u"非蛋白不查加糖次数", stage_verdict("cream", 1) == (None, None)))
+    r.append((u"反例：全程高速判需改进", speed_verdict("high_throughout")[0] == u"需改进"))
+    r.append((u"低速收尾判合格", speed_verdict("low_finish")[0] == u"合格"))
+    st = rescue_steps("cream", True, False, u"合格")
+    r.append((u"油水分离给出补救步骤", len(st) >= 2 and any(u"油水分离" in x for x in st)))
+    st2 = rescue_steps("meringue", False, True, u"合格")
+    r.append((u"打过头给出补救步骤", len(st2) >= 2))
+    r.append((u"无需补救时返回空", rescue_steps("meringue", False, False, u"合格") == []))
+
+    _, s = build_report({
+        "type": "meringue", "bowl_clean_dry": True, "yolk_mixed": False,
+        "temp_c": 20, "sugar_stages": 3, "speed_profile": "low_finish",
+        "target_state": "medium_peak", "observed_state": "medium_peak",
+        "over_whipped": False, "separated": False,
+    })
+    r.append((u"标准蛋白样例判定合格", s["overall"] == u"合格"))
+
+    _, s1 = build_report({
+        "type": "meringue", "bowl_clean_dry": False, "yolk_mixed": True,
+        "temp_c": 20, "sugar_stages": 3, "speed_profile": "low_finish",
+        "target_state": "medium_peak", "observed_state": "medium_peak",
+        "over_whipped": False, "separated": False,
+    })
+    r.append((u"反例：器具带油判不合格", s1["overall"] == u"不合格"))
+    r.append((u"反例：器具问题进缺陷表", any(u"带油带水" in d for d in s1["defects"])))
+    r.append((u"反例：混入蛋黄进缺陷表", any(u"混入蛋黄" in d for d in s1["defects"])))
+
+    _, s2 = build_report({
+        "type": "cream", "bowl_clean_dry": True, "yolk_mixed": False,
+        "temp_c": 22, "sugar_ratio_pct": 9, "speed_profile": "low_finish",
+        "target_state": "medium_peak", "observed_state": "soft_peak",
+        "cream_fat_pct": 28, "over_whipped": False, "separated": False,
+    })
+    r.append((u"反例：淡奶油温度与乳脂双超判不合格", s2["overall"] == u"不合格"))
+
+    _, s3 = build_report({"type": "cream", "separated": True})
+    r.append((u"只填油水分离不得判待确认", s3["overall"] == u"不合格"))
+    r.append((u"油水分离时给出补救步骤", len(s3["rescue_steps"]) >= 2))
+
+    _, s4 = build_report({})
+    r.append((u"全未填记为待确认", s4["overall"] == u"待确认"))
+
+    p = os.path.join(tempfile.gettempdir(), "_cake_bom_case.json")
+    blob = b"\xef\xbb\xbf" + json.dumps({
+        "type": "meringue", "bowl_clean_dry": True, "yolk_mixed": False,
+        "temp_c": 20, "sugar_stages": 3, "speed_profile": "low_finish",
+        "target_state": "medium_peak", "observed_state": "medium_peak",
+    }, ensure_ascii=False).encode("utf-8")
+    with open(p, "wb") as f:
+        f.write(blob)
+    try:
+        d = load_json(p)
+        r.append((u"UTF-8 BOM 输入首键可读", d.get("type") == "meringue"))
+        r.append((u"UTF-8 BOM 输入数值可读", abs(d.get("temp_c", 0) - 20.0) < 1e-9))
+    finally:
+        if os.path.exists(p):
+            os.remove(p)
+
+    return r
+
+
+def selftest():
+    results = _run_checks()
+    failed = [name for name, ok in results if not ok]
+    ok = len(failed) == 0
+    lines = ["SELFTEST %s" % ("OK" if ok else "FAILED")]
+    lines.append("checks=%d passed=%d failed=%d" % (len(results), len(results) - len(failed), len(failed)))
+    for name in failed:
+        lines.append("FAILED: %s" % name)
+    with io.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_selftest_result.txt"),
+                 "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+    return ok
+
+
+def main():
+    parser = argparse.ArgumentParser(description=u"蛋糕打发状态核对工具")
+    parser.add_argument("--file", help=u"输入 JSON 文件路径（UTF-8）")
+    parser.add_argument("--json", action="store_true", help=u"以 JSON 输出")
+    parser.add_argument("--out", help=u"结果写入指定文件")
+    parser.add_argument("--selftest", action="store_true", help=u"运行自检")
+    args = parser.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        sys.exit(0 if selftest() else 1)
+
+    if not args.file:
+        parser.error(u"需要 --file 或 --selftest")
+
+    data = load_json(args.file)
+
+    report, summary = build_report(data)
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.json else report
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    with io.open(out_path, "w", encoding="utf-8") as f:
+        f.write(body)
+    print(body)
+    print("")
+    print(u"结果已写入：%s" % out_path)
+
+
+if __name__ == "__main__":
+    main()
+

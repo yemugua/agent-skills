@@ -1,0 +1,99 @@
+PASS  norm 去空格与全角
+PASS  filled 待填为假
+PASS  filled 待确认为假
+PASS  filled 是为真
+PASS  unknown 空为真
+PASS  unknown 有值为假
+PASS  fmt_num 去点零
+PASS  fmt_num 保留小数
+PASS  money 格式
+PASS  parse_num 带单位
+PASS  parse_num 空为 None
+PASS  parse_date 中文
+PASS  parse_date 短横
+PASS  yesno 否
+PASS  yesno 是
+PASS  yesno 未填为 None
+PASS  yesno 没有为 False
+PASS  样例解析出产品名称
+PASS  样例解析出已付金额
+PASS  样例解析出宣传话术
+PASS  空输入字段仍解析
+PASS  空输入产品名为空
+PASS  空输入已付为空
+PASS  字段不串号-批准文号
+PASS  字段不串号-收款主体
+PASS  样例文号不通过
+PASS  样例文号提示查不到
+PASS  查到且有警示语=通过
+PASS  查到但无警示语=有风险
+PASS  无警示语有说明
+PASS  未填查询结果=待补正
+PASS  查到但无文号=待补正
+PASS  查不到=不通过
+PASS  样例有高危宣称
+PASS  命中疾病治疗功能
+PASS  命中断言保证
+PASS  命中代言现身说法
+PASS  承诺无效退款进风险
+PASS  医疗用语进风险
+PASS  话术摘录进说明
+PASS  无话术=风险项
+PASS  无话术不判高危
+PASS  合规话术不命中疾病
+PASS  声称降血糖仍属越界
+PASS  根治不用吃药命中
+PASS  样例会销高危
+PASS  样例义诊高危
+PASS  样例未开票风险
+PASS  样例未签合同风险
+PASS  样例收款主体不一致
+PASS  样例针对老年人
+PASS  渠道进入说明
+PASS  直播渠道提示录屏
+PASS  微商渠道提示聊天记录
+PASS  门店渠道提示小票
+PASS  无渠道=取证重点未定
+PASS  样例未退金额
+PASS  样例数量单价核对
+PASS  欺诈含退一赔三
+PASS  退一赔三金额
+PASS  部分已退净额
+PASS  无金额无法测算
+PASS  非欺诈按未开封协商
+PASS  样例不适=高危
+PASS  不适提示先就医
+PASS  不适描述入说明
+PASS  无不适无高危
+PASS  无不适有说明
+PASS  未填不适有说明
+PASS  样例有已具备证据
+PASS  样例缺文号查询截图
+PASS  样例缺录屏录音
+PASS  无证据缺6项
+PASS  证据齐全无缺失
+PASS  样例结论不通过
+PASS  样例有风险项
+PASS  报告九段
+PASS  含待办补正动作
+PASS  含边界与纪律
+PASS  含结论摘要
+PASS  含举报路径表格
+PASS  无四星号乱码
+PASS  有货币符号
+PASS  待办非空
+PASS  空输入结论待补正
+PASS  空输入不判通过
+PASS  空输入有补正提示
+PASS  空输入仍出报告
+PASS  样例 rc=0
+PASS  样例 stdout 有报告
+PASS  样例报告段落数>=9
+PASS  空输入 rc=2
+PASS  json rc=0
+PASS  json 可解析
+PASS  json 含结论
+PASS  json 含待办
+PASS  缺文件 rc=2
+
+PASS=97 FAIL=0

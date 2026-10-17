@@ -1,0 +1,502 @@
+# -*- coding: utf-8 -*-
+"""手机摄影构图自查：按所选构图法核查主体位置、水平、地平线、留白与杂物。
+
+用法:
+  python composition_check.py --file shots.json [--out result.md] [--format json]
+  python composition_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 构图法: (键, 中文名, 要点, 适用题材, 常见错误)
+METHODS = [
+    ('thirds', '三分法', '主体放在四条三分线的四个交点附近', '风景、人像、街拍通用',
+     '把主体放在画面正中央'),
+    ('center', '中心构图', '主体居中，画面左右对称', '建筑正面、对称场景、证件照',
+     '主体偏一边导致重心不稳'),
+    ('symmetry', '对称构图', '左右或上下完全对称，水平必须极正', '倒影、建筑、走廊',
+     '水平差一点点就毁掉整张'),
+    ('leading', '引导线构图', '用道路栏杆河流把视线引向主体', '道路、桥梁、河道、台阶',
+     '线条指向画面外而不是主体'),
+    ('frame', '框架构图', '用门窗树枝做前景框住主体', '有前景结构的场景',
+     '前景框太厚抢主体'),
+    ('negative', '留白构图', '主体占比小，大量留白', '极简、大面积天空、雾景、剪影',
+     '留白没有意义，只是主体太小'),
+    ('fill', '填充构图', '主体充满画面，去掉多余背景', '特写、美食、花卉、局部细节',
+     '画面边缘把主体切掉'),
+]
+
+# 阈值
+TOL = {
+    'tilt_max': 1.0,        # 一般构图允许的最大倾斜度数
+    'tilt_symmetry': 0.5,   # 对称构图允许的最大倾斜度数
+    'headroom_min': 0.05,   # 头顶留白下限
+    'headroom_max': 0.20,   # 头顶留白上限
+    'horizon_lo': 0.45,     # 地平线居中判定的下界
+    'horizon_hi': 0.55,     # 地平线居中判定的上界
+    'subject_min': 0.15,    # 主体占比下限
+    'negative_max': 0.35,   # 留白构图主体占比上限
+    'fill_min': 0.5,        # 填充构图主体占比下限
+}
+
+def _band(v):
+    """三分带的判定：落在 0.25-0.42 或 0.58-0.75。"""
+    return 0.25 <= v <= 0.42 or 0.58 <= v <= 0.75
+
+
+# 主体落点规则: 键 -> (区间说明, 判定函数)
+POS_RULE = {
+    'thirds': ('横坐标与纵坐标均落在 0.25-0.42 或 0.58-0.75',
+               lambda x, y: _band(x) and _band(y)),
+    'center': ('横坐标 0.42-0.58，纵坐标 0.35-0.65',
+               lambda x, y: 0.42 <= x <= 0.58 and 0.35 <= y <= 0.65),
+    'symmetry': ('横坐标 0.45-0.55',
+                 lambda x, y: 0.45 <= x <= 0.55),
+    'leading': ('横坐标 0.25-0.42 或 0.58-0.75，纵坐标 0.25-0.75',
+                lambda x, y: _band(x) and 0.25 <= y <= 0.75),
+    'frame': ('横纵坐标均落在 0.2-0.8',
+              lambda x, y: 0.2 <= x <= 0.8 and 0.2 <= y <= 0.8),
+    'negative': ('不限，但留白要有明确意义',
+                 lambda x, y: True),
+    'fill': ('横纵坐标均落在 0.3-0.7',
+             lambda x, y: 0.3 <= x <= 0.7 and 0.3 <= y <= 0.7),
+}
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def _num(shot, key, required=False):
+    v = shot.get(key)
+    if v is None:
+        if required:
+            raise ValueError('缺少必填项: %s' % key)
+        return None
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        raise ValueError('%s 必须是数字，实为 %s' % (key, v))
+    if not 0.0 <= f <= 1.0:
+        raise ValueError('%s 必须在 0 到 1 之间，实为 %s' % (key, v))
+    return f
+
+
+def shot_check(shot):
+    """对单张照片做构图自查，返回(结果字典)。"""
+    if not isinstance(shot, dict):
+        raise ValueError('shots 的每一项必须是对象')
+    name = str(shot.get('name') or '未命名').strip()
+    method = norm(shot.get('method'))
+    if method not in POS_RULE:
+        raise ValueError('未知的构图法: %s，可选 %s 之一'
+                         % (shot.get('method'), '/'.join(sorted(POS_RULE))))
+    x = _num(shot, 'subject_x', required=True)
+    y = _num(shot, 'subject_y', required=True)
+    tilt = shot.get('horizon_tilt_deg')
+    tilt = float(tilt) if tilt is not None else None
+    horizon = _num(shot, 'horizon_y')
+    headroom = _num(shot, 'headroom')
+    ratio = _num(shot, 'subject_ratio')
+    clutter = bool(shot.get('clutter'))
+    edge_cut = bool(shot.get('edge_cut'))
+    leading = shot.get('leading_lines')
+
+    issues = []
+    misses = []
+
+    # 1 水平（严重项）
+    if tilt is None:
+        misses.append('水平倾斜')
+    else:
+        lim = TOL['tilt_symmetry'] if method == 'symmetry' else TOL['tilt_max']
+        if abs(tilt) > lim:
+            issues.append({
+                'sev': 3, 'item': '水平',
+                'detail': '倾斜 %.2f 度，超过 %s 构图允许的 %.1f 度' % (abs(tilt), _mname(method), lim),
+                'why': '横平竖直的线倾斜超过 1 度就肉眼可见，对称构图差 0.5 度即破坏对称感',
+            })
+
+    # 2 主体位置（严重项）
+    ok, desc = POS_RULE[method][1](x, y), POS_RULE[method][0]
+    if not ok:
+        issues.append({
+            'sev': 3, 'item': '主体位置',
+            'detail': '当前坐标 (%.2f, %.2f)，%s 要求 %s' % (x, y, _mname(method), desc),
+            'why': '主体位置决定观众第一眼看哪里，落点不对整张图的重心就散了',
+        })
+
+    # 3 引导线必须指向主体（严重项）
+    if method == 'leading':
+        if leading is None:
+            misses.append('引导线是否指向主体')
+        elif not leading:
+            issues.append({
+                'sev': 3, 'item': '引导线',
+                'detail': '线条没有指向主体',
+                'why': '引导线的作用是把视线送到主体上，指向画面外会把观众带跑',
+            })
+
+    # 4 地平线居中（可改进项）
+    if horizon is not None and method != 'symmetry':
+        if TOL['horizon_lo'] <= horizon <= TOL['horizon_hi']:
+            issues.append({
+                'sev': 2, 'item': '地平线',
+                'detail': '地平线在 %.2f，落在 0.45 到 0.55 之间' % horizon,
+                'why': '地平线居中把画面上下切成两半，观众不知道该看天还是看地；'
+                       '表现天空压到 0.33，表现地面抬到 0.67',
+            })
+
+    # 5 头顶留白（可改进项）
+    if headroom is not None:
+        if not TOL['headroom_min'] <= headroom <= TOL['headroom_max']:
+            why = ('小于 0.05 会顶得太满、压抑，像被裁掉额头'
+                   if headroom < TOL['headroom_min'] else
+                   '大于 0.20 头顶空一大片，人显得小、画面松散')
+            issues.append({
+                'sev': 2, 'item': '头顶留白',
+                'detail': '留白比例 %.2f，合格区间 0.05 到 0.20' % headroom,
+                'why': why,
+            })
+
+    # 6 杂物与穿帮（可改进项）
+    if clutter:
+        issues.append({
+            'sev': 2, 'item': '画面杂物',
+            'detail': '画面四角或主体周围有杂物',
+            'why': '垃圾桶、电线杆、路人手臂会抢注意力，拍前扫四角比后期裁剪可靠',
+        })
+    if edge_cut:
+        issues.append({
+            'sev': 2, 'item': '边缘穿帮',
+            'detail': '画面边缘把主体切掉一截',
+            'why': '脚踝、手肘、头顶被切会让人觉得是废片，改变机位或往后退半步',
+        })
+
+    # 7 主体占比（可改进项）
+    if ratio is not None:
+        if ratio < TOL['subject_min'] and method != 'negative':
+            issues.append({
+                'sev': 2, 'item': '主体占比',
+                'detail': '占比 %.2f，低于 0.15' % ratio,
+                'why': '主体太小观众第一眼看不出在拍什么，走近几步或改用长焦段',
+            })
+        elif method == 'negative' and ratio > TOL['negative_max']:
+            issues.append({
+                'sev': 2, 'item': '主体占比',
+                'detail': '留白构图下占比 %.2f，高于 0.35' % ratio,
+                'why': '留白构图要的就是小主体加大片留白，占比过高就不是留白了',
+            })
+        elif method == 'fill' and ratio < TOL['fill_min']:
+            issues.append({
+                'sev': 2, 'item': '主体占比',
+                'detail': '填充构图下占比 %.2f，低于 0.5' % ratio,
+                'why': '填充构图要主体充满画面，占比不够说明背景还没去掉',
+            })
+
+    # 严重项排最前，同级别保持发现顺序
+    issues.sort(key=lambda r: -r['sev'])
+
+    if any(i['sev'] == 3 for i in issues):
+        level = '构图有明显问题'
+    elif issues:
+        level = '有可改进项'
+    elif misses:
+        level = '待确认'
+    else:
+        level = '构图规范'
+
+    return {
+        'name': name, 'method': method, 'method_name': _mname(method),
+        'pos_desc': desc, 'x': x, 'y': y,
+        'issues': issues, 'misses': misses, 'level': level,
+    }
+
+
+def _mname(key):
+    for k, n, _, _, _ in METHODS:
+        if k == key:
+            return n
+    return key
+
+
+def calc(data):
+    shots = data.get('shots')
+    if shots is None:
+        raise ValueError('输入缺少 shots 列表')
+    if not isinstance(shots, list) or not shots:
+        raise ValueError('shots 必须是非空列表')
+    rows = [shot_check(s) for s in shots]
+    n_bad = len([r for r in rows if r['level'] == '构图有明显问题'])
+    n_mid = len([r for r in rows if r['level'] == '有可改进项'])
+    n_unk = len([r for r in rows if r['level'] == '待确认'])
+    # 先看真实缺陷，再看可改进项，最后才看信息是否完整
+    if n_bad:
+        overall = '存在需要重拍的照片'
+    elif n_mid:
+        overall = '存在可改进的照片'
+    elif n_unk:
+        overall = '待确认'
+    else:
+        overall = '全部构图规范'
+    # 整改顺序：先看最高严重度(严重的排最前)，再看问题条数，最后按名字稳定排序
+    def _sev(r):
+        return max([i['sev'] for i in r['issues']], default=0)
+
+    order = sorted(rows, key=lambda r: (-_sev(r), -len(r['issues']), r['name']))
+    return {
+        'overall': overall, 'rows': rows,
+        'n_bad': n_bad, 'n_mid': n_mid, 'n_unk': n_unk, 'n_ok': len(rows) - n_bad - n_mid - n_unk,
+        'fix_order': [r['name'] for r in order if r['issues']],
+        'methods': [{'key': k, 'name': n, 'how': h, 'where': w, 'wrong': e}
+                    for k, n, h, w, e in METHODS],
+        'tol': dict(TOL),
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 手机摄影构图自查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['overall'])
+    L.append('')
+    L.append('| 类别 | 张数 |')
+    L.append('|---|---|')
+    L.append('| 需要重拍 | %d |' % r['n_bad'])
+    L.append('| 可改进 | %d |' % r['n_mid'])
+    L.append('| 待确认 | %d |' % r['n_unk'])
+    L.append('| 构图规范 | %d |' % r['n_ok'])
+    L.append('')
+    if r['fix_order']:
+        L.append('整改顺序（问题多的先改）：%s' % '、'.join(r['fix_order']))
+        L.append('')
+    L.append('## 二、逐张判定')
+    L.append('')
+    for row in r['rows']:
+        L.append('### %s（%s）' % (row['name'], row['method_name']))
+        L.append('')
+        L.append('- 主体坐标：(%.2f, %.2f)，该构图法要求 %s' % (row['x'], row['y'], row['pos_desc']))
+        L.append('- 判定：**%s**' % row['level'])
+        if row['issues']:
+            L.append('')
+            L.append('| 严重度 | 项目 | 问题 | 为什么要在意 |')
+            L.append('|---|---|---|---|')
+            for i in row['issues']:
+                L.append('| %s | %s | %s | %s |'
+                         % ('严重' if i['sev'] == 3 else '可改进', i['item'], i['detail'], i['why']))
+        if row['misses']:
+            L.append('')
+            L.append('- 未填写：%s' % '、'.join(row['misses']))
+        L.append('')
+    L.append('## 三、七种构图法速查')
+    L.append('')
+    L.append('| 构图法 | 要点 | 适用题材 | 常见错误 |')
+    L.append('|---|---|---|---|')
+    for m in r['methods']:
+        L.append('| %s | %s | %s | %s |' % (m['name'], m['how'], m['where'], m['wrong']))
+    L.append('')
+    L.append('## 四、阈值')
+    L.append('')
+    L.append('| 项目 | 阈值 |')
+    L.append('|---|---|')
+    L.append('| 水平倾斜 | 不超过 %.1f 度，对称构图不超过 %.1f 度 |'
+             % (r['tol']['tilt_max'], r['tol']['tilt_symmetry']))
+    L.append('| 头顶留白 | %.2f 到 %.2f |' % (r['tol']['headroom_min'], r['tol']['headroom_max']))
+    L.append('| 地平线居中判定 | %.2f 到 %.2f |' % (r['tol']['horizon_lo'], r['tol']['horizon_hi']))
+    L.append('| 主体占比 | 不低于 %.2f |' % r['tol']['subject_min'])
+    L.append('')
+    L.append('## 五、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 打开手机参考线，地平线压在网格横线上')
+    L.append('- [ ] 按快门前扫过画面四个角，没有杂物')
+    L.append('- [ ] 主体头顶与画面上边缘留白合适，没有被切')
+    L.append('- [ ] 拍人像时眼睛水平位置在画面高度 0.3 到 0.5 之间')
+    L.append('- [ ] 拍完放大到百分之百再看一次水平')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    # 1 三分法正例
+    good = {'name': '湖边', 'method': 'thirds', 'subject_x': 0.33, 'subject_y': 0.33,
+            'horizon_tilt_deg': 0.4, 'horizon_y': 0.33, 'headroom': 0.1,
+            'subject_ratio': 0.4}
+    r1 = shot_check(good)
+    ck(r1['level'] == '构图规范', '三分法正例应判构图规范，实为 %s' % r1['level'])
+    ck(r1['issues'] == [], '三分法正例不应有问题项，实为 %s' % r1['issues'])
+
+    # 2 反例：说是三分法却把主体放正中央
+    r2 = shot_check(dict(good, subject_x=0.5, subject_y=0.5))
+    ck(r2['level'] == '构图有明显问题', '三分法主体居中应判有明显问题，实为 %s' % r2['level'])
+    ck(any(i['item'] == '主体位置' for i in r2['issues']),
+       '应点名主体位置，实为 %s' % [i['item'] for i in r2['issues']])
+
+    # 3 反例：水平倾斜 3 度
+    r3 = shot_check(dict(good, horizon_tilt_deg=3.0))
+    ck(r3['level'] == '构图有明显问题', '倾斜 3 度应判有明显问题，实为 %s' % r3['level'])
+    ck(any(i['item'] == '水平' for i in r3['issues']), '应点名水平项')
+
+    # 4 对称构图 0.8 度不合格，0.4 度合格
+    sym = dict(good, method='symmetry', subject_x=0.5, subject_y=0.5, horizon_y=0.5)
+    r4a = shot_check(dict(sym, horizon_tilt_deg=0.8))
+    r4b = shot_check(dict(sym, horizon_tilt_deg=0.4))
+    ck(any(i['item'] == '水平' for i in r4a['issues']), '对称构图 0.8 度应不合格')
+    ck(not any(i['item'] == '水平' for i in r4b['issues']), '对称构图 0.4 度应合格')
+    ck(not any(i['item'] == '地平线' for i in r4b['issues']), '对称构图地平线居中不报问题')
+
+    # 5 反例：地平线居中
+    r5 = shot_check(dict(good, horizon_y=0.5))
+    ck(any(i['item'] == '地平线' for i in r5['issues']), '地平线居中应报可改进项')
+    ck(r5['level'] == '有可改进项', '地平线居中应判可改进，实为 %s' % r5['level'])
+
+    # 6 反例：头顶留白过大 / 过小
+    r6a = shot_check(dict(good, headroom=0.3))
+    r6b = shot_check(dict(good, headroom=0.02))
+    ck(any(i['item'] == '头顶留白' for i in r6a['issues']), '留白 0.3 应不合格')
+    ck(any(i['item'] == '头顶留白' for i in r6b['issues']), '留白 0.02 应不合格')
+    ck(shot_check(dict(good, headroom=0.05))['issues'] == [], '留白 0.05 边界应合格')
+    ck(shot_check(dict(good, headroom=0.2))['issues'] == [], '留白 0.2 边界应合格')
+
+    # 7 反例：引导线没指向主体
+    r7 = shot_check(dict(good, method='leading', leading_lines=False))
+    ck(any(i['item'] == '引导线' for i in r7['issues']), '引导线未指向主体应不合格')
+    ck(shot_check(dict(good, method='leading', leading_lines=True))['level'] == '构图规范',
+       '引导线正确应合格')
+
+    # 8 反例：留白构图主体占比过高；填充构图占比过低
+    r8a = shot_check(dict(good, method='negative', subject_ratio=0.6))
+    ck(any(i['item'] == '主体占比' for i in r8a['issues']), '留白构图占比 0.6 应不合格')
+    r8b = shot_check(dict(good, method='fill', subject_x=0.5, subject_y=0.5, subject_ratio=0.3))
+    ck(any(i['item'] == '主体占比' for i in r8b['issues']), '填充构图占比 0.3 应不合格')
+
+    # 9 排序方向：严重项必须排在最前
+    r9 = shot_check(dict(good, horizon_tilt_deg=2.0, clutter=True, horizon_y=0.5))
+    ck(r9['issues'][0]['sev'] == 3, '严重项应排最前，实为 %s' % r9['issues'][0]['sev'])
+    ck(r9['issues'][0]['item'] == '水平', '首个问题应是水平，实为 %s' % r9['issues'][0]['item'])
+    ck(r9['issues'][-1]['sev'] == 2, '末位应是可改进项')
+
+    # 10 判定顺序：有严重项时不能因为缺信息判成待确认
+    r10 = shot_check({'name': '缺留白', 'method': 'thirds', 'subject_x': 0.5, 'subject_y': 0.5})
+    ck(r10['level'] == '构图有明显问题', '缺留白但有严重项不应判待确认，实为 %s' % r10['level'])
+    r10b = shot_check({'name': '仅缺水平', 'method': 'thirds', 'subject_x': 0.33, 'subject_y': 0.33})
+    ck(r10b['level'] == '待确认', '坐标对但未填水平应判待确认，实为 %s' % r10b['level'])
+
+    # 11 汇总与整改顺序
+    r11 = calc({'shots': [good, dict(good, name='歪的', horizon_tilt_deg=3.0),
+                          dict(good, name='杂物', clutter=True)]})
+    ck(r11['overall'] == '存在需要重拍的照片', '有严重项应判需要重拍，实为 %s' % r11['overall'])
+    ck(r11['n_bad'] == 1, '严重项应为 1 张，实为 %d' % r11['n_bad'])
+    ck(r11['fix_order'][0] == '歪的',
+       '整改顺序首个应是严重度最高的（严重项优先于条数），实为 %s' % r11['fix_order'])
+    ck(r11['fix_order'][1] == '杂物', '严重项之后才是可改进项，实为 %s' % r11['fix_order'])
+
+    # 12 BOM 两条路径
+    bom = '﻿' + json.dumps({'shots': [dict(good, subject_x=0.5, subject_y=0.5)]})
+    r12 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r12['overall'] == '存在需要重拍的照片', 'BOM 字符串应正确解析，实为 %s' % r12['overall'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe_c1.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'shots': [dict(good, name='带BOM', horizon_tilt_deg=2.5)]}))
+    try:
+        r12b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r12b['rows'][0]['name'] == '带BOM', 'BOM 文件首个 key 应解析正常，实为 %s' % r12b['rows'][0]['name'])
+        ck(r12b['n_bad'] == 1, 'BOM 文件应判出 1 张严重，实为 %d' % r12b['n_bad'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 13 非法输入
+    for bad, why in (
+        ({'shots': []}, 'shots 空列表'),
+        ({}, '缺 shots'),
+        ({'shots': [{'method': 'thirds'}]}, '缺坐标'),
+        ({'shots': [{'method': '不存在的构图', 'subject_x': 0.3, 'subject_y': 0.3}]}, '未知构图法'),
+        ({'shots': [{'method': 'thirds', 'subject_x': 1.5, 'subject_y': 0.3}]}, '坐标越界'),
+        ({'shots': [{'method': 'thirds', 'subject_x': 'abc', 'subject_y': 0.3}]}, '坐标非数字'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例13 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 14 输出结构
+    md = render_md(r11)
+    for key in ('总体判定', '逐张判定', '七种构图法速查', '阈值', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(METHODS) == 7, '构图法应 7 种')
+    ck(all(m[0] in POS_RULE for m in METHODS), '每种构图法都要有落点规则')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 三分法正例/主体居中反例/倾斜3度反例/对称构图0.8与0.4度/'
+        '地平线居中反例/留白上下界与边界值/引导线反例/留白与填充占比反例/严重项排序/'
+        '判定顺序/汇总整改顺序/BOM两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='手机摄影构图自查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

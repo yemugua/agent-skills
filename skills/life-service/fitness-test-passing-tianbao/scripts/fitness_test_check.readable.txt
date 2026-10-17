@@ -1,0 +1,364 @@
+# -*- coding: utf-8 -*-
+"""体测项目差距测算与周期可行性判定工具。
+
+用法:
+  python fitness_test_check.py --file case.json [--json]
+  python fitness_test_check.py --selftest
+
+达标值需由使用者从当年公布的执行文件取得, 本脚本不内置任何达标分数线。
+判定顺序: 先看真实缺陷(周期不足的未达标项、差距过大项、训练频次不足),
+再看信息是否完整; 距考试只剩几天而某项差距 30% 时直接判来不及, 不是待确认。
+"""
+import argparse
+import io
+import json
+import os
+import sys
+import tempfile
+
+SESSION_MIN = 3.0
+GAP_QUICK = 5.0
+URGENT_WEEKS = 2.0
+
+
+def num(v):
+    if v is None or v == "":
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def gap_pct(item):
+    """越小越好: (当前-目标)/目标; 越大越好: (目标-当前)/目标。"""
+    typ = item.get("type")
+    cur = num(item.get("current"))
+    tgt = num(item.get("target"))
+    if typ not in ("lower_better", "higher_better") or cur is None or tgt is None or tgt == 0:
+        return None
+    if typ == "lower_better":
+        return (cur - tgt) / tgt * 100.0
+    return (tgt - cur) / tgt * 100.0
+
+
+def need_weeks(gap):
+    g = float(gap)
+    if g <= 3.0:
+        return 2.0
+    if g <= 6.0:
+        return 4.0
+    if g <= 10.0:
+        return 8.0
+    if g <= 15.0:
+        return 12.0
+    return 16.0
+
+
+def feasibility(gap, weeks):
+    """返回 (判定, 说明)。判定为 已达标 / 可达标 / 需冲刺 / 不乐观 / 来不及 / 待确认。"""
+    if gap is None:
+        return u"待确认", u"未提供当前成绩、达标值或项目类型"
+    if weeks is None:
+        return u"待确认", u"未提供距考试周数"
+    if gap <= 0:
+        return u"已达标", u"当前成绩已达到达标值，保持即可"
+    nw = need_weeks(gap)
+    if weeks < URGENT_WEEKS and gap > GAP_QUICK:
+        return u"来不及", u"距考试仅 %g 周而差距 %.1f%%：该项实质提升基本不可能，只做流程熟悉与稳定发挥" % (
+            weeks, gap)
+    if weeks < nw / 2.0:
+        return u"不乐观", u"差距 %.1f%% 约需 %g 周，剩余仅 %g 周：应调整预期，把时间投向差距小见效快的项目" % (
+            gap, nw, weeks)
+    if weeks < nw:
+        return u"需冲刺", u"差距 %.1f%% 约需 %g 周，剩余 %g 周：提高频次到每周 4 次并优先安排" % (gap, nw, weeks)
+    return u"可达标", u"差距 %.1f%% 约需 %g 周，剩余 %g 周，周期充足" % (gap, nw, weeks)
+
+
+def rank_items(rows):
+    """按差距降序排, 差距最大的排最前, 用负号锁住方向。"""
+    return sorted(rows, key=lambda r: -r["gap"])
+
+
+def load_json(path):
+    with io.open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def build_report(data):
+    items = data.get("items", []) or []
+    weeks = num(data.get("weeks_to_exam"))
+    sessions = num(data.get("weekly_sessions"))
+
+    rows = []
+    for it in items:
+        g = gap_pct(it)
+        rows.append({
+            "name": str(it.get("name", u"未命名项目")),
+            "type": it.get("type"),
+            "unit": it.get("unit", ""),
+            "current": num(it.get("current")),
+            "target": num(it.get("target")),
+            "gap": g,
+        })
+
+    ranked = [r for r in rank_items(rows) if r["gap"] is not None]
+    unknown = [r for r in rows if r["gap"] is None]
+
+    defects = []
+    fine = []
+    pending = []
+
+    if not items:
+        pending.append(u"未提供任何体测项目，无法做差距测算")
+    for r in unknown:
+        pending.append(u"项目「%s」的类型、当前成绩或达标值缺失，无法计算差距" % r["name"])
+
+    if weeks is None:
+        pending.append(u"未提供距考试周数，无法做周期可行性判定")
+
+    for r in ranked:
+        v, msg = feasibility(r["gap"], weeks)
+        r["verdict"] = v
+        r["msg"] = msg
+        if v in (u"来不及", u"不乐观"):
+            defects.append(u"项目「%s」[%s]：%s" % (r["name"], v, msg))
+        elif v == u"需冲刺":
+            fine.append(u"项目「%s」[%s]：%s" % (r["name"], v, msg))
+
+    if sessions is None:
+        pending.append(u"未提供每周训练次数")
+    elif sessions < SESSION_MIN:
+        fine.append(u"每周训练 %g 次偏少，低于 %g 次时进步很慢" % (sessions, SESSION_MIN))
+
+    lines = []
+    lines.append("=" * 62)
+    lines.append(u"体测项目差距测算与周期可行性判定")
+    lines.append("=" * 62)
+    lines.append(u"距考试周数：%s    每周训练次数：%s" % (
+        (u"%g" % weeks) if weeks is not None else u"--",
+        (u"%g" % sessions) if sessions is not None else u"--"))
+    lines.append("")
+    lines.append(u"[一] 逐项差距（按差距从大到小排序）")
+    lines.append(u"%-14s %10s %10s %10s %10s" % (u"项目", u"当前", u"达标值", u"差距", u"判定"))
+    lines.append("-" * 62)
+    for r in ranked:
+        lines.append(u"%-14s %10s %10s %10s %10s" % (
+            r["name"],
+            (u"%g" % r["current"]) if r["current"] is not None else u"--",
+            (u"%g" % r["target"]) if r["target"] is not None else u"--",
+            u"%.1f%%" % r["gap"],
+            r.get("verdict", u"--")))
+    if unknown:
+        for r in unknown:
+            lines.append(u"%-14s %10s %10s %10s %10s" % (r["name"], u"--", u"--", u"--", u"待确认"))
+    lines.append("-" * 62)
+    lines.append("")
+    lines.append(u"[二] 周期可行性")
+    lines.append(u"%-14s %10s %10s  %s" % (u"项目", u"差距", u"所需周", u"说明"))
+    lines.append("-" * 62)
+    for r in ranked:
+        lines.append(u"%-14s %10s %10s  %s" % (
+            r["name"], u"%.1f%%" % r["gap"], u"%g" % need_weeks(r["gap"]), r.get("msg", u"--")))
+    lines.append("-" * 62)
+    lines.append("")
+    lines.append(u"[三] 不合格项与原因")
+    if defects:
+        for i, d in enumerate(defects, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[四] 需改进项")
+    if fine:
+        for i, d in enumerate(fine, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[五] 待确认项")
+    if pending:
+        for i, d in enumerate(pending, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[六] 训练处方")
+    lines.append(u"  1. 达标值必须取自当年公布的执行文件，不要用旧版本")
+    if ranked:
+        top = ranked[0]
+        lines.append(u"  2. 训练重点：%s（差距 %.1f%%）" % (top["name"], top["gap"]))
+    lines.append(u"  3. 长跑权重高且提升慢，即使差距不是最大也要优先安排")
+    lines.append(u"  4. 每周 3-4 次：有氧 2 次、力量 2 次、专项 1 次，每 4 周安排减量周")
+    lines.append(u"  5. 引体向上做不了时走退阶链：悬垂 → 弹力带辅助 → 离心 → 标准")
+    lines.append(u"  6. 考前一周减量到 50-60%，考前一天完全休息")
+    lines.append(u"  7. 长跑前 200 米不要冲，最后 150-200 米再加速")
+
+    if defects:
+        overall = u"不合格"
+    elif fine:
+        overall = u"需改进"
+    elif pending:
+        overall = u"待确认"
+    else:
+        overall = u"合格"
+
+    lines.append("")
+    lines.append(u"总判定：%s" % overall)
+    lines.append(u"提示：本脚本不内置任何达标分数线，标准以当年公布的执行文件为准。")
+    lines.append(u"提示：胸闷胸痛、心悸、头晕、异常气短时立即停止训练并就医。")
+    lines.append(u"免责：本结果为差距自查输出，不构成达标承诺或体检结论。")
+    lines.append("=" * 62)
+
+    summary = {
+        "weeks_to_exam": weeks,
+        "ranked": [{"name": r["name"], "gap": r["gap"], "verdict": r.get("verdict")} for r in ranked],
+        "defects": defects,
+        "fine": fine,
+        "pending": pending,
+        "overall": overall,
+    }
+    return "\n".join(lines), summary
+
+
+def _run_checks():
+    r = []
+    r.append((u"越小越好差距算法", abs(gap_pct({"type": "lower_better", "current": 300,
+                                          "target": 250}) - 20.0) < 1e-9))
+    r.append((u"越大越好差距算法", abs(gap_pct({"type": "higher_better", "current": 1.8,
+                                          "target": 2.0}) - 10.0) < 1e-9))
+    r.append((u"已达标时差距为负", gap_pct({"type": "lower_better", "current": 240,
+                                      "target": 250}) < 0))
+    r.append((u"类型缺失时差距为 None", gap_pct({"type": "xxx", "current": 1, "target": 2}) is None))
+    r.append((u"达标值为 0 时差距为 None", gap_pct({"type": "higher_better", "current": 1,
+                                            "target": 0}) is None))
+    r.append((u"所需周期映射 3% 为 2 周", need_weeks(3.0) == 2.0))
+    r.append((u"所需周期映射 8% 为 8 周", need_weeks(8.0) == 8.0))
+    r.append((u"所需周期映射 20% 为 16 周", need_weeks(20.0) == 16.0))
+
+    rows = [
+        {"name": u"A", "gap": 5.0},
+        {"name": u"B", "gap": 25.0},
+        {"name": u"C", "gap": 12.0},
+    ]
+    ranked = rank_items(rows)
+    r.append((u"排序方向：差距最大的排最前", ranked[0]["name"] == u"B"))
+    r.append((u"排序方向：差距最小的排最后", ranked[-1]["name"] == u"A"))
+
+    r.append((u"反例：3 天且差距 30% 判来不及", feasibility(30.0, 0.5)[0] == u"来不及"))
+    r.append((u"反例：4 周且差距 12% 判不乐观", feasibility(12.0, 4.0)[0] == u"不乐观"))
+    r.append((u"6 周且差距 8% 判需冲刺", feasibility(8.0, 6.0)[0] == u"需冲刺"))
+    r.append((u"12 周且差距 5% 判可达标", feasibility(5.0, 12.0)[0] == u"可达标"))
+    r.append((u"已达标判定", feasibility(-2.0, 12.0)[0] == u"已达标"))
+    r.append((u"缺周数时判待确认", feasibility(5.0, None)[0] == u"待确认"))
+
+    _, s = build_report({
+        "weeks_to_exam": 12, "weekly_sessions": 4,
+        "items": [
+            {"name": u"1000米", "type": "lower_better", "current": 260, "target": 250, "unit": u"秒"},
+            {"name": u"立定跳远", "type": "higher_better", "current": 1.9, "target": 2.0, "unit": u"米"},
+        ],
+    })
+    r.append((u"标准样例判定合格", s["overall"] == u"合格"))
+    r.append((u"标准样例排序按差距降序", s["ranked"][0]["name"] == u"立定跳远"))
+
+    _, s1 = build_report({
+        "weeks_to_exam": 0.5, "weekly_sessions": 4,
+        "items": [
+            {"name": u"1000米", "type": "lower_better", "current": 330, "target": 250, "unit": u"秒"},
+        ],
+    })
+    r.append((u"反例：考前 3 天差距 32% 判不合格", s1["overall"] == u"不合格"))
+    r.append((u"反例：来不及进缺陷表", any(u"来不及" in d for d in s1["defects"])))
+
+    _, s2 = build_report({
+        "weeks_to_exam": 4, "weekly_sessions": 3,
+        "items": [
+            {"name": u"引体向上", "type": "higher_better", "current": 2, "target": 10, "unit": u"个"},
+        ],
+    })
+    r.append((u"反例：4 周差距 80% 判不乐观", s2["overall"] == u"不合格"))
+
+    _, s3 = build_report({
+        "weeks_to_exam": 12, "weekly_sessions": 2,
+        "items": [
+            {"name": u"1000米", "type": "lower_better", "current": 255, "target": 250, "unit": u"秒"},
+        ],
+    })
+    r.append((u"反例：每周 2 次判需改进", s3["overall"] == u"需改进"))
+
+    _, s4 = build_report({"weeks_to_exam": 12})
+    r.append((u"无项目记为待确认", s4["overall"] == u"待确认"))
+
+    _, s5 = build_report({
+        "weeks_to_exam": 0.5,
+        "items": [{"name": u"1000米", "type": "lower_better", "current": 330, "target": 250}],
+    })
+    r.append((u"缺训练频次但差距巨大不得判待确认", s5["overall"] == u"不合格"))
+
+    p = os.path.join(tempfile.gettempdir(), "_fitness_bom_case.json")
+    blob = b"\xef\xbb\xbf" + json.dumps({
+        "weeks_to_exam": 12, "weekly_sessions": 4,
+        "items": [{"name": u"1000米", "type": "lower_better", "current": 255,
+                   "target": 250, "unit": u"秒"}],
+    }, ensure_ascii=False).encode("utf-8")
+    with open(p, "wb") as f:
+        f.write(blob)
+    try:
+        d = load_json(p)
+        r.append((u"UTF-8 BOM 输入首键可读", abs(d.get("weeks_to_exam", 0) - 12.0) < 1e-9))
+        r.append((u"UTF-8 BOM 输入嵌套结构可读", d["items"][0]["name"] == u"1000米"))
+    finally:
+        if os.path.exists(p):
+            os.remove(p)
+
+    return r
+
+
+def selftest():
+    results = _run_checks()
+    failed = [name for name, ok in results if not ok]
+    ok = len(failed) == 0
+    lines = ["SELFTEST %s" % ("OK" if ok else "FAILED")]
+    lines.append("checks=%d passed=%d failed=%d" % (len(results), len(results) - len(failed), len(failed)))
+    for name in failed:
+        lines.append("FAILED: %s" % name)
+    with io.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_selftest_result.txt"),
+                 "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+    return ok
+
+
+def main():
+    parser = argparse.ArgumentParser(description=u"体测差距测算与周期可行性工具")
+    parser.add_argument("--file", help=u"输入 JSON 文件路径（UTF-8）")
+    parser.add_argument("--json", action="store_true", help=u"以 JSON 输出")
+    parser.add_argument("--out", help=u"结果写入指定文件")
+    parser.add_argument("--selftest", action="store_true", help=u"运行自检")
+    args = parser.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        sys.exit(0 if selftest() else 1)
+
+    if not args.file:
+        parser.error(u"需要 --file 或 --selftest")
+
+    data = load_json(args.file)
+
+    report, summary = build_report(data)
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.json else report
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    with io.open(out_path, "w", encoding="utf-8") as f:
+        f.write(body)
+    print(body)
+    print("")
+    print(u"结果已写入：%s" % out_path)
+
+
+if __name__ == "__main__":
+    main()
+
+

@@ -1,0 +1,214 @@
+# -*- coding: utf-8 -*-
+"""墙面裂缝记录校验脚本。
+
+用法:
+  python check.py --file 裂缝记录.json
+  python check.py --selftest
+
+JSON 字段:
+  location          位置: load_bearing(承重)/non_bearing/beam/column/top_floor
+  width_mm          裂缝宽度毫米 (数字)
+  through           是否贯通 (true/false)
+  extends_structure 是否随结构延伸 (true/false)
+  growing           是否在发展 (true/false)
+"""
+import argparse
+import json
+import os
+import sys
+
+WIDTH_SERIOUS = 0.3
+WIDTH_GENERAL = 0.2
+RED_LOCATIONS = {"load_bearing", "beam", "column"}
+
+
+def evaluate(data):
+    reasons = []
+    ok = True
+
+    loc = data.get("location")
+    if loc is None:
+        ok = False
+        reasons.append("未填写裂缝位置(location), 无法判断是否为结构性")
+    elif loc not in RED_LOCATIONS and loc != "non_bearing" and loc != "top_floor":
+        ok = False
+        reasons.append("location 取值非法(应为 load_bearing/non_bearing/beam/column/top_floor)")
+
+    width = data.get("width_mm")
+    if width is None:
+        ok = False
+        reasons.append("未填写裂缝宽度(width_mm), 无法分级")
+    else:
+        try:
+            w = float(width)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("width_mm 不是数字")
+        else:
+            if w > WIDTH_SERIOUS:
+                ok = False
+                reasons.append("裂缝宽度 %.2fmm 超过 0.3mm, 超出表层修补范围, 须转结构工程师" % w)
+
+    # 红线: 承重/梁柱位置, 或贯通, 或随结构延伸, 或持续发展
+    red = False
+    if loc in RED_LOCATIONS:
+        red = True
+        reasons.append("裂缝位于承重墙/梁/柱, 属红线, 须转交持证结构工程师确认")
+    through = data.get("through")
+    if through is True:
+        red = True
+        reasons.append("裂缝贯通, 属红线, 须转交结构工程师确认")
+    ext = data.get("extends_structure")
+    if ext is True:
+        red = True
+        reasons.append("裂缝随结构延伸, 属红线, 须转交结构工程师确认")
+    growing = data.get("growing")
+    if growing is True:
+        red = True
+        reasons.append("裂缝持续发展(变长变宽), 属红线, 须立即转专业确认")
+
+    if red:
+        ok = False
+
+    if ok:
+        reasons.append("裂缝记录通过: 非结构性、宽度合规、无红线项, 可按工艺修补")
+    return ok, reasons
+
+
+def load_json(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def selftest():
+    passed = 0
+
+    # 1. 正例: 非承重, 0.1mm, 不贯通不延伸不发展 -> 通过
+    ok, rs = evaluate({
+        "location": "non_bearing", "width_mm": 0.1,
+        "through": False, "extends_structure": False, "growing": False,
+    })
+    assert ok is True, "正例应通过: %s" % rs
+    passed += 1
+
+    # 2. 反例: 承重墙裂缝 -> 必须不合格
+    ok, rs = evaluate({
+        "location": "load_bearing", "width_mm": 0.1,
+        "through": False, "extends_structure": False, "growing": False,
+    })
+    assert ok is False, "承重墙必须判不合格"
+    assert any("结构工程师" in r for r in rs), "红线原因缺失: %s" % rs
+    passed += 1
+
+    # 3. 反例: 宽度 0.5mm -> 必须不合格
+    ok, rs = evaluate({
+        "location": "non_bearing", "width_mm": 0.5,
+        "through": False, "extends_structure": False, "growing": False,
+    })
+    assert ok is False, "超宽必须判不合格"
+    assert any("0.3mm" in r for r in rs), "超宽原因缺失: %s" % rs
+    passed += 1
+
+    # 4. 反例: 贯通 -> 必须不合格
+    ok, rs = evaluate({
+        "location": "non_bearing", "width_mm": 0.1,
+        "through": True, "extends_structure": False, "growing": False,
+    })
+    assert ok is False, "贯通必须判不合格"
+    passed += 1
+
+    # 5. 反例: 随结构延伸 -> 必须不合格
+    ok, rs = evaluate({
+        "location": "non_bearing", "width_mm": 0.1,
+        "through": False, "extends_structure": True, "growing": False,
+    })
+    assert ok is False, "延伸必须判不合格"
+    passed += 1
+
+    # 6. 反例: 持续发展 -> 必须不合格
+    ok, rs = evaluate({
+        "location": "non_bearing", "width_mm": 0.1,
+        "through": False, "extends_structure": False, "growing": True,
+    })
+    assert ok is False, "发展必须判不合格"
+    passed += 1
+
+    # 7. 反例: 缺位置 -> 必须不合格
+    ok, rs = evaluate({
+        "width_mm": 0.1, "through": False, "extends_structure": False, "growing": False,
+    })
+    assert ok is False, "缺位置必须判不合格"
+    passed += 1
+
+    # 8. 反例: location 非法 -> 必须不合格
+    ok, rs = evaluate({
+        "location": "floor", "width_mm": 0.1,
+        "through": False, "extends_structure": False, "growing": False,
+    })
+    assert ok is False, "非法位置必须判不合格"
+    passed += 1
+
+    # 9. BOM 处理
+    here = os.path.dirname(os.path.abspath(__file__))
+    bom_path = os.path.join(here, "_bom_sample.json")
+    payload = json.dumps({
+        "location": "non_bearing", "width_mm": 0.1,
+        "through": False, "extends_structure": False, "growing": False,
+    }, ensure_ascii=False)
+    with open(bom_path, "wb") as f:
+        f.write(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+    d = load_json(bom_path)
+    assert d.get("location") == "non_bearing", "BOM 输入 key 不应带 \﻿"
+    assert "width_mm" in d, "BOM 输入 key 必须干净"
+    os.remove(bom_path)
+    passed += 1
+
+    # 10. 边界: 顶层 0.25mm 非红线 -> 通过(一般级但非红线)
+    ok, rs = evaluate({
+        "location": "top_floor", "width_mm": 0.25,
+        "through": False, "extends_structure": False, "growing": False,
+    })
+    assert ok is True, "顶层一般缝应通过: %s" % rs
+    passed += 1
+
+    line = "SELFTEST OK (%d assertions)" % passed
+    return line, passed
+
+
+def main():
+    ap = argparse.ArgumentParser(description="墙面裂缝记录校验")
+    ap.add_argument("--file", help="裂缝记录 JSON")
+    ap.add_argument("--selftest", action="store_true", help="内置自检")
+    args = ap.parse_args()
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        line, total = selftest()
+        with open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        print(line)
+        return 0 if line.startswith("SELFTEST OK") else 1
+
+    if args.file:
+        try:
+            data = load_json(args.file)
+        except Exception as e:  # noqa: BLE001
+            msg = "读取失败: %s" % e
+            with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            print(msg)
+            return 1
+        ok, reasons = evaluate(data)
+        out = ("PASS " if ok else "FAIL ") + "；".join(reasons)
+        with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+            f.write(out + "\n")
+        print(out)
+        return 0 if ok else 1
+
+    print("需要 --file 或 --selftest")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

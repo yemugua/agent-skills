@@ -1,0 +1,2 @@
+SELFTEST FAIL (18 passed, 1 failed)
+FAILED: bonus 36000 -> /12=3000 -> 10% with quick 210

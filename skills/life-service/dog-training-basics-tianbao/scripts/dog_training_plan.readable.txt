@@ -1,0 +1,389 @@
+# -*- coding: utf-8 -*-
+"""宠物狗基础服从训练计划校验脚本。
+
+读入一份训练计划的 json，核对：
+  1. 犬龄分组是否被识别，单次时长与每日次数是否在硬区间内
+  2. 是否使用了禁止手段或禁止器具
+  3. 召回后是否被惩罚（召回垮掉的第一原因）
+  4. 标记延迟是否落在有效窗口内
+  5. 目标动作的前置阶段是否已完成（是否跳步）
+  6. 失败处理是否为降级，而非加码重复
+  7. 环境级别是否与目标阶段的进度相称
+
+结论分三档：先处理 / 待确认 / 可照此执行。
+判定顺序固定：先看真实缺陷，再看信息是否完整。
+
+用法:
+  python dog_training_plan.py --selftest
+  python dog_training_plan.py --file plan.json
+"""
+import argparse
+import json
+import os
+import sys
+
+HEREDIR = os.path.dirname(os.path.abspath(__file__))
+
+AGE_LIMIT = {
+    "幼犬": {"lo": 2, "hi": 6, "minute": (3, 10), "times": (1, 5)},
+    "青犬": {"lo": 6, "hi": 12, "minute": (5, 15), "times": (1, 3)},
+    "成犬": {"lo": 12, "hi": 240, "minute": (5, 20), "times": (1, 3)},
+}
+
+STAGES = ["注意力", "坐下", "趴下", "等待", "随行", "召回"]
+PREREQ = {
+    "注意力": [],
+    "坐下": ["注意力"],
+    "趴下": ["注意力", "坐下"],
+    "等待": ["注意力", "坐下", "趴下"],
+    "随行": ["注意力", "坐下", "趴下", "等待"],
+    "召回": ["注意力", "坐下", "趴下", "等待", "随行"],
+}
+
+BAN_TOOL = ["电击项圈", "针刺项圈", "金属滑动链", "自动收紧绳", "钉刺项圈"]
+BAN_METHOD = ["体罚", "打嘴巴", "敲打", "强行按压", "关禁闭", "喷水惩罚"]
+BAN_STRESS = {"长时间关禁闭": "破坏如厕习惯与独处安全感"}
+
+ENV_LEVEL = {"室内安静": 1, "室内有干扰": 2, "院子楼道": 3, "户外低干扰": 4, "户外高干扰": 5}
+TOOL_ALIAS = {"电击": "电击项圈", "P字链": "金属滑动链", "收束绳": "自动收紧绳"}
+TARGET_ALIAS = {"坐": "坐下", "趴": "趴下", "等": "等待", "召回训练": "召回", "随行训练": "随行"}
+STAGE_ALIAS = {"坐": "坐下", "趴": "趴下", "等": "等待"}
+REQUIRED = ["age_months", "minutes_per_session", "sessions_per_day", "target",
+            "marker_established", "reward_delay_sec"]
+
+
+def norm(s):
+    return str(s).strip().replace(" ", "").replace("　", "")
+
+
+def load_plan(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def age_group(months):
+    try:
+        m = float(months)
+    except (TypeError, ValueError):
+        return None
+    for k, v in AGE_LIMIT.items():
+        if v["lo"] <= m < v["hi"]:
+            return k
+    return None
+
+
+def canon(value, table, valid):
+    """把别名和规范名都归一到规范名。"""
+    n = norm(value)
+    if n in valid:
+        return n
+    return table.get(n, None)
+
+
+def check(plan):
+    bad = []
+    warn = []
+    miss = []
+
+    for k in REQUIRED:
+        if k not in plan or plan[k] in ("", None):
+            miss.append("缺少必填字段 %s" % k)
+
+    grp = age_group(plan.get("age_months"))
+    if grp is None:
+        miss.append("月龄「%s」无法归入幼犬、青犬或成犬，无法判定时长区间" % plan.get("age_months"))
+
+    target = canon(plan.get("target", ""), TARGET_ALIAS, STAGES)
+    if target is None:
+        miss.append("训练目标「%s」无法识别，应在 %s 取值" % (
+            plan.get("target", ""), "/".join(STAGES)))
+
+    # 1 时长与频次
+    if grp is not None:
+        lim = AGE_LIMIT[grp]
+        try:
+            mi = float(plan.get("minutes_per_session"))
+            if mi > lim["minute"][1]:
+                bad.append("单次时长 %.0f 分钟超出「%s」上限 %d 分钟：后半段全在练习走神，"
+                           "等于每天白练" % (mi, grp, lim["minute"][1]))
+            elif mi < lim["minute"][0]:
+                bad.append("单次时长 %.0f 分钟低于「%s」下限 %d 分钟：单次过短起不到练习作用" % (
+                    mi, grp, lim["minute"][0]))
+        except (TypeError, ValueError):
+            pass
+        try:
+            ts = int(plan.get("sessions_per_day"))
+            if ts > lim["times"][1]:
+                bad.append("每日训练 %d 次超出「%s」上限 %d 次：超频会形成压力，"
+                           "应改为短而多次并在出现压力信号时立即停止" % (ts, grp, lim["times"][1]))
+            elif ts < lim["times"][0]:
+                bad.append("每日训练 %d 次低于下限 %d 次：频次不足难以形成稳定联结" % (
+                    ts, lim["times"][0]))
+        except (TypeError, ValueError):
+            pass
+
+    # 2 禁止器具
+    tools = plan.get("tools") or []
+    hit_tool = []
+    hit_method = []
+    for t in tools:
+        c = canon(t, TOOL_ALIAS, BAN_TOOL)
+        if c in BAN_TOOL:
+            hit_tool.append(c)
+        for b in BAN_TOOL:
+            if b in norm(t):
+                hit_tool.append(b)
+    methods = plan.get("methods") or []
+    for m in methods:
+        for b in BAN_METHOD:
+            if b in norm(m):
+                hit_method.append(b)
+    for h in sorted(set(hit_tool)):
+        bad.append("器具清单含禁用项「%s」：靠疼痛或恐吓制动，会加剧暴冲或引发防御反应；"
+                   "应改用胸背带与长绳" % h)
+    for h in sorted(set(hit_method)):
+        bad.append("训练手段含禁用项「%s」：%s；应改用忽略加替代行为的做法" % (
+            h, BAN_STRESS.get(h, "只教出躲避，不教出正确行为")))
+
+    # 3 召回后被惩罚
+    if plan.get("punish_recall"):
+        bad.append("召回后惩罚：狗会把「回来」与坏事连起来，这是召回垮掉的第一原因；"
+                   "正确做法是召回后奖励，然后放它回去玩")
+
+    # 4 标记延迟
+    try:
+        dl = float(plan.get("reward_delay_sec"))
+        if dl > 2.0:
+            bad.append("奖励延迟 %.1f 秒超过 2 秒口径：标记晚一秒，强化到的就是下一个动作，"
+                       "这是零食给不少却没效果的最常见原因" % dl)
+        elif dl < 0:
+            bad.append("奖励延迟为负数，数据无效")
+    except (TypeError, ValueError):
+        pass
+
+    # 5 前置阶段是否完成（跳步）
+    if target is not None:
+        done = []
+        for s in plan.get("done_stages") or []:
+            c = canon(s, STAGE_ALIAS, STAGES)
+            if c:
+                done.append(c)
+        need = PREREQ[target]
+        lack = [x for x in need if x not in done]
+        if lack:
+            bad.append("目标「%s」缺前置阶段 %s：没达标就进阶基本必废，"
+                       "应先把缺的阶段各练 3 到 5 天" % (target, "/".join(lack)))
+        if not plan.get("marker_established"):
+            bad.append("尚未建立标记词或响片的配对就开始练动作，等于跳过地基；"
+                       "应先用连续 20 次响片后立刻给食完成配对")
+
+    # 6 失败处理：必须是降级，不许加码重复
+    try:
+        rp = int(plan.get("repeat_on_fail"))
+        if rp > 3:
+            bad.append("同一口令重复 %d 次远超 3 次上限：喊到第五遍狗已学会前几遍可以不当回事，"
+                       "口令被自己稀释掉；应改为重复 3 次无响应就降回上一难度重来" % rp)
+    except (TypeError, ValueError):
+        pass
+
+    # 7 环境级别
+    env = norm(plan.get("env", ""))
+    lv = ENV_LEVEL.get(env, 0)
+    if target is not None and lv >= 4:
+        done = [canon(s, STAGE_ALIAS, STAGES) for s in plan.get("done_stages") or []]
+        if target not in done:
+            bad.append("新目标「%s」直接在「%s」起步：根本沒达标就直接上高干扰环境必然失灵；"
+                       "应从室内安静起步逐级递进" % (target, env))
+
+    if bad:
+        verdict = "先处理"
+    elif miss:
+        verdict = "待确认"
+    else:
+        verdict = "可照此执行"
+    return {"verdict": verdict, "bad": bad, "warn": warn, "miss": miss}
+
+
+def render(plan, res):
+    lines = []
+    lines.append("# 宠物狗训练计划核对结果")
+    lines.append("")
+    lines.append("目标：%s ｜ 月龄：%s ｜ 单次：%s 分钟 ｜ 每日：%s 次" % (
+        plan.get("target", "-"), plan.get("age_months", "-"),
+        plan.get("minutes_per_session", "-"), plan.get("sessions_per_day", "-")))
+    lines.append("")
+    lines.append("结论：**%s**" % res["verdict"])
+    lines.append("")
+    if res["bad"]:
+        lines.append("## 不合格项（必须改方案后再实施）")
+        for x in res["bad"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if res["miss"]:
+        lines.append("## 待确认项（信息不足）")
+        for x in res["miss"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if res["warn"]:
+        lines.append("## 提示项")
+        for x in res["warn"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if not res["bad"] and not res["miss"]:
+        lines.append("未发现禁用手段，时长、频次、奖励时机均在口径内，前置阶段已达标。"
+                     "训练中出现舔嘴、打哈欠、转头、趴下不动等压力信号应立即停止本次训练。")
+    lines.append("")
+    lines.append("注：本结果为家庭基础服从训练的计划核对，不构成兽医诊疗或专业训犬意见。")
+    return "\n".join(lines) + "\n"
+
+
+def write_out(text, name="_last_result.txt"):
+    p = os.path.join(HEREDIR, name)
+    with open(p, "w", encoding="utf-8") as f:
+        f.write(text)
+    return p
+
+
+def selftest():
+    ok = 0
+    fail = []
+
+    def check_case(name, cond, extra=""):
+        nonlocal ok
+        if cond:
+            ok += 1
+        else:
+            fail.append(name + (" -> " + extra if extra else ""))
+
+    base = {
+        "age_months": 24, "minutes_per_session": 15, "sessions_per_day": 2,
+        "target": "坐下", "done_stages": ["注意力"], "marker_established": True,
+        "reward_delay_sec": 1.0, "repeat_on_fail": 3,
+        "tools": ["响片", "零食包", "胸背带"], "methods": ["正强化"],
+        "env": "室内安静", "punish_recall": False,
+    }
+
+    # 1 正例
+    r = check(dict(base))
+    check_case("正例应判可照此执行", r["verdict"] == "可照此执行", str(r))
+
+    # 2 反例：禁用器具电击项圈
+    bad_tool = dict(base, tools=["响片", "电击项圈"])
+    r = check(bad_tool)
+    check_case("反例-电击项圈应为先处理", r["verdict"] == "先处理", str(r))
+    check_case("反例-电击项圈应给出替代做法",
+               any("胸背带" in x for x in r["bad"]))
+
+    # 3 反例：召回后惩罚
+    bad_recall = dict(base, punish_recall=True)
+    r = check(bad_recall)
+    check_case("反例-召回后惩罚应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 4 反例：单次时长超上限
+    bad_min = dict(base, minutes_per_session=35)
+    r = check(bad_min)
+    check_case("反例-单次35分钟应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 5 反例：奖励延迟过长
+    bad_delay = dict(base, reward_delay_sec=4.0)
+    r = check(bad_delay)
+    check_case("反例-奖励延迟4秒应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 6 反例：跳步（目标召回但前置未完成）
+    bad_skip = dict(base, target="召回", done_stages=["注意力"],
+                    env="室内安静", minutes_per_session=15, sessions_per_day=2)
+    r = check(bad_skip)
+    check_case("反例-召回缺前置应为先处理", r["verdict"] == "先处理", str(r))
+    check_case("反例-跳步应点名缺哪个阶段", any("趴下" in x for x in r["bad"]))
+
+    # 7 反例：未建立标记
+    bad_marker = dict(base, marker_established=False)
+    r = check(bad_marker)
+    check_case("反例-未建立标记应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 8 反例：新目标直接上户外高干扰
+    bad_env = dict(base, env="户外高干扰")
+    r = check(bad_env)
+    check_case("反例-新目标直接户外应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 9 反例：重复 10 次
+    bad_rep = dict(base, repeat_on_fail=10)
+    r = check(bad_rep)
+    check_case("反例-重复10次应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 10 幼犬口径：成犬可行的 15 分钟在幼犬下必须超上限
+    bad_puppy = dict(base, age_months=4, minutes_per_session=15)
+    r = check(bad_puppy)
+    check_case("反例-幼犬15分钟应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 11 缺项 -> 待确认
+    incom = dict(base)
+    del incom["tools"]
+    r = check(incom)
+    check_case("缺非关键字段且无缺陷时仍可判可照此执行", r["verdict"] == "可照此执行", str(r))
+    incom2 = dict(base)
+    del incom2["age_months"]
+    r = check(incom2)
+    check_case("缺月龄应判待确认", r["verdict"] == "待确认", str(r))
+
+    # 12 判定顺序：既有缺项又有缺陷时必须先处理
+    both = dict(base, tools=["电击项圈"])
+    del both["age_months"]
+    r = check(both)
+    check_case("缺陷优先于缺项", r["verdict"] == "先处理", str(r))
+
+    # 13 UTF-8 BOM 输入必须能被正确处理
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        p = os.path.join(td, "plan.json")
+        with open(p, "w", encoding="utf-8-sig") as f:
+            json.dump(dict(base), f, ensure_ascii=False)
+        with open(p, "rb") as f:
+            head = f.read(3)
+        check_case("样例文件确实带BOM", head == b"\xef\xbb\xbf")
+        r = check(load_plan(p))
+        check_case("带BOM文件应正常解析并判可照此执行", r["verdict"] == "可照此执行", str(r))
+
+        # 14 BOM + 反例仍必须判不合格
+        p2 = os.path.join(td, "bad.json")
+        with open(p2, "w", encoding="utf-8-sig") as f:
+            json.dump(dict(bad_recall), f, ensure_ascii=False)
+        r = check(load_plan(p2))
+        check_case("带BOM反例仍判先处理", r["verdict"] == "先处理", str(r))
+
+    # 15 排序方向锁定：阶段序号必须递增，PREREQ 的层级不能倒挂
+    seq = [STAGES.index(x) for x in ["注意力", "坐下", "趴下", "等待", "随行", "召回"]]
+    check_case("阶段序号应递增且等于排序结果",
+               seq == sorted(seq) and seq == [0, 1, 2, 3, 4, 5])
+    check_case("召回的前置应包含随行", "随行" in PREREQ["召回"])
+
+    lines = ["SELFTEST OK (%d passed, 0 failed)" % ok]
+    if fail:
+        lines = ["SELFTEST FAILED (%d passed, %d failed)" % (ok, len(fail))]
+        lines += ["- " + x for x in fail]
+    write_out("\n".join(lines) + "\n", "_selftest_result.txt")
+    print("\n".join(lines))
+    return 0 if not fail else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description="宠物狗基础服从训练计划校验")
+    ap.add_argument("--file", help="训练计划 json 文件路径")
+    ap.add_argument("--selftest", action="store_true", help="运行自检")
+    a = ap.parse_args()
+    if a.selftest:
+        return selftest()
+    if not a.file:
+        ap.print_help()
+        return 2
+    plan = load_plan(a.file)
+    res = check(plan)
+    p = write_out(render(plan, res))
+    print("结果已写入: %s" % p)
+    print("结论: %s" % res["verdict"])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="16" fill="#f0ece4"/>
+  <rect x="30" y="48" width="68" height="34" rx="8" fill="#fff" stroke="#a0703c" stroke-width="4"/>
+  <rect x="34" y="36" width="14" height="20" rx="4" fill="#fff" stroke="#a0703c" stroke-width="3"/>
+  <rect x="80" y="36" width="14" height="20" rx="4" fill="#fff" stroke="#a0703c" stroke-width="3"/>
+  <text x="64" y="118" font-size="14" text-anchor="middle" fill="#a0703c" font-family="sans-serif">保养</text>
+</svg>

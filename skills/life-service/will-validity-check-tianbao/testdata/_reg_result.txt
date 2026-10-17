@@ -1,0 +1,49 @@
+PASS P01 norm
+PASS P02 is_ph 待填
+PASS P03 is_ph 分隔
+PASS P04 is_ph 真值
+PASS P05 pick_form
+PASS P06 pick_form 空表
+PASS P07 get_int 页数
+PASS P08 get_int 年龄
+PASS P09 标题不算
+PASS Y01 逐页签名否
+PASS Y02 注明日期是
+PASS Y03 夫妻共同是
+PASS Y04 只处分本人份额否
+PASS Y05 有人知道否
+PASS Y06 空表 None
+PASS R01 生成
+PASS R02 九段
+PASS R03 结论摘要
+PASS R04 形式要件
+PASS R05 见证人
+PASS R06 无效撤回
+PASS R07 处分范围
+PASS R08 必留份
+PASS R09 待办
+PASS R10 纪律
+PASS R11 形式=打印
+PASS R12 逐页签名缺失被抓
+PASS R13 见证人亲属硬伤
+PASS R14 夫妻共同份额
+PASS R15 必留份未保留
+PASS R16 多份抵触以最后为准
+PASS R17 没人知道遗嘱在哪
+PASS R18 未填不算通过
+PASS R19 无【待填】泄漏
+PASS R20 无乱码
+PASS R21 见证人硬伤计数
+PASS R22 表格不裂
+PASS O01 自书生成
+PASS O02 形式=自书
+PASS O03 无缺失
+PASS O04 不需要见证人
+PASS O05 已填项齐备
+PASS V01 口头生成
+PASS V02 口头提示危急
+PASS V03 口头提示重立
+PASS E01 空表 None
+PASS E02 空表提示
+PASS E03 缺文件不崩
+== TOTAL PASS=48 FAIL=0 ==

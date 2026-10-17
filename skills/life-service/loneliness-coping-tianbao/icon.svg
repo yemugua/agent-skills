@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="孤独感应对与社交支持">
+  <defs>
+    <linearGradient id="gN" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8FD0E8"/>
+      <stop offset="1" stop-color="#3A7FA8"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#gN)"/>
+  <circle cx="32" cy="24" r="8" fill="#FFFFFF"/>
+  <path d="M18 52 c0 -8 6 -13 14 -13 s14 5 14 13 Z" fill="#FFFFFF"/>
+  <path d="M14 22 C14 12 21 6 32 6" fill="none" stroke="#D7ECFA" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="12" cy="24" r="5.5" fill="#FFFFFF" opacity="0.75"/>
+  <path d="M6 40 c0 -4 2.6 -7 6 -7 s6 3 6 7 Z" fill="#FFFFFF" opacity="0.75"/>
+  <circle cx="52" cy="24" r="5.5" fill="#FFFFFF" opacity="0.75"/>
+  <path d="M46 40 c0 -4 2.6 -7 6 -7 s6 3 6 7 Z" fill="#FFFFFF" opacity="0.75"/>
+  <path d="M32 52 v6 M27 58 h10" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="52" cy="50" r="8" fill="#FFD666"/>
+  <path d="M49 50.5 a4 4 0 0 1 6 0" fill="none" stroke="#7A4A0B" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="52" cy="54.5" r="1.4" fill="#7A4A0B"/>
+</svg>

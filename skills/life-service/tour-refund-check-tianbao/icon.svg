@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="40" fill="#0E7C86"/>
+  <path d="M128 46 L210 110 L210 196 L46 196 L46 110 Z" fill="#ffffff" opacity="0.12"/>
+  <circle cx="128" cy="110" r="34" fill="#ffffff" opacity="0.95"/>
+  <path d="M128 88 a22 22 0 1 0 0.1 0 M128 110 l16 20" stroke="#0E7C86" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <rect x="70" y="160" width="116" height="14" rx="7" fill="#ffffff" opacity="0.9"/>
+  <rect x="84" y="182" width="88" height="11" rx="5.5" fill="#ffffff" opacity="0.6"/>
+  <text x="128" y="226" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="20" font-weight="700" fill="#ffffff" text-anchor="middle">旅游退款</text>
+</svg>

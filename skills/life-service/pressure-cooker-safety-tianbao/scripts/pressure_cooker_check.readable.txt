@@ -1,0 +1,429 @@
+# -*- coding: utf-8 -*-
+"""高压锅使用与安全核查：按食材匹配压力档位，输出安全红线自检与异常停用判定。
+
+用法:
+  python pressure_cooker_check.py --file cooker.json [--out result.md] [--format json]
+  python pressure_cooker_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 食材 -> (中文名, 建议压力档位, 是否易堵口, 是否需要预泄压, 关键禁忌)
+# 压力档位: 低压 / 中压 / 高压
+FOODS = {
+    'leafy_veg': ('绿叶蔬菜', '低压', True, False,
+                '体积大易堵限压阀，需下压量控制，勿装满'),
+    'potato': ('土豆与根茎', '中压', True, False,
+              '淀粉类易糊底堵塞，排气口须畅通'),
+    'beans': ('豆类与豆制品', '中压', True, False,
+              '豆类易产生泡沫顶起限压阀，需留足空间并分批'),
+    'meat': ('肉类', '高压', False, True,
+             '需完全去除压力后才能开盖'),
+    'bones': ('排骨与带骨肉', '高压', False, True,
+              '骨渣可能堵塞排气口，勿超量'),
+    'seafood': ('海鲜与贝类', '中压', True, True,
+                '海鲜易起泡顶阀，升温阶段须盯着限压阀'),
+    'whole_fish': ('整鱼', '中压', True, True,
+                   '整鱼易堵塞，升温时须全程看管'),
+    'noodle': ('面条与米线', '低压', True, False,
+               '易糊底，升温快需小火'),
+    'rice_water': ('米饭与粥', '低压', False, False,
+                   '易溢锅，勿超过内锅容积上限线'),
+    'egg': ('鸡蛋', '高压', False, True,
+            '带壳鸡蛋需完全泄压，骤然开盖会爆裂'),
+    'corn': ('玉米与根茎类', '中压', False, False,
+             '玉米易膨胀顶阀，装量不宜过多'),
+    'noodle_dumpling': ('速冻水饺', '低压', True, False,
+                        '易堵口，且速食本身无需高压'),
+}
+
+# 压力档位与食材匹配说明
+PRESSURE_NOTE = {
+    '低压': '约 80 千帕，适用于叶菜、面条、米饭粥类等易熟或易糊食材',
+    '中压': '约 100 千帕，适用于根茎、豆类、海鲜等需要适中压力的食材',
+    '高压': '约 120 千帕，适用于肉类、带骨肉、带壳蛋等需要快速熟透的食材',
+}
+
+# 安全红线自检项: (项目, 说明, 不合格时的处置)
+RED_LINES = [
+    ('limit_valve', '限压阀通畅',
+     '限压阀堵塞是高压锅最危险的故障之一，会导致锅内压力无法释放'),
+    ('safety_valve', '安全阀通畅且未改动',
+     '安全阀被替换、拆除或改动作业会导致压力无法释放，属严重安全隐患'),
+    ('gasket', '密封圈完好无老化',
+     '密封圈老化、变形或裂纹会导致封口不严，压力泄漏或蒸汽外溢烫伤'),
+    ('weight', '配重块齐全且未变形',
+     '配重块缺失或变形会导致压力档位不准，蒸汽泄漏或压力失控'),
+    ('vent_clear', '排气口无遮挡',
+     '排气口被毛巾、锅具或食物残渣堵塞会导致压力无法释放'),
+    ('fill_level', '装量未超过上限线',
+     '超过内锅容积上限线会导致沸腾时泡沫顶起限压阀，压力失控'),
+    ('seal_clean', '锅盖与锅口已清洁',
+     '锅口有食物残渣会导致密封不严，蒸汽从缝隙喷出烫伤'),
+    ('valve_clean', '限压阀与安全阀已定期清洗',
+     '阀孔积垢会导致压力释放不畅，是压力表异常的常见原因'),
+    ('age', '使用年限在产品说明范围内',
+     '超期服役的老化部件可能失效，应按产品说明更换整机或部件'),
+    ('base_flat', '锅体底座与灶面贴合稳定',
+     '底座变形或悬空会导致受热不均，压力波动异常'),
+]
+
+# 必须立即停用并转专业维修的情形
+STOP_USE = [
+    '听到异常噪音、尖锐啸叫或锅体剧烈震动',
+    '压力表指针不归零、不摆动或明显抖动',
+    '限压阀或安全阀堵塞、锈死、卡滞',
+    '密封圈老化开裂、变形或缺失',
+    '锅体变形、底部凹陷、焊点渗漏',
+    '排气口堵塞或蒸汽从非排气口位置喷出',
+    '使用时锅盖无法锁紧或有明显缝隙',
+]
+
+# 明确禁止的操作
+BANNED = [
+    '严禁在压力未完全释放时强行开盖',
+    '严禁带压开盖或用工具强行扳动锅盖',
+    '严禁堵塞排气口或在其上覆盖任何物品',
+    '严禁改装、拆除或替换安全阀与限压阀',
+    '严禁超过红线装量或超过内锅上限线',
+    '严禁使用超过产品说明年限的锅具继续作业',
+    '严禁在无人看管状态下加热',
+    '严禁用高压锅烹煮易产生大量泡沫而不留排气的食材',
+]
+
+# 停火后冷却要求
+COOLING = (
+    '听到异常噪音或出现压力异常时，应立即停火并自然冷却。'
+    '严禁强行开盖、严禁用冷水浇淋锅体加速冷却。'
+    '自然冷却过程中限压阀仍可能喷出蒸汽，应保持人员在场并避开排气口方向。'
+    '确认压力表指针完全归零、限压阀不再喷气后，方可按说明书开盖。'
+)
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def food_of(key):
+    k = norm(key)
+    if k not in FOODS:
+        raise ValueError('未知食材键: %s，可选键见 FOODS 表' % key)
+    return k, FOODS[k]
+
+
+def check_redlines(checks):
+    """checks: {项目键: True/False/None}; None 视为未检查。"""
+    rows = []
+    bad = []
+    unk = []
+    for key, name, why in RED_LINES:
+        v = checks.get(key)
+        if v is None:
+            rows.append((name, '未检查', why))
+            unk.append(name)
+        elif v:
+            rows.append((name, '合格', why))
+        else:
+            rows.append((name, '不合格', why))
+            bad.append(name)
+    return rows, bad, unk
+
+
+def calc(data):
+    checks = data.get('checks') or {}
+    if not isinstance(checks, dict):
+        raise ValueError('checks 必须是对象')
+    for k in checks:
+        if not any(norm(r[0]) == norm(k) for r in RED_LINES):
+            raise ValueError('未知的自检项: %s，可选项见 RED_LINES 表' % k)
+
+    rows, bad, unk = check_redlines(checks)
+
+    items = data.get('items') or []
+    food_rows = []
+    if items:
+        for it in items:
+            key, (name, press, clog, deflate, ban) = food_of(it.get('food'))
+            used = it.get('pressure') or press
+            if used not in ('低压', '中压', '高压'):
+                raise ValueError('pressure 只能填 低压/中压/高压，实为: %s' % used)
+            food_rows.append({
+                'name': it.get('name', name),
+                'food': key,
+                'food_name': name,
+                'recommended': press,
+                'used': used,
+                'match': used == press,
+                'clog_risk': clog,
+                'deflate_needed': deflate,
+                'ban': ban,
+                'pressure_note': PRESSURE_NOTE[press],
+            })
+        food_rows.sort(key=lambda r: (0 if not r['match'] else 1, 0 if r['clog_risk'] else 1))
+
+    if len(bad) >= 1:
+        level = '禁止使用'
+    elif unk:
+        level = '待确认'
+    else:
+        level = '可正常使用'
+
+    warns = []
+    why_map = {r[1]: (r[0], r[2]) for r in RED_LINES}
+    for b in bad:
+        key, why = why_map[b]
+        warns.append('自检不合格：%s（%s），必须先处理再使用：%s' % (key, b, why))
+    for u in unk:
+        warns.append('自检未完成：%s，未确认前不要开始加热' % u)
+    for r in food_rows:
+        if not r['match']:
+            warns.append('%s 使用%s，建议为%s：%s'
+                         % (r['name'], r['used'], r['recommended'],
+                            PRESSURE_NOTE[r['recommended']]))
+        if r['clog_risk']:
+            warns.append('%s 属易堵口食材，升温阶段须全程看管限压阀' % r['name'])
+        if r['deflate_needed']:
+            warns.append('%s 必须完全释放压力后才能开盖，严禁带压开盖' % r['name'])
+
+    return {
+        'level': level,
+        'redline_rows': [{'name': n, 'status': s, 'why': w} for n, s, w in rows],
+        'bad': bad,
+        'unchecked': unk,
+        'items': food_rows,
+        'warns': warns,
+        'banned': BANNED,
+        'stop_use': STOP_USE,
+        'cooling': COOLING,
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 高压锅使用与安全核查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['level'])
+    L.append('')
+    if r['level'] == '禁止使用':
+        L.append('存在自检不合格项，**先处理再使用**，不要开始加热。')
+    elif r['level'] == '待确认':
+        L.append('存在未完成的自检项，未确认前不要开始加热。')
+    else:
+        L.append('十项自检全部合格，可按食材匹配的压力档位正常使用。')
+    L.append('')
+    L.append('## 二、安全红线自检（十项）')
+    L.append('')
+    L.append('| 自检项 | 状态 | 为什么重要 |')
+    L.append('|---|---|---|')
+    for x in r['redline_rows']:
+        L.append('| %s | %s | %s |' % (x['name'], x['status'], x['why']))
+    L.append('')
+    L.append('## 三、食材与压力档位匹配')
+    L.append('')
+    if r['items']:
+        L.append('| 食材 | 建议档位 | 实际档位 | 匹配 | 易堵口 | 需完全泄压 | 关键禁忌 |')
+        L.append('|---|---|---|---|---|---|---|')
+        for x in r['items']:
+            L.append('| %s | %s | %s | %s | %s | %s | %s |'
+                     % (x['name'], x['recommended'], x['used'],
+                        '是' if x['match'] else '**否**',
+                        '是' if x['clog_risk'] else '否',
+                        '是' if x['deflate_needed'] else '否', x['ban']))
+        L.append('')
+        L.append('压力档位说明：')
+        L.append('')
+        for k in ('低压', '中压', '高压'):
+            L.append('- %s：%s' % (k, PRESSURE_NOTE[k]))
+    else:
+        L.append('- 未填写食材记录')
+    L.append('')
+    L.append('## 四、必须立即停用并转专业维修的情形')
+    L.append('')
+    for s in r['stop_use']:
+        L.append('- %s' % s)
+    L.append('')
+    L.append('## 五、明确禁止的操作')
+    L.append('')
+    for b in r['banned']:
+        L.append('- %s' % b)
+    L.append('')
+    L.append('## 六、停火后冷却要求')
+    L.append('')
+    L.append('- %s' % r['cooling'])
+    L.append('')
+    L.append('## 七、提示')
+    L.append('')
+    if r['warns']:
+        for w in r['warns']:
+            L.append('- %s' % w)
+    else:
+        L.append('- 未发现自检不合格项，按压力档位匹配表使用即可')
+    L.append('')
+    L.append('## 八、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 十项安全红线自检已逐项确认')
+    L.append('- [ ] 锅具未超过产品说明的使用年限')
+    L.append('- [ ] 装量未超过内锅上限线，留有余量')
+    L.append('- [ ] 排气口与限压阀方向无遮挡，且已避开面部与身体')
+    L.append('- [ ] 加热全程有人看管，未离开现场')
+    L.append('- [ ] 未出现异常噪音即已停火，未强行开盖')
+    L.append('- [ ] 开盖前压力已完全归零')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    # 1 全部合格 -> 可正常使用
+    allok = {k: True for k, _, _ in RED_LINES}
+    r1 = calc({'checks': allok})
+    ck(r1['level'] == '可正常使用', '十项全合格应可正常使用，实为 %s' % r1['level'])
+    ck(len(r1['redline_rows']) == 10, '红线应 10 项，实为 %d' % len(r1['redline_rows']))
+
+    # 2 限压阀不合格 -> 禁止使用
+    r2 = calc({'checks': dict(allok, limit_valve=False)})
+    ck(r2['level'] == '禁止使用', '限压阀不合格应禁止使用，实为 %s' % r2['level'])
+    ck('限压阀通畅' in r2['bad'], '应点名限压阀，实为 %s' % r2['bad'])
+    ck(any('堵塞' in w for w in r2['warns']), '应说明限压阀堵塞风险，实为 %s' % r2['warns'])
+
+    # 3 未检查 -> 待确认
+    r3 = calc({'checks': {k: True for k, _, _ in RED_LINES if k != 'gasket'}})
+    ck(r3['level'] == '待确认', '缺项应待确认，实为 %s' % r3['level'])
+    ck('密封圈完好无老化' in r3['unchecked'], '应列出未确认的密封圈，实为 %s' % r3['unchecked'])
+
+    # 4 密封圈老化禁止
+    r4 = calc({'checks': dict(allok, gasket=False)})
+    ck(r4['level'] == '禁止使用', '密封圈不合格应禁止使用')
+    ck(any('老化' in w or '变形' in w for w in r4['warns']), '应说明密封圈老化风险，实为 %s' % r4['warns'])
+
+    # 5 食材压力匹配
+    r5 = calc({'checks': allok, 'items': [
+        {'food': 'meat'}, {'food': 'leafy_veg'}, {'food': 'beans'}]})
+    byname = {x['name']: x for x in r5['items']}
+    ck(byname['肉类']['recommended'] == '高压', '肉类应高压，实为 %s' % byname['肉类']['recommended'])
+    ck(byname['绿叶蔬菜']['recommended'] == '低压', '绿叶蔬菜应低压，实为 %s' % byname['绿叶蔬菜']['recommended'])
+    ck(byname['豆类与豆制品']['recommended'] == '中压', '豆类应中压，实为 %s' % byname['豆类与豆制品']['recommended'])
+    ck(byname['肉类']['deflate_needed'] is True, '肉类须完全泄压')
+    ck(byname['豆类与豆制品']['clog_risk'] is True, '豆类应标易堵口')
+
+    # 6 压力不匹配告警
+    r6 = calc({'checks': allok, 'items': [{'food': 'meat', 'pressure': '低压'}]})
+    ck(r6['items'][0]['match'] is False, '肉类用低压应判不匹配')
+    ck(any('建议为高压' in w for w in r6['warns']), '应给出建议档位，实为 %s' % r6['warns'])
+
+    # 7 禁止强行开盖必须在输出中
+    md = render_md(r2)
+    ck('严禁' in md and '开盖' in md, '输出应包含禁止强行开盖的红线')
+    ck('停火后冷却要求' in md, '输出应含停火后冷却要求章节')
+
+    # 8 排序：不匹配在前
+    r8 = calc({'checks': allok, 'items': [
+        {'food': 'meat'}, {'food': 'beans', 'name': '红豆', 'pressure': '高压'}]})
+    ck(r8['items'][0]['match'] is False, '不匹配项应排最前，实为 %s' % r8['items'][0]['match'])
+
+    # 9 BOM 两条路径
+    bom = '﻿{"checks": {"limit_valve": true, "safety_valve": true, "gasket": true, "weight": true, "vent_clear": true, "fill_level": true, "seal_clean": true, "valve_clean": true, "age": true, "base_flat": true}, "items": [{"food": "egg"}]}'
+    r9 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r9['level'] == '可正常使用', 'BOM 输入应解析出十项，实为等级 %s' % r9['level'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe4.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'checks': dict(allok, base_flat=False)}))
+    try:
+        r9b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r9b['level'] == '禁止使用', 'utf-8-sig 读取应正常，实为 %s' % r9b['level'])
+        ck('锅体底座与灶面贴合稳定' in r9b['bad'], '应点名底座项，实为 %s' % r9b['bad'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 10 非法输入
+    for bad, why in (
+        ({'checks': {'不存在的项': True}}, '未知自检项'),
+        ({'checks': allok, 'items': [{'food': '不存在的食材'}]}, '未知食材'),
+        ({'checks': allok, 'items': [{'food': 'meat', 'pressure': '超高压'}]}, '非法档位'),
+        ({'checks': '不是对象'}, 'checks 非对象'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例10 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 11 停用情形与禁止项齐全
+    ck(len(STOP_USE) >= 7, '停用情形至少 7 条，实为 %d' % len(STOP_USE))
+    ck(len(BANNED) >= 8, '禁止操作至少 8 条，实为 %d' % len(BANNED))
+    ck(any('强行开盖' in b for b in BANNED), '必须含禁止强行开盖')
+    ck(any('堵塞排气口' in b for b in BANNED), '必须含禁止堵塞排气口')
+    ck('严禁用冷水浇淋' in COOLING, '必须含禁止冷水浇淋加速冷却')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 十项红线/不合格禁止使用/未检查待确认/密封圈老化/'
+        '压力档位匹配/不匹配告警/禁止强行开盖输出/排序/BOM 两条路径/非法输入/停用与禁止清单完整性' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='高压锅使用与安全核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

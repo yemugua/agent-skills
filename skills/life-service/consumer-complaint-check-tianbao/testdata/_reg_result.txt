@@ -1,0 +1,108 @@
+PASS P01 norm 去空格
+PASS P02 norm 全角括号
+PASS P03 is_ph 待填
+PASS P04 is_ph 有/无
+PASS P05 is_ph 分隔
+PASS P06 is_ph 真值
+PASS P07 split_row
+PASS P08 is_row
+PASS P09 is_row 否
+PASS P10 fmt_num 整数
+PASS P11 fmt_num None
+PASS P12 money
+PASS P13 fmt_flag 是
+PASS P14 fmt_flag 否
+PASS P15 fmt_flag NA
+PASS P16 have 缺
+PASS C01 冒号行 商品
+PASS C02 冒号行 金额
+PASS C03 冒号行 争议
+PASS F01 消费者姓名
+PASS F02 经营者名称
+PASS F03 争议类型
+PASS F04 消费金额
+PASS F05 订单号
+PASS F06 损失金额
+PASS F07 自测金额
+PASS F08 表头不算值
+PASS F09 是否有平台
+PASS F10 是否食品
+PASS F11 是否主张欺诈
+PASS F12 食品标准不适用
+PASS F13 是否已协商
+PASS F14 平台介入否
+PASS F15 空表 None
+PASS D01 parse_date
+PASS D02 parse_date 中文
+PASS D03 parse_date 空
+PASS D04 add_years
+PASS D05 add_years 闰日
+PASS R01 生成
+PASS R02 九段
+PASS R03 结论摘要
+PASS R04 路径排序
+PASS R05 投诉举报定性
+PASS R06 管辖
+PASS R07 证据缺口
+PASS R08 金额测算
+PASS R09 时效
+PASS R10 话术
+PASS R11 待办
+PASS R12 纪律
+PASS R13 结论=有风险
+PASS R14 争议类型
+PASS R15 诉求合计
+PASS R16 惩罚性赔偿
+PASS R17 三倍算式
+PASS R18 缺口3项
+PASS R19 宣传截图缺口
+PASS R20 检测报告缺口
+PASS R21 当前第1步
+PASS R22 未协商提示
+PASS R23 平台跳步提示
+PASS R24 七天已过
+PASS R25 诉讼时效剩余
+PASS R26 格式条款无效
+PASS R27 举报不解决退赔
+PASS R28 12315办结60日
+PASS R29 7日内受理
+PASS R30 管辖平台住所地
+PASS R31 证据编号连续
+PASS R32 无双句号
+PASS R33 无【待填】泄漏
+PASS R34 无乱码
+PASS R35 表格不裂
+PASS R36 待办非空
+PASS R37 风险项非空
+PASS R38 结尾免责
+PASS S01 食品生成
+PASS S02 食品十倍保底
+PASS S03 食品合计
+PASS S04 保底提示
+PASS S05 商务/食品分支
+PASS O01 合规生成
+PASS O02 结论=通过
+PASS O03 无缺口
+PASS O04 无惩罚性赔偿
+PASS O05 合计=实付
+PASS O06 无平台不适用
+PASS O07 未填不算通过提示
+PASS T01 过期生成
+PASS T02 结论=不通过
+PASS T03 时效届满标记
+PASS T04 时效届满提示
+PASS T05 建议书面催告
+PASS E01 空表 None
+PASS E02 空表提示
+PASS E03 缺文件不崩
+PASS E04 缺文件提示
+PASS E05 缺金额 None
+PASS E06 缺金额提示
+PASS J01 json rc
+PASS J02 json 可解析
+PASS J03 json 结论
+PASS J04 json 风险项
+PASS J05 json 待办
+PASS J06 空表 rc=2
+PASS J07 空表有输出
+== TOTAL PASS=107 FAIL=0 ==

@@ -1,0 +1,380 @@
+# -*- coding: utf-8 -*-
+"""缝补针法方案校验脚本。
+
+读入一份缝补方案的 json，核对：
+  1. 布料类别与破损形态是否被识别
+  2. 所选针法是否在该破损形态的允许集合内
+  3. 是否命中禁用组合（针织配棉线、薄料用粗针、受力位用隐藏类针法等）
+  4. 手缝针号是否在布料允许区间
+  5. 针距、缝份是否在允许区间
+  6. 回针比例是否落在有效带内
+  7. 操作顺序是否走反（按用户填的原序取索引，不重排）
+
+结论分三档：先处理 / 待确认 / 可照此执行。
+判定顺序固定：先看真实缺陷，再看信息是否完整。
+
+用法:
+  python stitch_plan.py --selftest
+  python stitch_plan.py --file plan.json
+"""
+import argparse
+import json
+import os
+import sys
+
+HEREDIR = os.path.dirname(os.path.abspath(__file__))
+
+FABRIC = {
+    "薄软": ["真丝", "雪纺", "乔其纱", "巴厘纱", "薄软"],
+    "中薄": ["衬衫棉", "府绸", "人造棉", "中薄", "棉布"],
+    "中厚": ["斜纹布", "牛津纺", "灯芯绒", "中厚"],
+    "厚硬": ["牛仔", "帆布", "羊毛呢", "厚硬"],
+    "针织带弹": ["针织", "汗布", "罗纹", "抓绒", "运动面料", "弹力"],
+}
+
+FABRIC_LIMIT = {
+    "薄软": {"needle": (9, 11), "slen": (1.5, 2.0), "seam": (6, 20)},
+    "中薄": {"needle": (8, 9), "slen": (2.0, 2.5), "seam": (6, 20)},
+    "中厚": {"needle": (7, 8), "slen": (2.5, 3.0), "seam": (8, 20)},
+    "厚硬": {"needle": (5, 7), "slen": (3.0, 4.0), "seam": (10, 20)},
+    "针织带弹": {"needle": (9, 11), "slen": (2.0, 3.0), "seam": (8, 20)},
+}
+
+DAMAGE = {
+    "顺缝崩线": {"ok": ["回针缝", "半回针缝"], "bad": ["平针", "藏针缝", "缭针缝"],
+                 "alias": ["崩线", "脱线"]},
+    "直线裂口": {"ok": ["回针缝", "半回针缝", "贴布补丁"], "bad": ["缭针缝", "藏针缝", "平针"],
+                 "alias": ["裂开", "撕开"]},
+    "破洞缺肉": {"ok": ["贴布补丁", "织补"], "bad": ["缭针缝", "藏针缝", "回针缝"],
+                 "alias": ["破洞", "缺肉", "磨破"]},
+    "毛边脱散": {"ok": ["锁边缝"], "bad": ["缭针缝", "藏针缝", "回针缝"],
+                 "alias": ["毛边", "脱散", "起毛"]},
+    "针织脱圈勾丝": {"ok": ["织补", "贴布补丁"], "bad": ["回针缝", "缭针缝", "藏针缝", "平针"],
+                     "alias": ["脱圈", "勾丝"]},
+    "下摆脱线": {"ok": ["缭针缝", "藏针缝"], "bad": ["回针缝"],
+                 "alias": ["下摆", "裤脚"]},
+}
+
+HIDE_STITCH = ["缭针缝", "藏针缝", "平针"]
+STRESS_POS = ["腋下", "袖窿", "裤裆", "肘部", "膝盖", "臀部"]
+ORDER = ["熨烫归正", "疏缝固定", "正式缝合", "收尾熨烫"]
+ORDER_ALIAS = {"熨烫": "熨烫归正", "熨平": "熨烫归正", "疏缝": "疏缝固定",
+               "假缝": "疏缝固定", "缝合": "正式缝合", "正式缝": "正式缝合",
+               "收尾": "收尾熨烫", "后整": "收尾熨烫"}
+REQUIRED = ["fabric", "damage", "position", "stitch", "thread", "needle",
+            "stitch_length_mm", "seam_allowance_mm"]
+
+
+def norm(s):
+    """归一化：去掉空格与全角空格，方便用户输入带空格的写法。"""
+    return str(s).strip().replace(" ", "").replace("　", "")
+
+
+def load_plan(path):
+    """读取方案文件。统一用 utf-8-sig，带 BOM 的文件也能正确解析。"""
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def pick_fabric(value):
+    key = norm(value)
+    for k, alias in FABRIC.items():
+        if key == k or key in [norm(x) for x in alias]:
+            return k
+    return None
+
+
+def pick_damage(value):
+    key = norm(value)
+    for k, v in DAMAGE.items():
+        if key == k or key in [norm(x) for x in v["alias"]]:
+            return k
+    return None
+
+
+def check(plan):
+    bad = []
+    warn = []
+    miss = []
+    fb = pick_fabric(plan.get("fabric", ""))
+    dm = pick_damage(plan.get("damage", ""))
+    if fb is None:
+        miss.append("布料类别无法识别，填的是「%s」，请在 %s 中取值" % (
+            plan.get("fabric", ""), "/".join(FABRIC.keys())))
+    if dm is None:
+        miss.append("破损形态无法识别，填的是「%s」，请在 %s 中取值" % (
+            plan.get("damage", ""), "/".join(DAMAGE.keys())))
+    for k in REQUIRED:
+        if k not in plan or plan[k] in ("", None):
+            miss.append("缺少必填字段 %s" % k)
+
+    st = norm(plan.get("stitch", ""))
+    th = norm(plan.get("thread", ""))
+    pos = norm(plan.get("position", ""))
+
+    # 1. 针法与破损形态是否匹配
+    if dm is not None and st:
+        if st in [norm(x) for x in DAMAGE[dm]["bad"]]:
+            bad.append("破损形态「%s」下禁用针法「%s」：这类破损靠该针法无法承载，"
+                       "正确做法是改用「%s」" % (dm, st, DAMAGE[dm]["ok"][0]))
+        elif st not in [norm(x) for x in DAMAGE[dm]["ok"]]:
+            warn.append("针法「%s」不在「%s」的推荐列表内，推荐为 %s" % (
+                st, dm, "/".join(DAMAGE[dm]["ok"])))
+
+    # 2. 禁用组合
+    if fb == "针织带弹" and any(t in th or th in t for t in ["棉线"]):
+        bad.append("针织或弹力布料配棉线：棉线几乎无弹，一撑就崩，且洗后缩率不一致导致抽皱；"
+                   "应改用涤纶线或弹力线")
+    if fb == "针织带弹" and norm(plan.get("needle_type", "")) not in ("", "球头针"):
+        bad.append("针织布料用了非球头针：普通尖头针会扎断线圈，洞口沿线路继续扩大")
+    if fb == "薄软":
+        try:
+            nd = int(plan.get("needle"))
+            if nd <= 7:
+                bad.append("薄软面料用 %d 号针过粗：会留下永久针孔，应改用 9 到 11 号" % nd)
+        except (TypeError, ValueError):
+            pass
+    if any(p in pos for p in STRESS_POS) and st in HIDE_STITCH:
+        bad.append("受力部位「%s」用了隐藏类针法「%s」：吃布浅、线迹松，穿上就会被拉开；"
+                   "改用回针缝，必要处加内侧贴布" % (pos, st))
+
+    # 3. 针号与尺寸
+    if fb is not None:
+        lim = FABRIC_LIMIT[fb]
+        try:
+            nd = int(plan.get("needle"))
+            if not (lim["needle"][0] <= nd <= lim["needle"][1]):
+                bad.append("手缝针号 %d 超出「%s」允许的 %d 到 %d 号区间" % (
+                    nd, fb, lim["needle"][0], lim["needle"][1]))
+        except (TypeError, ValueError):
+            pass
+        try:
+            sl = float(plan.get("stitch_length_mm"))
+            if sl < lim["slen"][0]:
+                bad.append("针距 %.1f 毫米低于「%s」下限 %.1f 毫米：过密会把布扎成一排针孔，"
+                           "等于开了条虚线" % (sl, fb, lim["slen"][0]))
+            elif sl > lim["slen"][1]:
+                bad.append("针距 %.1f 毫米超出「%s」上限 %.1f 毫米：过大则连结不够，"
+                           "洗两次就豁口" % (sl, fb, lim["slen"][1]))
+        except (TypeError, ValueError):
+            pass
+        try:
+            sa = float(plan.get("seam_allowance_mm"))
+            if sa < lim["seam"][0]:
+                bad.append("缝份 %.1f 毫米低于「%s」下限 %d 毫米：缝线所在的布边本来就稀，"
+                           "一受力就从线那里撕开" % (sa, fb, lim["seam"][0]))
+            elif sa > lim["seam"][1]:
+                warn.append("缝份 %.1f 毫米超过 %d 毫米且未修剪：不影响牢度，但穿着会硌" % (
+                    sa, lim["seam"][1]))
+        except (TypeError, ValueError):
+            pass
+
+    # 4. 回针比例
+    ratio = plan.get("backstitch_ratio")
+    if ratio is not None:
+        try:
+            r = float(ratio)
+            if r < 0.3:
+                bad.append("回针比例 %.2f 低于 0.3：正面线迹变成断续虚线，"
+                           "强度掉到半回针以下" % r)
+            elif r > 0.7:
+                warn.append("回针比例 %.2f 高于 0.7：偏浪费线且背面偏厚，不影响牢度" % r)
+        except (TypeError, ValueError):
+            warn.append("回针比例无法解析为数值")
+
+    # 5. 操作顺序：按用户填的原序取索引，绝不按正确顺序重排
+    steps = plan.get("steps") or []
+    picked = []
+    for s in steps:
+        n = norm(s)
+        if n not in ORDER:
+            for k, v in ORDER_ALIAS.items():
+                if k in n:
+                    n = v
+                    break
+        if n in ORDER:
+            picked.append(n)
+    if len(picked) < 4:
+        miss.append("操作顺序只识别到 %d 步，未凑齐四步，无法判断顺序是否走反" % len(picked))
+    else:
+        seq = [ORDER.index(x) for x in picked]
+        if seq != sorted(seq):
+            bad.append("操作顺序走反：实际为 %s，正确应为 %s；"
+                       "正式缝合排在疏缝固定之前会直接导致上下片跑位" % (
+                           " → ".join(picked), " → ".join(ORDER)))
+
+    if bad:
+        verdict = "先处理"
+    elif miss:
+        verdict = "待确认"
+    else:
+        verdict = "可照此执行"
+    return {"verdict": verdict, "bad": bad, "warn": warn, "miss": miss}
+
+
+def render(plan, res):
+    lines = []
+    lines.append("# 缝补针法方案核对结果")
+    lines.append("")
+    lines.append("布料：%s ｜ 破损形态：%s ｜ 部位：%s ｜ 针法：%s" % (
+        plan.get("fabric", "-"), plan.get("damage", "-"),
+        plan.get("position", "-"), plan.get("stitch", "-")))
+    lines.append("")
+    lines.append("结论：**%s**" % res["verdict"])
+    lines.append("")
+    if res["bad"]:
+        lines.append("## 不合格项（必须改方案后再落针）")
+        for x in res["bad"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if res["miss"]:
+        lines.append("## 待确认项（信息不足）")
+        for x in res["miss"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if res["warn"]:
+        lines.append("## 提示项")
+        for x in res["warn"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if not res["bad"] and not res["miss"]:
+        lines.append("未发现禁用组合，针号、针距、缝份均在「%s」允许区间内，顺序正确；"
+                     "按规则文件的人工确认清单逐项做即可。" % plan.get("fabric", ""))
+    lines.append("")
+    lines.append("注：本结果为生活缝补方案核对，不构成服装工艺专业意见。")
+    return "\n".join(lines) + "\n"
+
+
+def write_out(text, name="_last_result.txt"):
+    p = os.path.join(HEREDIR, name)
+    with open(p, "w", encoding="utf-8") as f:
+        f.write(text)
+    return p
+
+
+def selftest():
+    ok = 0
+    fail = []
+
+    def check_case(name, cond, extra=""):
+        nonlocal ok
+        if cond:
+            ok += 1
+        else:
+            fail.append(name + (" -> " + extra if extra else ""))
+
+    base = {
+        "fabric": "棉布", "damage": "崩线", "position": "下摆", "stitch": "回针缝",
+        "thread": "涤纶线", "needle": 8, "stitch_length_mm": 2.2,
+        "seam_allowance_mm": 10, "backstitch_ratio": 0.5,
+        "steps": ["熨平面料", "疏缝固定", "正式缝合", "收尾熨烫"],
+    }
+
+    # 1 正例：完整且正确
+    r = check(dict(base))
+    check_case("正例应判可照此执行", r["verdict"] == "可照此执行", str(r))
+
+    # 2 反例：针织配棉线
+    bad1 = dict(base, fabric="针织", thread="棉线")
+    r = check(bad1)
+    check_case("反例-针织配棉线应为先处理", r["verdict"] == "先处理", str(r))
+    check_case("反例-针织配棉线应带禁用原因",
+               any("棉线" in x and "无弹" in x for x in r["bad"]))
+
+    # 3 反例：受力部位用隐藏类针法
+    bad2 = dict(base, position="腋下", stitch="藏针缝")
+    r = check(bad2)
+    check_case("反例-腋下用藏针缝应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 4 反例：薄软面料用粗针
+    bad3 = dict(base, fabric="真丝", needle=5, stitch_length_mm=1.8)
+    r = check(bad3)
+    check_case("反例-真丝用5号针应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 5 反例：缝份过小
+    bad4 = dict(base, seam_allowance_mm=3)
+    r = check(bad4)
+    check_case("反例-缝份3毫米应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 6 反例：顺序走反（先缝合后疏缝）
+    bad5 = dict(base, steps=["熨平面料", "正式缝合", "疏缝固定", "收尾熨烫"])
+    r = check(bad5)
+    check_case("反例-顺序走反应为先处理", r["verdict"] == "先处理", str(r))
+    check_case("反例-顺序走反应点名疏缝", any("疏缝" in x for x in r["bad"]))
+
+    # 7 反例：回针比例过低
+    bad6 = dict(base, backstitch_ratio=0.1)
+    r = check(bad6)
+    check_case("反例-回针比例0.1应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 8 反例：破洞禁用的隐藏类针法
+    bad7 = dict(base, damage="破洞", stitch="缭针缝")
+    r = check(bad7)
+    check_case("反例-破洞用缭针应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 9 缺项
+    incom = dict(base)
+    del incom["needle"]
+    r = check(incom)
+    check_case("缺项应判待确认", r["verdict"] == "待确认", str(r))
+
+    # 10 判定顺序：既有缺项又有真实缺陷时，必须先处理
+    both = dict(base, fabric="针织", thread="棉线")
+    del both["needle"]
+    r = check(both)
+    check_case("缺陷优先于缺项", r["verdict"] == "先处理", str(r))
+
+    # 11 UTF-8 BOM 输入必须能被正确处理
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        p = os.path.join(td, "plan.json")
+        with open(p, "w", encoding="utf-8-sig") as f:
+            json.dump(dict(base), f, ensure_ascii=False)
+        with open(p, "rb") as f:
+            head = f.read(3)
+        check_case("样例文件确实带BOM", head == b"\xef\xbb\xbf")
+        r = check(load_plan(p))
+        check_case("带BOM文件应正常解析并判可照此执行", r["verdict"] == "可照此执行", str(r))
+
+        # 12 BOM + 反例：带 BOM 的反例仍必须判不合格
+        p2 = os.path.join(td, "bad.json")
+        with open(p2, "w", encoding="utf-8-sig") as f:
+            json.dump(dict(bad5), f, ensure_ascii=False)
+        r = check(load_plan(p2))
+        check_case("带BOM反例仍判先处理", r["verdict"] == "先处理", str(r))
+
+    # 13 排序方向锁定：正序索引必须等于其排序结果
+    seq = [ORDER.index(x) for x in ORDER]
+    check_case("正序索引应等于其排序结果", seq == sorted(seq) and seq == [0, 1, 2, 3])
+
+    lines = ["SELFTEST OK (%d passed, 0 failed)" % ok]
+    if fail:
+        lines = ["SELFTEST FAILED (%d passed, %d failed)" % (ok, len(fail))]
+        lines += ["- " + x for x in fail]
+    write_out("\n".join(lines) + "\n", "_selftest_result.txt")
+    print("\n".join(lines))
+    return 0 if not fail else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description="缝补针法方案校验")
+    ap.add_argument("--file", help="方案 json 文件路径")
+    ap.add_argument("--selftest", action="store_true", help="运行自检")
+    a = ap.parse_args()
+    if a.selftest:
+        return selftest()
+    if not a.file:
+        ap.print_help()
+        return 2
+    plan = load_plan(a.file)
+    res = check(plan)
+    p = write_out(render(plan, res))
+    print("结果已写入: %s" % p)
+    print("结论: %s" % res["verdict"])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+

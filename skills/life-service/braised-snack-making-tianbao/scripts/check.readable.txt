@@ -1,0 +1,227 @@
+# -*- coding: utf-8 -*-
+"""卤味卤制记录校验脚本。
+
+用法:
+  python check.py --file 卤制记录.json
+  python check.py --selftest
+
+JSON 字段:
+  blanched      肉类是否焯水 (true/false, 素菜可省略)
+  braise_minutes 卤制分钟数 (数字)
+  is_meat       是否荤菜 (true/false)
+  broth_uses    卤水已使用次数 (整数)
+  stored        保存方式: fridge(冷藏)/room(常温)/none(未保存)
+  spoiled       是否观察到变质信号 (true/false)
+"""
+import argparse
+import json
+import os
+import sys
+
+# 卤制时间安全区间（分钟），key 由调用方按食材给定上下限不便，这里用通用阈值
+MEAT_MIN = 10
+MEAT_MAX = 90
+VEG_MAX = 30
+BROTH_USE_LIMIT = 3
+
+
+def evaluate(data):
+    reasons = []
+    ok = True
+
+    spoiled = data.get("spoiled")
+    if spoiled is True:
+        ok = False
+        reasons.append("观察到变质信号(酸馊/发黏/产气), 卤水必须整锅废弃, 不可继续食用")
+        # 变质是最高优先, 直接返回
+        return ok, reasons
+
+    is_meat = data.get("is_meat")
+    blanched = data.get("blanched")
+    if is_meat is True and blanched is not True:
+        ok = False
+        reasons.append("荤菜未焯水直接卤, 血沫腥味重且卤水易浑, 必须先焯水去沫")
+
+    minutes = data.get("braise_minutes")
+    if minutes is None:
+        ok = False
+        reasons.append("未填写卤制时间(braise_minutes), 无法判断是否夹生或过头")
+    else:
+        try:
+            m = float(minutes)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("braise_minutes 不是数字")
+        else:
+            if is_meat is True and (m < MEAT_MIN or m > MEAT_MAX):
+                ok = False
+                reasons.append("荤菜卤制 %.0f 分钟超出安全区间(10–90), 可能夹生或过度软烂" % m)
+            if is_meat is False and m > VEG_MAX:
+                ok = False
+                reasons.append("素菜卤制 %.0f 分钟超过 30 分钟上限, 易过咸过烂" % m)
+
+    uses = data.get("broth_uses")
+    if uses is not None:
+        try:
+            u = int(uses)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("broth_uses 不是整数")
+        else:
+            if u > BROTH_USE_LIMIT:
+                ok = False
+                reasons.append("卤水已使用 %d 次超过上限 3 次, 杂菌积累风味劣化, 建议废弃" % u)
+
+    stored = data.get("stored")
+    if stored is None:
+        ok = False
+        reasons.append("未填写保存方式(stored), 卤水保存状态未知")
+    elif stored == "room":
+        ok = False
+        reasons.append("卤水常温保存, 夏季数小时即酸败, 必须煮沸后冷藏")
+    elif stored not in ("fridge", "none"):
+        ok = False
+        reasons.append("stored 取值非法(应为 fridge/room/none)")
+
+    if ok:
+        reasons.append("卤制记录通过: 焯水/时间/卤水次数/保存均合规")
+    return ok, reasons
+
+
+def load_json(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def selftest():
+    passed = 0
+
+    # 1. 正例: 荤菜焯水+时间合规+卤水2次+冷藏 -> 通过
+    ok, rs = evaluate({
+        "is_meat": True, "blanched": True, "braise_minutes": 60,
+        "broth_uses": 2, "stored": "fridge", "spoiled": False,
+    })
+    assert ok is True, "正例应通过: %s" % rs
+    passed += 1
+
+    # 2. 反例: 变质信号 -> 必须不合格
+    ok, rs = evaluate({"spoiled": True})
+    assert ok is False, "变质必须判不合格"
+    assert any("废弃" in r for r in rs), "变质原因缺失: %s" % rs
+    passed += 1
+
+    # 3. 反例: 荤菜未焯水 -> 必须不合格
+    ok, rs = evaluate({
+        "is_meat": True, "blanched": False, "braise_minutes": 60,
+        "broth_uses": 1, "stored": "fridge", "spoiled": False,
+    })
+    assert ok is False, "荤菜未焯水必须判不合格"
+    assert any("焯水" in r for r in rs), "焯水原因缺失: %s" % rs
+    passed += 1
+
+    # 4. 反例: 卤制时间缺失 -> 必须不合格
+    ok, rs = evaluate({
+        "is_meat": True, "blanched": True, "broth_uses": 1,
+        "stored": "fridge", "spoiled": False,
+    })
+    assert ok is False, "缺时间必须判不合格"
+    passed += 1
+
+    # 5. 反例: 卤水超 3 次 -> 必须不合格
+    ok, rs = evaluate({
+        "is_meat": True, "blanched": True, "braise_minutes": 60,
+        "broth_uses": 5, "stored": "fridge", "spoiled": False,
+    })
+    assert ok is False, "超次必须判不合格"
+    assert any("3 次" in r for r in rs), "超次原因缺失: %s" % rs
+    passed += 1
+
+    # 6. 反例: 常温保存 -> 必须不合格
+    ok, rs = evaluate({
+        "is_meat": True, "blanched": True, "braise_minutes": 60,
+        "broth_uses": 1, "stored": "room", "spoiled": False,
+    })
+    assert ok is False, "常温保存必须判不合格"
+    assert any("冷藏" in r for r in rs), "保存原因缺失: %s" % rs
+    passed += 1
+
+    # 7. 反例: 素菜卤 60 分钟 -> 必须不合格
+    ok, rs = evaluate({
+        "is_meat": False, "braise_minutes": 60,
+        "broth_uses": 1, "stored": "fridge", "spoiled": False,
+    })
+    assert ok is False, "素菜超时必须判不合格"
+    passed += 1
+
+    # 8. 反例: 荤菜时间 5 分钟夹生 -> 必须不合格
+    ok, rs = evaluate({
+        "is_meat": True, "blanched": True, "braise_minutes": 5,
+        "broth_uses": 1, "stored": "fridge", "spoiled": False,
+    })
+    assert ok is False, "夹生必须判不合格"
+    passed += 1
+
+    # 9. BOM 处理
+    here = os.path.dirname(os.path.abspath(__file__))
+    bom_path = os.path.join(here, "_bom_sample.json")
+    payload = json.dumps({
+        "is_meat": True, "blanched": True, "braise_minutes": 60,
+        "broth_uses": 1, "stored": "fridge", "spoiled": False,
+    }, ensure_ascii=False)
+    with open(bom_path, "wb") as f:
+        f.write(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+    d = load_json(bom_path)
+    assert d.get("stored") == "fridge", "BOM 输入解析后 key 不应带 \﻿"
+    assert "braise_minutes" in d, "BOM 输入 key 必须干净"
+    os.remove(bom_path)
+    passed += 1
+
+    # 10. 边界: 素菜合规 -> 通过
+    ok, rs = evaluate({
+        "is_meat": False, "braise_minutes": 8,
+        "broth_uses": 1, "stored": "fridge", "spoiled": False,
+    })
+    assert ok is True, "素菜合规应通过: %s" % rs
+    passed += 1
+
+    line = "SELFTEST OK (%d assertions)" % passed
+    return line, passed
+
+
+def main():
+    ap = argparse.ArgumentParser(description="卤味卤制记录校验")
+    ap.add_argument("--file", help="卤制记录 JSON")
+    ap.add_argument("--selftest", action="store_true", help="内置自检")
+    args = ap.parse_args()
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        line, total = selftest()
+        with open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        print(line)
+        return 0 if line.startswith("SELFTEST OK") else 1
+
+    if args.file:
+        try:
+            data = load_json(args.file)
+        except Exception as e:  # noqa: BLE001
+            msg = "读取失败: %s" % e
+            with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            print(msg)
+            return 1
+        ok, reasons = evaluate(data)
+        out = ("PASS " if ok else "FAIL ") + "；".join(reasons)
+        with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+            f.write(out + "\n")
+        print(out)
+        return 0 if ok else 1
+
+    print("需要 --file 或 --selftest")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

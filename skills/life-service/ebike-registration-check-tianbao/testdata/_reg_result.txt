@@ -1,0 +1,96 @@
+PASS P01 norm 去空格
+PASS P02 norm 去括号
+PASS P03 filled 待填
+PASS P04 filled 有/无
+PASS P05 filled 有
+PASS P06 filled 空
+PASS P07 表头不算值
+PASS P08 样例字段数
+PASS P09 冒号行解析
+PASS F01 城市
+PASS F02 车速
+PASS F03 电压
+PASS F04 功率
+PASS F05 质量
+PASS F06 脚踏
+PASS F07 空表车速
+PASS F08 空表脚踏是占位
+PASS F09 最长别名优先
+PASS F10 发票
+PASS N01 parse_num 整数
+PASS N02 parse_num 小数
+PASS N03 parse_num 空
+PASS N04 parse_num 带单位
+PASS N05 fmt_num 去点零
+PASS N06 fmt_num 一位
+PASS N07 fmt_num None
+PASS N08 fmt_money
+PASS N09 parse_date
+PASS N10 parse_date 中文
+PASS N11 parse_date 空
+PASS C01 超标定性=机动车
+PASS C02 超标列出不符合项
+PASS C03 超标项数
+PASS C04 达标定性=非机动车
+PASS C05 达标无不符合项
+PASS C06 达标依据含 GB 17761
+PASS C07 无脚踏=超标
+PASS C08 无脚踏被抓
+PASS C09 缺车速=不判定超标
+PASS C10 缺车速列待补正
+PASS R01 生成成功
+PASS R02 九段
+PASS R03 结论摘要
+PASS R04 车种定性段
+PASS R05 材料段
+PASS R06 卡点段
+PASS R07 过渡期段
+PASS R08 资质段
+PASS R09 待办段
+PASS R10 纪律段
+PASS R11 定性=机动车
+PASS R12 改装被抓
+PASS R13 发票卡点被抓
+PASS R14 无证驾驶提示
+PASS R15 交强险提示
+PASS R16 过渡期查询入口
+PASS R17 12123 提示
+PASS R18 结论态四选一
+PASS R19 风险项非空
+PASS R20 待办非空
+PASS R21 无待填泄漏
+PASS R22 无乱码
+PASS R23 表格不裂
+PASS R24 城市写入
+PASS R25 复议诉讼提示
+PASS R26 达标车可生成
+PASS R27 达标车定性=非机动车
+PASS R28 达标车不出现无证驾驶提示
+PASS T01 过渡期过期被抓
+PASS T02 过渡期过期计入风险项
+PASS T03 过渡期未到期
+PASS T04 不清楚转待补正
+PASS T05 无过渡期提示
+PASS U01 车架号磨损被抓
+PASS U02 铭牌脱落被抓
+PASS V01 二手车被抓
+PASS V02 二手车提示查状态
+PASS V03 合格证不符被抓
+PASS W01 改装被抓
+PASS W02 改装提示恢复原状
+PASS W03 未改装不误报
+PASS X01 临时牌被抓
+PASS Y01 空表返回None
+PASS Y02 空表有提示
+PASS Y03 缺文件不崩
+PASS Z01 空输入退出码
+PASS Z02 空输入有提示
+PASS Z03 json 退出码
+PASS Z04 json 是对象
+PASS Z05 json 含结论
+PASS Z06 json 含风险项
+PASS Z07 json 含待办
+PASS Z08 json 含定性
+PASS Z09 样例退出码
+PASS Z10 样例多段
+== TOTAL PASS=95 FAIL=0 ==

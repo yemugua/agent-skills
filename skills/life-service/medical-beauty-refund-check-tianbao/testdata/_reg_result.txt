@@ -1,0 +1,64 @@
+PASS  norm
+PASS  filled 待填
+PASS  filled 否为真值
+PASS  unknown 空
+PASS  money
+PASS  parse_num 带贷
+PASS  parse_date
+PASS  yesno 否
+PASS  yesno 是
+PASS  yesno 待确认 None
+PASS  样例机构名
+PASS  样例已付
+PASS  样例事故
+PASS  空输入机构空
+PASS  空输入已付空
+PASS  字段不串-收款主体
+PASS  样例无许可证=不通过
+PASS  样例无许可证提示非法行医
+PASS  有证=通过
+PASS  有证提示核对科目
+PASS  未填资质=待补正
+PASS  样例医师未注册=高危
+PASS  样例医师名进说明
+PASS  医师已注册无高危
+PASS  样例未签合同=风险
+PASS  样例合同未写明=风险
+PASS  签了但无明细=风险
+PASS  样例事故=高危
+PASS  样例效果未达=风险
+PASS  无承诺无事故无风险
+PASS  样例增项=风险
+PASS  样例分期贷=风险
+PASS  无贷无风险
+PASS  样例全责全额退
+PASS  全责提示全额退
+PASS  部分责任净额
+PASS  无金额无法测算
+PASS  样例有合同证据?
+PASS  样例缺病历证据
+PASS  无证据缺5项
+PASS  证据齐全无缺失
+PASS  样例结论不通过
+PASS  样例有高危项
+PASS  报告九段
+PASS  含待办补正动作
+PASS  含边界与纪律
+PASS  含维权路径表格
+PASS  无四星号
+PASS  有货币符号
+PASS  待办非空
+PASS  空输入待补正
+PASS  空输入不判通过
+PASS  空输入补正提示
+PASS  空输入仍出报告
+PASS  样例 rc=0
+PASS  样例 stdout 有报告
+PASS  样例段落>=9
+PASS  空输入 rc=2
+PASS  json rc=0
+PASS  json 可解析
+PASS  json 含结论
+PASS  缺文件 rc=2
+
+PASS=62 FAIL=0

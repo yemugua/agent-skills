@@ -1,0 +1,399 @@
+# -*- coding: utf-8 -*-
+"""食物解冻方式与安全核查：按食材给出可用解冻方式、禁止方式、耗时估算与复冻判定。
+
+用法:
+  python food_thaw_guide.py --file thaw.json [--out result.md] [--format json]
+  python food_thaw_guide.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 四类解冻方式代号
+METHODS = ('冷藏慢解', '室温', '微波', '热水')
+
+# 食材 -> (中文名, 推荐方式, 禁止方式, 厚度厘米, 备注)
+# 厚度用于估算冷藏解冻耗时: 每 2.5 厘米约需 12 到 24 小时
+FOODS = {
+    'whole_fish': ('整条鱼', '冷藏慢解', '热水', 6,
+                   '整块鱼肉严禁热水或微波，解冻即崩散并大量流失汁液'),
+    'fish_fillet': ('鱼片鱼柳', '冷藏慢解', '热水', 3,
+                    '薄片可微波短时段解冻，但仍以冷藏为首选'),
+    'shrimp': ('虾仁虾', '冷藏慢解', '热水', 3,
+               '带壳虾可用盐水浸解，但不应长时间室温放置'),
+    'beef_roast': ('整块牛肉', '冷藏慢解', '室温', 8,
+                   '大块必须冷藏解冻，室温解冻表面已进危险温度区而内部还冻着'),
+    'beef_slice': ('牛肉片', '微波', '热水', 2,
+                   '薄片可微波或冷藏，解冻后不要放回冷冻室'),
+    'pork_roast': ('整块猪肉', '冷藏慢解', '室温', 7,
+                   '同牛肉，需按厚度给足冷藏时间'),
+    'chicken_whole': ('整鸡', '冷藏慢解', '室温', 10,
+                      '带骨整禽必须冷藏解冻，微波解冻易熟在局部而中心仍冻'),
+    'chicken_part': ('鸡翅鸡腿', '冷藏慢解', '热水', 4,
+                     '小块可微波，但须立即烹调'),
+    'ground_meat': ('肉馅肉糜', '冷藏慢解', '室温', 4,
+                    '肉馅表面积大，室温解冻风险高，只能冷藏'),
+    'frozen_dumpling': ('冷冻水饺包子', '冷藏慢解', '热水', 3,
+                        '速食类建议直接下锅煮，不建议解冻'),
+    'frozen_bread': ('冷冻面包', '室温', '热水', 6,
+                     '烘焙类室温回温即可，不需冷藏解冻'),
+    'ice_cream': ('冰淇淋', '冷藏慢解', '室温', 8,
+                  '仅冷藏室回温，严禁室温与热水，融化后不可再冻'),
+    'butter': ('黄油', '室温', '热水', 6,
+               '烘焙用黄油可室温回软，需隔水融化时水温不超过 40 摄氏度'),
+    'frozen_vegetable': ('冷冻蔬菜', '冷藏慢解', '热水', 4,
+                         '不解冻直接烹调更佳，口感与营养损失都更小'),
+    'frozen_rice': ('冷冻米饭', '冷藏慢解', '热水', 4,
+                    '优先直接加热水复热，无需解冻'),
+    'potato': ('整土豆', '室温', '热水', 8,
+               '土豆可室温回温，不可整块热水煮，内外受热不均易外熟内生'),
+    'whole_egg': ('整冷冻蛋', '冷藏慢解', '热水', 6,
+                  '无壳蛋可冷藏解冻，带壳冷冻蛋本就不应产生'),
+    'butter_cookie': ('冷冻饼干糕点', '室温', '微波', 5,
+                      '饼干类室温回温即可，微波会使黄油融化口感发砂'),
+}
+
+# 绝对禁止热水解冻的品类（硬红线）
+FORBID_HOT = {
+    'whole_fish': '整块鱼肉热水解冻，表层瞬间熟化而中心仍冰冻，细胞破裂后汁液流失、肉质发柴',
+    'shrimp': '虾类热水解冻外壳粘连、虾肉变面，风味与口感不可接受',
+    'chicken_whole': '带骨整禽热水解冻，局部受热熟化，中心仍冻，解冻后极易滋生细菌',
+    'pork_roast': '整块猪肉热水解冻，外层渗出大量汁液，营养流失且易污染台面',
+    'beef_roast': '整块牛肉热水解冻，汁液流失严重，表面残留生熟不均',
+    'frozen_dumpling': '速食类热水泡解冻会外皮泡烂破口，且速食本身无需解冻',
+    'ice_cream': '冰淇淋热水接触即大量融化，不可再冻成原质地',
+}
+
+# 不可复冻（一次性解冻用完）的品类
+NO_REFREEZE = {
+    'whole_fish': '整鱼解冻后细菌大量繁殖，不可复冻',
+    'fish_fillet': '鱼片解冻后质地已变，不可复冻',
+    'shrimp': '虾类解冻后不可复冻',
+    'beef_roast': '整块肉解冻后表面细菌繁殖，复冻不能逆转',
+    'beef_slice': '肉片解冻后不可复冻',
+    'pork_roast': '整块猪肉解冻后不可复冻',
+    'chicken_whole': '整鸡解冻后不可复冻',
+    'chicken_part': '鸡翅鸡腿解冻后不可复冻',
+    'ground_meat': '肉馅解冻后不可复冻',
+    'whole_egg': '蛋液解冻后不可复冻',
+}
+
+# 室温解冻的时间上限（小时），超过即进入危险温度区累积风险
+ROOM_LIMIT_H = {
+    'frozen_bread': 4,
+    'butter': 3,
+    'butter_cookie': 4,
+    'potato': 6,
+}
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def food_of(key):
+    k = norm(key)
+    if k not in FOODS:
+        raise ValueError('未知食材键: %s，可选键见 FOODS 表' % key)
+    return FOODS[k]
+
+
+def hours_refrigerated(thick_cm):
+    """冷藏解冻耗时估算: 每 2.5 厘米约 12 到 24 小时, 取区间下限作参考。"""
+    t = float(thick_cm)
+    if t <= 0:
+        raise ValueError('厚度必须为正数')
+    return t / 2.5 * 12.0
+
+
+def transfer_plan(hours):
+    """从冷冻室提前转移到冷藏室的时点建议。"""
+    h = float(hours)
+    if h <= 12:
+        return '当天尽早转入冷藏室，并在当日内完成解冻'
+    return '需提前一天转入冷藏室；按估算耗时 %.0f 小时倒推，夜间入睡前转入最合适' % h
+
+
+def allow(method, ban, key):
+    if method not in METHODS:
+        raise ValueError('方式只能填 %s 之一，实为: %s' % ('/'.join(METHODS), method))
+    if method == ban:
+        return False
+    if method == '热水' and key in FORBID_HOT:
+        return False
+    if method == '室温' and key in ('whole_fish', 'shrimp', 'chicken_whole',
+                                    'pork_roast', 'beef_roast', 'ground_meat'):
+        return False
+    return True
+
+
+def calc(data):
+    items = data.get('items') or []
+    if not items:
+        raise ValueError('至少需要一项待解冻食材')
+    plan_from = data.get('plan_from', '今天')
+    if plan_from not in ('今天', '明天', '后天'):
+        raise ValueError('plan_from 只能填 今天 / 明天 / 后天')
+
+    rows = []
+    for it in items:
+        key = norm(it.get('food'))
+        name, rec, ban, thick, note = food_of(key)
+        chosen = it.get('method') or rec
+        ok = allow(chosen, ban, key)
+        hrs = hours_refrigerated(thick)
+        if chosen == '冷藏慢解':
+            need = hrs
+        elif chosen == '室温':
+            need = max(2.0, hrs / 3.0)
+        elif chosen == '微波':
+            need = max(1.0, hrs / 6.0)
+        else:
+            need = 1.0
+        rows.append({
+            'name': it.get('name', name),
+            'food': key,
+            'food_name': name,
+            'chosen': chosen,
+            'recommended': rec,
+            'banned': ban,
+            'ok': ok,
+            'verdict': '方式可行' if ok else '方式禁止',
+            'hours': round(need, 1),
+            'thick': thick,
+            'refreeze': '可复冻' if key not in NO_REFREEZE else '不可复冻',
+            'transfer': transfer_plan(hrs) if ok else '方式禁止，不做转移安排',
+            'note': note,
+        })
+
+    rows.sort(key=lambda r: 0 if not r['ok'] else 1)
+    warns = []
+    for r in rows:
+        if not r['ok']:
+            warns.append('%s 选用「%s」为禁止方式，应改用「%s」。%s'
+                         % (r['name'], r['chosen'], r['recommended'],
+                            FORBID_HOT.get(r['food'], '该方式不适用于此类食材')))
+        if r['refreeze'] == '不可复冻':
+            warns.append('%s 解冻后不可复冻，解冻当次必须吃完' % r['name'])
+    slow = [r for r in rows if r['ok'] and r['hours'] >= 12]
+    if slow:
+        warns.append('以下食材冷藏解冻耗时较长，需按转移时点安排：%s' % '、'.join(
+            r['name'] for r in slow))
+    long_room = [r for r in rows if r['ok'] and r['chosen'] == '室温'
+                 and r['hours'] > ROOM_LIMIT_H.get(r['food'], 4)]
+    if long_room:
+        warns.append('以下食材室温解冻耗时超过安全上限，建议改用冷藏慢解：%s' % '、'.join(
+            r['name'] for r in long_room))
+    if plan_from == '今天' and any(r['ok'] and r['hours'] > 8 for r in rows):
+        warns.append('计划今天开始，但存在耗时超过 8 小时的食材，今天才转移来不及，请改用其他方式')
+
+    return {
+        'plan_from': plan_from,
+        'rows': rows,
+        'warns': warns,
+        'cross_contamination': [
+            '解冻盘必须单独使用，不与直接入口或即食食品接触',
+            '生禽与生肉的解冻液必须倒掉，绝不用于其他食材',
+            '解冻完成后立即清洗解冻盘与操作台面，再处理即食食品',
+            '解冻水不得倒入水槽污染其他物品，接触下层食材的滴液要提前防止',
+            '处理完生肉后必须洗手，再接触熟食与即食食品',
+        ],
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 食物解冻方式与安全核查')
+    L.append('')
+    L.append('计划起始：%s' % r['plan_from'])
+    L.append('')
+    L.append('## 一、逐项核查（禁止方式排最前）')
+    L.append('')
+    L.append('| 食材 | 采用方式 | 推荐方式 | 禁止方式 | 判定 | 预计耗时（小时） | 可否复冻 | 说明 |')
+    L.append('|---|---|---|---|---|---|---|---|')
+    for x in r['rows']:
+        L.append('| %s | %s | %s | %s | %s | %.1f | %s | %s |'
+                 % (x['name'], x['chosen'], x['recommended'], x['banned'],
+                    x['verdict'], x['hours'], x['refreeze'], x['note']))
+    L.append('')
+    L.append('## 二、转移时点')
+    L.append('')
+    for x in r['rows']:
+        L.append('- %s：%s' % (x['name'], x['transfer']))
+    L.append('')
+    L.append('## 三、解冻环节交叉污染防控')
+    L.append('')
+    for c in r['cross_contamination']:
+        L.append('- %s' % c)
+    L.append('')
+    L.append('## 四、提示')
+    L.append('')
+    if r['warns']:
+        for w in r['warns']:
+            L.append('- %s' % w)
+    else:
+        L.append('- 方式选择均在允许范围内，按估算耗时与转移时点执行')
+    L.append('')
+    L.append('## 五、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 已在冷冻室内完成解冻，未用热水或室温长时间放置')
+    L.append('- [ ] 解冻盘单独使用，解冻液已倒掉并清洗')
+    L.append('- [ ] 处理完生肉生禽后已洗手，再接触熟食与即食食品')
+    L.append('- [ ] 解冻后当次吃完，未复冻放回')
+    L.append('- [ ] 中心已彻底解冻，未按「外面化了就是化了」判断')
+    L.append('- [ ] 冷藏解冻期间未与生鲜即食食品同层交叉污染')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    # 1 整鱼禁止热水
+    r1 = calc({'items': [{'food': 'whole_fish', 'method': '热水'}]})
+    ck(r1['rows'][0]['ok'] is False, '整鱼热水解冻应被禁止，实为 %s' % r1['rows'][0]['ok'])
+    ck(r1['rows'][0]['verdict'] == '方式禁止', '整鱼热水应判方式禁止，实为 %s' % r1['rows'][0]['verdict'])
+    ck(any('禁止方式' in w for w in r1['warns']), '应产生禁止方式提示，实为 %s' % r1['warns'])
+    ck('流失' in FORBID_HOT['whole_fish'] or '流失' in r1['rows'][0]['note'],
+       '整鱼应说明汁液流失风险')
+
+    # 2 整鸡禁止室温
+    r2 = calc({'items': [{'food': 'chicken_whole', 'method': '室温'}]})
+    ck(r2['rows'][0]['ok'] is False, '整鸡室温解冻应被禁止，实为 %s' % r2['rows'][0]['ok'])
+
+    # 3 冷藏耗时按厚度估算
+    ck(abs(hours_refrigerated(2.5) - 12.0) < 0.01, '2.5 厘米应为 12 小时，实为 %s' % hours_refrigerated(2.5))
+    ck(abs(hours_refrigerated(6.0) - 28.8) < 0.01, '6 厘米应为 28.8 小时，实为 %s' % hours_refrigerated(6.0))
+    ck(abs(hours_refrigerated(10.0) - 48.0) < 0.01, '10 厘米应为 48 小时，实为 %s' % hours_refrigerated(10.0))
+
+    # 4 耗时长需提前一天转移
+    r4 = calc({'items': [{'food': 'chicken_whole', 'method': '冷藏慢解'}]})
+    ck(r4['rows'][0]['hours'] > 40, '整鸡冷藏解冻应超 40 小时，实为 %s' % r4['rows'][0]['hours'])
+    ck('提前一天' in r4['rows'][0]['transfer'], '超 12 小时应提示提前一天转移，实为 %s' % r4['rows'][0]['transfer'])
+
+    # 5 不可复冻
+    r5 = calc({'items': [{'food': 'beef_slice'}, {'food': 'frozen_bread'}]})
+    names = {x['name']: x['refreeze'] for x in r5['rows']}
+    ck(names['牛肉片'] == '不可复冻', '牛肉片应不可复冻，实为 %s' % names['牛肉片'])
+    ck(names['冷冻面包'] == '可复冻', '冷冻面包应可复冻，实为 %s' % names['冷冻面包'])
+
+    # 6 默认方式即推荐方式
+    r6 = calc({'items': [{'food': 'pork_roast'}]})
+    ck(r6['rows'][0]['chosen'] == '冷藏慢解', '整块猪肉默认应为冷藏慢解，实为 %s' % r6['rows'][0]['chosen'])
+    ck(r6['rows'][0]['ok'] is True, '整块猪肉冷藏慢解应可行，实为 %s' % r6['rows'][0]['ok'])
+
+    # 7 速食不解冻提示
+    ck('无需解冻' in FOODS['frozen_dumpling'][4] or '不建议解冻' in FOODS['frozen_dumpling'][4],
+       '速食类应提示无需解冻')
+
+    # 8 排序：禁止方式在前
+    r8 = calc({'items': [
+        {'food': 'frozen_bread', 'name': '面包'},
+        {'food': 'whole_fish', 'name': '整鱼', 'method': '热水'}]})
+    ck(r8['rows'][0]['name'] == '整鱼', '禁止方式应排最前，实为 %s' % r8['rows'][0]['name'])
+
+    # 9 今天开始但耗时长应告警
+    r9 = calc({'plan_from': '今天', 'items': [{'food': 'beef_roast', 'method': '冷藏慢解'}]})
+    ck(any('来不及' in w for w in r9['warns']), '今天开始+耗时长应告警，实为 %s' % r9['warns'])
+
+    # 10 BOM 输入两条路径
+    bom = '﻿{"items": [{"food": "shrimp", "method": "热水"}]}'
+    d10 = json.loads(bom.lstrip('﻿'))
+    r10 = calc(d10)
+    ck(r10['rows'][0]['name'] == '虾仁虾', 'BOM 输入应正确解析，实为 %s' % r10['rows'][0]['name'])
+    ck(r10['rows'][0]['ok'] is False, '虾类热水解冻应被禁止')
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe2.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'items': [{'food': 'ground_meat', 'method': '室温'}]}))
+    try:
+        r10b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r10b['rows'][0]['ok'] is False, '肉馅室温解冻应被禁止')
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 11 非法输入
+    for bad, why in (
+        ({'items': []}, '空列表'),
+        ({'items': [{'food': '不存在的食材'}]}, '未知食材键'),
+        ({'items': [{'food': 'shrimp', 'method': '开水烫'}]}, '非法方式名'),
+        ({'plan_from': '下周', 'items': [{'food': 'shrimp'}]}, '非法 plan_from'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例11 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 12 输出结构
+    md = render_md(r1)
+    for key in ('转移时点', '交叉污染防控', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(r1['cross_contamination']) == 5, '交叉污染防控应为 5 条，实为 %d' % len(r1['cross_contamination']))
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 热水禁止/室温禁止/冷藏耗时估算/提前一天转移/不可复冻/'
+        '默认方式/速食不解冻/禁止项排序/时间冲突告警/BOM 两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='食物解冻方式与安全核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

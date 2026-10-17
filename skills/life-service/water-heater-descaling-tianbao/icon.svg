@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="16" fill="#e8eef5"/>
+  <rect x="34" y="30" width="60" height="68" rx="20" fill="#fff" stroke="#3b6fa0" stroke-width="4"/>
+  <path d="M50 50 q6 10 0 20 M64 50 q6 10 0 20 M78 50 q6 10 0 20" stroke="#3b6fa0" stroke-width="3" fill="none"/>
+  <text x="64" y="118" font-size="14" text-anchor="middle" fill="#3b6fa0" font-family="sans-serif">除垢</text>
+</svg>

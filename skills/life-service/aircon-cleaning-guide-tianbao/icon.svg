@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="16" fill="#e8eef5"/>
+  <rect x="24" y="36" width="80" height="26" rx="6" fill="#fff" stroke="#3b6fa0" stroke-width="4"/>
+  <line x1="34" y1="49" x2="94" y2="49" stroke="#3b6fa0" stroke-width="2"/>
+  <path d="M40 70 q8 8 16 0 t16 0 t16 0" stroke="#3b6fa0" stroke-width="3" fill="none"/>
+  <text x="64" y="118" font-size="14" text-anchor="middle" fill="#3b6fa0" font-family="sans-serif">清洗</text>
+</svg>

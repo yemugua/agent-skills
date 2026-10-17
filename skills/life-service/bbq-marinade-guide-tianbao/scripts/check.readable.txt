@@ -1,0 +1,220 @@
+# -*- coding: utf-8 -*-
+"""烧烤腌制方案校验脚本。
+
+用法:
+  python check.py --file 腌制方案.json
+  python check.py --selftest
+
+JSON 字段:
+  meat_type      食材: beef/mutton/pork/chicken/seafood/vegetable
+  marinade_minutes 腌制分钟数 (数字)
+  tenderizer_g_per_kg 嫩肉粉克每公斤 (数字, 0 表示不用)
+  refrigerated   是否冷藏 (true/false)
+"""
+import argparse
+import json
+import os
+import sys
+
+# 各食材腌制时间上限（分钟），下限统一纳入判断
+TIME_LIMIT = {
+    "beef": 24 * 60, "mutton": 24 * 60, "pork": 12 * 60,
+    "chicken": 4 * 60, "seafood": 60, "vegetable": 2 * 60,
+}
+TENDERIZER_LIMIT = 3.0
+TENDERIZER_OVER = 5.0
+VALID_TYPES = list(TIME_LIMIT.keys())
+
+
+def evaluate(data):
+    reasons = []
+    ok = True
+
+    mtype = data.get("meat_type")
+    if mtype is None:
+        ok = False
+        reasons.append("未填写食材类型(meat_type), 无法匹配时间区间")
+    elif mtype not in VALID_TYPES:
+        ok = False
+        reasons.append("meat_type 取值非法(应为 beef/mutton/pork/chicken/seafood/vegetable)")
+
+    minutes = data.get("marinade_minutes")
+    if minutes is None:
+        ok = False
+        reasons.append("未填写腌制时间(marinade_minutes)")
+    else:
+        try:
+            m = float(minutes)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("marinade_minutes 不是数字")
+        else:
+            if mtype in TIME_LIMIT and m > TIME_LIMIT[mtype]:
+                ok = False
+                reasons.append("%s 腌制 %.0f 分钟超过上限 %d 分钟, 会出水变味发柴" % (
+                    mtype, m, TIME_LIMIT[mtype]))
+
+    tender = data.get("tenderizer_g_per_kg")
+    if tender is not None:
+        try:
+            t = float(tender)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("tenderizer_g_per_kg 不是数字")
+        else:
+            if t > TENDERIZER_OVER:
+                ok = False
+                reasons.append("嫩肉粉 %.1fg/kg 超过过量线 5g/kg, 肉质粉烂如渣" % t)
+            elif t > TENDERIZER_LIMIT:
+                ok = False
+                reasons.append("嫩肉粉 %.1fg/kg 超过安全上限 3g/kg" % t)
+
+    refrig = data.get("refrigerated")
+    if refrig is None:
+        ok = False
+        reasons.append("未填写是否冷藏(refrigerated)")
+    elif refrig is not True:
+        ok = False
+        reasons.append("未冷藏腌制, 常温尤其夏季细菌繁殖风险高, 必须冷藏")
+
+    if ok:
+        reasons.append("腌制方案通过: 时间/嫩肉粉/冷藏均合规")
+    return ok, reasons
+
+
+def load_json(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def selftest():
+    passed = 0
+
+    # 1. 正例: 牛肉冷藏腌 6h, 嫩肉粉 2g/kg -> 通过
+    ok, rs = evaluate({
+        "meat_type": "beef", "marinade_minutes": 360,
+        "tenderizer_g_per_kg": 2.0, "refrigerated": True,
+    })
+    assert ok is True, "正例应通过: %s" % rs
+    passed += 1
+
+    # 2. 反例: 嫩肉粉过量 8g/kg -> 必须不合格
+    ok, rs = evaluate({
+        "meat_type": "beef", "marinade_minutes": 360,
+        "tenderizer_g_per_kg": 8.0, "refrigerated": True,
+    })
+    assert ok is False, "嫩肉粉过量必须判不合格"
+    assert any("粉烂" in r for r in rs), "过量原因缺失: %s" % rs
+    passed += 1
+
+    # 3. 反例: 鸡肉常温腌 -> 必须不合格
+    ok, rs = evaluate({
+        "meat_type": "chicken", "marinade_minutes": 120,
+        "tenderizer_g_per_kg": 0, "refrigerated": False,
+    })
+    assert ok is False, "常温必须判不合格"
+    assert any("冷藏" in r for r in rs), "冷藏原因缺失: %s" % rs
+    passed += 1
+
+    # 4. 反例: 海鲜腌 120 分钟超上限 -> 必须不合格
+    ok, rs = evaluate({
+        "meat_type": "seafood", "marinade_minutes": 120,
+        "tenderizer_g_per_kg": 0, "refrigerated": True,
+    })
+    assert ok is False, "海鲜超时必须判不合格"
+    passed += 1
+
+    # 5. 反例: 缺 meat_type -> 必须不合格
+    ok, rs = evaluate({
+        "marinade_minutes": 360, "tenderizer_g_per_kg": 0, "refrigerated": True,
+    })
+    assert ok is False, "缺食材必须判不合格"
+    passed += 1
+
+    # 6. 反例: 缺时间 -> 必须不合格
+    ok, rs = evaluate({
+        "meat_type": "beef", "tenderizer_g_per_kg": 0, "refrigerated": True,
+    })
+    assert ok is False, "缺时间必须判不合格"
+    passed += 1
+
+    # 7. 反例: meat_type 非法 -> 必须不合格
+    ok, rs = evaluate({
+        "meat_type": "fish", "marinade_minutes": 30,
+        "tenderizer_g_per_kg": 0, "refrigerated": True,
+    })
+    assert ok is False, "非法食材必须判不合格"
+    passed += 1
+
+    # 8. 反例: 嫩肉粉 4g/kg 超安全上限 -> 必须不合格
+    ok, rs = evaluate({
+        "meat_type": "pork", "marinade_minutes": 300,
+        "tenderizer_g_per_kg": 4.0, "refrigerated": True,
+    })
+    assert ok is False, "超安全上限必须判不合格"
+    passed += 1
+
+    # 9. BOM 处理
+    here = os.path.dirname(os.path.abspath(__file__))
+    bom_path = os.path.join(here, "_bom_sample.json")
+    payload = json.dumps({
+        "meat_type": "beef", "marinade_minutes": 360,
+        "tenderizer_g_per_kg": 2.0, "refrigerated": True,
+    }, ensure_ascii=False)
+    with open(bom_path, "wb") as f:
+        f.write(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+    d = load_json(bom_path)
+    assert d.get("meat_type") == "beef", "BOM 输入 key 不应带 \﻿"
+    assert "marinade_minutes" in d, "BOM 输入 key 必须干净"
+    os.remove(bom_path)
+    passed += 1
+
+    # 10. 边界: 鸡肉冷藏腌 2h, 无嫩肉粉 -> 通过
+    ok, rs = evaluate({
+        "meat_type": "chicken", "marinade_minutes": 120,
+        "tenderizer_g_per_kg": 0, "refrigerated": True,
+    })
+    assert ok is True, "鸡肉合规应通过: %s" % rs
+    passed += 1
+
+    line = "SELFTEST OK (%d assertions)" % passed
+    return line, passed
+
+
+def main():
+    ap = argparse.ArgumentParser(description="烧烤腌制方案校验")
+    ap.add_argument("--file", help="腌制方案 JSON")
+    ap.add_argument("--selftest", action="store_true", help="内置自检")
+    args = ap.parse_args()
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        line, total = selftest()
+        with open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        print(line)
+        return 0 if line.startswith("SELFTEST OK") else 1
+
+    if args.file:
+        try:
+            data = load_json(args.file)
+        except Exception as e:  # noqa: BLE001
+            msg = "读取失败: %s" % e
+            with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            print(msg)
+            return 1
+        ok, reasons = evaluate(data)
+        out = ("PASS " if ok else "FAIL ") + "；".join(reasons)
+        with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+            f.write(out + "\n")
+        print(out)
+        return 0 if ok else 1
+
+    print("需要 --file 或 --selftest")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

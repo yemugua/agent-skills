@@ -1,0 +1,265 @@
+# -*- coding: utf-8 -*-
+"""乌龟饲养配置校验脚本。
+
+用法:
+  python turtle_care_check.py --selftest
+  python turtle_care_check.py --file plan.json
+
+输入为 JSON，字段见 SKILL.md 第五章。读取时统一用 utf-8-sig 剥 BOM，
+避免 PowerShell 写出带 BOM 的文件导致首 key 变成 ﻿species_type 而取不到值。
+"""
+import argparse
+import json
+import os
+import sys
+
+VALID_SPECIES = ['水龟', '半水龟', '陆龟']
+BANNED_FOOD = ['火腿肠', '咸味', '面包屑', '巧克力', '洋葱', '大蒜', '大葱', '乳制品', '生猪肉', '牛奶']
+CORRECT_ORDER = ['先定种类', '测背甲长度', '配水体与晒台', '配温控与光照',
+                 '定喂养方案', '排换水与清理', '判冬眠必要性']
+
+
+def load_plan(path):
+    raw = open(path, 'rb').read()
+    text = raw.decode('utf-8-sig')
+    return json.loads(text)
+
+
+def validate(data):
+    findings = []
+
+    def add(level, item, why):
+        findings.append({'level': level, 'item': item, 'why': why})
+
+    species = data.get('species_type')
+    carapace = data.get('carapace_cm')
+    water_depth = data.get('water_depth_cm')
+    basking = data.get('basking_exists')
+    basking_temp = data.get('basking_temp_c')
+    water_temp = data.get('water_temp_c')
+    uvb = data.get('uvb_provided')
+    uvb_age = data.get('uvb_age_months')
+    feed_times = data.get('feed_times_per_week')
+    foods = data.get('food_items') or []
+    hibernate = data.get('hibernate')
+    hib_temp = data.get('hibernate_temp_c')
+    weight_checked = data.get('weight_checked')
+    steps = data.get('steps') or []
+
+    valid = species in VALID_SPECIES
+    if not valid:
+        add('先处理', '种类识别', 'species_type 不是水龟/半水龟/陆龟，无法校验配置')
+
+    # 硬需求：完全离水的晒台/干燥晒背区
+    if basking is not True:
+        add('先处理', '晒台', '缺少完全离水的晒台/干燥晒背区，龟无法离水晒背')
+    # 硬需求：UVB 光源与更换周期
+    if uvb is not True:
+        add('先处理', 'UVB', '未配备 UVB 光源，窗边直射不能替代')
+    elif isinstance(uvb_age, (int, float)) and uvb_age > 12:
+        add('先处理', 'UVB', 'UVB 灯具已用 %s 个月，超过 12 个月更换周期' % uvb_age)
+
+    # 温度区间（按种类）
+    if species == '水龟':
+        if isinstance(water_temp, (int, float)) and (water_temp < 20 or water_temp > 32):
+            add('先处理', '水温', '水温 %s 摄氏度超出安全区间 20-32' % water_temp)
+        if isinstance(basking_temp, (int, float)) and (basking_temp < 28 or basking_temp > 38):
+            add('先处理', '晒背温度', '晒背区温度 %s 摄氏度超出 28-38' % basking_temp)
+    elif species == '半水龟':
+        if isinstance(basking_temp, (int, float)) and (basking_temp < 28 or basking_temp > 38):
+            add('先处理', '晒背温度', '晒背区温度 %s 摄氏度超出 28-38' % basking_temp)
+    elif species == '陆龟':
+        if isinstance(basking_temp, (int, float)) and (basking_temp < 30 or basking_temp > 40):
+            add('先处理', '晒背温度', '晒背区温度 %s 摄氏度超出 30-40' % basking_temp)
+
+    # 水深按背甲换算
+    if valid and isinstance(carapace, (int, float)) and isinstance(water_depth, (int, float)):
+        if species == '陆龟':
+            if water_depth > carapace * 0.5:
+                add('先处理', '水深', '陆龟水深 %s cm 过深，应仅放浅水盆(<=背甲*0.5)' % water_depth)
+        else:
+            if water_depth < carapace * 1.0:
+                add('先处理', '水深', '水深 %s cm 浅于背甲 %s cm，龟无法自由潜水与站立' % (water_depth, carapace))
+            elif water_depth > carapace * 3.0:
+                add('先处理', '水深', '水深 %s cm 超过背甲 3 倍，弱泳者易溺水' % water_depth)
+            if species == '半水龟' and water_depth > carapace * 2.0:
+                add('先处理', '水深', '半水龟水深 %s cm 过深，应浅水+大片陆地' % water_depth)
+        if carapace < 5 and water_depth > carapace:
+            add('先处理', '龟苗浅水', '龟苗背甲 %s cm 水深 %s cm 超背甲，需浅水区+缓坡' % (carapace, water_depth))
+
+    # 禁忌食物（用 any 匹配，不能用 in BANNED）
+    for f in foods:
+        if any(b in f for b in BANNED_FOOD):
+            add('先处理', '禁忌食物', '食物含禁忌项：%s' % f)
+
+    # 投喂频次
+    if isinstance(feed_times, (int, float)):
+        if valid and isinstance(carapace, (int, float)) and carapace < 5:
+            if feed_times < 5:
+                add('待确认', '投喂频次', '龟苗建议每天1次(每周>=5)，当前 %s 次/周偏少' % feed_times)
+        elif feed_times < 1 or feed_times > 7:
+            add('先处理', '投喂频次', '每周投喂 %s 次超出合理区间 1-7' % feed_times)
+
+    # 体重记录
+    if weight_checked is not True:
+        add('先处理', '体重记录', '未做体重记录，无法判断健康趋势')
+
+    # 冬眠筛查
+    if hibernate is True:
+        if not isinstance(hib_temp, (int, float)):
+            add('先处理', '冬眠控温', '计划冬眠但未给出控温温度')
+        elif hib_temp < 2 or hib_temp > 15:
+            add('先处理', '冬眠控温', '冬眠控温 %s 摄氏度超出安全区间 2-15' % hib_temp)
+        if valid and isinstance(carapace, (int, float)) and carapace < 5:
+            add('先处理', '龟苗冬眠', '龟苗背甲 %s cm 不建议冬眠，应加温过冬' % carapace)
+        if weight_checked is not True:
+            add('先处理', '冬眠称重', '冬眠期间未定期称重，无法发现掉秤')
+
+    # 操作顺序（按输入原序取索引，不重新排序）
+    norm_steps = [s for s in steps if s in CORRECT_ORDER]
+    idx = [CORRECT_ORDER.index(s) for s in norm_steps]
+    if idx != sorted(idx):
+        add('先处理', '操作顺序', '环境布置操作顺序错误：应先定种类再配水体等后续步骤')
+
+    # 完整性提示（真实缺陷优先，无缺陷才落到待确认）
+    if valid and not isinstance(carapace, (int, float)):
+        add('待确认', '背甲长度', '未提供背甲长度，水深等无法换算')
+    if species in ('水龟', '半水龟') and not isinstance(water_depth, (int, float)):
+        add('待确认', '水深', '未提供水深')
+    if valid and not isinstance(basking_temp, (int, float)):
+        add('待确认', '晒背温度', '未提供晒背区温度')
+    if uvb is True and not isinstance(uvb_age, (int, float)):
+        add('待确认', 'UVB周期', 'UVB 灯具已用月数未提供')
+
+    real = [f for f in findings if f['level'] == '先处理']
+    if real:
+        overall = '先处理'
+    elif any(f['level'] == '待确认' for f in findings):
+        overall = '待确认'
+    else:
+        overall = '可照此执行'
+    return {'overall': overall, 'findings': findings}
+
+
+def render(result):
+    lines = ['结论：%s' % result['overall'], '']
+    if not result['findings']:
+        lines.append('未发现问题，可照此执行。')
+    for f in result['findings']:
+        lines.append('[%s] %s：%s' % (f['level'], f['item'], f['why']))
+    return '\n'.join(lines) + '\n'
+
+
+def selftest():
+    passed = 0
+    failed = 0
+
+    good = {
+        'species_type': '水龟', 'carapace_cm': 10, 'water_depth_cm': 18,
+        'basking_exists': True, 'basking_temp_c': 32, 'water_temp_c': 26,
+        'uvb_provided': True, 'uvb_age_months': 6, 'feed_times_per_week': 3,
+        'food_items': ['龟粮', '小鱼虾'], 'hibernate': False, 'weight_checked': True,
+        'steps': ['先定种类', '测背甲长度', '配水体与晒台', '配温控与光照', '定喂养方案'],
+    }
+    r = validate(good)
+    assert r['overall'] == '可照此执行', '良好配置应判可照此执行，实际=%s' % r['overall']
+    passed += 1
+
+    # 反例1：缺晒台
+    bad = dict(good); bad['basking_exists'] = False
+    r = validate(bad)
+    assert any(f['item'] == '晒台' for f in r['findings']), '缺晒台应判先处理'
+    assert r['overall'] == '先处理', '反例应判先处理'
+    passed += 1
+
+    # 反例2：禁忌食物
+    bad = dict(good); bad['food_items'] = ['龟粮', '火腿肠']
+    r = validate(bad)
+    assert any(f['item'] == '禁忌食物' for f in r['findings']), '禁忌食物应判先处理'
+    passed += 1
+
+    # 反例3：龟苗冬眠
+    bad = dict(good); bad['carapace_cm'] = 4; bad['water_depth_cm'] = 3
+    bad['hibernate'] = True; bad['hibernate_temp_c'] = 7
+    r = validate(bad)
+    assert any(f['item'] == '龟苗冬眠' for f in r['findings']), '龟苗冬眠应判先处理'
+    passed += 1
+
+    # 反例4：冬眠控温越界
+    bad = dict(good); bad['hibernate'] = True; bad['hibernate_temp_c'] = 20
+    r = validate(bad)
+    assert any(f['item'] == '冬眠控温' for f in r['findings']), '冬眠控温越界应判先处理'
+    passed += 1
+
+    # 反例5：UVB 超期
+    bad = dict(good); bad['uvb_age_months'] = 18
+    r = validate(bad)
+    assert any(f['item'] == 'UVB' for f in r['findings']), 'UVB 超期应判先处理'
+    passed += 1
+
+    # 反例6：操作顺序错误（先配水体再定种类）
+    bad = dict(good); bad['steps'] = ['配水体与晒台', '先定种类']
+    r = validate(bad)
+    assert any(f['item'] == '操作顺序' for f in r['findings']), '操作顺序错误应判先处理'
+    passed += 1
+
+    # 反例7：陆龟深水
+    bad = {'species_type': '陆龟', 'carapace_cm': 15, 'water_depth_cm': 20,
+           'basking_exists': True, 'basking_temp_c': 34, 'uvb_provided': True,
+           'uvb_age_months': 5, 'feed_times_per_week': 3, 'food_items': ['龟粮'],
+           'hibernate': False, 'weight_checked': True,
+           'steps': ['先定种类', '测背甲长度', '配水体与晒台', '配温控与光照']}
+    r = validate(bad)
+    assert any(f['item'] == '水深' for f in r['findings']), '陆龟深水应判先处理'
+    passed += 1
+
+    # 反例护栏：任何含真实缺陷的配置都不得判成可照此执行
+    bad = dict(good); bad['food_items'] = ['龟粮', '巧克力']
+    r = validate(bad)
+    assert r['overall'] != '可照此执行', '含禁忌食物的反例不得判可照此执行'
+    passed += 1
+
+    # BOM 处理：带 BOM 的 JSON 必须能正确解析
+    bom_json = ('﻿' + json.dumps(good, ensure_ascii=False)).encode('utf-8')
+    text = bom_json.decode('utf-8-sig')
+    assert '﻿' not in text, 'BOM 未被剥除'
+    data = json.loads(text)
+    assert data['species_type'] == '水龟', 'BOM 解析后首 key 错位'
+    r = validate(data)
+    assert r['overall'] == '可照此执行', 'BOM 输入经解析后校验应正常通过'
+    passed += 1
+
+    msg = 'SELFTEST OK (%d passed, %d failed)' % (passed, failed)
+    return msg, passed, failed
+
+
+def main():
+    ap = argparse.ArgumentParser(description='乌龟饲养配置校验')
+    ap.add_argument('--file', help='输入 JSON 配置文件路径')
+    ap.add_argument('--selftest', action='store_true', help='运行内置自检')
+    args = ap.parse_args()
+
+    if args.selftest:
+        msg, passed, failed = selftest()
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_selftest_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(msg + '\n')
+        print(msg)
+        sys.exit(1 if failed else 0)
+
+    if args.file:
+        data = load_plan(args.file)
+        result = validate(data)
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_last_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(render(result))
+        print(render(result))
+        sys.exit(0)
+
+    print('用法: python turtle_care_check.py --selftest | --file plan.json')
+    sys.exit(2)
+
+
+if __name__ == '__main__':
+    main()
+

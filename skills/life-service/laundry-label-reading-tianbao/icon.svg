@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="16" fill="#eef3e8"/>
+  <rect x="34" y="28" width="60" height="72" rx="6" fill="#fff" stroke="#5a8a3c" stroke-width="4"/>
+  <path d="M46 44 h20 v18 a10 10 0 0 1 -20 0 Z" fill="none" stroke="#5a8a3c" stroke-width="3"/>
+  <path d="M52 64 l6 6 8 -10" stroke="#5a8a3c" stroke-width="3" fill="none"/>
+  <text x="64" y="118" font-size="14" text-anchor="middle" fill="#5a8a3c" font-family="sans-serif">标签</text>
+</svg>

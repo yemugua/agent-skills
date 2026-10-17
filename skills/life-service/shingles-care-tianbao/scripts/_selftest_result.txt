@@ -1,0 +1,2 @@
+SELFTEST OK
+checks=22 passed=22 failed=0

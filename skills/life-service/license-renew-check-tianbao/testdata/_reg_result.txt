@@ -1,0 +1,136 @@
+PASS P01 norm 去空格
+PASS P02 norm 去竖线
+PASS P03 is_ph 待填
+PASS P04 is_ph 待填带说明
+PASS P05 is_ph 是/否
+PASS P06 is_ph 真值
+PASS P07 is_ph 日期
+PASS P08 is_ph 不清蜇
+PASS P09 get_text 姓名
+PASS P10 get_int 年龄
+PASS P11 get_int 分数
+PASS P12 表头不算值
+PASS P13 parse_date
+PASS P14 parse_date 中文
+PASS P15 parse_date 空
+PASS P16 fmt_num 去点零
+PASS P17 money
+PASS P18 add_years
+PASS P19 add_years 闰日
+PASS Y01 未处理违法=有（含未缴款不误判）
+PASS Y02 未结案事故=无
+PASS Y03 每个周期均未满12分=否
+PASS Y04 有无记满12分周期=有
+PASS Y05 异地=是
+PASS Y06 已登录12123=否
+PASS Y07 年满70=否
+PASS Y08 不适用→None
+PASS Y09 空表 None
+PASS Y10 A/B类有记分=是
+PASS Y11 空表档位=空
+PASS L01 准驾车型不被A/B类字段抢
+PASS L02 体检证明不被70岁字段抢
+PASS L03 年满70不被按年提交抢
+PASS L04 按年提交证明取到不适用
+PASS L05 有效期止不被起始日抢
+PASS L06 起始日正确
+PASS V01 档位识别6年
+PASS V02 档位推断6年
+PASS V03 档位推断10年
+PASS V04 档位推断长期
+PASS V05 缺日期推断空
+PASS O01 未逾期→1
+PASS O02 逾期109天→2
+PASS O03 逾期天数
+PASS O04 恰好差一天满1年→2
+PASS O05 恰好满1年→3
+PASS O06 满2年→3
+PASS O07 恰好满3年→4
+PASS O08 逾期5年→4
+PASS O09 缺日期→0
+PASS O10 档位名
+PASS N01 6年且全清→10年
+PASS N02 6年且有满分→6年不升档
+PASS N03 10年且全清→长期
+PASS N04 10年且有满分→10年不升档
+PASS N05 长期→无需换证
+PASS N06 未填→待补正
+PASS N07 记分全清未填→待补正
+PASS N08 逾期3档→先恢复
+PASS A01 B2识别
+PASS A02 A2识别
+PASS A03 C1不识别
+PASS A04 空不识别
+PASS R01 生成成功
+PASS R02 九段
+PASS R03 结论摘要
+PASS R04 有效期档位
+PASS R05 逾期档位
+PASS R06 下次能换
+PASS R07 材料清单
+PASS R08 办理路径
+PASS R09 特殊分支
+PASS R10 待办
+PASS R11 纪律
+PASS R12 结论=有风险
+PASS R13 逾期档位=2
+PASS R14 下次能换
+PASS R15 逾期驾车警示
+PASS R16 无证驾驶性质
+PASS R17 科目一提示
+PASS R18 异地通办
+PASS R19 12123
+PASS R20 提前90日
+PASS R21 体检机构层级
+PASS R22 工本费
+PASS R23 A/B类30日审验
+PASS R24 未处理违法被抓
+PASS R25 居住证明被抓
+PASS R26 体检缺失被抓
+PASS R27 不予换证条款
+PASS R28 未填不算通过
+PASS R29 无待填泄漏
+PASS R30 无乱码
+PASS R31 风险项>=6
+PASS R32 待办>=8
+PASS R33 无阻断项
+PASS R34 表格不裂
+PASS C01 生成
+PASS C02 逾期档位=1
+PASS C03 结论=通过
+PASS C04 下次换10年
+PASS C05 已可办理
+PASS D01 逾期档位=3
+PASS D02 结论=不通过
+PASS D03 提示重考科目一
+PASS D04 提示恢复驾驶资格
+PASS E01 逾期档位=4
+PASS E02 结论=不通过
+PASS E03 提示重新报考全部科目
+PASS E04 阻断项>=1
+PASS F01 70岁分支
+PASS F02 70岁未提交证明
+PASS F03 D/E降级F
+PASS F04 扣押阻断
+PASS F05 结论=不通过
+PASS F06 阻断项>=1
+PASS G01 丢失提示
+PASS G02 提示补证
+PASS G03 补证不是换证
+PASS H01 空表返回None
+PASS H02 空表有提示
+PASS H03 缺文件不崩
+PASS H04 缺有效期止返回None
+PASS H05 提示有效期止
+PASS I01 冒号行可解析
+PASS I02 冒号行档位
+PASS I03 冒号行结论
+PASS I04 冒号行未逾期
+PASS I05 冒号行抓到照片缺失
+PASS I06 冒号行体检已备未报错
+PASS J01 json 可解析
+PASS J02 含结论
+PASS J03 含风险项
+PASS J04 含待办
+PASS J05 结论四态
+== TOTAL PASS=135 FAIL=0 ==

@@ -1,0 +1,206 @@
+# -*- coding: utf-8 -*-
+"""灌溉施肥计划校验脚本。
+
+用法:
+  python irrig_fert_plan.py --selftest
+  python irrig_fert_plan.py --file plan.json
+
+输入为 JSON，字段见 SKILL.md 第五章。读取统一用 utf-8-sig 剥 BOM。
+农业类只做频次/方式/时段的判断与记录核对，不涉及农药浓度。
+"""
+import argparse
+import json
+import os
+import sys
+
+METHODS = ['滴灌', '漫灌', '喷灌', '人工', '沟灌']
+BAD_TIME = '中午'
+
+
+def load_plan(path):
+    raw = open(path, 'rb').read()
+    text = raw.decode('utf-8-sig')
+    return json.loads(text)
+
+
+def validate(data):
+    findings = []
+
+    def add(level, item, why):
+        findings.append({'level': level, 'item': item, 'why': why})
+
+    crop = data.get('crop_type')
+    area = data.get('area_type')
+    method = data.get('irrigation_method')
+    freq = data.get('frequency_per_week')
+    tod = data.get('time_of_day')
+    mulch = data.get('mulch')
+    stages = data.get('fert_stages') or []
+    npk = data.get('npk_recorded')
+    records = data.get('records_kept')
+
+    # 灌溉方式合法
+    if method not in METHODS:
+        add('先处理', '灌溉方式', 'irrigation_method 不在已知方式（滴灌/漫灌/喷灌/人工/沟灌）内')
+
+    # 浇水时段
+    if tod == BAD_TIME:
+        add('先处理', '浇水时段', '中午浇水蒸发大且易灼叶，应改清晨或上午')
+    elif tod is None:
+        add('待确认', '浇水时段', '未提供浇水时段')
+
+    # 频次区间
+    if isinstance(freq, (int, float)):
+        if freq < 1 or freq > 21:
+            add('先处理', '灌溉频次', '每周灌溉 %s 次超出合理区间 1-21' % freq)
+    else:
+        add('待确认', '灌溉频次', '未提供灌溉频次')
+
+    # 底肥
+    if '底肥' not in stages:
+        add('待确认', '底肥安排', '未安排腐熟底肥，根基不牢')
+
+    # N-P-K 记录
+    if npk is not True:
+        add('待确认', 'N-P-K记录', '未记录肥料 N-P-K 类型，无法核对结构')
+
+    # 施肥记录
+    if records is not True:
+        add('待确认', '施肥记录', '未做灌溉施肥记录，无法核对用量与效果')
+
+    # 覆盖保墒（菜地/大棚鼓励）
+    if mulch is not True and area in ('菜地', '大棚'):
+        add('待确认', '覆盖保墒', '未覆盖保墒，无效蒸腾大、需水更多')
+
+    # 作物/地块完整性
+    if crop is None:
+        add('待确认', '作物类型', '未提供作物类型，频次无法细化')
+    if area is None:
+        add('待确认', '地块类型', '未提供地块类型')
+
+    real = [f for f in findings if f['level'] == '先处理']
+    if real:
+        overall = '先处理'
+    elif any(f['level'] == '待确认' for f in findings):
+        overall = '待确认'
+    else:
+        overall = '可照此执行'
+    return {'overall': overall, 'findings': findings}
+
+
+def render(result):
+    lines = ['结论：%s' % result['overall'], '']
+    if not result['findings']:
+        lines.append('未发现问题，可照此执行。')
+    for f in result['findings']:
+        lines.append('[%s] %s：%s' % (f['level'], f['item'], f['why']))
+    return '\n'.join(lines) + '\n'
+
+
+def selftest():
+    passed = 0
+    failed = 0
+
+    good = {
+        'crop_type': '叶菜', 'area_type': '菜地', 'irrigation_method': '滴灌',
+        'frequency_per_week': 4, 'time_of_day': '清晨', 'mulch': True,
+        'fert_stages': ['底肥', '苗期', '花果期'], 'npk_recorded': True,
+        'records_kept': True,
+    }
+    r = validate(good)
+    assert r['overall'] == '可照此执行', '良好方案应判可照此执行，实际=%s' % r['overall']
+    passed += 1
+
+    # 反例1：中午浇水
+    bad = dict(good); bad['time_of_day'] = '中午'
+    r = validate(bad)
+    assert any(f['item'] == '浇水时段' for f in r['findings']), '中午浇水应判先处理'
+    assert r['overall'] == '先处理', '反例应判先处理'
+    passed += 1
+
+    # 反例2：方式非法
+    bad = dict(good); bad['irrigation_method'] = '洪水'
+    r = validate(bad)
+    assert any(f['item'] == '灌溉方式' for f in r['findings']), '方式非法应判先处理'
+    passed += 1
+
+    # 反例3：频次越界
+    bad = dict(good); bad['frequency_per_week'] = 0
+    r = validate(bad)
+    assert any(f['item'] == '灌溉频次' for f in r['findings']), '频次越界应判先处理'
+    passed += 1
+
+    # 反例4：漏底肥 → 待确认
+    bad = dict(good); bad['fert_stages'] = ['苗期', '花果期']
+    r = validate(bad)
+    assert any(f['item'] == '底肥安排' for f in r['findings']), '漏底肥应判待确认'
+    passed += 1
+
+    # 反例5：无记录 → 待确认
+    bad = dict(good); bad['records_kept'] = False
+    r = validate(bad)
+    assert any(f['item'] == '施肥记录' for f in r['findings']), '无记录应判待确认'
+    passed += 1
+
+    # 反例6：N-P-K 未记录 → 待确认
+    bad = dict(good); bad['npk_recorded'] = False
+    r = validate(bad)
+    assert any(f['item'] == 'N-P-K记录' for f in r['findings']), 'N-P-K 未记录应判待确认'
+    passed += 1
+
+    # 反例7：菜地未覆盖 → 待确认
+    bad = dict(good); bad['mulch'] = False
+    r = validate(bad)
+    assert any(f['item'] == '覆盖保墒' for f in r['findings']), '菜地未覆盖应判待确认'
+    passed += 1
+
+    # 反例护栏：中午浇水的反例不得判可照此执行
+    bad = dict(good); bad['time_of_day'] = '中午'
+    r = validate(bad)
+    assert r['overall'] != '可照此执行', '中午浇水的反例不得判可照此执行'
+    passed += 1
+
+    # BOM 处理
+    bom_json = ('﻿' + json.dumps(good, ensure_ascii=False)).encode('utf-8')
+    text = bom_json.decode('utf-8-sig')
+    assert '﻿' not in text, 'BOM 未被剥除'
+    data = json.loads(text)
+    assert data['irrigation_method'] == '滴灌', 'BOM 解析后字段错位'
+    r = validate(data)
+    assert r['overall'] == '可照此执行', 'BOM 输入经解析后校验应正常通过'
+    passed += 1
+
+    msg = 'SELFTEST OK (%d passed, %d failed)' % (passed, failed)
+    return msg, passed, failed
+
+
+def main():
+    ap = argparse.ArgumentParser(description='灌溉施肥计划校验')
+    ap.add_argument('--file', help='输入 JSON 配置文件路径')
+    ap.add_argument('--selftest', action='store_true', help='运行内置自检')
+    args = ap.parse_args()
+
+    if args.selftest:
+        msg, passed, failed = selftest()
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_selftest_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(msg + '\n')
+        print(msg)
+        sys.exit(1 if failed else 0)
+
+    if args.file:
+        data = load_plan(args.file)
+        result = validate(data)
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_last_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(render(result))
+        print(render(result))
+        sys.exit(0)
+
+    print('用法: python irrig_fert_plan.py --selftest | --file plan.json')
+    sys.exit(2)
+
+
+if __name__ == '__main__':
+    main()
+

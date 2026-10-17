@@ -1,0 +1,244 @@
+# -*- coding: utf-8 -*-
+"""面包揉面自评校验脚本。
+
+用法:
+  python check.py --file 自评.json
+  python check.py --selftest
+
+JSON 字段:
+  stage         自评阶段: pick_up / extended / full
+  window_test   窗户测试破口: smooth(光滑) / serrated(锯齿) / none(拉不出)
+  knead_minutes 揉面总分钟数 (数字)
+  dough_temp    面团中心温度摄氏度 (数字)
+  flour_protein 面粉蛋白质百分比 (数字, 如 12.5)
+"""
+import argparse
+import json
+import os
+import sys
+
+# 各阶段允许的最高温度与建议时长区间
+TEMP_LIMIT = 28.0
+TEMP_WARN = 30.0
+FULL_STAGE = "full"
+EXTENDED_STAGE = "extended"
+PICK_UP_STAGE = "pick_up"
+
+VALID_STAGES = [PICK_UP_STAGE, EXTENDED_STAGE, FULL_STAGE]
+VALID_WINDOW = ["smooth", "serrated", "none"]
+
+
+def evaluate(data):
+    """返回 (ok, reasons)。ok 为 False 时 reasons 必须带原因。"""
+    reasons = []
+    ok = True
+
+    stage = data.get("stage")
+    if stage is None:
+        ok = False
+        reasons.append("未填写 stage(揉面阶段), 无法判定是否到位")
+    elif stage not in VALID_STAGES:
+        ok = False
+        reasons.append("stage 取值非法(应为 pick_up/extended/full), 不能据此判定")
+
+    window = data.get("window_test")
+    if window is None:
+        ok = False
+        reasons.append("未做窗户测试(window_test 缺失), 面筋状态无依据")
+    elif window not in VALID_WINDOW:
+        ok = False
+        reasons.append("window_test 取值非法, 无法判断薄膜状态")
+
+    # 窗户测试与阶段一致性: 完全阶段必须 smooth, 否则矛盾
+    if stage == FULL_STAGE and window not in (None, "smooth"):
+        ok = False
+        reasons.append("stage 为完全阶段但窗户测试破口非光滑, 面筋未真正达标(可能误判)")
+    if stage == PICK_UP_STAGE and window not in (None, "none"):
+        ok = False
+        reasons.append("stage 为拾起阶段却拉出膜, 阶段与薄膜状态矛盾")
+
+    # 温度: 超上限必须判不合格
+    temp = data.get("dough_temp")
+    if temp is None:
+        ok = False
+        reasons.append("未填写面团温度(dough_temp), 无法确认是否超温")
+    else:
+        try:
+            t = float(temp)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("dough_temp 不是数字, 无法判定温度")
+        else:
+            if t > TEMP_WARN:
+                ok = False
+                reasons.append("面团温度 %.1f℃ 超过 30℃ 警戒线, 面筋易化水、发酵提前" % t)
+            elif t > TEMP_LIMIT:
+                ok = False
+                reasons.append("面团温度 %.1f℃ 超过 28℃ 上限, 应换冰液体控温" % t)
+
+    # 揉面时长: 完全阶段手揉低于 15 分钟视为不可信
+    minutes = data.get("knead_minutes")
+    if minutes is not None:
+        try:
+            m = float(minutes)
+        except (TypeError, ValueError):
+            ok = False
+            reasons.append("knead_minutes 不是数字")
+        else:
+            if stage == FULL_STAGE and m < 15:
+                ok = False
+                reasons.append("完全阶段手揉仅 %.0f 分钟, 时间过短难以真正出膜, 阶段疑似误判" % m)
+
+    # 低筋粉强求完全阶段
+    protein = data.get("flour_protein")
+    if protein is not None:
+        try:
+            p = float(protein)
+        except (TypeError, ValueError):
+            pass
+        else:
+            if stage == FULL_STAGE and p < 11.5:
+                ok = False
+                reasons.append("面粉蛋白质 %.1f%% 低于 11.5%%, 低筋粉难以真正出膜" % p)
+
+    if ok:
+        reasons.append("揉面状态自评通过: 阶段与窗户测试一致、温度与时长在区间内")
+    return ok, reasons
+
+
+def load_json(path):
+    """用 utf-8-sig 读取, 同时处理带 BOM 与不带 BOM 的输入。"""
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def selftest():
+    passed = 0
+    failed = 0
+
+    # 1. 正例: 完全阶段 + 光滑破口 + 温度合规 + 时长充足 -> 通过
+    ok, rs = evaluate({
+        "stage": "full", "window_test": "smooth",
+        "knead_minutes": 30, "dough_temp": 26.0, "flour_protein": 13.0,
+    })
+    assert ok is True, "正例应判定通过: %s" % rs
+    passed += 1
+
+    # 2. 反例: 完全阶段却锯齿破口 -> 必须不合格
+    ok, rs = evaluate({
+        "stage": "full", "window_test": "serrated",
+        "knead_minutes": 30, "dough_temp": 26.0,
+    })
+    assert ok is False, "完全阶段锯齿破口必须判不合格"
+    assert any("面筋未真正达标" in r for r in rs), "反例原因缺失: %s" % rs
+    passed += 1
+
+    # 3. 反例: 温度超 30 警戒线 -> 必须不合格
+    ok, rs = evaluate({
+        "stage": "extended", "window_test": "serrated",
+        "knead_minutes": 20, "dough_temp": 32.0,
+    })
+    assert ok is False, "超温必须判不合格"
+    assert any("30℃" in r for r in rs), "超温原因缺失: %s" % rs
+    passed += 1
+
+    # 4. 反例: 阶段缺失 -> 必须不合格
+    ok, rs = evaluate({"window_test": "smooth", "dough_temp": 26.0})
+    assert ok is False, "缺阶段必须判不合格"
+    assert any("未填写 stage" in r for r in rs), "缺阶段原因缺失: %s" % rs
+    passed += 1
+
+    # 5. 反例: 窗户测试缺失 -> 必须不合格
+    ok, rs = evaluate({"stage": "extended", "dough_temp": 26.0})
+    assert ok is False, "缺窗户测试必须判不合格"
+    assert any("窗户测试" in r for r in rs), "缺窗户测试原因缺失: %s" % rs
+    passed += 1
+
+    # 6. 反例: 低筋粉强求完全阶段 -> 必须不合格
+    ok, rs = evaluate({
+        "stage": "full", "window_test": "smooth",
+        "knead_minutes": 30, "dough_temp": 26.0, "flour_protein": 9.0,
+    })
+    assert ok is False, "低筋粉完全阶段必须判不合格"
+    assert any("低筋" in r for r in rs), "低筋原因缺失: %s" % rs
+    passed += 1
+
+    # 7. 反例: 完全阶段但时长仅 5 分钟 -> 必须不合格
+    ok, rs = evaluate({
+        "stage": "full", "window_test": "smooth",
+        "knead_minutes": 5, "dough_temp": 26.0,
+    })
+    assert ok is False, "完全阶段时长过短必须判不合格"
+    passed += 1
+
+    # 8. 反例: stage 非法取值 -> 必须不合格
+    ok, rs = evaluate({"stage": "super", "window_test": "smooth", "dough_temp": 26.0})
+    assert ok is False, "非法 stage 必须判不合格"
+    passed += 1
+
+    # 9. BOM 处理: 带 UTF-8 BOM 的 JSON 必须能被正确解析
+    here = os.path.dirname(os.path.abspath(__file__))
+    bom_path = os.path.join(here, "_bom_sample.json")
+    payload = json.dumps({
+        "stage": "extended", "window_test": "serrated",
+        "knead_minutes": 20, "dough_temp": 26.0,
+    }, ensure_ascii=False)
+    with open(bom_path, "wb") as f:
+        f.write(b"\xef\xbb\xbf" + payload.encode("utf-8"))
+    d = load_json(bom_path)
+    assert d.get("stage") == "extended", "BOM 输入解析后首 key 不应带 \﻿ 前缀"
+    assert "dough_temp" in d, "BOM 输入解析后 key 必须干净"
+    os.remove(bom_path)
+    passed += 1
+
+    # 10. 边界: 扩展阶段 + 锯齿 + 温度合规 -> 通过
+    ok, rs = evaluate({
+        "stage": "extended", "window_test": "serrated",
+        "knead_minutes": 20, "dough_temp": 27.0,
+    })
+    assert ok is True, "扩展阶段合规应通过: %s" % rs
+    passed += 1
+
+    total = passed + failed
+    line = "SELFTEST OK (%d assertions)" % total
+    return line, total
+
+
+def main():
+    ap = argparse.ArgumentParser(description="面包揉面自评校验")
+    ap.add_argument("--file", help="自评 JSON 文件路径")
+    ap.add_argument("--selftest", action="store_true", help="运行内置自检")
+    args = ap.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        line, total = selftest()
+        with open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+            f.write(line + "\n")
+        print(line)
+        return 0 if line.startswith("SELFTEST OK") else 1
+
+    if args.file:
+        try:
+            data = load_json(args.file)
+        except Exception as e:  # noqa: BLE001
+            msg = "读取失败: %s" % e
+            with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+                f.write(msg + "\n")
+            print(msg)
+            return 1
+        ok, reasons = evaluate(data)
+        out = ("PASS " if ok else "FAIL ") + "；".join(reasons)
+        with open(os.path.join(here, "_last_result.txt"), "w", encoding="utf-8") as f:
+            f.write(out + "\n")
+        print(out)
+        return 0 if ok else 1
+
+    print("需要 --file 或 --selftest")
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+

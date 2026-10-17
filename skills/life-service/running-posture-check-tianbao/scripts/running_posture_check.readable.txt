@@ -1,0 +1,431 @@
+# -*- coding: utf-8 -*-
+"""跑步姿势指标判定与负荷递增核对工具。
+
+用法:
+  python running_posture_check.py --file case.json [--json]
+  python running_posture_check.py --selftest
+
+判定顺序: 先看真实缺陷(疼痛、跨步、步频过低、垂直振幅超标、左右失衡、
+腰前倾、触地时间过长、跑量增幅超限), 再看信息是否完整; 只填了部分指标
+但填了疼痛时, 直接判不合格而不是待确认。
+"""
+import argparse
+import io
+import json
+import os
+import sys
+import tempfile
+
+CADENCE_BAD = 160.0
+CADENCE_OK = 170.0
+OSC_BAD = 12.0
+OSC_OK = 10.0
+CONTACT_BAD = 330.0
+CONTACT_OK = 300.0
+BALANCE_BAD = 3.0
+BALANCE_OK = 2.0
+GROWTH_LIMIT = 10.0
+LONGEST_RATE = 30.0
+
+PAIN_ITEMS = [
+    ("knee", u"膝关节疼痛"),
+    ("shin", u"小腿前侧或内侧痛"),
+    ("achilles", u"跟腱痛"),
+    ("itb", u"膝外侧或大腿外侧痛"),
+    ("foot", u"足部痛"),
+    ("hip", u"髋部痛"),
+]
+
+LANDING_POS = {
+    "under": (u"合格", u"落地点在重心正下方"),
+    "slightly_ahead": (u"合格", u"落地点略在重心前方，属于可接受范围"),
+    "ahead": (u"不合格", u"落地点明显在重心前方：跨步刹车，冲击全部由膝盖承担"),
+}
+TRUNK = {
+    "ankle": (u"合格", u"从脚踝整体微前倾，姿态正确"),
+    "upright": (u"需改进", u"躯干过于直立，可尝试从脚踝整体微前倾 5-10 度"),
+    "waist": (u"不合格", u"从腰部折下去：会压迫腰椎并限制摆髋，应改为从脚踝整体前倾"),
+}
+
+
+def num(v):
+    if v is None or v == "":
+        return None
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def cadence_verdict(c):
+    if c is None:
+        return u"待确认", u"未提供步频"
+    if c >= 180.0:
+        return u"优", u"步频 %g 步/分钟，达到优的区间" % c
+    if c >= CADENCE_OK:
+        return u"合格", u"步频 %g 步/分钟，在 170-180 的实用区间" % c
+    if c >= CADENCE_BAD:
+        return u"需改进", u"步频 %g 步/分钟，多半伴随跨步，先提 5%% 再观察" % c
+    return u"不合格", u"步频 %g 步/分钟，低于 160，几乎必然伴随落地点靠前，冲击显著增大" % c
+
+
+def osc_verdict(v):
+    if v is None:
+        return u"待确认", u"未提供垂直振幅"
+    if v <= 8.0:
+        return u"优", u"垂直振幅 %g 厘米，重心平稳" % v
+    if v <= OSC_OK:
+        return u"合格", u"垂直振幅 %g 厘米，在合理区间" % v
+    if v <= OSC_BAD:
+        return u"需改进", u"垂直振幅 %g 厘米，上下起伏浪费能量" % v
+    return u"不合格", u"垂直振幅 %g 厘米，明显在跳而不是跑" % v
+
+
+def contact_verdict(v):
+    if v is None:
+        return u"待确认", u"未提供触地时间"
+    if v < 250.0:
+        return u"优", u"触地时间 %g 毫秒，推蹬效率高" % v
+    if v <= CONTACT_OK:
+        return u"合格", u"触地时间 %g 毫秒，在合理区间" % v
+    if v <= CONTACT_BAD:
+        return u"需改进", u"触地时间 %g 毫秒，推蹬效率偏低" % v
+    return u"不合格", u"触地时间 %g 毫秒，说明推蹬效率低，先降速练技术" % v
+
+
+def balance_verdict(v):
+    if v is None:
+        return u"待确认", u"未提供左右触地平衡差"
+    if v <= BALANCE_OK:
+        return u"合格", u"左右触地平衡差 %g%%，对称性良好" % v
+    if v <= BALANCE_BAD:
+        return u"需改进", u"左右触地平衡差 %g%%，建议加单侧力量训练" % v
+    return u"不合格", u"左右触地平衡差 %g%%，提示单侧力量或活动度不对称" % v
+
+
+def growth_verdict(cur, prev):
+    if cur is None or prev is None:
+        return u"待确认", u"周跑量或上周跑量未提供，无法核算增幅"
+    if prev <= 0:
+        return u"待确认", u"上周跑量为 0，无法计算增幅百分比"
+    rate = (cur - prev) / prev * 100.0
+    if rate <= GROWTH_LIMIT:
+        return u"合格", u"周跑量增幅 %.1f%%，未超过 %.0f%% 上限" % (rate, GROWTH_LIMIT)
+    if rate <= 20.0:
+        return u"需改进", u"周跑量增幅 %.1f%%，超过 %.0f%% 上限，建议回落" % (rate, GROWTH_LIMIT)
+    return u"不合格", u"周跑量增幅 %.1f%%，远超 %.0f%% 上限，这是最集中的受伤窗口" % (rate, GROWTH_LIMIT)
+
+
+def longest_verdict(longest, weekly):
+    if longest is None or weekly is None or weekly <= 0:
+        return u"待确认", u"单次最长距离或周跑量未提供"
+    rate = longest / weekly * 100.0
+    if rate <= LONGEST_RATE:
+        return u"合格", u"单次最长距离占周跑量 %.0f%%，未超过 %.0f%%" % (rate, LONGEST_RATE)
+    return u"需改进", u"单次最长距离占周跑量 %.0f%%，超过 %.0f%% 上限，建议拆分" % (rate, LONGEST_RATE)
+
+
+def load_json(path):
+    with io.open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def build_report(data):
+    cadence = num(data.get("cadence"))
+    osc = num(data.get("vertical_oscillation_cm"))
+    contact = num(data.get("ground_contact_ms"))
+    balance = num(data.get("balance_diff_pct"))
+    weekly = num(data.get("weekly_km"))
+    prev = num(data.get("prev_weekly_km"))
+    longest = num(data.get("longest_run_km"))
+    landing = data.get("landing_position")
+    trunk = data.get("trunk_lean")
+    arm_cross = data.get("arm_cross")
+    head_down = data.get("head_down")
+    noise = data.get("foot_strike_noise")
+    pain = data.get("pain", {}) or {}
+    pain_hit = [name for key, name in PAIN_ITEMS if pain.get(key) is True]
+
+    defects = []
+    fine = []
+    pending = []
+
+    # 真实缺陷一：疼痛优先
+    if pain_hit:
+        defects.append(u"存在疼痛部位（%s）：疼痛是停跑信号，先停跑并就医评估，不要靠改姿势硬扛" % (
+            u"、".join(pain_hit)))
+
+    lv, lm = LANDING_POS.get(landing, (u"待确认", u"落地点取值未识别，应为重心下方、略前或明显在前"))
+    if lv == u"不合格":
+        defects.append(lm)
+    elif lv == u"待确认":
+        pending.append(lm)
+
+    cv, cm = cadence_verdict(cadence)
+    if cv == u"不合格":
+        defects.append(cm)
+    elif cv == u"需改进":
+        fine.append(cm)
+    elif cv == u"待确认":
+        pending.append(cm)
+
+    ov, om = osc_verdict(osc)
+    if ov == u"不合格":
+        defects.append(om)
+    elif ov == u"需改进":
+        fine.append(om)
+    elif ov == u"待确认":
+        pending.append(om)
+
+    bv, bm = balance_verdict(balance)
+    if bv == u"不合格":
+        defects.append(bm)
+    elif bv == u"需改进":
+        fine.append(bm)
+    elif bv == u"待确认":
+        pending.append(bm)
+
+    tv, tm = TRUNK.get(trunk, (u"待确认", u"躯干姿态取值未识别"))
+    if tv == u"不合格":
+        defects.append(tm)
+    elif tv == u"需改进":
+        fine.append(tm)
+    elif tv == u"待确认":
+        pending.append(tm)
+
+    ctv, ctm = contact_verdict(contact)
+    if ctv == u"不合格":
+        defects.append(ctm)
+    elif ctv == u"需改进":
+        fine.append(ctm)
+    elif ctv == u"待确认":
+        pending.append(ctm)
+
+    gv, gm = growth_verdict(weekly, prev)
+    if gv == u"不合格":
+        defects.append(gm)
+    elif gv == u"需改进":
+        fine.append(gm)
+    elif gv == u"待确认":
+        pending.append(gm)
+
+    lvv, lvm = longest_verdict(longest, weekly)
+    if lvv == u"需改进":
+        fine.append(lvm)
+    elif lvv == u"待确认":
+        pending.append(lvm)
+
+    if arm_cross is True:
+        fine.append(u"摆臂横过身体中线：会带动躯干旋转浪费能量，改为前后摆")
+    if head_down is True:
+        fine.append(u"低头看脚：会改变颈椎与躯干力线，改为目视前方 20-30 米")
+    if noise == "loud":
+        fine.append(u"落地声大、有砸地感：多半落地点靠前，先查落地点再谈触地部位")
+
+    lines = []
+    lines.append("=" * 62)
+    lines.append(u"跑步姿势指标判定与负荷核对")
+    lines.append("=" * 62)
+    lines.append(u"[一] 指标判定")
+    lines.append(u"  %-14s %s" % (u"落地点", u"%s —— %s" % (lv, lm)))
+    lines.append(u"  %-14s %s" % (u"步频", u"%s —— %s" % (cv, cm)))
+    lines.append(u"  %-14s %s" % (u"垂直振幅", u"%s —— %s" % (ov, om)))
+    lines.append(u"  %-14s %s" % (u"触地时间", u"%s —— %s" % (ctv, ctm)))
+    lines.append(u"  %-14s %s" % (u"左右平衡", u"%s —— %s" % (bv, bm)))
+    lines.append(u"  %-14s %s" % (u"躯干姿态", u"%s —— %s" % (tv, tm)))
+    lines.append(u"  %-14s %s" % (u"跑量增幅", u"%s —— %s" % (gv, gm)))
+    lines.append(u"  %-14s %s" % (u"最长单次", u"%s —— %s" % (lvv, lvm)))
+    lines.append("")
+    lines.append(u"[二] 不合格项与原因")
+    if defects:
+        for i, d in enumerate(defects, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[三] 需改进项")
+    if fine:
+        for i, d in enumerate(fine, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[四] 待确认项")
+    if pending:
+        for i, d in enumerate(pending, 1):
+            lines.append(u"  %d. %s" % (i, d))
+    else:
+        lines.append(u"  无")
+    lines.append("")
+    lines.append(u"[五] 纠正优先级")
+    if pain_hit:
+        lines.append(u"  0. 先停跑并就医评估，疼痛期间不做任何姿势纠正")
+    if lv == u"不合格":
+        lines.append(u"  1. 落地点：提高步频 5%，原地小步跑跟频，落地点自然回到重心下方")
+    elif cv in (u"不合格", u"需改进"):
+        lines.append(u"  1. 步频：节拍器设当前 +5%，跟频慢跑 5 分钟，每周 3 次")
+    if ov in (u"不合格", u"需改进"):
+        lines.append(u"  2. 垂直振幅：想象头顶有天花板，配合核心与臀中肌训练")
+    if tv != u"合格":
+        lines.append(u"  3. 躯干：从脚踝整体微前倾，不要从腰部折")
+    if bv in (u"不合格", u"需改进"):
+        lines.append(u"  4. 左右平衡：加单侧力量训练，持续超 3%% 请专业人士评估")
+    lines.append(u"  5. 一次只改一项，稳定两周再改下一项")
+    lines.append(u"  6. 两周后在同样配速与距离下复测，保证数据可比")
+
+    if defects:
+        overall = u"不合格"
+    elif fine:
+        overall = u"需改进"
+    elif pending:
+        overall = u"待确认"
+    else:
+        overall = u"合格"
+
+    lines.append("")
+    lines.append(u"总判定：%s" % overall)
+    lines.append(u"提示：疼痛进行性加重、夜间痛、关节肿胀、跟腱突发剧痛、跑中胸闷头晕时立即停跑就医。")
+    lines.append(u"免责：本结果为姿势自查输出，不构成医学诊断或运动康复方案。")
+    lines.append("=" * 62)
+
+    summary = {
+        "landing_verdict": lv,
+        "cadence_verdict": cv,
+        "osc_verdict": ov,
+        "contact_verdict": ctv,
+        "balance_verdict": bv,
+        "trunk_verdict": tv,
+        "growth_verdict": gv,
+        "pain_hit": pain_hit,
+        "defects": defects,
+        "fine": fine,
+        "pending": pending,
+        "overall": overall,
+    }
+    return "\n".join(lines), summary
+
+
+def _run_checks():
+    r = []
+    r.append((u"步频 180 判优", cadence_verdict(180)[0] == u"优"))
+    r.append((u"步频 172 判合格", cadence_verdict(172)[0] == u"合格"))
+    r.append((u"步频 165 判需改进", cadence_verdict(165)[0] == u"需改进"))
+    r.append((u"反例：步频 150 判不合格", cadence_verdict(150)[0] == u"不合格"))
+    r.append((u"反例：垂直振幅 13 判不合格", osc_verdict(13)[0] == u"不合格"))
+    r.append((u"反例：左右失衡 6 判不合格", balance_verdict(6)[0] == u"不合格"))
+    r.append((u"反例：触地 350 毫秒判不合格", contact_verdict(350)[0] == u"不合格"))
+    r.append((u"反例：周增幅 50 判不合格", growth_verdict(45, 30)[0] == u"不合格"))
+    r.append((u"周增幅 8 判合格", growth_verdict(32.4, 30)[0] == u"合格"))
+    r.append((u"反例：单次占比超 30 判需改进", longest_verdict(20, 40)[0] == u"需改进"))
+    r.append((u"落地点明显在前判不合格", LANDING_POS["ahead"][0] == u"不合格"))
+    r.append((u"腰前倾判不合格", TRUNK["waist"][0] == u"不合格"))
+
+    _, s = build_report({
+        "cadence": 174, "vertical_oscillation_cm": 9, "ground_contact_ms": 280,
+        "balance_diff_pct": 1.5, "landing_position": "slightly_ahead",
+        "trunk_lean": "ankle", "arm_cross": False, "head_down": False,
+        "foot_strike_noise": "quiet", "weekly_km": 32, "prev_weekly_km": 30,
+        "longest_run_km": 9, "pain": {},
+    })
+    r.append((u"标准样例判定合格", s["overall"] == u"合格"))
+
+    _, s1 = build_report({
+        "cadence": 150, "vertical_oscillation_cm": 13, "ground_contact_ms": 300,
+        "balance_diff_pct": 6, "landing_position": "ahead",
+        "trunk_lean": "waist", "arm_cross": False, "head_down": False,
+        "foot_strike_noise": "loud", "weekly_km": 32, "prev_weekly_km": 30,
+        "longest_run_km": 9, "pain": {},
+    })
+    r.append((u"反例：多项姿势违规判不合格", s1["overall"] == u"不合格"))
+    r.append((u"反例：跨步进缺陷表", any(u"跨步刹车" in d for d in s1["defects"])))
+    r.append((u"反例：腰前倾进缺陷表", any(u"从腰部折" in d for d in s1["defects"])))
+
+    _, s2 = build_report({
+        "cadence": 174, "vertical_oscillation_cm": 9, "ground_contact_ms": 280,
+        "balance_diff_pct": 1.5, "landing_position": "slightly_ahead",
+        "trunk_lean": "ankle", "weekly_km": 32, "prev_weekly_km": 30,
+        "longest_run_km": 9, "pain": {"knee": True},
+    })
+    r.append((u"反例：有疼痛即判不合格", s2["overall"] == u"不合格"))
+    r.append((u"反例：疼痛进缺陷表并提示停跑", any(u"停跑" in d for d in s2["defects"])))
+
+    _, s3 = build_report({"pain": {"shin": True}})
+    r.append((u"缺指标但有疼痛不得判待确认", s3["overall"] == u"不合格"))
+
+    _, s4 = build_report({"landing_position": "xxx"})
+    r.append((u"落地点取值未识别记为待确认", any(u"落地点" in p for p in s4["pending"])))
+
+    _, s5 = build_report({
+        "cadence": 174, "vertical_oscillation_cm": 9, "ground_contact_ms": 280,
+        "balance_diff_pct": 1.5, "landing_position": "slightly_ahead",
+        "trunk_lean": "ankle", "weekly_km": 60, "prev_weekly_km": 30,
+        "longest_run_km": 9, "pain": {},
+    })
+    r.append((u"反例：跑量翻倍判不合格", s5["overall"] == u"不合格"))
+
+    p = os.path.join(tempfile.gettempdir(), "_running_bom_case.json")
+    blob = b"\xef\xbb\xbf" + json.dumps({
+        "cadence": 174, "vertical_oscillation_cm": 9, "landing_position": "under",
+        "trunk_lean": "ankle", "weekly_km": 30, "prev_weekly_km": 30,
+        "longest_run_km": 8, "pain": {},
+    }, ensure_ascii=False).encode("utf-8")
+    with open(p, "wb") as f:
+        f.write(blob)
+    try:
+        d = load_json(p)
+        r.append((u"UTF-8 BOM 输入首键可读", abs(d.get("cadence", 0) - 174.0) < 1e-9))
+        r.append((u"UTF-8 BOM 输入嵌套结构可读", d.get("pain", {}).get("knee") is None))
+    finally:
+        if os.path.exists(p):
+            os.remove(p)
+
+    return r
+
+
+def selftest():
+    results = _run_checks()
+    failed = [name for name, ok in results if not ok]
+    ok = len(failed) == 0
+    lines = ["SELFTEST %s" % ("OK" if ok else "FAILED")]
+    lines.append("checks=%d passed=%d failed=%d" % (len(results), len(results) - len(failed), len(failed)))
+    for name in failed:
+        lines.append("FAILED: %s" % name)
+    with io.open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "_selftest_result.txt"),
+                 "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+    return ok
+
+
+def main():
+    parser = argparse.ArgumentParser(description=u"跑步姿势指标判定工具")
+    parser.add_argument("--file", help=u"输入 JSON 文件路径（UTF-8）")
+    parser.add_argument("--json", action="store_true", help=u"以 JSON 输出")
+    parser.add_argument("--out", help=u"结果写入指定文件")
+    parser.add_argument("--selftest", action="store_true", help=u"运行自检")
+    args = parser.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        sys.exit(0 if selftest() else 1)
+
+    if not args.file:
+        parser.error(u"需要 --file 或 --selftest")
+
+    data = load_json(args.file)
+
+    report, summary = build_report(data)
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.json else report
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    with io.open(out_path, "w", encoding="utf-8") as f:
+        f.write(body)
+    print(body)
+    print("")
+    print(u"结果已写入：%s" % out_path)
+
+
+if __name__ == "__main__":
+    main()
+
+

@@ -1,0 +1,631 @@
+# -*- coding: utf-8 -*-
+"""逆光拍照核查：判定补光与剪影两条路线，核测光方式、曝光锁定、补光距离与眩光控制。
+
+用法:
+  python backlit_check.py --file backlit.json [--out result.md] [--format json]
+  python backlit_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 路线: (键, 中文名, 目标)
+MODES = [
+    ('portrait', '补光人像', '人脸与背景都有层次'),
+    ('silhouette', '剪影', '主体成为纯黑轮廓，背景漂亮'),
+]
+
+# 光位: (键, 中文名, 是否逆光)
+LIGHTS = [
+    ('back', '逆光（光源在主体后方）', True),
+    ('side_back', '侧逆光（光源在侧后方 45 度）', True),
+    ('side', '侧光', False),
+    ('front', '顺光', False),
+]
+
+# 测光方式: (键, 中文名, 逆光下是否被亮背景带偏)
+METERING = [
+    ('spot_face', '点测光对人脸', False),
+    ('evaluative', '评价测光 / 矩阵测光', True),
+    ('center', '中央重点测光', True),
+    ('average', '平均测光', True),
+    ('spot_bg', '点测光对背景（剪影用）', False),
+]
+
+# 补光方式: (键, 中文名, 参考有效距离, 是否需要判断距离)
+FILLS = [
+    ('reflector', '反光板', 2.0, True),
+    ('flash', '闪光灯 / 补光灯', 3.0, True),
+    ('continuous', '常亮补光', 3.0, True),
+    ('hdr', 'HDR 或提曝光补偿', 99.0, False),
+    ('none', '不补光', 0.0, False),
+]
+
+# 光源相对镜头的角度: (键, 中文名, 是否直射镜头)
+ANGLES = [
+    ('shielded', '光源被主体或物体遮挡', False),
+    ('side', '偏离光源 15 到 30 度', False),
+    ('direct', '正对光源', True),
+]
+
+# 阈值
+TOL = {
+    'silhouette_ev_max': -0.5,   # 剪影要求的曝光补偿上限
+    'silhouette_ev_min': -2.0,   # 剪影曝光补偿下限
+    'fill_gap_max': 2.0,         # 人脸比背景暗的挡数上限
+    'fill_gap_min': 1.0,         # 人脸比背景暗的挡数下限
+}
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def _f(shot, key):
+    v = shot.get(key)
+    if v is None:
+        return None
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        raise ValueError('%s 必须是数字，实为 %s' % (key, v))
+    if f < 0:
+        raise ValueError('%s 不能为负数，实为 %s' % (key, v))
+    return f
+
+
+def _row(table, val, label):
+    if val is None or val == '':
+        return None
+    n = norm(val)
+    for r in table:
+        if norm(r[0]) == n:
+            return r
+    raise ValueError('未知的 %s: %s，可选 %s 之一' % (label, val, '/'.join(r[0] for r in table)))
+
+
+def shot_check(shot):
+    if not isinstance(shot, dict):
+        raise ValueError('shots 的每一项必须是对象')
+    name = str(shot.get('name') or '未命名').strip()
+    mode = _row(MODES, shot.get('mode'), 'mode')
+    light = _row(LIGHTS, shot.get('light'), 'light')
+    meter = _row(METERING, shot.get('metering'), 'metering')
+    fill = _row(FILLS, shot.get('fill'), 'fill')
+    angle = _row(ANGLES, shot.get('angle_to_sun'), 'angle_to_sun')
+    ev = shot.get('ev')
+    ev = float(ev) if ev is not None else None
+    dist = _f(shot, 'fill_distance_m')
+    reach = _f(shot, 'flash_effective_m')
+    lock = shot.get('exposure_lock')
+    hood = shot.get('lens_hood')
+    hdr = shot.get('hdr')
+    clip = shot.get('bg_clipped')
+    outline = shot.get('outline_clear')
+    bg_light = shot.get('bg_has_light')
+
+    issues = []
+    misses = []
+
+    if mode is None:
+        misses.append('拍摄路线')
+    if light is None:
+        misses.append('光位')
+
+    # 非逆光场景：本技能的逆光判定不适用，只提示
+    if light is not None and not light[2] and mode is not None:
+        return {
+            'name': name, 'level': '不适用逆光判定', 'issues': [],
+            'misses': ['当前光位为%s，逆光专项判定不适用' % light[1]],
+            'mode': mode[1], 'light': light[1], 'ev': ev,
+        }
+
+    if mode is not None and mode[0] == 'portrait':
+        # 严重项 1：测光方式被亮背景带偏且没有补偿手段
+        if meter is None:
+            misses.append('测光方式')
+        else:
+            if meter[2] and fill is not None and fill[0] == 'none' and not hdr:
+                issues.append({
+                    'sev': 3, 'item': '测光方式',
+                    'detail': '用了%s，且既没补光也没开 HDR' % meter[1],
+                    'why': '逆光时明亮背景占据大面积，测光系统为压住亮区会整体降曝光，'
+                           '人脸必然欠曝；改成对人脸点测光，或开 HDR、提曝光补偿',
+                })
+            elif meter[2] and meter[0] == 'average':
+                issues.append({
+                    'sev': 3, 'item': '测光方式',
+                    'detail': '用了平均测光',
+                    'why': '平均测光在逆光下最不可靠，人脸会被明亮背景拖黑；'
+                           '改为对人脸点测光并锁定曝光',
+                })
+
+        # 严重项 2：既没补光也没 HDR
+        if fill is None:
+            misses.append('补光方式')
+        elif fill[0] == 'none' and not hdr:
+            issues.append({
+                'sev': 3, 'item': '补光',
+                'detail': '逆光人像既没补光也没开 HDR',
+                'why': '补光路线下不补光，人脸只能欠曝成灰黑；'
+                       '用反光板、闪光灯、常亮补光，或者至少开 HDR',
+            })
+
+        # 严重项 3：补光超出有效距离
+        if fill is not None and fill[3] and dist is not None:
+            limit = reach if (fill[0] == 'flash' and reach) else fill[2]
+            if dist > limit:
+                issues.append({
+                    'sev': 3, 'item': '补光距离',
+                    'detail': '%s距离为 %.1f 米，超出有效距离 %.1f 米' % (fill[1], dist, limit),
+                    'why': '补光超出有效距离等于没补，人脸依然黑；'
+                           '走近补光、提高补光功率，或改用反光板近距离补',
+                })
+
+        # 可改进项：曝光锁定
+        if meter is not None and meter[0] == 'spot_face':
+            if lock is None:
+                misses.append('曝光锁定')
+            elif not lock:
+                issues.append({
+                    'sev': 2, 'item': '曝光锁定',
+                    'detail': '对人脸点测光后没有锁定曝光',
+                    'why': '手机多为点哪里测哪里，重新构图时测光点会漂移，脸又黑回去；'
+                           '点完人脸按下锁定再重新构图',
+                })
+
+        # 可改进项：遮光罩
+        if hood is False:
+            issues.append({
+                'sev': 2, 'item': '眩光控制',
+                'detail': '逆光下没有遮光措施',
+                'why': '光源直射镜头会产生灰雾与光斑；装遮光罩，'
+                       '或用手在镜头上方斜着挡（别让手入画），或让主体挡住太阳',
+            })
+
+        # 可改进项：正对光源
+        if angle is not None and angle[2]:
+            issues.append({
+                'sev': 2, 'item': '机位角度',
+                'detail': '正对光源拍摄',
+                'why': '正对光源眩光最严重、画面发灰；偏 15 到 30 度，'
+                       '或让主体的头、一棵树挡住太阳',
+            })
+
+        # 可改进项：背景高光溢出
+        if clip:
+            issues.append({
+                'sev': 2, 'item': '背景高光',
+                'detail': '背景高光溢出（天空或水面死白）',
+                'why': '背景溢出会让画面失去层次；降低曝光补偿、'
+                       '换角度让太阳被遮挡，或干脆改走剪影路线',
+            })
+
+        # 可改进项：补光量
+        gap = shot.get('face_vs_bg_stops')
+        if gap is not None:
+            gap = float(gap)
+            if gap > TOL['fill_gap_max']:
+                issues.append({
+                    'sev': 2, 'item': '补光量',
+                    'detail': '人脸比背景暗 %.1f 挡' % gap,
+                    'why': '暗超过 2 挡人脸细节就不容易救回来；再补一点光或提一挡曝光补偿',
+                })
+            elif gap < TOL['fill_gap_min']:
+                issues.append({
+                    'sev': 2, 'item': '补光量',
+                    'detail': '人脸与背景亮度差只有 %.1f 挡' % gap,
+                    'why': '补过头会丢掉逆光氛围，脸比背景还亮就像棚拍；'
+                           '补到比背景暗 1 到 2 挡就停',
+                })
+
+    elif mode is not None and mode[0] == 'silhouette':
+        # 严重项：没压曝光
+        if ev is None:
+            misses.append('曝光补偿')
+        elif ev > TOL['silhouette_ev_max']:
+            issues.append({
+                'sev': 3, 'item': '曝光补偿',
+                'detail': '%.1f EV，剪影要求不高于 %.1f' % (ev, TOL['silhouette_ev_max']),
+                'why': '剪影的核心是让主体彻底黑掉；没压曝光会得到灰蒙蒙的人，'
+                       '既不是人像也不是剪影，压到负 1 到负 2',
+            })
+
+        # 严重项：轮廓不清晰
+        if outline is False:
+            issues.append({
+                'sev': 3, 'item': '轮廓',
+                'detail': '主体轮廓不清晰',
+                'why': '剪影靠形状说话；不要让两个人的轮廓叠在一起，'
+                       '也不要让树枝挡住主体，让人分开站留出间隙',
+            })
+
+        # 严重项：背景没有光
+        if bg_light is False:
+            issues.append({
+                'sev': 3, 'item': '背景',
+                'detail': '背景没有光',
+                'why': '纯黑背景拍剪影毫无意义；选晚霞、亮水面、亮天空做背景',
+            })
+
+        # 可改进项：压过头
+        if ev is not None and ev < TOL['silhouette_ev_min']:
+            issues.append({
+                'sev': 2, 'item': '曝光补偿',
+                'detail': '%.1f EV，低于 %.1f' % (ev, TOL['silhouette_ev_min']),
+                'why': '压过头连背景的光也一起压掉，剪影就没了衬底',
+            })
+
+        # 可改进项：正对光源拍剪影也会有眩光
+        if angle is not None and angle[2] and hood is False:
+            issues.append({
+                'sev': 2, 'item': '眩光控制',
+                'detail': '正对光源且没有遮光措施',
+                'why': '拍剪影时太阳在画面里，更易产生灰雾与光斑；'
+                       '让主体挡住太阳本体，或加遮光罩',
+            })
+
+    issues.sort(key=lambda r: -r['sev'])
+
+    if any(i['sev'] == 3 for i in issues):
+        level = '逆光处理有明显问题'
+    elif issues:
+        level = '有可改进项'
+    elif misses:
+        level = '待确认'
+    else:
+        level = '处理得当'
+
+    return {
+        'name': name, 'level': level, 'issues': issues, 'misses': misses,
+        'mode': mode[1] if mode else None, 'light': light[1] if light else None,
+        'metering': meter[1] if meter else None, 'fill': fill[1] if fill else None,
+        'angle': angle[1] if angle else None, 'ev': ev,
+    }
+
+
+def calc(data):
+    shots = data.get('shots')
+    if shots is None:
+        raise ValueError('输入缺少 shots 列表')
+    if not isinstance(shots, list) or not shots:
+        raise ValueError('shots 必须是非空列表')
+    rows = [shot_check(s) for s in shots]
+    n_bad = len([r for r in rows if r['level'] == '逆光处理有明显问题'])
+    n_mid = len([r for r in rows if r['level'] == '有可改进项'])
+    n_unk = len([r for r in rows if r['level'] == '待确认'])
+    if n_bad:
+        overall = '存在需要重拍的逆光照片'
+    elif n_mid:
+        overall = '存在可改进的逆光照片'
+    elif n_unk:
+        overall = '待确认'
+    else:
+        overall = '全部处理得当'
+
+    def _sev(r):
+        return max([i['sev'] for i in r['issues']], default=0)
+
+    order = sorted(rows, key=lambda r: (-_sev(r), -len(r['issues']), r['name']))
+    return {
+        'overall': overall, 'rows': rows,
+        'n_bad': n_bad, 'n_mid': n_mid, 'n_unk': n_unk,
+        'n_ok': len(rows) - n_bad - n_mid - n_unk,
+        'fix_order': [r['name'] for r in order if r['issues']],
+        'modes': [{'key': k, 'name': n, 'goal': g} for k, n, g in MODES],
+        'lights': [{'key': k, 'name': n, 'backlit': b} for k, n, b in LIGHTS],
+        'meterings': [{'key': k, 'name': n, 'biased': b} for k, n, b in METERING],
+        'fills': [{'key': k, 'name': n, 'reach': r, 'need_dist': d} for k, n, r, d in FILLS],
+        'angles': [{'key': k, 'name': n, 'direct': d} for k, n, d in ANGLES],
+        'tol': dict(TOL),
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 逆光拍照核查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['overall'])
+    L.append('')
+    L.append('| 类别 | 张数 |')
+    L.append('|---|---|')
+    L.append('| 需要重拍 | %d |' % r['n_bad'])
+    L.append('| 可改进 | %d |' % r['n_mid'])
+    L.append('| 待确认 | %d |' % r['n_unk'])
+    L.append('| 处理得当 | %d |' % r['n_ok'])
+    L.append('')
+    if r['fix_order']:
+        L.append('整改顺序（严重度高的先改）：%s' % '、'.join(r['fix_order']))
+        L.append('')
+    L.append('## 二、两条路线')
+    L.append('')
+    L.append('| 路线 | 目标 |')
+    L.append('|---|---|')
+    for m in r['modes']:
+        L.append('| %s | %s |' % (m['name'], m['goal']))
+    L.append('')
+    L.append('## 三、逐张判定')
+    L.append('')
+    for row in r['rows']:
+        L.append('### %s' % row['name'])
+        L.append('')
+        L.append('- 判定：**%s**' % row['level'])
+        if row['mode']:
+            L.append('- 路线：%s' % row['mode'])
+        if row['light']:
+            L.append('- 光位：%s' % row['light'])
+        if row['metering']:
+            L.append('- 测光：%s' % row['metering'])
+        if row['fill']:
+            L.append('- 补光：%s' % row['fill'])
+        if row['angle']:
+            L.append('- 机位：%s' % row['angle'])
+        if row['ev'] is not None:
+            L.append('- 曝光补偿：%.1f EV' % row['ev'])
+        if row['issues']:
+            L.append('')
+            L.append('| 严重度 | 项目 | 问题 | 为什么要在意 |')
+            L.append('|---|---|---|---|')
+            for i in row['issues']:
+                L.append('| %s | %s | %s | %s |'
+                         % ('严重' if i['sev'] == 3 else '可改进', i['item'], i['detail'], i['why']))
+        if row['misses']:
+            L.append('')
+            L.append('- 未填写：%s' % '、'.join(row['misses']))
+        L.append('')
+    L.append('## 四、测光方式')
+    L.append('')
+    L.append('| 方式 | 逆光下是否被亮背景带偏 |')
+    L.append('|---|---|')
+    for m in r['meterings']:
+        L.append('| %s | %s |' % (m['name'], '会' if m['biased'] else '不会'))
+    L.append('')
+    L.append('## 五、补光方式与有效距离')
+    L.append('')
+    L.append('| 方式 | 参考有效距离 | 需核对距离 |')
+    L.append('|---|---|---|')
+    for f in r['fills']:
+        L.append('| %s | %s | %s |'
+                 % (f['name'], '不限' if f['reach'] > 90 else '%.1f 米' % f['reach'],
+                    '是' if f['need_dist'] else '否'))
+    L.append('')
+    L.append('## 六、阈值')
+    L.append('')
+    L.append('| 项目 | 阈值 |')
+    L.append('|---|---|')
+    L.append('| 剪影曝光补偿 | 不高于 %.1f EV，不低于 %.1f EV |'
+             % (r['tol']['silhouette_ev_max'], r['tol']['silhouette_ev_min']))
+    L.append('| 补光后人脸与背景亮度差 | %.1f 到 %.1f 挡 |'
+             % (r['tol']['fill_gap_min'], r['tol']['fill_gap_max']))
+    L.append('')
+    L.append('## 七、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 已二选一：补光人像或剪影，不是中间状态')
+    L.append('- [ ] 补光路线已对人脸点测光并锁定曝光')
+    L.append('- [ ] 补光距离在器材有效距离之内')
+    L.append('- [ ] 有遮光措施，或光源已被主体遮挡')
+    L.append('- [ ] 剪影路线已压曝光到负 1 到负 2，轮廓清晰、背景有光')
+    L.append('- [ ] 没有长时间用镜头或眼睛直对强光源')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    port = {'name': '傍晚人像', 'mode': 'portrait', 'light': 'side_back',
+            'metering': 'spot_face', 'exposure_lock': True, 'fill': 'reflector',
+            'fill_distance_m': 1.5, 'lens_hood': True, 'angle_to_sun': 'shielded',
+            'face_vs_bg_stops': 1.5, 'ev': 0.0}
+
+    # 1 补光人像正例
+    r1 = shot_check(port)
+    ck(r1['level'] == '处理得当', '补光正例应判处理得当，实为 %s' % r1['level'])
+    ck(r1['issues'] == [], '补光正例不应有问题项，实为 %s' % r1['issues'])
+
+    # 2 反例：平均测光
+    r2 = shot_check(dict(port, metering='average'))
+    ck(r2['level'] == '逆光处理有明显问题', '平均测光应判严重，实为 %s' % r2['level'])
+    ck(any(i['item'] == '测光方式' for i in r2['issues']), '应点名测光方式')
+
+    # 3 反例：既没补光也没 HDR
+    r3 = shot_check(dict(port, metering='evaluative', fill='none', hdr=False))
+    ck(any(i['item'] == '补光' for i in r3['issues']), '没补光也没 HDR 应判严重')
+    ck(r3['level'] == '逆光处理有明显问题', '没补光也没 HDR 应判严重，实为 %s' % r3['level'])
+    ck(not any(i['item'] == '补光' for i in shot_check(dict(port, metering='evaluative',
+                                                            fill='none', hdr=True))['issues']),
+       '开了 HDR 就不应再报没补光')
+
+    # 4 反例：补光超出有效距离
+    r4 = shot_check(dict(port, fill='flash', fill_distance_m=6.0, flash_effective_m=3.0))
+    ck(any(i['item'] == '补光距离' for i in r4['issues']), '闪光 6 米超出 3 米应判严重')
+    ck(not any(i['item'] == '补光距离' for i in shot_check(dict(port, fill='flash',
+                                                               fill_distance_m=2.5,
+                                                               flash_effective_m=3.0))['issues']),
+       '闪光 2.5 米在 3 米内应合格')
+    ck(any(i['item'] == '补光距离' for i in shot_check(dict(port, fill='reflector',
+                                                           fill_distance_m=3.5))['issues']),
+       '反光板 3.5 米超出 2 米应判严重')
+
+    # 5 可改进项：没锁曝光
+    r5 = shot_check(dict(port, exposure_lock=False))
+    ck(any(i['item'] == '曝光锁定' for i in r5['issues']), '没锁曝光应提示')
+    ck(r5['level'] == '有可改进项', '没锁曝光应判可改进，实为 %s' % r5['level'])
+
+    # 6 可改进项：无遮光罩 / 正对光源 / 背景溢出
+    ck(any(i['item'] == '眩光控制' for i in shot_check(dict(port, lens_hood=False))['issues']),
+       '无遮光措施应提示')
+    ck(any(i['item'] == '机位角度' for i in shot_check(dict(port, angle_to_sun='direct'))['issues']),
+       '正对光源应提示')
+    ck(any(i['item'] == '背景高光' for i in shot_check(dict(port, bg_clipped=True))['issues']),
+       '背景溢出应提示')
+
+    # 7 可改进项：补光量过与不及
+    ck(any(i['item'] == '补光量' for i in shot_check(dict(port, face_vs_bg_stops=3.0))['issues']),
+       '暗 3 挡应提示补偿不足')
+    ck(any(i['item'] == '补光量' for i in shot_check(dict(port, face_vs_bg_stops=0.3))['issues']),
+       '只差 0.3 挡应提示补过头')
+    ck(shot_check(dict(port, face_vs_bg_stops=1.0))['issues'] == [], '差 1 挡边界应合格')
+    ck(shot_check(dict(port, face_vs_bg_stops=2.0))['issues'] == [], '差 2 挡边界应合格')
+
+    # 8 剪影正例
+    sil = {'name': '海边剪影', 'mode': 'silhouette', 'light': 'back', 'ev': -1.5,
+           'outline_clear': True, 'bg_has_light': True, 'angle_to_sun': 'shielded',
+           'lens_hood': True}
+    r8 = shot_check(sil)
+    ck(r8['level'] == '处理得当', '剪影正例应判处理得当，实为 %s' % r8['level'])
+    ck(not any('脸' in i['detail'] for i in r8['issues']), '剪影不应报脸黑')
+
+    # 9 反例：剪影没压曝光
+    r9 = shot_check(dict(sil, ev=1.0))
+    ck(r9['level'] == '逆光处理有明显问题', '剪影没压曝光应判严重，实为 %s' % r9['level'])
+    ck(any(i['item'] == '曝光补偿' for i in r9['issues']), '应点名曝光补偿')
+    ck(shot_check(dict(sil, ev=-0.5))['issues'] == [], 'EV -0.5 边界应合格')
+    ck(any(i['item'] == '曝光补偿' for i in shot_check(dict(sil, ev=-3.0))['issues']),
+       'EV -3.0 压过头应提示')
+
+    # 10 反例：剪影轮廓不清 / 背景无光
+    ck(any(i['item'] == '轮廓' for i in shot_check(dict(sil, outline_clear=False))['issues']),
+       '轮廓不清应判严重')
+    ck(any(i['item'] == '背景' for i in shot_check(dict(sil, bg_has_light=False))['issues']),
+       '背景无光应判严重')
+
+    # 11 非逆光场景不适用
+    r11 = shot_check(dict(port, light='front'))
+    ck(r11['level'] == '不适用逆光判定', '顺光应判不适用，实为 %s' % r11['level'])
+    ck(r11['issues'] == [], '不适用时不应报问题项')
+
+    # 12 排序方向：严重项排最前
+    r12 = shot_check(dict(port, metering='average', fill='none', lens_hood=False,
+                          bg_clipped=True))
+    ck(r12['issues'][0]['sev'] == 3, '严重项应排最前，实为 %s' % r12['issues'][0]['sev'])
+    ck(r12['issues'][-1]['sev'] == 2, '末位应是可改进项')
+
+    # 13 判定顺序：有严重项时不因缺信息判待确认
+    r13 = shot_check({'name': '只填测光', 'mode': 'portrait', 'light': 'back',
+                      'metering': 'average', 'fill': 'none', 'hdr': False})
+    ck(r13['level'] == '逆光处理有明显问题', '缺其他项但有严重项不应判待确认，实为 %s' % r13['level'])
+    r13b = shot_check({'name': '只填路线', 'mode': 'portrait', 'light': 'back',
+                       'metering': 'spot_face', 'fill': 'reflector', 'fill_distance_m': 1.5})
+    ck(r13b['level'] == '待确认', '未填锁定与遮光应判待确认，实为 %s' % r13b['level'])
+
+    # 14 汇总与整改顺序
+    r14 = calc({'shots': [port,
+                          dict(port, name='脸全黑', metering='average', fill='none', hdr=False),
+                          dict(port, name='没遮光', lens_hood=False)]})
+    ck(r14['overall'] == '存在需要重拍的逆光照片', '有严重项应判需要重拍，实为 %s' % r14['overall'])
+    ck(r14['n_bad'] == 1, '严重项应为 1 张，实为 %d' % r14['n_bad'])
+    ck(r14['fix_order'][0] == '脸全黑', '严重项应先改，实为 %s' % r14['fix_order'])
+    ck(r14['fix_order'][1] == '没遮光', '可改进项排其后，实为 %s' % r14['fix_order'])
+
+    # 15 BOM 两条路径
+    bom = '﻿' + json.dumps({'shots': [dict(port, metering='average')]})
+    r15 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r15['overall'] == '存在需要重拍的逆光照片', 'BOM 字符串应正确解析，实为 %s' % r15['overall'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe_c4.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'shots': [dict(sil, name='带BOM', ev=1.0)]}))
+    try:
+        r15b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r15b['rows'][0]['name'] == '带BOM', 'BOM 文件首个 key 应解析正常，实为 %s' % r15b['rows'][0]['name'])
+        ck(r15b['n_bad'] == 1, '剪影没压曝光应判严重，实为 %d' % r15b['n_bad'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 16 非法输入
+    for bad, why in (
+        ({}, '缺 shots'),
+        ({'shots': []}, 'shots 空列表'),
+        ({'shots': [dict(port, mode='半逆光')]}, '未知路线'),
+        ({'shots': [dict(port, light='顶光')]}, '未知光位'),
+        ({'shots': [dict(port, metering='点测光')]}, '未知测光'),
+        ({'shots': [dict(port, fill='打光')]}, '未知补光'),
+        ({'shots': [dict(port, angle_to_sun='斜着')]}, '未知机位'),
+        ({'shots': [dict(port, fill_distance_m=-1)]}, '距离为负'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例16 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 17 输出结构
+    md = render_md(r14)
+    for key in ('总体判定', '两条路线', '逐张判定', '测光方式', '补光方式与有效距离',
+                '阈值', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(MODES) == 2, '路线应 2 条')
+    ck(len([m for m in METERING if m[2]]) == 3, '会被带偏的测光方式应 3 种')
+    ck(any(f[0] == 'flash' for f in FILLS), '补光方式必须含闪光灯')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 补光正例/平均测光反例/没补光也没HDR反例/补光超距反例与边界/'
+        '未锁曝光/眩光与机位与背景溢出/补光量上下界/剪影正例与不报脸黑/剪影未压曝光反例与边界/'
+        '剪影轮廓与背景反例/非逆光不适用/严重项排序/判定顺序/汇总整改顺序/BOM两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='逆光拍照核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

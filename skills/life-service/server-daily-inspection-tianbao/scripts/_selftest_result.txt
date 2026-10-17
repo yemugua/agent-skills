@@ -1,0 +1,3 @@
+SELFTEST OK
+result: OK
+assertions: 45

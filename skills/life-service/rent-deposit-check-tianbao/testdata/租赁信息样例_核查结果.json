@@ -1,0 +1,57 @@
+{
+  "version": "1.0.1",
+  "base_date": "2026-06-10",
+  "deposit": 5000.0,
+  "deducted": 3600.0,
+  "legit": 500.0,
+  "rows": [
+    {
+      "name": "墙面刷漆",
+      "amount": 800.0,
+      "verdict": "不成立",
+      "reason": "自然损耗属出租方风险，维修义务在房东",
+      "ticket": false
+    },
+    {
+      "name": "深度清洁",
+      "amount": 300.0,
+      "verdict": "存疑",
+      "reason": "除非合同明确约定且金额与市价相符",
+      "ticket": false
+    },
+    {
+      "name": "空置期损失",
+      "amount": 2000.0,
+      "verdict": "不成立",
+      "reason": "房屋再出租是出租方经营风险，无转嫁依据",
+      "ticket": false
+    },
+    {
+      "name": "欠租",
+      "amount": 500.0,
+      "verdict": "正当",
+      "reason": "欠租可从押金抵扣，但需已履行催告且金额对应",
+      "ticket": true
+    }
+  ],
+  "refund_due": "2026-05-07",
+  "overdue_days": 34,
+  "claimable": 4512.58,
+  "interest": 12.58,
+  "tickets": {
+    "contract_end": "2026-04-30",
+    "limit_end": "2029-05-07",
+    "days_left": 1062
+  },
+  "evidence": {
+    "have": 5,
+    "total": 8,
+    "lack": [
+      "入住时现状照片或视频",
+      "催告记录",
+      "房东扣款的依据（票据报价照片）"
+    ]
+  },
+  "kind": "押金",
+  "kind_rule": "押金/保证金"
+}

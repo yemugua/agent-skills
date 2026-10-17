@@ -1,0 +1,560 @@
+# -*- coding: utf-8 -*-
+"""吉他调音核查：按 A4=440 计算六根空弦标准音，量化音分偏差，并核五品调弦法步骤。
+
+用法:
+  python guitar_tuning_check.py --file tuning.json [--out result.md] [--format json]
+  python guitar_tuning_check.py --selftest
+"""
+import argparse
+import json
+import math
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 六根空弦: (键, 中文名, 音名, MIDI 音高编号)
+STRINGS = [
+    ('s6', '6 弦（最粗）', 'E2', 40),
+    ('s5', '5 弦', 'A2', 45),
+    ('s4', '4 弦', 'D3', 50),
+    ('s3', '3 弦', 'G3', 55),
+    ('s2', '2 弦', 'B3', 59),
+    ('s1', '1 弦（最细）', 'E4', 64),
+]
+
+# 五品调弦法步骤: (起始弦键, 品数, 目标弦键, 说明)
+FIFTH_FRET_STEPS = [
+    ('s6', 5, 's5', '6 弦 5 品按音与 5 弦空弦同高'),
+    ('s5', 5, 's4', '5 弦 5 品按音与 4 弦空弦同高'),
+    ('s4', 5, 's3', '4 弦 5 品按音与 3 弦空弦同高'),
+    ('s3', 4, 's2', '3 弦到 2 弦是大三度，必须按 4 品'),
+    ('s2', 5, 's1', '2 弦 5 品按音与 1 弦空弦同高'),
+]
+
+# 调音方法: (键, 中文名, 精度, 是否不推荐)
+METHODS = [
+    ('tuner', '调音器或调音 App', '最高', False),
+    ('fifth_fret', '五品调弦法', '中', False),
+    ('harmonic', '泛音法', '高', False),
+    ('reference', '参照乐器（钢琴、定音笛）', '中', False),
+    ('ear', '纯靠耳朵，没有参照音源', '低', True),
+]
+
+# 阈值（音分）
+TOL = {
+    'ok': 5.0,        # 音准上限
+    'minor': 10.0,    # 需微调上限
+    'bad': 20.0,      # 明显跑调上限，超过即严重跑调
+    'a4': 440.0,      # 参考音高
+}
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def freq_of(midi, a4=TOL['a4']):
+    """十二平均律：f = A4 * 2 的 ((midi - 69) / 12) 次方。"""
+    return a4 * (2.0 ** ((midi - 69.0) / 12.0))
+
+
+def cents(freq, ref):
+    """音分偏差 = 1200 * log2(实测 / 标准)。"""
+    if freq is None or ref is None or freq <= 0 or ref <= 0:
+        return None
+    return 1200.0 * math.log(freq / ref, 2)
+
+
+def _f(obj, key):
+    v = obj.get(key)
+    if v is None:
+        return None
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        raise ValueError('%s 必须是数字，实为 %s' % (key, v))
+    if f <= 0:
+        raise ValueError('%s 必须为正数，实为 %s' % (key, v))
+    return f
+
+
+def _row(table, val, label):
+    if val is None or val == '':
+        return None
+    n = norm(val)
+    for r in table:
+        if norm(r[0]) == n:
+            return r
+    raise ValueError('未知的 %s: %s，可选 %s 之一' % (label, val, '/'.join(r[0] for r in table)))
+
+
+def string_check(item, a4):
+    """单根弦的音准判定。item 可为 {'key': 's6', 'freq': 82.4}。"""
+    if not isinstance(item, dict):
+        raise ValueError('strings 的每一项必须是对象')
+    key = norm(item.get('key') or item.get('string'))
+    if not key:
+        raise ValueError('缺少弦的标识 key')
+    match = None
+    for s in STRINGS:
+        if norm(s[0]) == key or norm(s[2]) == key:
+            match = s
+            break
+    if match is None:
+        raise ValueError('未知的弦: %s，可选 %s 之一'
+                         % (key, '/'.join(s[0] for s in STRINGS)))
+    freq = _f(item, 'freq')
+    ref = freq_of(match[3], a4)
+    dev = cents(freq, ref)
+    if dev is None:
+        return {'key': match[0], 'name': match[1], 'note': match[2],
+                'freq': None, 'ref': ref, 'cents': None,
+                'status': '未填写', 'sev': 0, 'advice': ''}
+    a = abs(dev)
+    if a <= TOL['ok'] + 1e-9:
+        status, sev = '音准', 0
+        advice = ''
+    elif a <= TOL['minor']:
+        status, sev = '需微调', 2
+        advice = '偏差 %.1f 音分，往%s方向微调一点点' % (a, '升高' if dev < 0 else '降低')
+    elif a <= TOL['bad']:
+        status, sev = '明显跑调', 3
+        advice = '偏差 %.1f 音分，往%s方向重调；弹和弦立刻能听出来' % (
+            a, '升高' if dev < 0 else '降低')
+    else:
+        status, sev = '严重跑调', 3
+        advice = '偏差 %.1f 音分，可能是调错弦或调错八度，整弦重调' % a
+    return {'key': match[0], 'name': match[1], 'note': match[2],
+            'freq': freq, 'ref': ref, 'cents': dev,
+            'status': status, 'sev': sev, 'advice': advice}
+
+
+def steps_check(steps):
+    """五品调弦法步骤核查，返回(问题列表, 未填写提示)。"""
+    issues = []
+    if steps is None:
+        return issues, ['五品调弦法步骤']
+    if not isinstance(steps, list):
+        raise ValueError('steps 必须是列表')
+    for st in steps:
+        if not isinstance(st, dict):
+            raise ValueError('steps 的每一项必须是对象')
+        src = norm(st.get('from'))
+        dst = norm(st.get('to'))
+        fret = st.get('fret')
+        if fret is None:
+            raise ValueError('steps 缺少 fret')
+        try:
+            fret = int(fret)
+        except (TypeError, ValueError):
+            raise ValueError('fret 必须是整数，实为 %s' % fret)
+        want = None
+        for a, fr, b, desc in FIFTH_FRET_STEPS:
+            if norm(a) == src and norm(b) == dst:
+                want = (fr, desc)
+                break
+        if want is None:
+            raise ValueError('未知的步骤: %s 到 %s，五品法只含相邻的五组' % (src, dst))
+        if fret != want[0]:
+            issues.append({
+                'sev': 3, 'item': '五品调弦法',
+                'detail': '%s 弦用了 %d 品去对 %s 弦，应为 %d 品' % (src, fret, dst, want[0]),
+                'why': want[1] + '；品数错会把整把琴的和弦都调错',
+            })
+    return issues, []
+
+
+def calc(data):
+    a4 = _f(data, 'reference_a4') or TOL['a4']
+    strings = data.get('strings')
+    if strings is None:
+        raise ValueError('输入缺少 strings 列表')
+    if not isinstance(strings, list) or not strings:
+        raise ValueError('strings 必须是非空列表')
+    rows = [string_check(s, a4) for s in strings]
+
+    method = _row(METHODS, data.get('method'), 'method')
+    issues = []
+    miss_names = [r['name'] for r in rows if r['cents'] is None]
+    # 没提交的弦也要算信息缺失，否则「只填一根且是准的」会被误判成全琴音准合格
+    present = set(r['key'] for r in rows)
+    for s in STRINGS:
+        if s[0] not in present:
+            miss_names.append(s[1])
+
+    # 弦自身的偏差
+    for r in rows:
+        if r['sev'] >= 3:
+            issues.append({
+                'sev': 3, 'item': r['name'],
+                'detail': '%s 实测 %.2f 赫兹，标准 %.2f 赫兹，偏差 %+.1f 音分'
+                          % (r['note'], r['freq'], r['ref'], r['cents']),
+                'why': r['advice'],
+            })
+        elif r['sev'] == 2:
+            issues.append({
+                'sev': 2, 'item': r['name'],
+                'detail': '%s 实测 %.2f 赫兹，标准 %.2f 赫兹，偏差 %+.1f 音分'
+                          % (r['note'], r['freq'], r['ref'], r['cents']),
+                'why': r['advice'],
+            })
+
+    # 五品调弦法步骤：只有声明用五品法时，未填步骤才算信息缺失
+    step_issues, step_miss = steps_check(data.get('steps'))
+    issues.extend(step_issues)
+    if method is not None and method[0] == 'fifth_fret':
+        miss_names.extend(step_miss)
+
+    # 调音方法
+    if method is None:
+        miss_names.append('调音方法')
+    elif method[3]:
+        issues.append({
+            'sev': 2, 'item': '调音方法',
+            'detail': '用%s' % method[1],
+            'why': '没有参照音高时，人很容易把整把琴整体调高或调低；'
+                   '六根弦彼此是准的，但整体不在标准音高上',
+        })
+
+    # 用五品法却没先定 6 弦
+    if method is not None and method[0] == 'fifth_fret':
+        s6 = next((r for r in rows if r['key'] == 's6'), None)
+        if s6 is not None and s6['cents'] is not None and abs(s6['cents']) > TOL['ok']:
+            issues.append({
+                'sev': 2, 'item': '五品法前提',
+                'detail': '用五品调弦法但 6 弦本身偏差 %+.1f 音分' % s6['cents'],
+                'why': '五品法只能保证六根弦彼此的相对关系正确；'
+                       '6 弦不准，全琴都不在标准音高上',
+            })
+
+    # 变调夹
+    if data.get('capo'):
+        if data.get('retune_for_capo'):
+            issues.append({
+                'sev': 2, 'item': '变调夹',
+                'detail': '因为用了变调夹而改变了调音目标',
+                'why': '变调夹只改变空弦的实际音高，调音仍应按标准 EADGBE 调，'
+                       '不要因为夹了变调夹就去改弦',
+            })
+
+    issues.sort(key=lambda r: -r['sev'])
+
+    n_bad = len([r for r in rows if r['sev'] >= 3])
+    if n_bad or any(i['sev'] == 3 for i in issues):
+        level = '音准有明显问题'
+    elif issues:
+        level = '有可改进项'
+    elif miss_names:
+        level = '待确认'
+    else:
+        level = '音准合格'
+
+    worst = sorted([r for r in rows if r['cents'] is not None],
+                   key=lambda r: -abs(r['cents']))
+    return {
+        'level': level, 'rows': rows, 'issues': issues, 'misses': miss_names,
+        'a4': a4, 'method': method[1] if method else None,
+        'n_bad': n_bad,
+        'n_minor': len([r for r in rows if r['sev'] == 2]),
+        'n_ok': len([r for r in rows if r['sev'] == 0 and r['cents'] is not None]),
+        'worst': [r['name'] for r in worst[:3]],
+        'fix_order': [i['item'] for i in issues],
+        'steps': [{'from': a, 'fret': f, 'to': b, 'desc': d}
+                  for a, f, b, d in FIFTH_FRET_STEPS],
+        'methods': [{'key': k, 'name': n, 'precision': p, 'bad': b}
+                    for k, n, p, b in METHODS],
+        'tol': dict(TOL),
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 吉他调音核查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['level'])
+    L.append('')
+    L.append('- 参考音高：A4 = %.1f 赫兹' % r['a4'])
+    if r['method']:
+        L.append('- 调音方法：%s' % r['method'])
+    L.append('- 音准 %d 根，需微调 %d 根，明显或严重跑调 %d 根'
+             % (r['n_ok'], r['n_minor'], r['n_bad']))
+    if r['worst']:
+        L.append('- 偏差最大的先调：%s' % '、'.join(r['worst']))
+    L.append('')
+    L.append('## 二、六根弦逐根判定')
+    L.append('')
+    L.append('| 弦 | 音名 | 标准频率 | 实测频率 | 偏差 | 判定 |')
+    L.append('|---|---|---|---|---|---|')
+    for row in r['rows']:
+        L.append('| %s | %s | %.2f 赫兹 | %s | %s | %s |'
+                 % (row['name'], row['note'], row['ref'],
+                    '%.2f 赫兹' % row['freq'] if row['freq'] else '未填写',
+                    '%+.1f 音分' % row['cents'] if row['cents'] is not None else '未填写',
+                    row['status']))
+    L.append('')
+    if r['issues']:
+        L.append('## 三、问题与整改')
+        L.append('')
+        L.append('| 严重度 | 项目 | 问题 | 为什么要在意 |')
+        L.append('|---|---|---|---|')
+        for i in r['issues']:
+            L.append('| %s | %s | %s | %s |'
+                     % ('严重' if i['sev'] == 3 else '可改进', i['item'], i['detail'], i['why']))
+        L.append('')
+    if r['misses']:
+        L.append('- 未填写：%s' % '、'.join(r['misses']))
+        L.append('')
+    L.append('## 四、五品调弦法')
+    L.append('')
+    L.append('| 步骤 | 操作 | 说明 |')
+    L.append('|---|---|---|')
+    for s in r['steps']:
+        L.append('| %s 弦 %d 品 | 对 %s 弦空弦 | %s |' % (s['from'], s['fret'], s['to'], s['desc']))
+    L.append('')
+    L.append('## 五、调音方法')
+    L.append('')
+    L.append('| 方法 | 精度 | 是否推荐 |')
+    L.append('|---|---|---|')
+    for m in r['methods']:
+        L.append('| %s | %s | %s |' % (m['name'], m['precision'], '不推荐' if m['bad'] else '推荐'))
+    L.append('')
+    L.append('## 六、阈值（音分）')
+    L.append('')
+    L.append('| 项目 | 阈值 |')
+    L.append('|---|---|')
+    L.append('| 音准 | 偏差不超过 %.0f 音分 |' % r['tol']['ok'])
+    L.append('| 需微调 | %.0f 到 %.0f 音分 |' % (r['tol']['ok'], r['tol']['minor']))
+    L.append('| 明显跑调 | %.0f 到 %.0f 音分 |' % (r['tol']['minor'], r['tol']['bad']))
+    L.append('| 严重跑调 | 超过 %.0f 音分 |' % r['tol']['bad'])
+    L.append('')
+    L.append('## 七、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 6 弦已用调音器或参照音源调到标准 E')
+    L.append('- [ ] 五品法第 4 步用的是 4 品，不是 5 品')
+    L.append('- [ ] 每根弦是从低往高调上去的，不是从高往低调')
+    L.append('- [ ] 六根调完后再复核一遍')
+    L.append('- [ ] 弹 C、G、Em 各一遍，耳朵听着舒服')
+    L.append('- [ ] 换弦或换环境后重新调过')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    # 1 标准频率计算
+    ck(abs(freq_of(40) - 82.41) < 0.01, 'E2 应为 82.41，实为 %.4f' % freq_of(40))
+    ck(abs(freq_of(45) - 110.0) < 0.01, 'A2 应为 110.00，实为 %.4f' % freq_of(45))
+    ck(abs(freq_of(50) - 146.83) < 0.01, 'D3 应为 146.83，实为 %.4f' % freq_of(50))
+    ck(abs(freq_of(55) - 196.0) < 0.01, 'G3 应为 196.00，实为 %.4f' % freq_of(55))
+    ck(abs(freq_of(59) - 246.94) < 0.01, 'B3 应为 246.94，实为 %.4f' % freq_of(59))
+    ck(abs(freq_of(64) - 329.63) < 0.01, 'E4 应为 329.63，实为 %.4f' % freq_of(64))
+    ck(abs(freq_of(69) - 440.0) < 1e-9, 'A4 应为 440.00，实为 %.4f' % freq_of(69))
+
+    # 2 音分计算
+    ck(abs(cents(440 * 2, 440) - 1200) < 1e-9, '高八度应为 +1200 音分')
+    ck(abs(cents(440 / 2, 440) + 1200) < 1e-9, '低八度应为 -1200 音分')
+    ck(abs(cents(440, 440)) < 1e-9, '同频应为 0 音分')
+
+    # 3 全部标准的正例
+    std = [{'key': k, 'freq': freq_of(m)} for k, _, _, m in STRINGS]
+    r3 = calc({'strings': std, 'method': 'tuner'})
+    ck(r3['level'] == '音准合格', '全部标准应判音准合格，实为 %s' % r3['level'])
+    ck(r3['issues'] == [], '全部标准不应有问题项，实为 %s' % r3['issues'])
+    ck(r3['n_ok'] == 6, '音准应为 6 根，实为 %d' % r3['n_ok'])
+
+    # 4 反例：6 弦调到 80 赫兹
+    bad6 = [dict(std[0], freq=80.0)] + std[1:]
+    r4 = calc({'strings': bad6, 'method': 'tuner'})
+    ck(r4['level'] == '音准有明显问题', '6 弦 80 赫兹应判严重，实为 %s' % r4['level'])
+    ck(any(i['item'] == '6 弦（最粗）' for i in r4['issues']), '应点名 6 弦')
+    ck(abs(r4['rows'][0]['cents']) > 20, '偏差应超过 20 音分，实为 %s' % r4['rows'][0]['cents'])
+
+    # 5 音分分级边界：只让 5 弦偏 dev 音分，其余五根保持标准
+    def mk(dev):
+        out = [{'key': k, 'freq': freq_of(m)} for k, _, _, m in STRINGS]
+        out[1]['freq'] = freq_of(45) * (2 ** (dev / 1200.0))
+        return out
+
+    ck(calc({'strings': mk(5), 'method': 'tuner'})['level'] == '音准合格',
+       '5 音分边界应合格')
+    ck(calc({'strings': mk(-5), 'method': 'tuner'})['level'] == '音准合格',
+       '负 5 音分边界应合格')
+    ck(calc({'strings': mk(8), 'method': 'tuner'})['level'] == '有可改进项',
+       '8 音分应判需微调')
+    ck(calc({'strings': mk(15), 'method': 'tuner'})['level'] == '音准有明显问题',
+       '15 音分应判明显跑调')
+    ck(calc({'strings': mk(40), 'method': 'tuner'})['level'] == '音准有明显问题',
+       '40 音分应判严重跑调')
+
+    # 6 反例：五品法第 4 步用错品数
+    wrong = [{'from': 's3', 'fret': 5, 'to': 's2'}]
+    r6 = calc({'strings': std, 'method': 'fifth_fret', 'steps': wrong})
+    ck(any(i['item'] == '五品调弦法' for i in r6['issues']), '3 弦用 5 品应判严重')
+    ck(r6['level'] == '音准有明显问题', '品数错应判严重，实为 %s' % r6['level'])
+    ck('应为 4 品' in r6['issues'][0]['detail'], '应给出正确品数，实为 %s' % r6['issues'][0]['detail'])
+
+    # 7 正确的五品法步骤
+    right = [{'from': a, 'fret': f, 'to': b} for a, f, b, _ in FIFTH_FRET_STEPS]
+    r7 = calc({'strings': std, 'method': 'fifth_fret', 'steps': right})
+    ck(not any(i['item'] == '五品调弦法' for i in r7['issues']), '正确步骤不应报错')
+    ck(r7['level'] == '音准合格', '正确步骤应合格，实为 %s' % r7['level'])
+
+    # 8 反例：其他步骤也用错品数
+    for a, f, b, _ in FIFTH_FRET_STEPS:
+        if f == 5:
+            r8 = calc({'strings': std, 'method': 'fifth_fret',
+                       'steps': [{'from': a, 'fret': 4, 'to': b}]})
+            ck(any(i['item'] == '五品调弦法' for i in r8['issues']),
+               '%s 弦用 4 品去对 %s 弦应判严重' % (a, b))
+
+    # 9 反例：纯靠耳朵调
+    r9 = calc({'strings': std, 'method': 'ear'})
+    ck(any(i['item'] == '调音方法' for i in r9['issues']), '纯靠耳朵应提示')
+    ck(r9['level'] == '有可改进项', '纯靠耳朵应判可改进，实为 %s' % r9['level'])
+
+    # 10 反例：用五品法但 6 弦不准
+    r10 = calc({'strings': [dict(std[0], freq=freq_of(40) * (2 ** (12 / 1200.0)))] + std[1:],
+                'method': 'fifth_fret', 'steps': right})
+    ck(any(i['item'] == '五品法前提' for i in r10['issues']), '6 弦不准用五品法应提示')
+
+    # 11 反例：因变调夹改调音目标
+    r11 = calc({'strings': std, 'method': 'tuner', 'capo': 2, 'retune_for_capo': True})
+    ck(any(i['item'] == '变调夹' for i in r11['issues']), '因变调夹改调音应提示')
+    ck(calc({'strings': std, 'method': 'tuner', 'capo': 2})['level'] == '音准合格',
+       '夹变调夹但不改调音目标应合格')
+
+    # 12 参考音高变化
+    r12 = calc({'strings': [{'key': 's5', 'freq': 110.0}], 'method': 'tuner',
+                'reference_a4': 442})
+    ck(r12['a4'] == 442, '参考音高应为 442')
+    ck(r12['rows'][0]['cents'] < -5, '以 442 为基准时 110 赫兹应偏低')
+
+    # 13 排序方向：偏差最大的排最前
+    r13 = calc({'strings': [dict(std[0], freq=freq_of(40) * (2 ** (-50 / 1200.0))),
+                            dict(std[1], freq=freq_of(45) * (2 ** (30 / 1200.0))),
+                            dict(std[2], freq=freq_of(50) * (2 ** (8 / 1200.0)))],
+                'method': 'tuner'})
+    ck(r13['worst'][0] == '6 弦（最粗）', '偏差最大的应排最前，实为 %s' % r13['worst'])
+    ck(r13['worst'][1] == '5 弦', '第二应是 5 弦，实为 %s' % r13['worst'])
+    ck(r13['issues'][0]['sev'] == 3, '严重项应排最前，实为 %s' % r13['issues'][0]['sev'])
+
+    # 14 判定顺序：有严重项时不因缺信息判待确认
+    r14 = calc({'strings': [dict(std[0], freq=80.0)]})
+    ck(r14['level'] == '音准有明显问题', '只填一根且跑调不应判待确认，实为 %s' % r14['level'])
+    r14b = calc({'strings': [{'key': 's6', 'freq': freq_of(40)}], 'method': 'tuner'})
+    ck(r14b['level'] == '待确认', '只填 6 弦且准应判待确认，实为 %s' % r14b['level'])
+
+    # 15 BOM 两条路径
+    bom = '﻿' + json.dumps({'strings': [dict(std[0], freq=80.0)], 'method': 'tuner'})
+    r15 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r15['level'] == '音准有明显问题', 'BOM 字符串应正确解析，实为 %s' % r15['level'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe_c8.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'strings': std, 'method': 'fifth_fret',
+                            'steps': [{'from': 's3', 'fret': 5, 'to': 's2'}]}))
+    try:
+        r15b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(any(i['item'] == '五品调弦法' for i in r15b['issues']),
+           'BOM 文件应解析出 steps，实为 %s' % r15b['issues'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 16 非法输入
+    for bad, why in (
+        ({}, '缺 strings'),
+        ({'strings': []}, 'strings 空列表'),
+        ({'strings': [{'key': 's7', 'freq': 100}]}, '未知弦'),
+        ({'strings': [{'freq': 100}]}, '缺弦标识'),
+        ({'strings': [{'key': 's6', 'freq': 'abc'}]}, '频率非数字'),
+        ({'strings': [{'key': 's6', 'freq': 0}]}, '频率为 0'),
+        ({'strings': std, 'method': '拍音法'}, '未知方法'),
+        ({'strings': std, 'steps': [{'from': 's6', 'fret': 5, 'to': 's3'}]}, '非相邻步骤'),
+        ({'strings': std, 'steps': [{'from': 's6', 'to': 's5'}]}, '缺 fret'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例16 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 17 输出结构
+    md = render_md(r4)
+    for key in ('总体判定', '六根弦逐根判定', '五品调弦法', '调音方法', '阈值', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(STRINGS) == 6, '弦应 6 根')
+    ck(len(FIFTH_FRET_STEPS) == 5, '五品法步骤应 5 步')
+    ck(FIFTH_FRET_STEPS[3][1] == 4, '第 4 步必须是 4 品')
+    ck(all(f == 5 for i, (_, f, _, _) in enumerate(FIFTH_FRET_STEPS) if i != 3),
+       '除第 4 步外都应是 5 品')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 六根弦标准频率/音分计算与八度/全标准正例/6弦80赫兹反例/'
+        '音分分级边界(5与8与15与40)/五品法3弦用5品反例/正确步骤/其余步骤品数反例/'
+        '纯靠耳朵反例/五品法前提反例/变调夹反例/参考音高442/偏差排序/判定顺序/'
+        'BOM两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='吉他调音核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

@@ -1,0 +1,558 @@
+# -*- coding: utf-8 -*-
+"""夜景拍摄核查：算安全快门、核 ISO 上限、闪光灯、曝光补偿与三脚架操作。
+
+用法:
+  python night_shot_check.py --file night.json [--out result.md] [--format json]
+  python night_shot_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 设备: (键, 中文名, ISO 建议上限)
+DEVICES = [
+    ('phone', '手机', 3200),
+    ('aps_c', '相机（半幅）', 3200),
+    ('full', '相机（全幅）', 6400),
+]
+
+# 支撑方式: (键, 中文名, 是否有支撑)
+SUPPORT = [
+    ('tripod', '三脚架', True),
+    ('rest', '固定依托（栏杆、地面、包）', True),
+    ('handheld', '手持', False),
+]
+
+# 阈值
+TOL = {
+    'ev_min': -1.0,       # 夜景曝光补偿下限
+    'ev_max': 0.0,        # 夜景曝光补偿上限
+    'ev_under': -2.0,     # 欠曝下限
+    'ev_over': 0.3,       # 高光开始溢出的上界
+    'tripod_iso_max': 400,  # 三脚架下建议的 ISO 上限
+    'rest_shutter_max': 0.5,  # 仅有依托时的建议最长曝光
+}
+
+# 题材曝光时长参考: (键, 中文名, 快门区间, 要点)
+SUBJECTS = [
+    ('city', '城市夜景、建筑', '2 到 10 秒', '等车少的时候拍，避免车灯过曝'),
+    ('trail', '车流光轨', '8 到 30 秒', '需要三脚架，ISO 压到最低，用小光圈'),
+    ('water', '水面倒影', '1 到 5 秒', '水面平静时倒影才清晰'),
+    ('star', '星空（无赤道仪）', '15 到 25 秒', '超过 30 秒星星会拖线，用大光圈高 ISO'),
+    ('handheld', '手持夜景', '不长于安全快门', '靠提 ISO 和连拍挑片'),
+]
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def _f(shot, key):
+    v = shot.get(key)
+    if v is None:
+        return None
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        raise ValueError('%s 必须是数字，实为 %s' % (key, v))
+    if f <= 0:
+        raise ValueError('%s 必须为正数，实为 %s' % (key, v))
+    return f
+
+
+def _row(table, key, val, label):
+    if val is None or val == '':
+        return None
+    n = norm(val)
+    for r in table:
+        if norm(r[0]) == n:
+            return r
+    raise ValueError('未知的 %s: %s，可选 %s 之一' % (label, val, '/'.join(r[0] for r in table)))
+
+
+def safe_shutter(focal, crop):
+    """安全快门 = 1 / (等效焦距 * 裁切系数)。"""
+    return 1.0 / (focal * crop)
+
+
+def shot_check(shot):
+    if not isinstance(shot, dict):
+        raise ValueError('shots 的每一项必须是对象')
+    name = str(shot.get('name') or '未命名').strip()
+    dev = _row(DEVICES, 'device', shot.get('device'), 'device')
+    sup = _row(SUPPORT, 'support', shot.get('support'), 'support')
+    focal = _f(shot, 'focal_mm')
+    crop = _f(shot, 'crop') or 1.0
+    shutter = _f(shot, 'shutter_s')
+    iso = _f(shot, 'iso')
+    ev = shot.get('ev')
+    ev = float(ev) if ev is not None else None
+    flash = shot.get('flash')
+    night = shot.get('night_mode')
+    raw = shot.get('raw')
+    remote = shot.get('timer_or_remote')
+    subject = _row(SUBJECTS, 'subject', shot.get('subject'), 'subject')
+
+    issues = []
+    misses = []
+    facts = {}
+
+    if dev is None:
+        misses.append('设备类型')
+    if sup is None:
+        misses.append('支撑方式')
+    if focal is None:
+        misses.append('等效焦距')
+
+    # 安全快门
+    if focal is not None:
+        safe = safe_shutter(focal, crop)
+        facts['safe_shutter'] = safe
+        if shutter is not None:
+            facts['over_stop'] = (shutter / safe) if safe else 0.0
+            # 手持：快门时间必须不长于安全快门
+            if sup is not None and not sup[2] and shutter > safe:
+                issues.append({
+                    'sev': 3, 'item': '安全快门',
+                    'detail': '手持 %.3f 秒，安全快门为 1/%.0f 秒（约 %.3f 秒），超出约 %.0f 倍'
+                              % (shutter, 1.0 / safe, safe, shutter / safe),
+                    'why': '手持曝光超过安全快门必然拍糊，光学防抖救不了这么大的缺口；'
+                           '上三脚架、找固定依托，或提高 ISO 把快门压回来',
+                })
+            # 仅有依托：曝光也不宜过长
+            elif sup is not None and sup[0] == 'rest' and shutter > TOL['rest_shutter_max']:
+                issues.append({
+                    'sev': 2, 'item': '支撑稳定性',
+                    'detail': '仅有依托却用了 %.2f 秒曝光' % shutter,
+                    'why': '栏杆、包这类依托能延长一两挡，但撑不住秒级长曝光，建议改用三脚架',
+                })
+        # 三脚架下却用了过短曝光且高 ISO：本可以更好
+        if sup is not None and sup[0] == 'tripod' and iso is not None \
+                and iso > TOL['tripod_iso_max'] and shutter is not None and shutter >= 1.0:
+            issues.append({
+                'sev': 2, 'item': 'ISO 偏高',
+                'detail': '已上三脚架且曝光 %.1f 秒，ISO 却用到 %.0f' % (shutter, iso),
+                'why': '三脚架的意义就是用长曝光换低 ISO，此时应把 ISO 压到 100 到 400',
+            })
+    else:
+        misses.append('安全快门（需焦距）')
+
+    # ISO 上限
+    if iso is None:
+        misses.append('ISO')
+    elif dev is not None:
+        limit = dev[2]
+        if iso > limit:
+            issues.append({
+                'sev': 3, 'item': 'ISO',
+                'detail': 'ISO %.0f，超过%s建议上限 %d' % (iso, dev[1], limit),
+                'why': '超过上限后降噪算法会强力涂抹，建筑边缘发糊、细节变色块、'
+                       '暗部出现彩色噪点；正确路径是用三脚架换长曝光，而不是硬拉 ISO',
+            })
+
+    # 闪光灯
+    if flash is None:
+        misses.append('闪光灯状态')
+    elif flash:
+        issues.append({
+            'sev': 3, 'item': '闪光灯',
+            'detail': '开着闪光灯拍夜景',
+            'why': '闪光只照亮 2 到 5 米，近处死白、远处依然黑、暖色氛围被冷白光压掉；'
+                   '需要补近处主体时用常亮光，不要开闪光',
+        })
+
+    # 曝光补偿
+    if ev is None:
+        misses.append('曝光补偿')
+    else:
+        if ev > TOL['ev_over']:
+            issues.append({
+                'sev': 2, 'item': '曝光补偿',
+                'detail': '%.1f EV，高于 %.1f' % (ev, TOL['ev_over']),
+                'why': '夜景加曝光会让灯牌、霓虹、天空的高光溢出成死白，且后期拉不回来；'
+                       '宁可稍欠不可过曝，应压在负 1.0 到 0',
+            })
+        elif ev < TOL['ev_under']:
+            issues.append({
+                'sev': 2, 'item': '曝光补偿',
+                'detail': '%.1f EV，低于 %.1f' % (ev, TOL['ev_under']),
+                'why': '压得太狠整体欠曝，后期提亮暗部会让噪点爆炸',
+            })
+
+    # 夜景模式（手机）
+    if dev is not None and dev[0] == 'phone':
+        if night is None:
+            misses.append('夜景模式')
+        elif not night and sup is not None and not sup[2]:
+            issues.append({
+                'sev': 2, 'item': '夜景模式',
+                'detail': '手机手持拍夜景却没开夜景模式',
+                'why': '手持夜景靠多帧合成才能压住噪点，不开夜景模式画质会明显变差',
+            })
+
+    # RAW
+    if raw is False:
+        issues.append({
+            'sev': 2, 'item': 'RAW',
+            'detail': '未拍 RAW',
+            'why': '夜景暗部需要后期提亮，JPG 的宽容度不够；拍 RAW 才有提亮空间',
+        })
+
+    # 三脚架上手按快门
+    if sup is not None and sup[0] == 'tripod':
+        if remote is None:
+            misses.append('定时或遥控快门')
+        elif not remote:
+            issues.append({
+                'sev': 2, 'item': '按快门方式',
+                'detail': '三脚架上用手直接按快门',
+                'why': '按下那一下的抖动就够毁掉几秒的长曝光；用 2 秒定时或快门线',
+            })
+
+    issues.sort(key=lambda r: -r['sev'])
+
+    if any(i['sev'] == 3 for i in issues):
+        level = '参数有明显问题'
+    elif issues:
+        level = '有可改进项'
+    elif misses:
+        level = '待确认'
+    else:
+        level = '参数可行'
+
+    return {
+        'name': name, 'level': level, 'issues': issues, 'misses': misses,
+        'facts': facts, 'device': dev[1] if dev else None,
+        'support': sup[1] if sup else None,
+        'focal': focal, 'crop': crop, 'shutter': shutter, 'iso': iso, 'ev': ev,
+        'subject': subject[1] if subject else None,
+    }
+
+
+def calc(data):
+    shots = data.get('shots')
+    if shots is None:
+        raise ValueError('输入缺少 shots 列表')
+    if not isinstance(shots, list) or not shots:
+        raise ValueError('shots 必须是非空列表')
+    rows = [shot_check(s) for s in shots]
+    n_bad = len([r for r in rows if r['level'] == '参数有明显问题'])
+    n_mid = len([r for r in rows if r['level'] == '有可改进项'])
+    n_unk = len([r for r in rows if r['level'] == '待确认'])
+    if n_bad:
+        overall = '存在需要重拍的夜景'
+    elif n_mid:
+        overall = '存在可改进的夜景'
+    elif n_unk:
+        overall = '待确认'
+    else:
+        overall = '全部参数可行'
+
+    def _sev(r):
+        return max([i['sev'] for i in r['issues']], default=0)
+
+    order = sorted(rows, key=lambda r: (-_sev(r), -len(r['issues']), r['name']))
+    return {
+        'overall': overall, 'rows': rows,
+        'n_bad': n_bad, 'n_mid': n_mid, 'n_unk': n_unk,
+        'n_ok': len(rows) - n_bad - n_mid - n_unk,
+        'fix_order': [r['name'] for r in order if r['issues']],
+        'devices': [{'key': k, 'name': n, 'iso_max': m} for k, n, m in DEVICES],
+        'supports': [{'key': k, 'name': n, 'stable': s} for k, n, s in SUPPORT],
+        'subjects': [{'key': k, 'name': n, 'shutter': s, 'note': nt} for k, n, s, nt in SUBJECTS],
+        'tol': dict(TOL),
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 夜景拍摄核查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['overall'])
+    L.append('')
+    L.append('| 类别 | 张数 |')
+    L.append('|---|---|')
+    L.append('| 需要重拍 | %d |' % r['n_bad'])
+    L.append('| 可改进 | %d |' % r['n_mid'])
+    L.append('| 待确认 | %d |' % r['n_unk'])
+    L.append('| 参数可行 | %d |' % r['n_ok'])
+    L.append('')
+    if r['fix_order']:
+        L.append('整改顺序（严重度高的先改）：%s' % '、'.join(r['fix_order']))
+        L.append('')
+    L.append('## 二、逐张判定')
+    L.append('')
+    for row in r['rows']:
+        L.append('### %s' % row['name'])
+        L.append('')
+        L.append('- 判定：**%s**' % row['level'])
+        if row['device']:
+            L.append('- 设备：%s' % row['device'])
+        if row['support']:
+            L.append('- 支撑：%s' % row['support'])
+        if row['focal'] is not None:
+            L.append('- 等效焦距：%.0f mm（裁切系数 %.1f）' % (row['focal'], row['crop']))
+        if row['facts'].get('safe_shutter'):
+            L.append('- 安全快门：约 %.4f 秒（1/%.0f 秒）'
+                     % (row['facts']['safe_shutter'], 1.0 / row['facts']['safe_shutter']))
+        if row['shutter'] is not None:
+            L.append('- 实际快门：%.3f 秒' % row['shutter'])
+        if row['iso'] is not None:
+            L.append('- ISO：%.0f' % row['iso'])
+        if row['ev'] is not None:
+            L.append('- 曝光补偿：%.1f EV' % row['ev'])
+        if row['subject']:
+            L.append('- 题材：%s' % row['subject'])
+        if row['issues']:
+            L.append('')
+            L.append('| 严重度 | 项目 | 问题 | 为什么要在意 |')
+            L.append('|---|---|---|---|')
+            for i in row['issues']:
+                L.append('| %s | %s | %s | %s |'
+                         % ('严重' if i['sev'] == 3 else '可改进', i['item'], i['detail'], i['why']))
+        if row['misses']:
+            L.append('')
+            L.append('- 未填写：%s' % '、'.join(row['misses']))
+        L.append('')
+    L.append('## 三、ISO 建议上限')
+    L.append('')
+    L.append('| 设备 | 上限 |')
+    L.append('|---|---|')
+    for d in r['devices']:
+        L.append('| %s | %d |' % (d['name'], d['iso_max']))
+    L.append('')
+    L.append('## 四、题材曝光时长参考')
+    L.append('')
+    L.append('| 题材 | 快门时间 | 要点 |')
+    L.append('|---|---|---|')
+    for s in r['subjects']:
+        L.append('| %s | %s | %s |' % (s['name'], s['shutter'], s['note']))
+    L.append('')
+    L.append('## 五、阈值')
+    L.append('')
+    L.append('| 项目 | 阈值 |')
+    L.append('|---|---|')
+    L.append('| 曝光补偿 | %.1f 到 %.1f EV（低于 %.1f 算欠曝，高于 %.1f 算溢出） |'
+             % (r['tol']['ev_min'], r['tol']['ev_max'], r['tol']['ev_under'], r['tol']['ev_over']))
+    L.append('| 三脚架下 ISO | 不高于 %d |' % r['tol']['tripod_iso_max'])
+    L.append('| 仅有依托时最长曝光 | %.1f 秒 |' % r['tol']['rest_shutter_max'])
+    L.append('')
+    L.append('## 六、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 已算安全快门，手持曝光不长于该值')
+    L.append('- [ ] ISO 未超过设备建议上限')
+    L.append('- [ ] 闪光灯已关闭')
+    L.append('- [ ] 曝光补偿压在负 1.0 到 0')
+    L.append('- [ ] 三脚架时用了 2 秒定时或快门线')
+    L.append('- [ ] 连拍了 3 到 5 张，回家挑最清晰的那张')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    tripod = {'name': '江边夜景', 'device': 'full', 'support': 'tripod', 'focal_mm': 24,
+              'crop': 1.0, 'shutter_s': 5.0, 'iso': 200, 'ev': -0.7, 'flash': False,
+              'raw': True, 'timer_or_remote': True, 'subject': 'city'}
+
+    # 1 三脚架正例
+    r1 = shot_check(tripod)
+    ck(r1['level'] == '参数可行', '三脚架正例应判参数可行，实为 %s' % r1['level'])
+    ck(r1['issues'] == [], '三脚架正例不应有问题项，实为 %s' % r1['issues'])
+
+    # 2 安全快门计算
+    ck(abs(safe_shutter(24, 1.0) - 1.0 / 24) < 1e-9, '24mm 全幅安全快门应为 1/24 秒')
+    ck(abs(safe_shutter(50, 1.5) - 1.0 / 75) < 1e-9, '50mm 半幅安全快门应为 1/75 秒')
+
+    hand = {'name': '手持夜景', 'device': 'phone', 'support': 'handheld',
+            'focal_mm': 24, 'crop': 1.0, 'shutter_s': 1.0 / 30, 'iso': 1600,
+            'ev': 0.0, 'flash': False, 'raw': True, 'night_mode': True}
+
+    # 3 反例：手持 24mm 用 0.5 秒
+    r3 = shot_check(dict(hand, shutter_s=0.5, ev=-0.5))
+    ck(r3['level'] == '参数有明显问题', '手持 0.5 秒应判严重，实为 %s' % r3['level'])
+    ck(any(i['item'] == '安全快门' for i in r3['issues']), '应点名安全快门')
+    ck(r3['facts']['over_stop'] > 10, '应算出超出倍数，实为 %s' % r3['facts']['over_stop'])
+
+    # 4 手持边界：1/25 秒合格，1/20 秒不合格
+    r4a = shot_check(dict(hand, name='手持边界内', shutter_s=1.0 / 25))
+    r4b = shot_check(dict(hand, name='手持超界', shutter_s=1.0 / 20))
+    ck(not any(i['item'] == '安全快门' for i in r4a['issues']), '1/25 秒应不超过 1/24 秒')
+    ck(any(i['item'] == '安全快门' for i in r4b['issues']), '1/20 秒应超过 1/24 秒')
+
+    # 5 反例：手机 ISO 超上限
+    r5 = shot_check(dict(hand, iso=6400))
+    ck(any(i['item'] == 'ISO' for i in r5['issues']), '手机 ISO 6400 应判严重')
+    ck(r5['level'] == '参数有明显问题', 'ISO 超限应判严重，实为 %s' % r5['level'])
+    ck(not any(i['item'] == 'ISO' for i in shot_check(dict(hand, iso=3200))['issues']),
+       '手机 ISO 3200 边界应合格')
+    ck(not any(i['item'] == 'ISO' for i in shot_check(dict(tripod, device='full', iso=6400))['issues']),
+       '全幅 ISO 6400 边界应合格')
+    ck(any(i['item'] == 'ISO' for i in shot_check(dict(tripod, device='full', iso=12800))['issues']),
+       '全幅 ISO 12800 应不合格')
+
+    # 6 反例：开闪光灯
+    r6 = shot_check(dict(tripod, flash=True))
+    ck(any(i['item'] == '闪光灯' for i in r6['issues']), '开闪光灯应判严重')
+    ck(r6['level'] == '参数有明显问题', '开闪光灯应判严重，实为 %s' % r6['level'])
+
+    # 7 反例：曝光补偿过高
+    r7 = shot_check(dict(tripod, ev=1.0))
+    ck(any(i['item'] == '曝光补偿' for i in r7['issues']), 'EV +1.0 应提示')
+    ck(r7['level'] == '有可改进项', 'EV +1.0 应判可改进，实为 %s' % r7['level'])
+    ck(any(i['item'] == '曝光补偿' for i in shot_check(dict(tripod, ev=-2.5))['issues']),
+       'EV -2.5 应提示欠曝')
+    ck(shot_check(dict(tripod, ev=0.0))['issues'] == [], 'EV 0 应合格')
+    ck(shot_check(dict(tripod, ev=-1.0))['issues'] == [], 'EV -1.0 应合格')
+
+    # 8 反例：手机手持不开夜景模式
+    r8 = shot_check(dict(hand, name='手机手持', ev=-0.5, night_mode=False))
+    ck(any(i['item'] == '夜景模式' for i in r8['issues']), '手机手持不开夜景模式应提示')
+    ck(shot_check(dict(hand, ev=-0.5, night_mode=True))['level'] == '参数可行',
+       '开了夜景模式应合格，实为 %s' % shot_check(dict(hand, ev=-0.5, night_mode=True))['level'])
+
+    # 9 反例：三脚架上手按快门
+    r9 = shot_check(dict(tripod, timer_or_remote=False))
+    ck(any(i['item'] == '按快门方式' for i in r9['issues']), '三脚架手按快门应提示')
+
+    # 10 反例：三脚架长曝光却高 ISO
+    r10 = shot_check(dict(tripod, iso=3200))
+    ck(any(i['item'] == 'ISO 偏高' for i in r10['issues']), '三脚架高 ISO 应提示')
+
+    # 11 反例：只有依托却用 2 秒
+    r11 = shot_check(dict(tripod, support='rest', shutter_s=2.0, iso=800))
+    ck(any(i['item'] == '支撑稳定性' for i in r11['issues']), '依托用 2 秒应提示')
+
+    # 12 反例：未拍 RAW
+    r12 = shot_check(dict(tripod, raw=False))
+    ck(any(i['item'] == 'RAW' for i in r12['issues']), '未拍 RAW 应提示')
+
+    # 13 排序方向：严重项排最前
+    r13 = shot_check(dict(tripod, iso=12800, flash=True, ev=1.0))
+    ck(r13['issues'][0]['sev'] == 3, '严重项应排最前，实为 %s' % r13['issues'][0]['sev'])
+    ck(r13['issues'][-1]['sev'] == 2, '末位应是可改进项')
+
+    # 14 判定顺序：有严重项时不因缺信息判待确认
+    r14 = shot_check({'name': '只填闪光灯', 'flash': True})
+    ck(r14['level'] == '参数有明显问题', '缺其他项但有严重项不应判待确认，实为 %s' % r14['level'])
+    r14b = shot_check({'name': '只填焦距', 'focal_mm': 24})
+    ck(r14b['level'] == '待确认', '只填焦距应判待确认，实为 %s' % r14b['level'])
+
+    # 15 汇总与整改顺序
+    r15 = calc({'shots': [tripod,
+                          dict(tripod, name='手持糊了', support='handheld', shutter_s=1.0, iso=3200),
+                          dict(tripod, name='没拍RAW', raw=False)]})
+    ck(r15['overall'] == '存在需要重拍的夜景', '有严重项应判需要重拍，实为 %s' % r15['overall'])
+    ck(r15['n_bad'] == 1, '严重项应为 1 张，实为 %d' % r15['n_bad'])
+    ck(r15['fix_order'][0] == '手持糊了', '严重项应先改，实为 %s' % r15['fix_order'])
+    ck(r15['fix_order'][1] == '没拍RAW', '可改进项排其后，实为 %s' % r15['fix_order'])
+
+    # 16 BOM 两条路径
+    bom = '﻿' + json.dumps({'shots': [dict(tripod, flash=True)]})
+    r16 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r16['overall'] == '存在需要重拍的夜景', 'BOM 字符串应正确解析，实为 %s' % r16['overall'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe_c3.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'shots': [dict(tripod, name='带BOM', iso=12800)]}))
+    try:
+        r16b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r16b['rows'][0]['name'] == '带BOM', 'BOM 文件首个 key 应解析正常，实为 %s' % r16b['rows'][0]['name'])
+        ck(r16b['n_bad'] == 1, 'ISO 超限应判严重，实为 %d' % r16b['n_bad'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 17 非法输入
+    for bad, why in (
+        ({}, '缺 shots'),
+        ({'shots': []}, 'shots 空列表'),
+        ({'shots': [dict(tripod, iso='abc')]}, 'ISO 非数字'),
+        ({'shots': [dict(tripod, shutter_s=0)]}, '快门非正数'),
+        ({'shots': [dict(tripod, device='无人机')]}, '未知设备'),
+        ({'shots': [dict(tripod, support='手持抖动')]}, '未知支撑方式'),
+        ({'shots': [dict(tripod, subject='月亮')]}, '未知题材'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例17 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 18 输出结构
+    md = render_md(r15)
+    for key in ('总体判定', '逐张判定', 'ISO 建议上限', '题材曝光时长参考', '阈值', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(DEVICES) == 3, '设备类型应 3 种')
+    ck(len(SUBJECTS) >= 4, '题材参考至少 4 条')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 三脚架正例/安全快门计算/手持超时反例与边界/ISO上限与边界/'
+        '闪光灯反例/曝光补偿上下界/夜景模式反例/手按快门反例/三脚架高ISO反例/依托长曝光反例/'
+        '未拍RAW反例/严重项排序/判定顺序/汇总整改顺序/BOM两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='夜景拍摄核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

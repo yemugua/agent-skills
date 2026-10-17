@@ -1,0 +1,611 @@
+# -*- coding: utf-8 -*-
+"""直播布光核查：核主光位置与照度、辅光比例、轮廓光与背景光、色温统一与眼镜反光。
+
+用法:
+  python lighting_check.py --file lighting.json [--out result.md] [--format json]
+  python lighting_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 主光高度: (键, 中文名, 是否合格, 说明)
+HEIGHTS = [
+    ('above_eye', '略高于视线', True, '眼部有神、下巴阴影自然，推荐'),
+    ('eye_level', '与视线齐平', True, '可用，但立体感略平'),
+    ('below', '低于视线', False, '阴影往上走，观感怪异'),
+]
+
+# 场景: (键, 中文名, 要点)
+SCENES = [
+    ('sit', '坐播（桌面近距）', '主光侧前方 45 度，关掉房间顶灯，桌面反光材质避开直射'),
+    ('stand', '站播（全身）', '主光抬高覆盖全身，必须有轮廓光，背景整体提亮一档'),
+    ('product', '产品展示', '柔光箱贴近产品突出纹理，反光板补光，5600K 色彩更准'),
+]
+
+# 阈值
+TOL = {
+    'angle_min': 30.0,        # 主光角度下限（度）
+    'angle_max': 60.0,        # 主光角度上限（度）
+    'angle_flat': 15.0,       # 正面直打判定阈值（度）
+    'key_lux_min': 300.0,     # 主光照度下限（勒克斯）
+    'key_lux_ideal': 600.0,   # 主光照度推荐下限
+    'fill_min': 0.3,          # 辅光与主光之比下限
+    'fill_max': 0.7,          # 辅光与主光之比上限
+    'fill_dead': 0.2,         # 暗部死黑的判定线
+    'ambient_ratio_min': 3.0,  # 主光与环境光之比下限
+    'ambient_ratio_max': 8.0,  # 主光与环境光之比上限
+    'glass_angle_min': 30.0,  # 戴眼镜时的主光角度下限
+    'back_angle': 150.0,      # 判定为「正后方光源」的角度
+}
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def _f(shot, key):
+    v = shot.get(key)
+    if v is None:
+        return None
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        raise ValueError('%s 必须是数字，实为 %s' % (key, v))
+    if f < 0:
+        raise ValueError('%s 不能为负数，实为 %s' % (key, v))
+    return f
+
+
+def _row(table, val, label):
+    if val is None or val == '':
+        return None
+    n = norm(val)
+    for r in table:
+        if norm(r[0]) == n:
+            return r
+    raise ValueError('未知的 %s: %s，可选 %s 之一' % (label, val, '/'.join(r[0] for r in table)))
+
+
+def setup_check(s):
+    if not isinstance(s, dict):
+        raise ValueError('setups 的每一项必须是对象')
+    name = str(s.get('name') or '未命名').strip()
+    angle = _f(s, 'key_angle_deg')
+    height = _row(HEIGHTS, s.get('key_height'), 'key_height')
+    scene = _row(SCENES, s.get('scene'), 'scene')
+    key_lux = _f(s, 'key_lux')
+    amb_lux = _f(s, 'ambient_lux')
+    fill = _f(s, 'fill_ratio')
+    temp_k = _f(s, 'color_temp_k')
+
+    issues = []
+    misses = []
+
+    # 严重项 1：正后方光源或背后强窗
+    behind = bool(s.get('window_behind')) or (angle is not None and angle >= TOL['back_angle'])
+    if behind:
+        issues.append({
+            'sev': 3, 'item': '光源方位',
+            'detail': '主光在正后方或背后有强光源（窗户）',
+            'why': '背后极亮会让摄像设备整体降曝光，人脸直接变黑；'
+                   '拉上窗帘、关掉背后光源，或改成侧对、面对窗户',
+        })
+
+    # 严重项 2：只有顶光
+    if s.get('top_light_only'):
+        issues.append({
+            'sev': 3, 'item': '顶光',
+            'detail': '只有顶光',
+            'why': '顶光会在眼窝、鼻下、下巴留下浓重阴影，眼神发黑；'
+                   '在侧前方 30 到 60 度补一盏主光',
+        })
+
+    # 严重项 3：照度不足
+    if key_lux is None:
+        misses.append('主光照度')
+    else:
+        if key_lux < TOL['key_lux_min']:
+            issues.append({
+                'sev': 3, 'item': '主光照度',
+                'detail': '%.0f 勒克斯，低于 %.0f' % (key_lux, TOL['key_lux_min']),
+                'why': '照度不足时设备会自动提高感光度，画面出现噪点与涂抹感；先加灯，不要指望后期',
+            })
+        elif key_lux < TOL['key_lux_ideal']:
+            issues.append({
+                'sev': 2, 'item': '主光照度',
+                'detail': '%.0f 勒克斯，未达建议的 %.0f' % (key_lux, TOL['key_lux_ideal']),
+                'why': '照度偏低，画面容易发暗；把主光调亮或拉近一点',
+            })
+
+    # 严重项 4：色温不一致
+    if s.get('temp_consistent') is False:
+        issues.append({
+            'sev': 3, 'item': '色温',
+            'detail': '现场混用了不同色温的光源',
+            'why': '一侧发黄一侧发青，后期怎么调都调不回来；'
+                   '关掉房间原有顶灯，或给直播灯加同色温的色片',
+        })
+
+    # 严重项 5：主光高度低于视线
+    if height is not None and not height[2]:
+        issues.append({
+            'sev': 3, 'item': '主光高度',
+            'detail': '%s' % height[1],
+            'why': '光源低于视线时阴影往上走，观感怪异；把主光抬到略高于视线',
+        })
+
+    # 严重项 6：正面零角度直打
+    if angle is None:
+        misses.append('主光角度')
+    else:
+        if angle < TOL['angle_flat'] and not behind:
+            issues.append({
+                'sev': 3, 'item': '主光角度',
+                'detail': '%.0f 度，属于正面直打' % angle,
+                'why': '正面零角度直打会让脸像一张平板，没有立体感；'
+                       '把主光偏到 30 到 60 度',
+            })
+        elif angle < TOL['angle_min'] and not behind:
+            issues.append({
+                'sev': 2, 'item': '主光角度',
+                'detail': '%.0f 度，未达建议的 %.0f 度' % (angle, TOL['angle_min']),
+                'why': '角度偏小立体感不足；偏到 30 到 60 度效果最好',
+            })
+        elif angle > TOL['angle_max'] and not behind:
+            issues.append({
+                'sev': 2, 'item': '主光角度',
+                'detail': '%.0f 度，超过 %.0f 度' % (angle, TOL['angle_max']),
+                'why': '角度过大另一侧脸会全黑；回到 30 到 60 度，或加辅光补暗部',
+            })
+        # 戴眼镜时的反光
+        if s.get('glasses') and angle < TOL['glass_angle_min'] and not behind:
+            issues.append({
+                'sev': 3, 'item': '眼镜反光',
+                'detail': '戴眼镜且主光角度 %.0f 度，小于 %.0f 度' % (angle, TOL['glass_angle_min']),
+                'why': '镜片会把光源直接反射进镜头形成白斑遮住眼睛；'
+                       '把主光角度加大并抬高，或用柔光箱扩大光源面积',
+            })
+
+    # 可改进项：辅光比例
+    if fill is None:
+        misses.append('辅光比例')
+    else:
+        if fill < TOL['fill_dead']:
+            issues.append({
+                'sev': 2, 'item': '辅光比例',
+                'detail': '辅光为主光的 %.2f，低于 %.1f' % (fill, TOL['fill_dead']),
+                'why': '辅光太弱暗部会死黑；辅光调到主光的 0.3 到 0.7',
+            })
+        elif fill < TOL['fill_min']:
+            issues.append({
+                'sev': 2, 'item': '辅光比例',
+                'detail': '辅光为主光的 %.2f，未达建议的 %.1f' % (fill, TOL['fill_min']),
+                'why': '辅光偏弱，暗部细节不足；辅光是提亮暗部，不是消灭阴影',
+            })
+        elif fill > TOL['fill_max']:
+            issues.append({
+                'sev': 2, 'item': '辅光比例',
+                'detail': '辅光为主光的 %.2f，超过 %.1f' % (fill, TOL['fill_max']),
+                'why': '辅光太强会把主光的造型全抹平，脸又变成平板；'
+                       '辅光降到主光的 0.3 到 0.7',
+            })
+
+    # 可改进项：轮廓光与背景光
+    if s.get('backlight') is False:
+        issues.append({
+            'sev': 2, 'item': '轮廓光',
+            'detail': '没有轮廓光',
+            'why': '没有轮廓光人与背景会糊在一起；从侧后方补一盏，'
+                   '在头发肩膀边缘勾一道亮边',
+        })
+    if s.get('bg_light') is False:
+        issues.append({
+            'sev': 2, 'item': '背景光',
+            'detail': '背景没有独立打光',
+            'why': '背景全黑会让画面缺少层次；给背景单独补光，'
+                   '但不要让背景比人脸还亮',
+        })
+
+    # 可改进项：主光与环境光之比
+    if key_lux is not None and amb_lux is not None and amb_lux > 0:
+        ratio = key_lux / amb_lux
+        if ratio < TOL['ambient_ratio_min']:
+            issues.append({
+                'sev': 2, 'item': '光比',
+                'detail': '主光与环境光之比为 %.1f，低于 %.1f' % (ratio, TOL['ambient_ratio_min']),
+                'why': '环境太亮主体不突出，画面发平；降低环境光或提高主光',
+            })
+        elif ratio > TOL['ambient_ratio_max']:
+            issues.append({
+                'sev': 2, 'item': '光比',
+                'detail': '主光与环境光之比为 %.1f，超过 %.1f' % (ratio, TOL['ambient_ratio_max']),
+                'why': '环境太暗会显得像在洞里；给背景补一点光',
+            })
+
+    # 可改进项：人贴墙
+    if s.get('too_close_to_wall'):
+        issues.append({
+            'sev': 2, 'item': '人物距离',
+            'detail': '人物离墙太近',
+            'why': '贴着墙会把影子投在墙上；离墙至少 0.5 米',
+        })
+
+    issues.sort(key=lambda r: -r['sev'])
+
+    if any(i['sev'] == 3 for i in issues):
+        level = '布光有明显问题'
+    elif issues:
+        level = '有可改进项'
+    elif misses:
+        level = '待确认'
+    else:
+        level = '布光合理'
+
+    return {
+        'name': name, 'level': level, 'issues': issues, 'misses': misses,
+        'angle': angle, 'height': height[1] if height else None,
+        'key_lux': key_lux, 'amb_lux': amb_lux, 'fill': fill, 'temp_k': temp_k,
+        'scene': scene[1] if scene else None,
+    }
+
+
+def calc(data):
+    setups = data.get('setups')
+    if setups is None:
+        raise ValueError('输入缺少 setups 列表')
+    if not isinstance(setups, list) or not setups:
+        raise ValueError('setups 必须是非空列表')
+    rows = [setup_check(s) for s in setups]
+    n_bad = len([r for r in rows if r['level'] == '布光有明显问题'])
+    n_mid = len([r for r in rows if r['level'] == '有可改进项'])
+    n_unk = len([r for r in rows if r['level'] == '待确认'])
+    if n_bad:
+        overall = '存在需要重调的布光'
+    elif n_mid:
+        overall = '存在可改进的布光'
+    elif n_unk:
+        overall = '待确认'
+    else:
+        overall = '全部布光合理'
+
+    def _sev(r):
+        return max([i['sev'] for i in r['issues']], default=0)
+
+    order = sorted(rows, key=lambda r: (-_sev(r), -len(r['issues']), r['name']))
+    return {
+        'overall': overall, 'rows': rows,
+        'n_bad': n_bad, 'n_mid': n_mid, 'n_unk': n_unk,
+        'n_ok': len(rows) - n_bad - n_mid - n_unk,
+        'fix_order': [r['name'] for r in order if r['issues']],
+        'heights': [{'key': k, 'name': n, 'ok': o, 'note': nt} for k, n, o, nt in HEIGHTS],
+        'scenes': [{'key': k, 'name': n, 'note': nt} for k, n, nt in SCENES],
+        'tol': dict(TOL),
+    }
+
+
+def render_md(r):
+    L = []
+    L.append('# 直播布光核查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['overall'])
+    L.append('')
+    L.append('| 类别 | 个数 |')
+    L.append('|---|---|')
+    L.append('| 需要重调 | %d |' % r['n_bad'])
+    L.append('| 可改进 | %d |' % r['n_mid'])
+    L.append('| 待确认 | %d |' % r['n_unk'])
+    L.append('| 布光合理 | %d |' % r['n_ok'])
+    L.append('')
+    if r['fix_order']:
+        L.append('整改顺序（严重度高的先改）：%s' % '、'.join(r['fix_order']))
+        L.append('')
+    L.append('## 二、三点布光')
+    L.append('')
+    L.append('| 灯 | 位置 | 作用 | 亮度 |')
+    L.append('|---|---|---|---|')
+    L.append('| 主光 | 镜头侧前方 30 到 60 度，略高于视线 | 决定基本明暗与立体感 | 基准 |')
+    L.append('| 辅光 | 另一侧靠近镜头轴线 | 提亮暗部，不消灭阴影 | 主光的 0.3 到 0.7 |')
+    L.append('| 轮廓光 | 侧后方，从肩膀斜后方打 | 把人与背景分开 | 与主光相当或略高 |')
+    L.append('')
+    L.append('## 三、逐套判定')
+    L.append('')
+    for row in r['rows']:
+        L.append('### %s' % row['name'])
+        L.append('')
+        L.append('- 判定：**%s**' % row['level'])
+        if row['scene']:
+            L.append('- 场景：%s' % row['scene'])
+        if row['angle'] is not None:
+            L.append('- 主光角度：%.0f 度' % row['angle'])
+        if row['height']:
+            L.append('- 主光高度：%s' % row['height'])
+        if row['key_lux'] is not None:
+            L.append('- 主光照度：%.0f 勒克斯' % row['key_lux'])
+        if row['amb_lux'] is not None:
+            L.append('- 环境照度：%.0f 勒克斯' % row['amb_lux'])
+        if row['fill'] is not None:
+            L.append('- 辅光比例：%.2f' % row['fill'])
+        if row['temp_k'] is not None:
+            L.append('- 色温：%.0f K' % row['temp_k'])
+        if row['issues']:
+            L.append('')
+            L.append('| 严重度 | 项目 | 问题 | 为什么要在意 |')
+            L.append('|---|---|---|---|')
+            for i in row['issues']:
+                L.append('| %s | %s | %s | %s |'
+                         % ('严重' if i['sev'] == 3 else '可改进', i['item'], i['detail'], i['why']))
+        if row['misses']:
+            L.append('')
+            L.append('- 未填写：%s' % '、'.join(row['misses']))
+        L.append('')
+    L.append('## 四、主光高度')
+    L.append('')
+    L.append('| 高度 | 是否可用 | 说明 |')
+    L.append('|---|---|---|')
+    for h in r['heights']:
+        L.append('| %s | %s | %s |' % (h['name'], '可以' if h['ok'] else '不可以', h['note']))
+    L.append('')
+    L.append('## 五、三种场景方案')
+    L.append('')
+    L.append('| 场景 | 要点 |')
+    L.append('|---|---|')
+    for s in r['scenes']:
+        L.append('| %s | %s |' % (s['name'], s['note']))
+    L.append('')
+    L.append('## 六、阈值')
+    L.append('')
+    L.append('| 项目 | 阈值 |')
+    L.append('|---|---|')
+    L.append('| 主光角度 | %.0f 到 %.0f 度（小于 %.0f 度为正面直打） |'
+             % (r['tol']['angle_min'], r['tol']['angle_max'], r['tol']['angle_flat']))
+    L.append('| 主光照度 | 不低于 %.0f 勒克斯，建议 %.0f 以上 |'
+             % (r['tol']['key_lux_min'], r['tol']['key_lux_ideal']))
+    L.append('| 辅光与主光之比 | %.1f 到 %.1f |' % (r['tol']['fill_min'], r['tol']['fill_max']))
+    L.append('| 主光与环境光之比 | %.0f 到 %.0f |'
+             % (r['tol']['ambient_ratio_min'], r['tol']['ambient_ratio_max']))
+    L.append('| 戴眼镜时主光角度 | 不小于 %.0f 度 |' % r['tol']['glass_angle_min'])
+    L.append('')
+    L.append('## 七、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 看脸：脸是不是均匀亮，有没有一边全黑')
+    L.append('- [ ] 看背景：背景有独立打光，人和背景分得开')
+    L.append('- [ ] 看色温：关掉房间顶灯，全场只有一种色温')
+    L.append('- [ ] 戴眼镜的话镜片上没有白斑')
+    L.append('- [ ] 人离墙至少 0.5 米，墙上没有影子')
+    L.append('- [ ] 灯具用电安全，没有超负荷使用插线板')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    good = {'name': '坐播桌面', 'scene': 'sit', 'key_angle_deg': 45,
+            'key_height': 'above_eye', 'key_lux': 900, 'ambient_lux': 150,
+            'fill_ratio': 0.5, 'color_temp_k': 5600, 'temp_consistent': True,
+            'backlight': True, 'bg_light': True, 'glasses': False,
+            'window_behind': False, 'top_light_only': False,
+            'too_close_to_wall': False}
+
+    # 1 正例
+    r1 = setup_check(good)
+    ck(r1['level'] == '布光合理', '正例应判布光合理，实为 %s' % r1['level'])
+    ck(r1['issues'] == [], '正例不应有问题项，实为 %s' % r1['issues'])
+
+    # 2 反例：背后有窗
+    r2 = setup_check(dict(good, window_behind=True))
+    ck(r2['level'] == '布光有明显问题', '背后有窗应判严重，实为 %s' % r2['level'])
+    ck(any(i['item'] == '光源方位' for i in r2['issues']), '应点名光源方位')
+
+    # 3 反例：主光在正后方
+    r3 = setup_check(dict(good, key_angle_deg=170))
+    ck(any(i['item'] == '光源方位' for i in r3['issues']), '主光 170 度应判正后方光源')
+
+    # 4 反例：只有顶光
+    r4 = setup_check(dict(good, top_light_only=True))
+    ck(any(i['item'] == '顶光' for i in r4['issues']), '只有顶光应判严重')
+    ck(r4['level'] == '布光有明显问题', '只有顶光应判严重，实为 %s' % r4['level'])
+
+    # 5 反例：照度不足与边界
+    r5 = setup_check(dict(good, key_lux=150))
+    ck(any(i['item'] == '主光照度' and i['sev'] == 3 for i in r5['issues']),
+       '150 勒克斯应判严重')
+    ck(any(i['item'] == '主光照度' and i['sev'] == 2
+           for i in setup_check(dict(good, key_lux=450))['issues']),
+       '450 勒克斯应判可改进')
+    ck(setup_check(dict(good, key_lux=600))['issues'] == [], '600 勒克斯边界应合格')
+    ck(setup_check(dict(good, key_lux=300))['level'] != '布光有明显问题',
+       '300 勒克斯边界不应判严重')
+
+    # 6 反例：色温混用
+    r6 = setup_check(dict(good, temp_consistent=False))
+    ck(any(i['item'] == '色温' for i in r6['issues']), '色温混用应判严重')
+    ck(r6['level'] == '布光有明显问题', '色温混用应判严重，实为 %s' % r6['level'])
+
+    # 7 反例：主光低于视线
+    r7 = setup_check(dict(good, key_height='below'))
+    ck(any(i['item'] == '主光高度' for i in r7['issues']), '主光低于视线应判严重')
+    ck(setup_check(dict(good, key_height='eye_level'))['level'] != '布光有明显问题',
+       '与视线齐平不应判严重')
+
+    # 8 反例：正面零角度直打
+    r8 = setup_check(dict(good, key_angle_deg=5))
+    ck(any(i['item'] == '主光角度' and i['sev'] == 3 for i in r8['issues']),
+       '5 度直打应判严重')
+    ck(any(i['item'] == '主光角度'
+           for i in setup_check(dict(good, key_angle_deg=20))['issues']),
+       '20 度应提示偏小')
+    ck(setup_check(dict(good, key_angle_deg=30))['issues'] == [], '30 度边界应合格')
+    ck(setup_check(dict(good, key_angle_deg=60))['issues'] == [], '60 度边界应合格')
+    ck(any(i['item'] == '主光角度' for i in setup_check(dict(good, key_angle_deg=80))['issues']),
+       '80 度应提示另一侧全黑')
+
+    # 9 反例：戴眼镜且角度过小
+    r9 = setup_check(dict(good, glasses=True, key_angle_deg=20))
+    ck(any(i['item'] == '眼镜反光' for i in r9['issues']), '戴眼镜 20 度应判严重')
+    ck(r9['level'] == '布光有明显问题', '眼镜反光应判严重，实为 %s' % r9['level'])
+    ck(not any(i['item'] == '眼镜反光'
+               for i in setup_check(dict(good, glasses=True, key_angle_deg=45))['issues']),
+       '戴眼镜 45 度不应报反光')
+    ck(any(i['item'] == '眼镜反光'
+           for i in setup_check(dict(good, glasses=True, key_angle_deg=10))['issues']),
+       '戴眼镜 10 度同时命中直打与反光')
+
+    # 10 反例：辅光比例
+    ck(any(i['item'] == '辅光比例' for i in setup_check(dict(good, fill_ratio=0.1))['issues']),
+       '辅光 0.1 应提示暗部死黑')
+    ck(any(i['item'] == '辅光比例' for i in setup_check(dict(good, fill_ratio=0.25))['issues']),
+       '辅光 0.25 应提示偏弱')
+    ck(any(i['item'] == '辅光比例' for i in setup_check(dict(good, fill_ratio=1.2))['issues']),
+       '辅光 1.2 应提示过强')
+    ck(setup_check(dict(good, fill_ratio=0.3))['issues'] == [], '0.3 边界应合格')
+    ck(setup_check(dict(good, fill_ratio=0.7))['issues'] == [], '0.7 边界应合格')
+
+    # 11 反例：无轮廓光、无背景光、贴墙
+    ck(any(i['item'] == '轮廓光' for i in setup_check(dict(good, backlight=False))['issues']),
+       '无轮廓光应提示')
+    ck(any(i['item'] == '背景光' for i in setup_check(dict(good, bg_light=False))['issues']),
+       '无背景光应提示')
+    ck(any(i['item'] == '人物距离'
+           for i in setup_check(dict(good, too_close_to_wall=True))['issues']),
+       '贴墙应提示')
+
+    # 12 反例：光比
+    ck(any(i['item'] == '光比' for i in setup_check(dict(good, ambient_lux=400))['issues']),
+       '环境 400 勒克斯应提示主体不突出')
+    ck(any(i['item'] == '光比' for i in setup_check(dict(good, ambient_lux=10))['issues']),
+       '环境 10 勒克斯应提示太暗')
+    ck(setup_check(dict(good, ambient_lux=150))['issues'] == [], '环境 150 勒克斯应合格')
+
+    # 13 排序方向：严重项排最前
+    r13 = setup_check(dict(good, window_behind=True, backlight=False, fill_ratio=1.2))
+    ck(r13['issues'][0]['sev'] == 3, '严重项应排最前，实为 %s' % r13['issues'][0]['sev'])
+    ck(r13['issues'][0]['item'] == '光源方位', '首个应是光源方位，实为 %s' % r13['issues'][0]['item'])
+    ck(r13['issues'][-1]['sev'] == 2, '末位应是可改进项')
+
+    # 14 判定顺序：有严重项时不因缺信息判待确认
+    r14 = setup_check({'name': '只填顶光', 'top_light_only': True})
+    ck(r14['level'] == '布光有明显问题', '缺其他项但有严重项不应判待确认，实为 %s' % r14['level'])
+    r14b = setup_check({'name': '只填角度', 'key_angle_deg': 45, 'key_height': 'above_eye'})
+    ck(r14b['level'] == '待确认', '未填照度与辅光应判待确认，实为 %s' % r14b['level'])
+
+    # 15 汇总与整改顺序
+    r15 = calc({'setups': [good,
+                           dict(good, name='背后有窗', window_behind=True),
+                           dict(good, name='无轮廓光', backlight=False)]})
+    ck(r15['overall'] == '存在需要重调的布光', '有严重项应判需要重调，实为 %s' % r15['overall'])
+    ck(r15['n_bad'] == 1, '严重项应为 1 套，实为 %d' % r15['n_bad'])
+    ck(r15['fix_order'][0] == '背后有窗', '严重项应先改，实为 %s' % r15['fix_order'])
+    ck(r15['fix_order'][1] == '无轮廓光', '可改进项排其后，实为 %s' % r15['fix_order'])
+
+    # 16 BOM 两条路径
+    bom = '﻿' + json.dumps({'setups': [dict(good, window_behind=True)]})
+    r16 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r16['overall'] == '存在需要重调的布光', 'BOM 字符串应正确解析，实为 %s' % r16['overall'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe_c7.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'setups': [dict(good, name='带BOM', top_light_only=True)]}))
+    try:
+        r16b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r16b['rows'][0]['name'] == '带BOM', 'BOM 文件首个 key 应解析正常，实为 %s' % r16b['rows'][0]['name'])
+        ck(r16b['n_bad'] == 1, '只有顶光应判严重，实为 %d' % r16b['n_bad'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 17 非法输入
+    for bad, why in (
+        ({}, '缺 setups'),
+        ({'setups': []}, 'setups 空列表'),
+        ({'setups': [dict(good, key_lux='abc')]}, '照度非数字'),
+        ({'setups': [dict(good, key_height='头顶')]}, '未知高度'),
+        ({'setups': [dict(good, scene='户外')]}, '未知场景'),
+        ({'setups': [dict(good, fill_ratio=-0.5)]}, '比例为负'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例17 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 18 输出结构
+    md = render_md(r15)
+    for key in ('总体判定', '三点布光', '逐套判定', '主光高度', '三种场景方案', '阈值',
+                '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(HEIGHTS) == 3, '主光高度应 3 档')
+    ck(len([h for h in HEIGHTS if not h[2]]) == 1, '不合格高度应 1 档')
+    ck(len(SCENES) == 3, '场景方案应 3 种')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 正例/背后有窗反例/主光正后方反例/只有顶光反例/'
+        '照度与边界/色温混用反例/主光低于视线反例/正面直打与角度边界/眼镜反光反例/'
+        '辅光比例上下界/轮廓光背景光贴墙/光比/严重项排序/判定顺序/汇总整改顺序/'
+        'BOM两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='直播布光核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

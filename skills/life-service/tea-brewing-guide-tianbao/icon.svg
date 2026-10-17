@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#3f7d4f"/>
+  <path d="M18 28 h22 v14 a8 8 0 0 1 -8 8 h-6 a8 8 0 0 1 -8 -8 z" fill="#d9ead0"/>
+  <path d="M40 32 q8 2 8 8 q0 6 -8 6" fill="none" stroke="#d9ead0" stroke-width="3"/>
+  <text x="32" y="20" font-size="14" text-anchor="middle" fill="#eaf5e2">茶艺</text>
+</svg>

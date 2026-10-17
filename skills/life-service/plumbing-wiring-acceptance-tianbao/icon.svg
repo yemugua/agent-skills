@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#2f7d7d"/>
+  <circle cx="24" cy="32" r="10" fill="none" stroke="#bfe6e6" stroke-width="3"/>
+  <path d="M30 32 h18 M42 26 l6 6 l-6 6" fill="none" stroke="#bfe6e6" stroke-width="3"/>
+  <text x="32" y="54" font-size="11" text-anchor="middle" fill="#d6f0f0">水电</text>
+</svg>

@@ -1,0 +1,450 @@
+# -*- coding: utf-8 -*-
+"""观赏鱼水质与喂养管理校验脚本。
+
+读入一份鱼缸状态的 json，核对：
+  1. 氮代谢三项指标是否落入危险区间
+  2. 酸碱度是否在所选鱼种的适生区间内
+  3. 水温与二十四小时温差是否符合要求
+  4. 密度是否超过 fish_type 对应的承载上限
+  5. 单次换水比例与投喂次数是否符合口径
+  6. 是否使用未处理的自来水、养水天数是否足够
+  7. 过滤停转时长是否超过容忍线
+  8. 新鱼入缸的过温、过水顺序是否走对（按填的原序取索引）
+
+结论分三档：先处理 / 待确认 / 可照此执行。
+判定顺序固定：先看真实缺陷，再看信息是否完整。
+
+用法:
+  python fish_care_check.py --selftest
+  python fish_care_check.py --file tank.json
+"""
+import argparse
+import json
+import os
+import sys
+
+HEREDIR = os.path.dirname(os.path.abspath(__file__))
+
+FISH_NEED = {"小型热带鱼": 1.0, "中型热带鱼": 2.0, "金鱼": 3.0, "锦鲤": 5.0}
+FISH_ALIAS = {"热带鱼": "小型热带鱼", "灯科鱼": "小型热带鱼", "孔雀鱼": "小型热带鱼",
+              "金鱼": "金鱼"}
+PH_RANGE = {
+    "小型热带鱼": (6.0, 7.2),
+    "中型热带鱼": (6.2, 7.5),
+    "金鱼": (7.0, 8.0),
+    "锦鲤": (7.0, 8.5),
+}
+TEMP_RANGE = {
+    "小型热带鱼": (24, 28),
+    "中型热带鱼": (24, 28),
+    "金鱼": (18, 24),
+    "锦鲤": (15, 25),
+}
+CYCLE_MIN = {"成熟滤材": 7, "硝化菌制剂": 7, "无": 21}
+ORDER = ["连袋过温", "分批过水", "捞鱼入缸", "静养观察"]
+ORDER_ALIAS = {"过温": "连袋过温", "泡袋": "连袋过温", "泡缸": "连袋过温",
+               "连袋": "连袋过温", "过水": "分批过水",
+               "兑水": "分批过水", "入缸": "捞鱼入缸", "放鱼": "捞鱼入缸",
+               "观察": "静养观察", "静养": "静养观察"}
+REQUIRED = ["tank_liters", "fish_cm_total", "fish_type", "cycle_days"]
+
+
+def norm(s):
+    return str(s).strip().replace(" ", "").replace("　", "")
+
+
+def load_plan(path):
+    with open(path, "r", encoding="utf-8-sig") as f:
+        return json.load(f)
+
+
+def canon_type(value):
+    n = norm(value)
+    if n in FISH_NEED:
+        return n
+    return FISH_ALIAS.get(n)
+
+
+def check(plan):
+    bad = []
+    warn = []
+    miss = []
+
+    for k in REQUIRED:
+        if k not in plan or plan[k] in ("", None):
+            miss.append("缺少必填字段 %s" % k)
+
+    ftype = canon_type(plan.get("fish_type", ""))
+    if ftype is None:
+        miss.append("鱼种类别「%s」无法识别，应在 %s 取值" % (
+            plan.get("fish_type", ""), "/".join(FISH_NEED.keys())))
+
+    # 1 三项含氮指标
+    if all(plan.get(k) is None for k in ("ammonia", "nitrite", "nitrate")):
+        miss.append("三项含氮指标一项都没提供：没有实测值就无法判断水质，"                "请先完成一次基础测试再核对")
+    for key, danger, warn_at, label, why in (
+            ("ammonia", 0.25, 0.02, "氨氮",
+             "氨氮直接损伤鳃组织，等指标出现行为异常时损伤往往已经发生"),
+            ("nitrite", 0.25, 0.05, "亚硝酸盐",
+             "亚硝酸盐影响血液携氧能力，看不见但危害大"),
+            ("nitrate", 40.0, 20.0, "硝酸盐",
+             "硝酸盐长期偏高会抑制生长与抵抗力")):
+        if plan.get(key) is None:
+            continue
+        try:
+            v = float(plan.get(key))
+        except (TypeError, ValueError):
+            miss.append("%s 无法解析为数值" % label)
+            continue
+        if v > danger:
+            bad.append("%s %.2f 毫克每升已进危险区间（超过 %.2f）：%s；"
+                       "应立即停喂并安排部分换水、检查过滤与密度" % (
+                           label, v, danger, why))
+        elif v > warn_at:
+            warn.append("%s %.2f 毫克每升处于警戒区间（超过 %.2f）："
+                        "尚未到危险地步，但应提前安排换水" % (label, v, warn_at))
+
+    # 2 酸碱度
+    if ftype is not None and plan.get("ph") is not None:
+        try:
+            ph = float(plan.get("ph"))
+        except (TypeError, ValueError):
+            miss.append("酸碱度无法解析为数值")
+            ph = None
+        if ph is not None:
+            lo, hi = PH_RANGE[ftype]
+            if ph < lo or ph > hi:
+                bad.append("酸碱度 %.1f 不在「%s」适生区间 %.1f 到 %.1f 内："
+                           "水质偏离会让鱼长期处于应激状态；"
+                           "注意稳定性比精确数值更重要" % (ph, ftype, lo, hi))
+
+    # 3 水温
+    if ftype is not None:
+        try:
+            tc = float(plan.get("temp_c"))
+            lo, hi = TEMP_RANGE[ftype]
+            if tc < lo or tc > hi:
+                bad.append("水温 %.1f 摄氏度不在「%s」适用区间 %d 到 %d 内："
+                           "偏离会直接影响代谢与免疫" % (tc, ftype, lo, hi))
+        except (TypeError, ValueError):
+            pass
+    try:
+        d = abs(float(plan.get("temp_change_24h")))
+        if d > 2.0:
+            bad.append("二十四小时水温变化 %.1f 摄氏度超过 2 摄氏度："
+                       "水温突变比偏低偏高本身危害更大，换水时的新水也要控制在 2 摄氏度内" % d)
+    except (TypeError, ValueError):
+        pass
+
+    # 4 密度
+    if ftype is not None:
+        try:
+            liters = float(plan.get("tank_liters"))
+            cm = float(plan.get("fish_cm_total"))
+            limit = liters / FISH_NEED[ftype]
+            if cm > limit:
+                bad.append("密度超标：%.0f 升水养「%s」，体长上限约 %.0f 厘米，"
+                           "当前 %.0f 厘米（每厘米需 %.0f 升）："
+                           "需减鱼、换大缸或提高换水频次三选一" % (
+                               liters, ftype, limit, cm, FISH_NEED[ftype]))
+        except (TypeError, ValueError):
+            pass
+
+    # 5 换水比例
+    try:
+        wc = float(plan.get("water_change_percent"))
+        if wc > 50:
+            bad.append("单次换水 %.0f 超过 50 上限："
+                       "这是最常见的操作错误，水质与温度双重突变会让体质差的鱼当场出事；"
+                       "常规应为 20 到 30，特殊情况最多 50 且应分两次进行" % wc)
+        elif wc < 0:
+            bad.append("换水比例为负数，数据无效")
+    except (TypeError, ValueError):
+        pass
+
+    if plan.get("dechlorinated") is False:
+        bad.append("新水未经除氯处理：自来水中的余氯会损伤鳃组织，"
+                   "同时杀灭滤材中的硝化菌；应困水、曝气或使用除氯剂")
+
+    # 6 养水周期
+    seed = norm(plan.get("cycle_seed", "无"))
+    min_day = CYCLE_MIN.get(seed, CYCLE_MIN["无"])
+    try:
+        cd = int(plan.get("cycle_days"))
+        if cd < min_day:
+            bad.append("开缸养水 %d 天少于「%s」路径所需的 %d 天："
+                       "养水没完成就下鱼，等同于让鱼生活在自己的排泄物里；"
+                       "且判据不看天数，要以氨氮与亚硝酸盐都能在一到两天内降到不可测为准" % (
+                           cd, seed, min_day))
+    except (TypeError, ValueError):
+        pass
+
+    # 7 投喂
+    try:
+        ft = int(plan.get("feed_times_per_day"))
+        if ft > 3:
+            bad.append("每日投喂 %d 次超过 3 次上限：投喂过量是最常见的水质恶化来源；"
+                       "成鱼应为 1 到 2 次" % ft)
+    except (TypeError, ValueError):
+        pass
+    try:
+        fm = float(plan.get("fed_in_minutes"))
+        if fm > 5:
+            bad.append("本次投饵 %.0f 分钟后仍有残食，说明投喂过量："
+                       "标准口径是 2 到 3 分钟内吃完，"
+                       "且投喂后 10 分钟内的残饵要吸出，否则会分解为氨氮" % fm)
+    except (TypeError, ValueError):
+        pass
+
+    # 8 过滤停转
+    try:
+        fs = float(plan.get("filter_stop_hours"))
+        if fs > 4:
+            bad.append("过滤停转 %.1f 小时超过 4 小时：硝化菌是需氧菌，"
+                       "停转或滤材干涸会造成处理能力明显倒退，需重新测水" % fs)
+        elif fs > 1:
+            warn.append("过滤停转 %.1f 小时：超过 1 小时应加强水质观察" % fs)
+    except (TypeError, ValueError):
+        pass
+
+    # 9 新鱼入缸顺序：按填的原序取索引，不重排
+    steps = plan.get("steps") or []
+    picked = []
+    for s in steps:
+        n = norm(s)
+        if n not in ORDER:
+            for k, v in ORDER_ALIAS.items():
+                if k in n:
+                    n = v
+                    break
+        if n in ORDER:
+            picked.append(n)
+    if len(picked) < 4:
+        miss.append("入缸操作只识别到 %d 步，未凑齐四步，无法判断顺序是否走反" % len(picked))
+    else:
+        seq = [ORDER.index(x) for x in picked]
+        if seq != sorted(seq):
+            bad.append("入缸顺序走反：实际为 %s，正确应为 %s；"
+                       "过温对付温差、过水对付水质突变，两步分别对付两种打击，"
+                       "省掉任何一步都等于让鱼自己扛" % (
+                           " → ".join(picked), " → ".join(ORDER)))
+    for s in [norm(x) for x in steps]:
+        if "倒袋水" in s or "连水倒" in s or "整袋倒入" in s:
+            bad.append("操作含「把袋里的水倒进缸」：运输袋里的水氨氮往往很高，"
+                       "且可能含运输途中添加的成分，应只用网把鱼捞出，袋水不进缸")
+
+    if bad:
+        verdict = "先处理"
+    elif miss:
+        verdict = "待确认"
+    else:
+        verdict = "可照此执行"
+    return {"verdict": verdict, "bad": bad, "warn": warn, "miss": miss}
+
+
+def render(plan, res):
+    lines = []
+    lines.append("# 观赏鱼水质与喂养核对结果")
+    lines.append("")
+    lines.append("水体：%s 升 ｜ 鱼体长合计：%s 厘米 ｜ 种类：%s ｜ 养水：%s 天" % (
+        plan.get("tank_liters", "-"), plan.get("fish_cm_total", "-"),
+        plan.get("fish_type", "-"), plan.get("cycle_days", "-")))
+    lines.append("")
+    lines.append("结论：**%s**" % res["verdict"])
+    lines.append("")
+    if res["bad"]:
+        lines.append("## 不合格项（必须改方案后再实施）")
+        for x in res["bad"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if res["miss"]:
+        lines.append("## 待确认项（信息不足）")
+        for x in res["miss"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if res["warn"]:
+        lines.append("## 提示项")
+        for x in res["warn"]:
+            lines.append("- %s" % x)
+        lines.append("")
+    if not res["bad"] and not res["miss"]:
+        lines.append("水质、密度、换水与投喂均在口径内，入缸步骤顺序正确。"
+                     "保持两周一次的测水节奏并做记录，趋势比单次数值更能说明问题。")
+    lines.append("")
+    lines.append("注：本结果为家庭饲养管理核对，不构成水产兽医诊疗意见；"
+                 "涉及鱼病请咨询专业人员。")
+    return "\n".join(lines) + "\n"
+
+
+def write_out(text, name="_last_result.txt"):
+    p = os.path.join(HEREDIR, name)
+    with open(p, "w", encoding="utf-8") as f:
+        f.write(text)
+    return p
+
+
+def selftest():
+    ok = 0
+    fail = []
+
+    def check_case(name, cond, extra=""):
+        nonlocal ok
+        if cond:
+            ok += 1
+        else:
+            fail.append(name + (" -> " + extra if extra else ""))
+
+    base = {
+        "tank_liters": 60, "fish_cm_total": 45, "fish_type": "小型热带鱼",
+        "ammonia": 0.0, "nitrite": 0.0, "nitrate": 20, "ph": 7.0,
+        "temp_c": 26, "temp_change_24h": 0.5, "cycle_days": 14,
+        "cycle_seed": "成熟滤材", "water_change_percent": 30,
+        "dechlorinated": True, "feed_times_per_day": 2, "fed_in_minutes": 3,
+        "filter_stop_hours": 0,
+        "steps": ["连袋泡缸20分钟", "分批兑水40分钟", "用网捞鱼入缸", "关灯静养观察"],
+    }
+
+    # 1 正例
+    r = check(dict(base))
+    check_case("正例应判可照此执行", r["verdict"] == "可照此执行", str(r))
+
+    # 2 反例：氨氮进危险区间
+    bad_nh3 = dict(base, ammonia=0.6)
+    r = check(bad_nh3)
+    check_case("反例-氨氮0.6应为先处理", r["verdict"] == "先处理", str(r))
+    check_case("反例-氨氮应带损伤原因", any("鳃" in x for x in r["bad"]))
+
+    # 3 反例：亚硝酸盐超标
+    bad_no2 = dict(base, nitrite=0.8)
+    r = check(bad_no2)
+    check_case("反例-亚硝酸盐0.8应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 4 反例：硝酸盐超标
+    bad_no3 = dict(base, nitrate=60)
+    r = check(bad_no3)
+    check_case("反例-硝酸盐60应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 5 反例：单次换水超过上限
+    bad_wc = dict(base, water_change_percent=70)
+    r = check(bad_wc)
+    check_case("反例-换水七成应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 6 反例：自来水未处理
+    bad_chl = dict(base, dechlorinated=False)
+    r = check(bad_chl)
+    check_case("反例-未除氯应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 7 反例：养水天数不足
+    bad_cyc = dict(base, cycle_days=3, cycle_seed="成熟滤材")
+    r = check(bad_cyc)
+    check_case("反例-养水3天应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 8 反例：密度超标
+    bad_den = dict(base, fish_cm_total=120)
+    r = check(bad_den)
+    check_case("反例-密度超标应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 9 反例：入缸顺序走反
+    bad_ord = dict(base, steps=["分批兑水40分钟", "连袋泡缸20分钟", "用网捞鱼入缸", "关灯静养观察"])
+    r = check(bad_ord)
+    check_case("反例-入缸顺序走反应为先处理", r["verdict"] == "先处理", str(r))
+    check_case("反例-顺序走反应点名过温", any("过温" in x for x in r["bad"]))
+
+    # 10 反例：把袋水倒进缸
+    bad_bag = dict(base, steps=["连袋泡缸", "分批兑水", "整袋倒入缸中", "静养观察"])
+    r = check(bad_bag)
+    check_case("反例-倒袋水应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 11 反例：投喂次数过多
+    bad_feed = dict(base, feed_times_per_day=5)
+    r = check(bad_feed)
+    check_case("反例-每日喂5次应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 12 反例：过滤停转过久
+    bad_filt = dict(base, filter_stop_hours=8)
+    r = check(bad_filt)
+    check_case("反例-过滤停转8小时应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 13 反例：酸碱度偏离鱼种区间
+    bad_ph = dict(base, fish_type="锦鲤", ph=6.0)
+    r = check(bad_ph)
+    check_case("反例-锦鲤酸碱度6.0应为先处理", r["verdict"] == "先处理", str(r))
+
+    # 14 缺项 -> 待确认
+    incom = dict(base)
+    del incom["ammonia"]
+    del incom["nitrate"]
+    del incom["nitrite"]
+    del incom["ph"]
+    del incom["temp_c"]
+    r = check(incom)
+    check_case("缺水质数据应判待确认", r["verdict"] == "待确认", str(r))
+
+    # 15 判定顺序：既有缺项又有缺陷时必须先处理
+    both = dict(base, ammonia=1.0)
+    del both["nitrate"]
+    del both["nitrite"]
+    del both["ph"]
+    del both["temp_c"]
+    r = check(both)
+    check_case("缺陷优先于缺项", r["verdict"] == "先处理", str(r))
+
+    # 16 UTF-8 BOM 输入必须能被正确处理
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        p = os.path.join(td, "tank.json")
+        with open(p, "w", encoding="utf-8-sig") as f:
+            json.dump(dict(base), f, ensure_ascii=False)
+        with open(p, "rb") as f:
+            head = f.read(3)
+        check_case("样例文件确实带BOM", head == b"\xef\xbb\xbf")
+        r = check(load_plan(p))
+        check_case("带BOM文件应正常解析并判可照此执行", r["verdict"] == "可照此执行", str(r))
+
+        # 17 BOM + 反例仍必须判不合格
+        p2 = os.path.join(td, "bad.json")
+        with open(p2, "w", encoding="utf-8-sig") as f:
+            json.dump(dict(bad_nh3), f, ensure_ascii=False)
+        r = check(load_plan(p2))
+        check_case("带BOM反例仍判先处理", r["verdict"] == "先处理", str(r))
+
+    # 18 排序方向锁定：密度系数必须随排泄量递增
+    vals = [FISH_NEED[k] for k in ["小型热带鱼", "中型热带鱼", "金鱼", "锦鲤"]]
+    check_case("鱼种所需水体应递增", vals == sorted(vals) and vals[0] < vals[-1])
+
+    # 19 养水周期：加了菌源的应短于自然建立
+    check_case("加入成熟滤材的养水周期应短于无菌源",
+               CYCLE_MIN["成熟滤材"] < CYCLE_MIN["无"])
+
+    lines = ["SELFTEST OK (%d passed, 0 failed)" % ok]
+    if fail:
+        lines = ["SELFTEST FAILED (%d passed, %d failed)" % (ok, len(fail))]
+        lines += ["- " + x for x in fail]
+    write_out("\n".join(lines) + "\n", "_selftest_result.txt")
+    print("\n".join(lines))
+    return 0 if not fail else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description="观赏鱼水质与喂养管理校验")
+    ap.add_argument("--file", help="鱼缸状态 json 文件路径")
+    ap.add_argument("--selftest", action="store_true", help="运行自检")
+    a = ap.parse_args()
+    if a.selftest:
+        return selftest()
+    if not a.file:
+        ap.print_help()
+        return 2
+    plan = load_plan(a.file)
+    res = check(plan)
+    p = write_out(render(plan, res))
+    print("结果已写入: %s" % p)
+    print("结论: %s" % res["verdict"])
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+
+

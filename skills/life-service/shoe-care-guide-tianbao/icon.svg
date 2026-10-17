@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="16" fill="#f0ece4"/>
+  <path d="M26 84 q4 -20 24 -20 h26 q18 0 26 14 l4 6 H26 Z" fill="#fff" stroke="#a0703c" stroke-width="4"/>
+  <path d="M50 66 q8 -6 16 0" stroke="#a0703c" stroke-width="3" fill="none"/>
+  <text x="64" y="118" font-size="14" text-anchor="middle" fill="#a0703c" font-family="sans-serif">养护</text>
+</svg>

@@ -1,0 +1,637 @@
+# -*- coding: utf-8 -*-
+"""短视频运镜核查：按起幅、运镜段、落幅三段结构核查每个镜头，并核运镜种类与节奏。
+
+用法:
+  python camera_move_check.py --file shots.json [--out result.md] [--format json]
+  python camera_move_check.py --selftest
+"""
+import argparse
+import json
+import os
+import sys
+
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
+# 运镜手法: (键, 中文名, 画面效果, 适用内容, 常见错误, 运镜段下限)
+MOVES = [
+    ('push', '推', '画面逐渐靠近主体，注意力收紧', '开场引入、强调细节、情绪递进',
+     '推得太快显得急躁；推到底没停住', 0.8),
+    ('pull', '拉', '画面逐渐远离，交代环境', '结尾收束、揭示场景、转场',
+     '拉出去露出穿帮的边角', 0.8),
+    ('pan', '摇', '镜头左右转动，横向扫过', '展示横向空间、跟随横向运动',
+     '摇过头来回找；速度忽快忽慢', 0.5),
+    ('tilt', '俯仰', '镜头上下转动', '展示高度、从脚到头介绍人物',
+     '仰拍到顶全是天空', 0.5),
+    ('truck', '横移', '机身整体左右平移', '跟随并排行走、展示侧面层次',
+     '平移时距离忽远忽近', 0.5),
+    ('follow', '跟拍', '跟着运动主体同速移动', '走路、跑步、骑行',
+     '跟得太近主体出画', 0.5),
+    ('pedestal', '升降', '机身垂直升高或降低', '展示高度层次、从低处揭示场景',
+     '升降速度不均', 0.5),
+    ('arc', '环绕', '围绕主体转', '展示产品、突出人物',
+     '转太快观众发晕；绕不到一半就停', 0.5),
+    ('static', '固定', '镜头不动', '穿插在运镜之间做呼吸点',
+     '全片没有固定镜头会让观众疲劳', 0.0),
+]
+
+# 阈值
+TOL = {
+    'shot_min': 1.5,        # 单个运镜镜头的最短时长
+    'static_head': 0.5,     # 起幅最短时长
+    'static_tail': 0.5,     # 落幅最短时长
+    'move_min': 0.5,        # 运镜段最短时长
+    'arc_shot_min': 2.0,    # 环绕镜头最短总时长
+    'kinds_max': 3,         # 一个片子允许的运镜种类上限
+    'repeat_max': 3,        # 连续同类型运镜的允许个数
+    'long_video': 20.0,     # 需要穿插固定镜头的片长门槛
+    'arc_half': 0.6,        # 环绕至少转过的圈数比例
+}
+
+# 运镜目的清单: (键, 中文名, 推荐手法)
+PURPOSES = [
+    ('intro', '引入主体，把注意力收进来', '推'),
+    ('context', '交代环境，展示主体在哪', '拉、摇'),
+    ('detail', '强调某个细节', '推（慢推）'),
+    ('follow_action', '跟随正在运动的主体', '跟拍、横移'),
+    ('height', '展示高度或层次', '俯仰、升降'),
+    ('product', '展示产品全貌', '环绕'),
+    ('emotion', '情绪递进或收束', '推、拉'),
+    ('transition', '转场', '拉、摇'),
+]
+
+
+def norm(k):
+    return str(k or '').strip().lower().replace(' ', '')
+
+
+def _f(shot, key):
+    v = shot.get(key)
+    if v is None:
+        return None
+    try:
+        f = float(v)
+    except (TypeError, ValueError):
+        raise ValueError('%s 必须是数字，实为 %s' % (key, v))
+    if f < 0:
+        raise ValueError('%s 不能为负数，实为 %s' % (key, v))
+    return f
+
+
+def _row(table, val, label):
+    if val is None or val == '':
+        return None
+    n = norm(val)
+    for r in table:
+        if norm(r[0]) == n:
+            return r
+    raise ValueError('未知的 %s: %s，可选 %s 之一' % (label, val, '/'.join(r[0] for r in table)))
+
+
+def shot_check(shot):
+    if not isinstance(shot, dict):
+        raise ValueError('shots 的每一项必须是对象')
+    name = str(shot.get('name') or '未命名').strip()
+    move = _row(MOVES, shot.get('move'), 'move')
+    if move is None:
+        raise ValueError('缺少必填项: move')
+    dur = _f(shot, 'duration_s')
+    head = _f(shot, 'start_static_s')
+    tail = _f(shot, 'end_static_s')
+    speed = norm(shot.get('speed') or '')
+    purpose = _row(PURPOSES, shot.get('purpose'), 'purpose')
+    arc_turn = _f(shot, 'arc_turn_ratio')
+
+    issues = []
+    misses = []
+
+    # 固定镜头：只做节奏层面的检查，不做三段结构检查
+    if move[0] == 'static':
+        if dur is None:
+            misses.append('镜头时长')
+        elif dur < TOL['static_head']:
+            issues.append({
+                'sev': 2, 'item': '镜头时长',
+                'detail': '固定镜头 %.2f 秒，短于 %.1f 秒' % (dur, TOL['static_head']),
+                'why': '固定镜头太短起不到呼吸点的作用，观众还没看清就切走了',
+            })
+        return {'name': name, 'move': move[1], 'level': _level(issues, misses),
+                'issues': issues, 'misses': misses, 'duration': dur,
+                'head': None, 'tail': None, 'move_span': None, 'purpose': None}
+
+    # 严重项 1：镜头总时长
+    if dur is None:
+        misses.append('镜头时长')
+    elif dur < TOL['shot_min']:
+        issues.append({
+            'sev': 3, 'item': '镜头时长',
+            'detail': '%.2f 秒，短于 %.1f 秒' % (dur, TOL['shot_min']),
+            'why': '运镜镜头短于 1.5 秒，起幅运镜段落幅塞不下，运镜必然显得抽搐',
+        })
+
+    # 严重项 2：起幅
+    if head is None:
+        misses.append('起幅')
+    elif head < TOL['static_head']:
+        issues.append({
+            'sev': 3, 'item': '起幅',
+            'detail': '起幅 %.2f 秒，短于 %.1f 秒' % (head, TOL['static_head']),
+            'why': '没有起幅，剪辑接片时找不到干净的入点，观众也来不及看清画面',
+        })
+
+    # 严重项 3：落幅
+    if tail is None:
+        misses.append('落幅')
+    elif tail < TOL['static_tail']:
+        issues.append({
+            'sev': 3, 'item': '落幅',
+            'detail': '落幅 %.2f 秒，短于 %.1f 秒' % (tail, TOL['static_tail']),
+            'why': '没有落幅就没有干净的切点，接上去就是抖一下接抖一下，观众会觉得晕',
+        })
+
+    # 运镜段时长
+    span = None
+    if dur is not None and head is not None and tail is not None:
+        span = dur - head - tail
+        if span < 0:
+            issues.append({
+                'sev': 3, 'item': '时长矛盾',
+                'detail': '起幅 %.2f 加落幅 %.2f 已超过总时长 %.2f 秒' % (head, tail, dur),
+                'why': '三段时长自相矛盾，说明计时有误，需要重新核对',
+            })
+        elif span < TOL['move_min'] - 1e-9:
+            issues.append({
+                'sev': 3, 'item': '运镜段',
+                'detail': '运镜段 %.2f 秒，短于 %.1f 秒' % (span, TOL['move_min']),
+                'why': '运镜过程太短显得抽搐；加长镜头总时长或缩短起幅落幅之外的停顿',
+            })
+        elif move[5] > TOL['move_min'] and span < move[5] - 1e-9:
+            issues.append({
+                'sev': 2, 'item': '运镜段',
+                'detail': '%s镜的运镜段 %.2f 秒，短于该手法建议的 %.1f 秒' % (move[1], span, move[5]),
+                'why': '推拉需要更长的运动过程才不显得急躁，加长到 0.8 秒以上',
+            })
+
+    # 可改进项：变速
+    if speed == '':
+        misses.append('运镜速度')
+    elif speed != 'const':
+        issues.append({
+            'sev': 2, 'item': '运镜速度',
+            'detail': '运镜速度不均匀',
+            'why': '忽快忽慢是新手最明显的特点；起手缓、中间匀、收手缓',
+        })
+
+    # 可改进项：没有目的
+    if purpose is None:
+        if shot.get('purpose') is None:
+            misses.append('运镜目的')
+        else:
+            issues.append({
+                'sev': 2, 'item': '运镜目的',
+                'detail': '说不出这个运镜为了什么',
+                'why': '没有目的的运镜是纯粹的干扰；对照目的清单选一个',
+            })
+
+    # 可改进项：环绕要求
+    if move[0] == 'arc':
+        if dur is not None and dur < TOL['arc_shot_min']:
+            issues.append({
+                'sev': 2, 'item': '环绕时长',
+                'detail': '环绕镜头 %.2f 秒，短于 %.1f 秒' % (dur, TOL['arc_shot_min']),
+                'why': '环绕是转速最慢的运镜，镜头太短只能转一小段，看着像手抖',
+            })
+        if arc_turn is not None and arc_turn < TOL['arc_half']:
+            issues.append({
+                'sev': 2, 'item': '环绕幅度',
+                'detail': '只转了 %.0f%% 圈' % (arc_turn * 100 - 50),
+                'why': '环绕只转四分之一圈就切，看着像晃动；要么转完整，要么换手法',
+            })
+
+    return {
+        'name': name, 'move': move[1], 'level': _level(issues, misses),
+        'issues': issues, 'misses': misses, 'duration': dur,
+        'head': head, 'tail': tail, 'move_span': span,
+        'purpose': purpose[1] if purpose else None,
+    }
+
+
+def _level(issues, misses):
+    if any(i['sev'] == 3 for i in issues):
+        return '运镜有明显问题'
+    if issues:
+        return '有可改进项'
+    if misses:
+        return '待确认'
+    return '运镜规范'
+
+
+def calc(data):
+    shots = data.get('shots')
+    if shots is None:
+        raise ValueError('输入缺少 shots 列表')
+    if not isinstance(shots, list) or not shots:
+        raise ValueError('shots 必须是非空列表')
+    rows = [shot_check(s) for s in shots]
+
+    total = _f(data, 'total_duration_s') or sum(r['duration'] or 0 for r in rows)
+    global_issues = []
+
+    # 运镜种类不超过 3 种
+    kinds = sorted(set(norm(s.get('move')) for s in shots if norm(s.get('move')) != 'static'))
+    if len(kinds) > TOL['kinds_max']:
+        global_issues.append({
+            'sev': 2, 'item': '运镜种类',
+            'detail': '共用了 %d 种运镜（%s），超过 %d 种'
+                      % (len(kinds), '、'.join(_mname(k) for k in kinds), TOL['kinds_max']),
+            'why': '一个片子运镜种类超过 3 种，风格就不统一，观众会觉得杂乱',
+        })
+
+    # 不要连续 3 个以上同类型运镜
+    seq = [norm(s.get('move')) for s in shots if norm(s.get('move')) != 'static']
+    run, worst = 1, 1
+    for i in range(1, len(seq)):
+        if seq[i] == seq[i - 1]:
+            run += 1
+            worst = max(worst, run)
+        else:
+            run = 1
+    if worst >= TOL['repeat_max']:
+        global_issues.append({
+            'sev': 2, 'item': '运镜重复',
+            'detail': '存在连续 %d 个同类型运镜镜头' % worst,
+            'why': '连续重复同一种运镜会让观众疲劳，也会显得偷懒；中间换手法或插固定镜头',
+        })
+
+    # 长片必须有固定镜头穿插
+    n_static = len([s for s in shots if norm(s.get('move')) == 'static'])
+    if total and total > TOL['long_video'] and n_static == 0 and len(shots) > 1:
+        global_issues.append({
+            'sev': 2, 'item': '缺少固定镜头',
+            'detail': '全片 %.0f 秒全部是运镜镜头，没有固定镜头' % total,
+            'why': '20 秒以上的片子全程都在动观众会晕；运镜之间要插固定镜头做呼吸点',
+        })
+
+    global_issues.sort(key=lambda r: -r['sev'])
+
+    n_bad = len([r for r in rows if r['level'] == '运镜有明显问题'])
+    n_mid = len([r for r in rows if r['level'] == '有可改进项'])
+    n_unk = len([r for r in rows if r['level'] == '待确认'])
+    if n_bad:
+        overall = '存在需要重拍的运镜镜头'
+    elif n_mid or global_issues:
+        overall = '存在可改进的运镜'
+    elif n_unk:
+        overall = '待确认'
+    else:
+        overall = '全部运镜规范'
+
+    def _sev(r):
+        return max([i['sev'] for i in r['issues']], default=0)
+
+    order = sorted(rows, key=lambda r: (-_sev(r), -len(r['issues']), r['name']))
+    return {
+        'overall': overall, 'rows': rows, 'global_issues': global_issues,
+        'n_bad': n_bad, 'n_mid': n_mid, 'n_unk': n_unk,
+        'n_ok': len(rows) - n_bad - n_mid - n_unk,
+        'n_static': n_static, 'total': total, 'kinds': [_mname(k) for k in kinds],
+        'fix_order': [r['name'] for r in order if r['issues']],
+        'moves': [{'key': k, 'name': n, 'effect': e, 'use': u, 'wrong': w, 'span_min': s}
+                  for k, n, e, u, w, s in MOVES],
+        'purposes': [{'key': k, 'name': n, 'move': m} for k, n, m in PURPOSES],
+        'tol': dict(TOL),
+    }
+
+
+def _mname(key):
+    for k, n, _, _, _, _ in MOVES:
+        if k == key:
+            return n
+    return key
+
+
+def render_md(r):
+    L = []
+    L.append('# 短视频运镜核查')
+    L.append('')
+    L.append('## 一、总体判定')
+    L.append('')
+    L.append('**%s**' % r['overall'])
+    L.append('')
+    L.append('| 类别 | 个数 |')
+    L.append('|---|---|')
+    L.append('| 需要重拍 | %d |' % r['n_bad'])
+    L.append('| 可改进 | %d |' % r['n_mid'])
+    L.append('| 待确认 | %d |' % r['n_unk'])
+    L.append('| 运镜规范 | %d |' % r['n_ok'])
+    L.append('')
+    L.append('- 片长：%.1f 秒，其中固定镜头 %d 个，用到的运镜：%s'
+             % (r['total'], r['n_static'], '、'.join(r['kinds']) or '无'))
+    L.append('')
+    if r['global_issues']:
+        L.append('## 二、整片层面的问题')
+        L.append('')
+        L.append('| 严重度 | 项目 | 问题 | 为什么要在意 |')
+        L.append('|---|---|---|---|')
+        for i in r['global_issues']:
+            L.append('| %s | %s | %s | %s |'
+                     % ('严重' if i['sev'] == 3 else '可改进', i['item'], i['detail'], i['why']))
+        L.append('')
+    if r['fix_order']:
+        L.append('整改顺序（严重度高的先改）：%s' % '、'.join(r['fix_order']))
+        L.append('')
+    L.append('## 三、逐镜头判定')
+    L.append('')
+    for row in r['rows']:
+        L.append('### %s（%s）' % (row['name'], row['move']))
+        L.append('')
+        L.append('- 判定：**%s**' % row['level'])
+        if row['duration'] is not None:
+            L.append('- 总时长：%.2f 秒' % row['duration'])
+        if row['head'] is not None:
+            L.append('- 起幅：%.2f 秒' % row['head'])
+        if row['move_span'] is not None:
+            L.append('- 运镜段：%.2f 秒' % row['move_span'])
+        if row['tail'] is not None:
+            L.append('- 落幅：%.2f 秒' % row['tail'])
+        if row['purpose']:
+            L.append('- 目的：%s' % row['purpose'])
+        if row['issues']:
+            L.append('')
+            L.append('| 严重度 | 项目 | 问题 | 为什么要在意 |')
+            L.append('|---|---|---|---|')
+            for i in row['issues']:
+                L.append('| %s | %s | %s | %s |'
+                         % ('严重' if i['sev'] == 3 else '可改进', i['item'], i['detail'], i['why']))
+        if row['misses']:
+            L.append('')
+            L.append('- 未填写：%s' % '、'.join(row['misses']))
+        L.append('')
+    L.append('## 四、八种运镜手法')
+    L.append('')
+    L.append('| 手法 | 画面效果 | 适用内容 | 常见错误 | 运镜段下限 |')
+    L.append('|---|---|---|---|---|')
+    for m in r['moves']:
+        L.append('| %s | %s | %s | %s | %s |'
+                 % (m['name'], m['effect'], m['use'], m['wrong'],
+                    '不适用' if m['span_min'] == 0 else '%.1f 秒' % m['span_min']))
+    L.append('')
+    L.append('## 五、运镜目的清单')
+    L.append('')
+    L.append('| 目的 | 推荐手法 |')
+    L.append('|---|---|')
+    for p in r['purposes']:
+        L.append('| %s | %s |' % (p['name'], p['move']))
+    L.append('')
+    L.append('## 六、阈值')
+    L.append('')
+    L.append('| 项目 | 阈值 |')
+    L.append('|---|---|')
+    L.append('| 运镜镜头总时长 | 不短于 %.1f 秒 |' % r['tol']['shot_min'])
+    L.append('| 起幅 / 落幅 | 各不短于 %.1f 秒 |' % r['tol']['static_head'])
+    L.append('| 运镜段 | 不短于 %.1f 秒（推拉 %.1f 秒）|' % (r['tol']['move_min'], 0.8))
+    L.append('| 环绕镜头 | 不短于 %.1f 秒 |' % r['tol']['arc_shot_min'])
+    L.append('| 运镜种类 | 不超过 %d 种 |' % r['tol']['kinds_max'])
+    L.append('| 连续同类型 | 少于 %d 个 |' % r['tol']['repeat_max'])
+    L.append('')
+    L.append('## 七、人工确认清单（脚本不替代）')
+    L.append('')
+    L.append('- [ ] 每个运镜镜头都有起幅与落幅，各不少于 0.5 秒')
+    L.append('- [ ] 运镜过程是匀速的，起手缓、收手缓')
+    L.append('- [ ] 每个运镜都能说出目的')
+    L.append('- [ ] 一个片子运镜种类不超过 3 种')
+    L.append('- [ ] 长片有固定镜头穿插做呼吸点')
+    L.append('- [ ] 拍摄时人身与设备安全，没有在移动中操作设备')
+    return '\n'.join(L)
+
+
+def selftest():
+    errs = []
+    n = 0
+
+    def ck(cond, msg):
+        nonlocal n
+        n += 1
+        if not cond:
+            errs.append(msg)
+
+    good = {'name': '开场推镜', 'move': 'push', 'duration_s': 3.0,
+            'start_static_s': 0.6, 'end_static_s': 0.8, 'speed': 'const',
+            'purpose': 'intro'}
+
+    # 1 正例
+    r1 = shot_check(good)
+    ck(r1['level'] == '运镜规范', '正例应判运镜规范，实为 %s' % r1['level'])
+    ck(r1['issues'] == [], '正例不应有问题项，实为 %s' % r1['issues'])
+    ck(abs(r1['move_span'] - 1.6) < 1e-9, '运镜段应为 1.6 秒，实为 %s' % r1['move_span'])
+
+    # 2 反例：缺起幅
+    r2 = shot_check(dict(good, start_static_s=0.2))
+    ck(r2['level'] == '运镜有明显问题', '缺起幅应判严重，实为 %s' % r2['level'])
+    ck(any(i['item'] == '起幅' for i in r2['issues']), '应点名起幅')
+    ck(shot_check(dict(good, start_static_s=0.5))['issues'] == [], '起幅 0.5 秒边界应合格')
+
+    # 3 反例：缺落幅
+    r3 = shot_check(dict(good, end_static_s=0.1))
+    ck(any(i['item'] == '落幅' for i in r3['issues']), '缺落幅应判严重')
+    ck(shot_check(dict(good, end_static_s=0.5))['issues'] == [], '落幅 0.5 秒边界应合格')
+
+    # 4 反例：镜头太短
+    r4 = shot_check(dict(good, duration_s=1.0, start_static_s=0.3, end_static_s=0.3))
+    ck(r4['level'] == '运镜有明显问题', '镜头 1 秒应判严重，实为 %s' % r4['level'])
+    ck(any(i['item'] == '镜头时长' for i in r4['issues']), '应点名镜头时长')
+    r4b = shot_check(dict(good, duration_s=1.5, start_static_s=0.5, end_static_s=0.5))
+    ck(not any(i['sev'] == 3 for i in r4b['issues']), '1.5 秒边界不应有严重项，实为 %s' % r4b['issues'])
+    ck(any(i['item'] == '运镜段' for i in r4b['issues']),
+       '推镜运镜段 0.5 秒仍应提示偏短')
+
+    # 5 反例：运镜段太短
+    r5 = shot_check(dict(good, duration_s=2.0, start_static_s=0.8, end_static_s=0.8))
+    ck(r5['move_span'] < 0.5, '运镜段应不足 0.5 秒')
+    ck(any(i['item'] == '运镜段' for i in r5['issues']), '运镜段太短应判严重')
+
+    # 6 反例：推拉运镜段不足 0.8 秒
+    r6 = shot_check(dict(good, duration_s=2.2, start_static_s=0.8, end_static_s=0.8))
+    ck(abs(r6['move_span'] - 0.6) < 1e-9, '运镜段应为 0.6 秒')
+    ck(any(i['item'] == '运镜段' and i['sev'] == 2 for i in r6['issues']),
+       '推镜运镜段 0.6 秒应判可改进')
+    ck(shot_check(dict(good, duration_s=2.4, start_static_s=0.8, end_static_s=0.8))['issues'] == [],
+       '推镜运镜段 0.8 秒边界应合格')
+    ck(shot_check(dict(good, move='pan', duration_s=2.2, start_static_s=0.8,
+                       end_static_s=0.8))['issues'] == [], '摇镜运镜段 0.6 秒应合格')
+
+    # 7 反例：时长自相矛盾
+    r7 = shot_check(dict(good, duration_s=1.0, start_static_s=0.8, end_static_s=0.8))
+    ck(any(i['item'] == '时长矛盾' for i in r7['issues']), '起落幅超过总时长应判严重')
+
+    # 8 反例：变速
+    r8 = shot_check(dict(good, speed='variable'))
+    ck(any(i['item'] == '运镜速度' for i in r8['issues']), '变速应提示')
+    ck(r8['level'] == '有可改进项', '变速应判可改进，实为 %s' % r8['level'])
+
+    # 9 反例：没说目的
+    r9 = shot_check(dict(good, purpose=''))
+    ck(any(i['item'] == '运镜目的' for i in r9['issues']), '没说目的应提示')
+
+    # 10 反例：环绕太短、转不到一半
+    r10 = shot_check(dict(good, move='arc', purpose='product', duration_s=1.5,
+                          start_static_s=0.5, end_static_s=0.5, arc_turn_ratio=0.25))
+    ck(any(i['item'] == '环绕时长' for i in r10['issues']), '环绕 1.5 秒应提示')
+    ck(any(i['item'] == '环绕幅度' for i in r10['issues']), '只转 0.25 圈应提示')
+    ck(not any(i['item'] in ('环绕时长', '环绕幅度')
+               for i in shot_check(dict(good, move='arc', purpose='product', duration_s=3.0,
+                                        start_static_s=0.6, end_static_s=0.8,
+                                        arc_turn_ratio=1.0))['issues']),
+       '环绕 3 秒转满一圈应合格')
+
+    # 11 固定镜头
+    r11 = shot_check({'name': '呼吸点', 'move': 'static', 'duration_s': 2.0})
+    ck(r11['level'] == '运镜规范', '固定镜头 2 秒应合格，实为 %s' % r11['level'])
+    ck(any(i['item'] == '镜头时长'
+           for i in shot_check({'name': '太短固定', 'move': 'static', 'duration_s': 0.3})['issues']),
+       '固定镜头 0.3 秒应提示')
+
+    # 12 排序方向：严重项排最前
+    r12 = shot_check(dict(good, start_static_s=0.1, speed='variable'))
+    ck(r12['issues'][0]['sev'] == 3, '严重项应排最前，实为 %s' % r12['issues'][0]['sev'])
+    ck(r12['issues'][0]['item'] == '起幅', '首个应是起幅，实为 %s' % r12['issues'][0]['item'])
+
+    # 13 判定顺序：有严重项时不因缺信息判待确认
+    r13 = shot_check({'name': '只填时长', 'move': 'push', 'duration_s': 1.0})
+    ck(r13['level'] == '运镜有明显问题', '缺其他项但有严重项不应判待确认，实为 %s' % r13['level'])
+    r13b = shot_check({'name': '只填手法', 'move': 'push', 'duration_s': 3.0,
+                       'start_static_s': 0.6, 'end_static_s': 0.8})
+    ck(r13b['level'] == '待确认', '未填速度与目的应判待确认，实为 %s' % r13b['level'])
+
+    # 14 整片：运镜种类超过 3 种
+    many = [dict(good, move=m, purpose='intro') for m in ('push', 'pull', 'pan', 'arc', 'tilt')]
+    r14 = calc({'shots': many})
+    ck(any(i['item'] == '运镜种类' for i in r14['global_issues']), '5 种运镜应提示风格不统一')
+    ck(len(r14['kinds']) == 5, '应统计出 5 种，实为 %s' % r14['kinds'])
+    r14b = calc({'shots': [dict(good, move=m, purpose='intro') for m in ('push', 'pull', 'pan')]})
+    ck(not any(i['item'] == '运镜种类' for i in r14b['global_issues']), '3 种运镜应合格')
+
+    # 15 整片：连续 3 个同类型
+    r15 = calc({'shots': [dict(good, name='推1'), dict(good, name='推2'), dict(good, name='推3')]})
+    ck(any(i['item'] == '运镜重复' for i in r15['global_issues']), '连续 3 个推镜应提示')
+    r15b = calc({'shots': [dict(good, name='推1'), dict(good, name='推2'),
+                           dict(good, name='拉1', move='pull')]})
+    ck(not any(i['item'] == '运镜重复' for i in r15b['global_issues']), '连续 2 个同类型应合格')
+
+    # 16 整片：长片没有固定镜头
+    r16 = calc({'shots': [dict(good, name='镜%d' % i, move=m, purpose='intro')
+                          for i, m in enumerate(('push', 'pull', 'pan'))],
+                'total_duration_s': 30})
+    ck(any(i['item'] == '缺少固定镜头' for i in r16['global_issues']), '30 秒全运镜应提示')
+    r16b = calc({'shots': [dict(good, name='推1'), dict(good, name='拉1', move='pull'),
+                           {'name': '呼吸点', 'move': 'static', 'duration_s': 2.0}],
+                 'total_duration_s': 30})
+    ck(not any(i['item'] == '缺少固定镜头' for i in r16b['global_issues']),
+       '有固定镜头穿插应合格')
+
+    # 17 汇总与整改顺序
+    r17 = calc({'shots': [good,
+                          dict(good, name='缺起幅', start_static_s=0.1),
+                          dict(good, name='变速', speed='variable')]})
+    ck(r17['overall'] == '存在需要重拍的运镜镜头', '有严重项应判需要重拍，实为 %s' % r17['overall'])
+    ck(r17['n_bad'] == 1, '严重项应为 1 个，实为 %d' % r17['n_bad'])
+    ck(r17['fix_order'][0] == '缺起幅', '严重项应先改，实为 %s' % r17['fix_order'])
+    ck(r17['fix_order'][1] == '变速', '可改进项排其后，实为 %s' % r17['fix_order'])
+
+    # 18 BOM 两条路径
+    bom = '﻿' + json.dumps({'shots': [dict(good, start_static_s=0.1)]})
+    r18 = calc(json.loads(bom.lstrip('﻿')))
+    ck(r18['overall'] == '存在需要重拍的运镜镜头', 'BOM 字符串应正确解析，实为 %s' % r18['overall'])
+    tmp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_bom_probe_c6.json')
+    with open(tmp, 'w', encoding='utf-8-sig') as f:
+        f.write(json.dumps({'shots': [dict(good, name='带BOM', duration_s=1.0)]}))
+    try:
+        r18b = calc(json.loads(open(tmp, 'r', encoding='utf-8-sig').read()))
+        ck(r18b['rows'][0]['name'] == '带BOM', 'BOM 文件首个 key 应解析正常，实为 %s' % r18b['rows'][0]['name'])
+        ck(r18b['n_bad'] == 1, '镜头 1 秒应判严重，实为 %d' % r18b['n_bad'])
+    finally:
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+    # 19 非法输入
+    for bad, why in (
+        ({}, '缺 shots'),
+        ({'shots': []}, 'shots 空列表'),
+        ({'shots': [{'duration_s': 3}]}, '缺 move'),
+        ({'shots': [dict(good, move='甩镜')]}, '未知运镜'),
+        ({'shots': [dict(good, purpose='随便动动')]}, '未知目的'),
+        ({'shots': [dict(good, duration_s='abc')]}, '时长非数字'),
+        ({'shots': [dict(good, start_static_s=-1)]}, '起幅为负'),
+    ):
+        try:
+            calc(bad)
+            ck(False, '用例19 %s 应抛错' % why)
+        except ValueError:
+            ck(True, '')
+
+    # 20 输出结构
+    md = render_md(r17)
+    for key in ('总体判定', '逐镜头判定', '八种运镜手法', '运镜目的清单', '阈值', '人工确认清单'):
+        ck(key in md, 'Markdown 输出应含章节 %s' % key)
+    ck(len(MOVES) == 9, '运镜手法应 9 种（含固定）')
+    ck(len(PURPOSES) >= 6, '目的清单至少 6 条')
+
+    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_selftest_result.txt')
+    msg = 'SELFTEST FAIL\n' + '\n'.join(errs) if errs else (
+        'SELFTEST OK\n断言数: %d\n覆盖: 正例与运镜段计算/缺起幅反例与边界/缺落幅反例与边界/'
+        '镜头太短反例/运镜段太短反例/推拉0.8秒边界/时长矛盾反例/变速反例/无目的反例/'
+        '环绕时长与幅度反例/固定镜头/严重项排序/判定顺序/运镜种类/连续重复/缺固定镜头/'
+        '汇总整改顺序/BOM两条路径/非法输入/输出结构' % n)
+    with open(out, 'w', encoding='utf-8') as f:
+        f.write(msg + '\n')
+    print(msg)
+    return 0 if not errs else 1
+
+
+def main():
+    ap = argparse.ArgumentParser(description='短视频运镜核查')
+    ap.add_argument('--file', help='输入 JSON 文件')
+    ap.add_argument('--text', help='输入 JSON 字符串')
+    ap.add_argument('--out', help='结果输出路径')
+    ap.add_argument('--format', default='md', choices=['md', 'json'])
+    ap.add_argument('--selftest', action='store_true')
+    a = ap.parse_args()
+
+    if a.selftest:
+        return selftest()
+
+    raw = a.text or ''
+    if a.file:
+        if not os.path.exists(a.file):
+            print('ERROR --file 不存在: %s' % a.file)
+            return 2
+        raw = open(a.file, 'r', encoding='utf-8-sig', errors='replace').read()
+    if not raw.strip():
+        print('ERROR 需要 --file 或 --text')
+        return 2
+    try:
+        data = json.loads(raw.lstrip('﻿'))
+    except ValueError as e:
+        print('ERROR JSON 解析失败: %s' % e)
+        return 2
+    try:
+        r = calc(data)
+    except ValueError as e:
+        print('ERROR %s' % e)
+        return 2
+
+    out = render_md(r) if a.format == 'md' else json.dumps(r, ensure_ascii=False, indent=2)
+    d = os.path.dirname(os.path.abspath(__file__))
+    target = a.out or os.path.join(d, '_last_result.txt')
+    with open(target, 'w', encoding='utf-8') as f:
+        f.write(out + '\n')
+    print('结果已写入: %s' % target)
+    print(out)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
+

@@ -1,0 +1,2 @@
+SELFTEST OK
+checks=25 passed=25 failed=0

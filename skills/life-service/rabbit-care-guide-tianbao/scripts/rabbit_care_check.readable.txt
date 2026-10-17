@@ -1,0 +1,218 @@
+# -*- coding: utf-8 -*-
+"""兔子饲养配置校验脚本。
+
+用法:
+  python rabbit_care_check.py --selftest
+  python rabbit_care_check.py --file rabbit.json
+
+输入为 JSON，字段见 SKILL.md 第五章。读取统一用 utf-8-sig 剥 BOM。
+"""
+import argparse
+import json
+import os
+import sys
+
+BANNED_VEG = ['葱', '蒜', '韭菜', '洋葱', '马铃薯', '土豆', '巧克力', '牛奶', '面包', '饼干', '糖果']
+VET_SYMPTOM = ['不食', '流涎', '软便', '便血', '腹胀', '瘫软', '抽搐', '呼吸', '喷嚏', '便血']
+
+
+def load_plan(path):
+    raw = open(path, 'rb').read()
+    text = raw.decode('utf-8-sig')
+    return json.loads(text)
+
+
+def validate(data):
+    findings = []
+
+    def add(level, item, why):
+        findings.append({'level': level, 'item': item, 'why': why})
+
+    clen = data.get('cage_length_cm')
+    cwid = data.get('cage_width_cm')
+    litter = data.get('litter_trained')
+    hay_pct = data.get('hay_pct')
+    pellet = data.get('pellet_g_per_kg')
+    water = data.get('water_available')
+    veg = data.get('veg_items') or []
+    chew = data.get('chew_toys')
+    weight = data.get('weight_kg')
+    symptoms = data.get('symptoms') or []
+
+    # 笼具空间
+    if isinstance(clen, (int, float)) and isinstance(cwid, (int, float)) and clen > 0 and cwid > 0:
+        area = clen * cwid
+        min_area = 5400
+        if weight is not None and isinstance(weight, (int, float)):
+            if weight > 3:
+                min_area = 7500
+            elif weight < 1.5:
+                min_area = 3600
+        if area < min_area:
+            add('先处理', '笼具空间', '笼底面积 %d cm² 低于该体重最小要求 %d cm²' % (area, min_area))
+    else:
+        add('待确认', '笼具空间', '未提供有效笼长笼宽，无法换算底面积')
+
+    # 定点排便训练
+    if litter is not True:
+        add('待确认', '定点排便', '未做定点排便训练，笼内易脏且异味重')
+
+    # 牧草占比
+    if isinstance(hay_pct, (int, float)):
+        if hay_pct < 60:
+            add('先处理', '牧草占比', '牧草占日粮 %s%% 低于 60%%，应以牧草为主食' % hay_pct)
+        elif hay_pct > 100:
+            add('先处理', '牧草占比', '牧草占比 %s%% 超过 100%%，取值错误' % hay_pct)
+    else:
+        add('待确认', '牧草占比', '未提供牧草占比')
+
+    # 饮水
+    if water is not True:
+        add('先处理', '常备饮水', '未提供常备清洁饮水，兔子必须随时能喝到水')
+
+    # 颗粒粮控量
+    if isinstance(pellet, (int, float)):
+        if pellet > 50:
+            add('先处理', '颗粒粮', '颗粒粮 %s 克/公斤/天超过 50，易肥胖与肠道负担' % pellet)
+        elif pellet < 10:
+            add('待确认', '颗粒粮', '颗粒粮 %s 克/公斤/天偏少，确认牧草是否充足' % pellet)
+
+    # 禁忌蔬菜（用 any 匹配，不能用 in BANNED_VEG）
+    for v in veg:
+        if any(b in v for b in BANNED_VEG):
+            add('先处理', '禁忌食物', '蔬菜含禁忌项：%s' % v)
+
+    # 磨牙物
+    if chew is not True:
+        add('待确认', '磨牙物', '未配磨牙物，长期缺磨牙牙齿易过长')
+
+    # 体重
+    if not isinstance(weight, (int, float)) or weight <= 0:
+        add('待确认', '体重', '未提供有效体重，空间与颗粒粮无法换算')
+
+    # 就医症状（用 any 匹配）
+    for s in symptoms:
+        if any(v in s for v in VET_SYMPTOM):
+            add('先处理', '就医症状', '观察到需就医症状：%s' % s)
+            break
+
+    real = [f for f in findings if f['level'] == '先处理']
+    if real:
+        overall = '先处理'
+    elif any(f['level'] == '待确认' for f in findings):
+        overall = '待确认'
+    else:
+        overall = '可照此执行'
+    return {'overall': overall, 'findings': findings}
+
+
+def render(result):
+    lines = ['结论：%s' % result['overall'], '']
+    if not result['findings']:
+        lines.append('未发现问题，可照此执行。')
+    for f in result['findings']:
+        lines.append('[%s] %s：%s' % (f['level'], f['item'], f['why']))
+    return '\n'.join(lines) + '\n'
+
+
+def selftest():
+    passed = 0
+    failed = 0
+
+    good = {
+        'cage_length_cm': 100, 'cage_width_cm': 60, 'litter_trained': True,
+        'hay_pct': 80, 'pellet_g_per_kg': 30, 'water_available': True,
+        'veg_items': ['油麦菜', '胡萝卜'], 'chew_toys': True,
+        'weight_kg': 2.0, 'symptoms': [],
+    }
+    r = validate(good)
+    assert r['overall'] == '可照此执行', '良好配置应判可照此执行，实际=%s' % r['overall']
+    passed += 1
+
+    # 反例1：笼太小
+    bad = dict(good); bad['cage_length_cm'] = 50; bad['cage_width_cm'] = 40
+    r = validate(bad)
+    assert any(f['item'] == '笼具空间' for f in r['findings']), '笼太小应判先处理'
+    assert r['overall'] == '先处理', '反例应判先处理'
+    passed += 1
+
+    # 反例2：牧草过低
+    bad = dict(good); bad['hay_pct'] = 30
+    r = validate(bad)
+    assert any(f['item'] == '牧草占比' for f in r['findings']), '牧草过低应判先处理'
+    passed += 1
+
+    # 反例3：无饮水
+    bad = dict(good); bad['water_available'] = False
+    r = validate(bad)
+    assert any(f['item'] == '常备饮水' for f in r['findings']), '无饮水应判先处理'
+    passed += 1
+
+    # 反例4：禁忌蔬菜
+    bad = dict(good); bad['veg_items'] = ['油麦菜', '洋葱']
+    r = validate(bad)
+    assert any(f['item'] == '禁忌食物' for f in r['findings']), '禁忌蔬菜应判先处理'
+    passed += 1
+
+    # 反例5：颗粒粮过量
+    bad = dict(good); bad['pellet_g_per_kg'] = 80
+    r = validate(bad)
+    assert any(f['item'] == '颗粒粮' for f in r['findings']), '颗粒粮过量应判先处理'
+    passed += 1
+
+    # 反例6：就医症状
+    bad = dict(good); bad['symptoms'] = ['今天不食超过半天']
+    r = validate(bad)
+    assert any(f['item'] == '就医症状' for f in r['findings']), '就医症状应判先处理'
+    passed += 1
+
+    # 反例护栏：含禁忌食物的反例不得判可照此执行
+    bad = dict(good); bad['veg_items'] = ['胡萝卜', '巧克力']
+    r = validate(bad)
+    assert r['overall'] != '可照此执行', '含禁忌食物的反例不得判可照此执行'
+    passed += 1
+
+    # BOM 处理：带 BOM 的 JSON 必须能正确解析
+    bom_json = ('﻿' + json.dumps(good, ensure_ascii=False)).encode('utf-8')
+    text = bom_json.decode('utf-8-sig')
+    assert '﻿' not in text, 'BOM 未被剥除'
+    data = json.loads(text)
+    assert data['hay_pct'] == 80, 'BOM 解析后字段错位'
+    r = validate(data)
+    assert r['overall'] == '可照此执行', 'BOM 输入经解析后校验应正常通过'
+    passed += 1
+
+    msg = 'SELFTEST OK (%d passed, %d failed)' % (passed, failed)
+    return msg, passed, failed
+
+
+def main():
+    ap = argparse.ArgumentParser(description='兔子饲养配置校验')
+    ap.add_argument('--file', help='输入 JSON 配置文件路径')
+    ap.add_argument('--selftest', action='store_true', help='运行内置自检')
+    args = ap.parse_args()
+
+    if args.selftest:
+        msg, passed, failed = selftest()
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_selftest_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(msg + '\n')
+        print(msg)
+        sys.exit(1 if failed else 0)
+
+    if args.file:
+        data = load_plan(args.file)
+        result = validate(data)
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_last_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(render(result))
+        print(render(result))
+        sys.exit(0)
+
+    print('用法: python rabbit_care_check.py --selftest | --file rabbit.json')
+    sys.exit(2)
+
+
+if __name__ == '__main__':
+    main()
+

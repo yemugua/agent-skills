@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="微信聊天记录转保险理赔材料">
+  <rect width="256" height="256" rx="58" fill="#0B5FA5"/>
+  <rect x="44" y="56" width="168" height="106" rx="26" fill="#FFFFFF"/>
+  <path d="M76 156 L76 190 L106 156 Z" fill="#FFFFFF"/>
+  <rect x="70" y="82" width="66" height="12" rx="6" fill="#0B5FA5"/>
+  <rect x="70" y="106" width="116" height="12" rx="6" fill="#0B5FA5"/>
+  <rect x="70" y="130" width="88" height="12" rx="6" fill="#0B5FA5"/>
+  <path d="M164 52 L176 64 L196 44" fill="none" stroke="#F5B942" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="40" y="166" width="176" height="58" rx="16" fill="#F5B942" stroke="#FFFFFF" stroke-width="6"/>
+  <text x="128" y="199" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="bold" fill="#0B5FA5" text-anchor="middle" dominant-baseline="central">¥</text>
+</svg>

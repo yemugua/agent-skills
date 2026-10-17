@@ -1,0 +1,207 @@
+# -*- coding: utf-8 -*-
+"""鱼塘增氧方案校验脚本。
+
+用法:
+  python pond_aeration_plan.py --selftest
+  python pond_aeration_plan.py --file pond.json
+
+输入为 JSON，字段见 SKILL.md 第五章。读取统一用 utf-8-sig 剥 BOM。
+"""
+import argparse
+import json
+import os
+import sys
+
+AERATOR_TYPES = ['叶轮式', '微孔', '水车式', '射流式']
+HYPOX_SYM = ['浮头', '水面聚集', '吃食差', '游边', '张口']
+DENSITY_LEVELS = ['高', '中', '低']
+
+
+def load_plan(path):
+    raw = open(path, 'rb').read()
+    text = raw.decode('utf-8-sig')
+    return json.loads(text)
+
+
+def validate(data):
+    findings = []
+
+    def add(level, item, why):
+        findings.append({'level': level, 'item': item, 'why': why})
+
+    area = data.get('pond_area_m2')
+    density = data.get('density_level')
+    do = data.get('do_value_mg')
+    symptoms = data.get('symptoms') or []
+    atype = data.get('aerator_type')
+    acount = data.get('aerator_count')
+    windows = data.get('run_windows') or []
+    placement = data.get('placement_ok')
+    emergency = data.get('emergency_ready')
+
+    # 设备类型
+    if atype not in AERATOR_TYPES:
+        add('先处理', '增氧机类型', 'aerator_type 不在已知类型（叶轮式/微孔/水车式/射流式）内')
+
+    # 台数
+    if not isinstance(acount, (int, float)) or acount < 1:
+        add('先处理', '增氧机配置', '未配置任何增氧机，无增氧保障')
+
+    # 溶氧
+    if isinstance(do, (int, float)) and do < 3:
+        add('先处理', '溶氧过低', '溶氧 %s mg/L 低于 3，需立即增氧' % do)
+
+    # 缺氧信号（用 any 匹配，不能用 in HYPOX_SYM）
+    for s in symptoms:
+        if any(v in s for v in HYPOX_SYM):
+            add('先处理', '缺氧信号', '出现缺氧信号：%s' % s)
+            break
+
+    # 高密度台数偏弱
+    if density == '高' and isinstance(acount, (int, float)) and acount < 2:
+        add('待确认', '高密度台数', '高密度建议至少 2 台，当前 %s 台死角易缺氧' % acount)
+
+    # 凌晨覆盖
+    if '凌晨' not in windows:
+        add('待确认', '凌晨时段', '未覆盖凌晨低氧时段，这是最易缺氧的窗口')
+
+    # 摆放
+    if placement is not True:
+        add('待确认', '摆放覆盖', '增氧机摆放未覆盖死角，存在静水缺氧区')
+
+    # 应急
+    if emergency is not True:
+        add('待确认', '应急准备', '无备用电源/备水，半夜跳闸将全塘缺氧')
+
+    # 完整性
+    if not isinstance(area, (int, float)) or area <= 0:
+        add('待确认', '塘面积', '未提供有效塘面积，台数无法细化')
+    if density not in DENSITY_LEVELS:
+        add('待确认', '放养密度', '未提供放养密度（高/中/低）')
+
+    real = [f for f in findings if f['level'] == '先处理']
+    if real:
+        overall = '先处理'
+    elif any(f['level'] == '待确认' for f in findings):
+        overall = '待确认'
+    else:
+        overall = '可照此执行'
+    return {'overall': overall, 'findings': findings}
+
+
+def render(result):
+    lines = ['结论：%s' % result['overall'], '']
+    if not result['findings']:
+        lines.append('未发现问题，可照此执行。')
+    for f in result['findings']:
+        lines.append('[%s] %s：%s' % (f['level'], f['item'], f['why']))
+    return '\n'.join(lines) + '\n'
+
+
+def selftest():
+    passed = 0
+    failed = 0
+
+    good = {
+        'pond_area_m2': 200, 'density_level': '中', 'do_value_mg': 5,
+        'symptoms': [], 'aerator_type': '叶轮式', 'aerator_count': 2,
+        'run_windows': ['凌晨', '高温午后', '投喂后'], 'placement_ok': True,
+        'emergency_ready': True,
+    }
+    r = validate(good)
+    assert r['overall'] == '可照此执行', '良好方案应判可照此执行，实际=%s' % r['overall']
+    passed += 1
+
+    # 反例1：溶氧过低
+    bad = dict(good); bad['do_value_mg'] = 1.5
+    r = validate(bad)
+    assert any(f['item'] == '溶氧过低' for f in r['findings']), '溶氧过低应判先处理'
+    assert r['overall'] == '先处理', '反例应判先处理'
+    passed += 1
+
+    # 反例2：缺氧信号
+    bad = dict(good); bad['symptoms'] = ['清晨鱼浮头']
+    r = validate(bad)
+    assert any(f['item'] == '缺氧信号' for f in r['findings']), '缺氧信号应判先处理'
+    passed += 1
+
+    # 反例3：类型非法
+    bad = dict(good); bad['aerator_type'] = '不明机型'
+    r = validate(bad)
+    assert any(f['item'] == '增氧机类型' for f in r['findings']), '类型非法应判先处理'
+    passed += 1
+
+    # 反例4：无增氧机
+    bad = dict(good); bad['aerator_count'] = 0
+    r = validate(bad)
+    assert any(f['item'] == '增氧机配置' for f in r['findings']), '无增氧机应判先处理'
+    passed += 1
+
+    # 反例5：未覆盖凌晨 → 待确认
+    bad = dict(good); bad['run_windows'] = ['高温午后', '投喂后']
+    r = validate(bad)
+    assert any(f['item'] == '凌晨时段' for f in r['findings']), '未覆盖凌晨应判待确认'
+    passed += 1
+
+    # 反例6：高密度仅1台 → 待确认
+    bad = dict(good); bad['density_level'] = '高'; bad['aerator_count'] = 1
+    r = validate(bad)
+    assert any(f['item'] == '高密度台数' for f in r['findings']), '高密度1台应判待确认'
+    passed += 1
+
+    # 反例7：无应急 → 待确认
+    bad = dict(good); bad['emergency_ready'] = False
+    r = validate(bad)
+    assert any(f['item'] == '应急准备' for f in r['findings']), '无应急应判待确认'
+    passed += 1
+
+    # 反例护栏：溶氧过低反例不得判可照此执行
+    bad = dict(good); bad['do_value_mg'] = 2.0
+    r = validate(bad)
+    assert r['overall'] != '可照此执行', '溶氧过低反例不得判可照此执行'
+    passed += 1
+
+    # BOM 处理
+    bom_json = ('﻿' + json.dumps(good, ensure_ascii=False)).encode('utf-8')
+    text = bom_json.decode('utf-8-sig')
+    assert '﻿' not in text, 'BOM 未被剥除'
+    data = json.loads(text)
+    assert data['aerator_type'] == '叶轮式', 'BOM 解析后字段错位'
+    r = validate(data)
+    assert r['overall'] == '可照此执行', 'BOM 输入经解析后校验应正常通过'
+    passed += 1
+
+    msg = 'SELFTEST OK (%d passed, %d failed)' % (passed, failed)
+    return msg, passed, failed
+
+
+def main():
+    ap = argparse.ArgumentParser(description='鱼塘增氧方案校验')
+    ap.add_argument('--file', help='输入 JSON 配置文件路径')
+    ap.add_argument('--selftest', action='store_true', help='运行内置自检')
+    args = ap.parse_args()
+
+    if args.selftest:
+        msg, passed, failed = selftest()
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_selftest_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(msg + '\n')
+        print(msg)
+        sys.exit(1 if failed else 0)
+
+    if args.file:
+        data = load_plan(args.file)
+        result = validate(data)
+        here = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(here, '_last_result.txt'), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(render(result))
+        print(render(result))
+        sys.exit(0)
+
+    print('用法: python pond_aeration_plan.py --selftest | --file pond.json')
+    sys.exit(2)
+
+
+if __name__ == '__main__':
+    main()
+

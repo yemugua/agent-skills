@@ -1,0 +1,433 @@
+# -*- coding: utf-8 -*-
+"""黄瓜嫁接愈合期与成活率核算工具。
+
+用法:
+  python graft_check.py --file graft.json [--json]
+  python graft_check.py --selftest
+
+本工具不提供砧木商品名, 不给病害抗性等级结论, 不含农药与生长调节剂。
+"""
+import argparse
+import io
+import json
+import os
+import sys
+
+# 砧木类型 -> 搭配建议
+ROOTSTOCK = {
+    "black_seed_pumpkin": {
+        "name": "黑籽南瓜类",
+        "relation": "同科远缘",
+        "strength": "抗枯萎病能力强, 主根发达",
+        "note": "下胚轴伸长快, 注意苗期徒长",
+        "affinity": "中",
+    },
+    "chowua": {
+        "name": "葫瓜类",
+        "relation": "同科近缘",
+        "strength": "抗逆性好, 接口粗壮",
+        "note": "部分组合可能影响瓜味, 先小区验证",
+        "affinity": "中高",
+    },
+    "wild_cucumber": {
+        "name": "野黄瓜类",
+        "relation": "同属近缘",
+        "strength": "亲和性好, 生长势不突变",
+        "note": "抗枯萎病等级低于南瓜类",
+        "affinity": "高",
+    },
+    "winter_squash": {
+        "name": "笋瓜类",
+        "relation": "同科远缘",
+        "strength": "耐盐碱能力较好",
+        "note": "亲和性需先做小区试验",
+        "affinity": "中",
+    },
+    "long_gourd": {
+        "name": "长葫芦类",
+        "relation": "同科远缘",
+        "strength": "耐低温较好",
+        "note": "同样需先做小区试验",
+        "affinity": "中",
+    },
+}
+
+# 愈合期七阶段
+STAGES = [
+    (0, 1, "一", "立即入愈合室, 全遮光或弱光, 湿度 90% 以上"),
+    (1, 2, "二", "温度 25-28℃, 湿度 90% 以上, 接口不沾水"),
+    (2, 3, "三", "散射光每次 10-20 分钟, 每天 2-3 次"),
+    (3, 5, "四", "逐步延长见光时间, 防止徒长与接口失水"),
+    (5, 7, "五", "开始小口通风, 接口不得结露"),
+    (7, 10, "六", "松绑或去除扎带, 湿度降到 60-70%"),
+    (10, 15, "七", "进入炼苗阶段, 接口摸之有硬感"),
+]
+
+# 接口征兆 -> (最可能原因, 处置)
+SIGNS = {
+    "black_soft": ("接口沾水加高湿不通风, 立即腐烂",
+                   "立即停止喷雾与浇水, 开小口通风; 已腐烂整株移出销毁"),
+    "mold": ("苗床高湿, 消毒不彻底, 通风不足",
+             "通风降湿, 移出病株, 刀具与台面重新消毒"),
+    "dry_separate": ("愈合期湿度不足或成活后才失水",
+                     "前期维持 90% 以上湿度, 遮阴到位"),
+    "scion_wilt": ("接穗失水过度, 早期未及时入高湿室",
+                   "立即转入高湿环境补失水"),
+    "rootstock_burst": ("砧木芽未及时抹除",
+                        "及时抹芽, 接穗恢复生长后可追回"),
+    "uneven_graft": ("播期未控好, 砧穗茎粗不匹配",
+                     "砧木早播 5-10 天, 粗细差控制在 1-2 mm"),
+    "constrict": ("绑扎过紧或未及时松绑",
+                  "愈合后 7-10 天及时松绑或去除"),
+    "late_wilt": ("根系问题或砧穗不亲和",
+                  "拔起查根, 根系褐变需排查苗床病害"),
+    "no_new_leaf": ("接穗已死, 砧木单独生长",
+                    "拔除, 用同级成活苗补位"),
+    "rot_after_plant": ("定植时嫁接口被埋入土中",
+                        "调整定植深度, 保持接口在土面之上"),
+}
+
+AFFINITY_ORDER = {"低": 1, "中": 2, "中高": 3, "高": 4}
+
+# 苗级判据
+GRADES = [
+    ("一级苗", "接口愈合完整, 新叶 2-3 片, 茎粗壮, 无病斑", "主用苗"),
+    ("二级苗", "接口愈合, 新叶 1-2 片, 略小", "备用苗与补苗"),
+    ("三级苗", "接口刚愈合, 苗偏小", "单独缓苗, 不急于定植"),
+    ("淘汰苗", "接口未愈合, 新叶不展, 茎基部有病斑", "移出销毁, 不进定植棚"),
+]
+
+
+def stage_of(days):
+    d = int(days or 0)
+    for i, (lo, hi, name, advice) in enumerate(STAGES):
+        if d < hi:
+            return name, advice, (d < lo)
+    return "已过愈合期", "按定植前炼苗与成活率复核口径处理", True
+
+
+def stage_index(days):
+    d = int(days or 0)
+    for i, (lo, hi, name, advice) in enumerate(STAGES):
+        if d < hi:
+            return i
+    return len(STAGES)
+
+
+def survival_rate(total, survived):
+    t = float(total or 0)
+    s = float(survived or 0)
+    if t <= 0:
+        return 0.0
+    if s > t:
+        s = t
+    return round(s / t * 100.0, 1)
+
+
+def rate_grade(rate):
+    if rate >= 85:
+        return "合格", "可进入定植, 按苗级正常使用"
+    if rate >= 70:
+        return "偏低", "补苗到位后再定植, 查明失败原因"
+    if rate >= 50:
+        return "不合格", "本批全数报废, 重新育苗"
+    return "严重不合格", "立即停止下一批, 先查操作与环境再育苗"
+
+
+def risk_level(total, survived):
+    r = survival_rate(total, survived)
+    if r >= 85:
+        return 0
+    if r >= 70:
+        return 1
+    if r >= 50:
+        return 2
+    return 3
+
+
+RISK_NAMES = {0: "正常", 1: "需补苗", 2: "本批报废", 3: "立即停止育苗"}
+
+MATCH_ADVICE = {
+    "黑籽南瓜类": "露地与连作重地块的常用选择, 抗枯萎病优先考虑",
+    "葫瓜类": "短季节或需要较强亲和性的场景, 先小区验证瓜味",
+    "野黄瓜类": "亲和性最好但抗性提升有限, 适合连作压力小的地块",
+    "笋瓜类": "土壤偏盐碱的地块可考虑, 亲和性须先验证",
+    "长葫芦类": "早春低温栽培可考虑, 同样先做小区试验",
+}
+
+
+def describe_rootstock(key):
+    info = ROOTSTOCK.get(key)
+    if not info:
+        return None
+    return dict(info)
+
+
+def affinity_rank(name):
+    for k, v in AFFINITY_ORDER.items():
+        if name == k:
+            return v
+    return 0
+
+
+def build_report(data):
+    rootstock_key = data.get("rootstock", "")
+    scion_state = data.get("scion_state", "")
+    days = int(data.get("days_after_graft", 0) or 0)
+    signs = data.get("stage_s_signs", []) or []
+    total = data.get("seedling_count", 0) or 0
+    survived = data.get("survived_count", 0) or 0
+
+    lines = []
+    summary = {
+        "rootstock": rootstock_key,
+        "rootstock_name": None,
+        "stage": None,
+        "risk": None,
+        "risk_name": None,
+        "survival_rate": None,
+        "grade": None,
+        "signs": [],
+        "product_recommendation": False,
+    }
+
+    lines.append("=" * 68)
+    lines.append("黄瓜嫁接愈合期与成活率核算")
+    lines.append("=" * 68)
+
+    info = describe_rootstock(rootstock_key)
+    lines.append("[一] 砧木与接穗搭配")
+    lines.append("-" * 68)
+    if info:
+        summary["rootstock_name"] = info["name"]
+        lines.append("  砧木类型: %s" % info["name"])
+        lines.append("    与黄瓜亲缘关系: %s" % info["relation"])
+        lines.append("    主要作用: %s" % info["strength"])
+        lines.append("    使用注意: %s" % info["note"])
+        lines.append("    亲和性参考: %s" % info["affinity"])
+        lines.append("    搭配建议: %s" % MATCH_ADVICE[info["name"]])
+        lines.append("    播期差: 砧木比接穗早播 5-10 天, 茎粗差控制在 1-2 mm 内")
+        lines.append("    提醒: 换新组合先种 20-30 株小区试验, 不要第一年全棚换")
+    else:
+        lines.append("  未提供已登记的砧木类型, 通用原则:")
+        lines.append("    亲缘关系不能太远也不能太近; 看用途选择; 先做小区试验")
+        lines.append("    播期差 5-10 天; 品种选择以供种方说明和当地农技部门为准")
+    lines.append("")
+
+    lines.append("[二] 接穗苗态核查")
+    lines.append("-" * 68)
+    ok_states = {"合格": "子叶展开, 真叶 2-3 片, 茎段 4-5 cm 带 2-3 片叶",
+                 "偏小": "子叶展开但真叶不足 2 片, 嫁接后可分批进行",
+                 "徒长": "茎细弱节间拉长, 接口难绑牢, 不宜嫁接",
+                 "带病": "茎基部或叶片有病斑, 不可入愈合室"}
+    for st in (scion_state or "").split(","):
+        st = st.strip()
+        if not st:
+            continue
+        lines.append("  %s -> %s" % (st, ok_states.get(st, "未登记状态, 需人工确认")))
+    if not scion_state:
+        lines.append("  未提供接穗苗态, 请按合格苗标准自查")
+    lines.append("")
+
+    lines.append("[三] 愈合期阶段定位 (嫁后第 %d 天)" % days)
+    lines.append("-" * 68)
+    idx = stage_index(days)
+    name, advice, passed = stage_of(days)
+    summary["stage"] = name
+    lines.append("  当前阶段: 第 %s 阶段" % name)
+    lines.append("    管理口径: %s" % advice)
+    lines.append("    进度位置: 第 %d / %d 阶段" % (idx + 1, len(STAGES)))
+    if days <= 2:
+        lines.append("    重点: 湿度维持 90% 以上, 接口不沾水, 砧木与接穗不错位")
+    if 2 < days <= 7:
+        lines.append("    重点: 逐步见光; 第 5 天起开始小口通风, 接口不得结露")
+    if 7 < days <= 10:
+        lines.append("    重点: 及时松绑或去除扎带, 湿度降到 60-70%")
+    if days > 10:
+        lines.append("    重点: 进入炼苗; 开始按接口愈合加新叶正常展开双条件复核")
+    lines.append("")
+    lines.append("  全阶段时间轴:")
+    for lo, hi, sname, sadvice in STAGES:
+        mark = "<<" if sname == name else "  "
+        lines.append("   %s 第%s阶段 %2d-%2d 天: %s" % (
+            mark, sname, lo, hi, sadvice))
+    lines.append("")
+
+    lines.append("[四] 接口征兆判别")
+    lines.append("-" * 68)
+    if not signs:
+        lines.append("  未报告接口异常征兆")
+        lines.append("  三条铁律: 第5天起通风且接口不结露; 砧木芽 1-2 mm 即抹; 温度不骤变大落")
+    for s in signs:
+        s = s.strip()
+        if not s:
+            continue
+        if s in SIGNS:
+            cause, action = SIGNS[s]
+            lines.append("  [异常] %s" % s)
+            lines.append("    最可能原因: %s" % cause)
+            lines.append("    处置口径: %s" % action)
+            summary["signs"].append(s)
+        else:
+            lines.append("  [未登记] %s -> 需人工比对征兆对照表" % s)
+    lines.append("")
+
+    lines.append("[五] 成活率复核与苗级")
+    lines.append("-" * 68)
+    rate = survival_rate(total, survived)
+    grade, gadvice = rate_grade(rate)
+    risk = risk_level(total, survived)
+    summary["survival_rate"] = rate
+    summary["grade"] = grade
+    summary["risk"] = risk
+    summary["risk_name"] = RISK_NAMES[risk]
+    lines.append("  嫁接总苗数: %g   成活苗数: %g" % (float(total or 0), float(survived or 0)))
+    lines.append("  成活率: %.1f%% -> %s" % (rate, grade))
+    lines.append("  处置: %s" % gadvice)
+    lines.append("")
+    lines.append("  成活率 = (接口愈合且新叶正常展开的苗数) / (嫁接总苗数)")
+    lines.append("  不能只看接口颜色: 有的苗接口看着接上了, 接穗早已死亡, 靠砧木芽在撑")
+    lines.append("")
+    lines.append("  苗级判据:")
+    for gname, crit, usage in GRADES:
+        lines.append("    %s: %s -> %s" % (gname, crit, usage))
+    lines.append("")
+
+    lines.append("[六] 定植前后提醒")
+    lines.append("-" * 68)
+    lines.append("  定植深度与苗床相平, 嫁接口不埋进土里")
+    lines.append("  嫁接苗靠砧木强根系供水, 缓苗期不追大水, 不按自根苗的脾气大水大肥")
+    lines.append("  移栽后 3-5 天搭遮阳网, 缓苗后逐步去除")
+    lines.append("")
+    lines.append("免责: 本结果为愈合期管理与成活率自查, 不构成品种评价或病害抗性结论。")
+    lines.append("免责: 病原检测与砧木种子检疫状态以检测与检疫结论为准。")
+    lines.append("免责: 用药与生长调节剂以产品标签说明和当地农技部门要求为准。")
+    lines.append("=" * 68)
+    return "\n".join(lines), summary
+
+
+def load_json(path):
+    with io.open(path, "r", encoding="utf-8", errors="ignore") as f:
+        raw = f.read()
+    # PowerShell 写出的 UTF-8 文件可能带 BOM, 不剥掉会让首个 key 取不到值且不报错
+    raw = raw.lstrip("﻿")
+    return json.loads(raw)
+
+
+def _run_checks():
+    r = []
+    r.append(("第 0 天为第一阶段", stage_of(0)[0] == "一"))
+    r.append(("第 2 天为第三阶段", stage_of(2)[0] == "三"))
+    r.append(("第 5 天为第五阶段", stage_of(5)[0] == "五"))
+    r.append(("第 9 天为第六阶段", stage_of(9)[0] == "六"))
+    r.append(("第 12 天为第七阶段", stage_of(12)[0] == "七"))
+    r.append(("第 30 天为已过愈合期", stage_of(30)[0] == "已过愈合期"))
+    r.append(("阶段索引单调递增",
+              stage_index(0) < stage_index(6) < stage_index(12)))
+    r.append(("成活率 90 正确", survival_rate(100, 90) == 90.0))
+    r.append(("成活率四舍五入一位小数", survival_rate(3, 2) == 66.7))
+    r.append(("总苗数为 0 时成活率为 0", survival_rate(0, 5) == 0.0))
+    r.append(("成活数超总数被截断", survival_rate(10, 15) == 100.0))
+    r.append(("90% 为合格", rate_grade(90.0)[0] == "合格"))
+    r.append(("75% 为偏低", rate_grade(75.0)[0] == "偏低"))
+    r.append(("55% 为不合格", rate_grade(55.0)[0] == "不合格"))
+    r.append(("30% 为严重不合格", rate_grade(30.0)[0] == "严重不合格"))
+    r.append(("风险等级 0 对应正常", risk_level(100, 95) == 0))
+    r.append(("风险等级 3 对应立即停止", risk_level(100, 10) == 3))
+    r.append(("黑籽南瓜属同科远缘",
+              describe_rootstock("black_seed_pumpkin")["relation"] == "同科远缘"))
+    r.append(("野黄瓜亲缘为同属近缘",
+              describe_rootstock("wild_cucumber")["relation"] == "同属近缘"))
+    r.append(("野黄瓜亲和性最高",
+              affinity_rank(describe_rootstock("wild_cucumber")["affinity"]) >=
+              affinity_rank(describe_rootstock("black_seed_pumpkin")["affinity"])))
+    r.append(("未登记砧木返回空", describe_rootstock("none") is None))
+    r.append(("接口发黑对应沾水",
+              "沾水" in SIGNS["black_soft"][0]))
+    r.append(("接口发霉对应高湿",
+              "高湿" in SIGNS["mold"][0]))
+    r.append(("苗级共四级", len(GRADES) == 4))
+
+    txt, s = build_report({
+        "rootstock": "black_seed_pumpkin", "scion_state": "合格",
+        "days_after_graft": 6, "stage_s_signs": ["black_soft"],
+        "seedling_count": 100, "survived_count": 78,
+    })
+    r.append(("样例砧木名正确", s["rootstock_name"] == "黑籽南瓜类"))
+    r.append(("样例定位第五阶段", s["stage"] == "五"))
+    r.append(("样例成活率 78", s["survival_rate"] == 78.0))
+    r.append(("样例判为偏低", s["grade"] == "偏低"))
+    r.append(("样例记录征兆", s["signs"] == ["black_soft"]))
+    r.append(("样例不推荐商品", s["product_recommendation"] is False))
+    r.append(("样例文本含阶段", "第七阶段" in txt))
+
+    _, s2 = build_report({})
+    r.append(("空输入不报错", s2["rootstock_name"] is None))
+    r.append(("空输入无征兆", s2["signs"] == []))
+    r.append(("空输入成活率 0", s2["survival_rate"] == 0.0))
+
+    _, s3 = build_report({"rootstock": "wild_cucumber", "days_after_graft": 30})
+    r.append(("野黄瓜样例名正确", s3["rootstock_name"] == "野黄瓜类"))
+    r.append(("超期定位已过愈合期", s3["stage"] == "已过愈合期"))
+
+    r.append(("BOM 输入被正确剥离",
+               load_json(_write_bom_sample())["rootstock"] == "chowua"))
+    r.append(("字符串形式的征兆可解析",
+               build_report({"stage_s_signs": ["mold"]})[1]["signs"] == ["mold"]))
+    return r
+
+
+def _write_bom_sample():
+    here = os.path.dirname(os.path.abspath(__file__))
+    p = os.path.join(here, "_selftest_bom_sample.json")
+    with io.open(p, "w", encoding="utf-8") as f:
+        f.write("﻿{\"rootstock\": \"chowua\", \"days_after_graft\": 6}")
+    return p
+
+
+def selftest():
+    results = _run_checks()
+    failed = [name for name, ok in results if not ok]
+    ok = len(failed) == 0
+    lines = ["SELFTEST %s" % ("OK" if ok else "FAILED")]
+    lines.append("checks=%d passed=%d failed=%d" % (
+        len(results), len(results) - len(failed), len(failed)))
+    for name in failed:
+        lines.append("FAILED: %s" % name)
+    here = os.path.dirname(os.path.abspath(__file__))
+    with io.open(os.path.join(here, "_selftest_result.txt"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+    print("\n".join(lines))
+    return ok
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="黄瓜嫁接愈合期与成活率核算工具")
+    parser.add_argument("--file", help="输入 JSON 文件路径 (UTF-8)")
+    parser.add_argument("--json", action="store_true", help="以 JSON 输出")
+    parser.add_argument("--out", help="结果写入指定文件")
+    parser.add_argument("--selftest", action="store_true", help="运行自检")
+    args = parser.parse_args()
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if args.selftest:
+        sys.exit(0 if selftest() else 1)
+
+    if not args.file:
+        parser.error("需要 --file 或 --selftest")
+
+    data = load_json(args.file)
+    report, summary = build_report(data)
+    body = json.dumps(summary, ensure_ascii=False, indent=2) if args.json else report
+    out_path = args.out or os.path.join(here, "_last_result.txt")
+    with io.open(out_path, "w", encoding="utf-8") as f:
+        f.write(body)
+    print(body)
+    print("结果已写入: %s" % out_path)
+
+
+if __name__ == "__main__":
+    main()
+
