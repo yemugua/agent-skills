@@ -12080,5 +12080,201 @@
   "name": "家用制氧机使用",
   "description": "家用制氧机使用：分步骤实操指南",
   "source_batch": "batch15-blank"
+ },
+ {
+  "slug": "forest-right-certificate-tianbao",
+  "category": "life-service",
+  "name": "林权证办理",
+  "description": "林权证办理：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "farm-machinery-license-tianbao",
+  "category": "life-service",
+  "name": "农机驾驶证申领",
+  "description": "农机驾驶证申领：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "tractor-inspection-tianbao",
+  "category": "life-service",
+  "name": "拖拉机年检",
+  "description": "拖拉机年检：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "rural-housing-reinforce-tianbao",
+  "category": "life-service",
+  "name": "农房抗震改造申请",
+  "description": "农房抗震改造申请：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "rural-toilet-subsidy-tianbao",
+  "category": "life-service",
+  "name": "农村改厕补贴",
+  "description": "农村改厕补贴：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "biogas-pool-maintain-tianbao",
+  "category": "life-service",
+  "name": "沼气池维护",
+  "description": "沼气池维护：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "farm-irrigation-permit-tianbao",
+  "category": "life-service",
+  "name": "农田灌溉取水证",
+  "description": "农田灌溉取水证：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "farm-env-assessment-tianbao",
+  "category": "life-service",
+  "name": "养殖场环评手续",
+  "description": "养殖场环评手续：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "slaughter-quarantine-tianbao",
+  "category": "life-service",
+  "name": "屠宰检疫流程",
+  "description": "屠宰检疫流程：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "grain-grower-certify-tianbao",
+  "category": "life-service",
+  "name": "种粮大户认定",
+  "description": "种粮大户认定：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "well-drilling-permit-tianbao",
+  "category": "life-service",
+  "name": "水井打井审批",
+  "description": "水井打井审批：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "veterinary-drug-rules-tianbao",
+  "category": "life-service",
+  "name": "兽药购买规定",
+  "description": "兽药购买规定：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "full-moon-haircut-tianbao",
+  "category": "life-service",
+  "name": "满月剃头习俗",
+  "description": "满月剃头习俗：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "first-birthday-zhuazhou-tianbao",
+  "category": "life-service",
+  "name": "周岁抓周礼",
+  "description": "周岁抓周礼：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "wedding-car-rental-tianbao",
+  "category": "life-service",
+  "name": "婚车租赁",
+  "description": "婚车租赁：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "best-man-duties-tianbao",
+  "category": "life-service",
+  "name": "伴郎伴娘职责",
+  "description": "伴郎伴娘职责：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "door-blocking-games-tianbao",
+  "category": "life-service",
+  "name": "婚礼拦门游戏",
+  "description": "婚礼拦门游戏：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "funeral-hall-setup-tianbao",
+  "category": "life-service",
+  "name": "灵堂布置",
+  "description": "灵堂布置：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "anniversary-memorial-tianbao",
+  "category": "life-service",
+  "name": "周年祭流程",
+  "description": "周年祭流程：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "grave-relocation-tianbao",
+  "category": "life-service",
+  "name": "迁坟手续",
+  "description": "迁坟手续：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "cemetery-purchase-tianbao",
+  "category": "life-service",
+  "name": "墓地选购",
+  "description": "墓地选购：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "senior-discount-card-tianbao",
+  "category": "life-service",
+  "name": "老年优待证办理",
+  "description": "老年优待证办理：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "companion-bed-rental-tianbao",
+  "category": "life-service",
+  "name": "陪护床租借",
+  "description": "陪护床租借：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "prosthesis-fitting-tianbao",
+  "category": "life-service",
+  "name": "假肢适配流程",
+  "description": "假肢适配流程：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "cataract-surgery-tianbao",
+  "category": "life-service",
+  "name": "白内障手术流程",
+  "description": "白内障手术流程：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "stent-aftercare-tianbao",
+  "category": "life-service",
+  "name": "心脏支架术后护理",
+  "description": "心脏支架术后护理：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "dialysis-companion-tianbao",
+  "category": "life-service",
+  "name": "透析陪护",
+  "description": "透析陪护：分步骤实操指南",
+  "source_batch": "batch16-blank"
+ },
+ {
+  "slug": "pension-benefit-claim-tianbao",
+  "category": "life-service",
+  "name": "抚恤金办理",
+  "description": "抚恤金办理：分步骤实操指南",
+  "source_batch": "batch16-blank"
  }
 ]
