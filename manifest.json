@@ -12479,5 +12479,131 @@
   "name": "毕业档案去向",
   "description": "毕业档案去向：分步骤实操指南",
   "source_batch": "batch18-blank"
+ },
+ {
+  "slug": "flooded-garage-response-tianbao",
+  "category": "life-service",
+  "name": "暴雨车库泡水应对",
+  "description": "暴雨车库泡水应对：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "typhoon-window-protection-tianbao",
+  "category": "life-service",
+  "name": "台风天窗户防护",
+  "description": "台风天窗户防护：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "hail-damage-claim-tianbao",
+  "category": "life-service",
+  "name": "冰雹车损理赔",
+  "description": "冰雹车损理赔：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "pipe-freeze-prevention-tianbao",
+  "category": "life-service",
+  "name": "寒潮水管防冻",
+  "description": "寒潮水管防冻：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "heatstroke-firstaid-tianbao",
+  "category": "life-service",
+  "name": "高温中暑急救",
+  "description": "高温中暑急救：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "fog-driving-tianbao",
+  "category": "life-service",
+  "name": "大雾天驾驶",
+  "description": "大雾天驾驶：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "ac-outdoor-icing-tianbao",
+  "category": "life-service",
+  "name": "空调外机除冰",
+  "description": "空调外机除冰：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "dust-storm-driving-tianbao",
+  "category": "life-service",
+  "name": "沙尘天行车",
+  "description": "沙尘天行车：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "snow-loaded-roof-tianbao",
+  "category": "life-service",
+  "name": "大雪压棚处理",
+  "description": "大雪压棚处理：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "return-ticket-waitlist-tianbao",
+  "category": "life-service",
+  "name": "返程票候补技巧",
+  "description": "返程票候补技巧：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "annual-leave-expiry-tianbao",
+  "category": "life-service",
+  "name": "年假清零前休假安排",
+  "description": "年假清零前休假安排：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "cross-province-social-security-tianbao",
+  "category": "life-service",
+  "name": "跨省社保衔接",
+  "description": "跨省社保衔接：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "school-transfer-midterm-tianbao",
+  "category": "life-service",
+  "name": "孩子转学插班",
+  "description": "孩子转学插班：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "corridor-clutter-complaint-tianbao",
+  "category": "life-service",
+  "name": "楼道堆物投诉",
+  "description": "楼道堆物投诉：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "square-dancing-noise-tianbao",
+  "category": "life-service",
+  "name": "广场舞噪音处理",
+  "description": "广场舞噪音处理：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "elevator-trapped-rescue-tianbao",
+  "category": "life-service",
+  "name": "电梯困人自救",
+  "description": "电梯困人自救：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "charging-wire-report-tianbao",
+  "category": "life-service",
+  "name": "飞线充电举报",
+  "description": "飞线充电举报：分步骤实操指南",
+  "source_batch": "batch19-blank"
+ },
+ {
+  "slug": "ebike-charging-spot-tianbao",
+  "category": "life-service",
+  "name": "电动车充电位置",
+  "description": "电动车充电位置：分步骤实操指南",
+  "source_batch": "batch19-blank"
  }
 ]
