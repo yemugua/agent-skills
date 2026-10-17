@@ -1,6 +1,6 @@
 # Agent Skills 中文技能库
 
-**1424 个中文 Agent Skills**（SKILL.md 格式），覆盖生活服务、微信生态、数据分析等场景，
+**1540 个中文 Agent Skills**（SKILL.md 格式），覆盖生活服务、微信生态、数据分析等场景，
 适用于 Claude Code、Codex、OpenCode、Cursor 等支持 Agent Skills 的工具。
 
 ## 安装
@@ -12,7 +12,7 @@ cp -r agent-skills/skills/<分类>/<技能名> ~/.claude/skills/
 
 ## 目录
 
-### 💬 微信生态（102）
+### 💬 微信生态（105）
 
 | 技能 | 说明 |
 |---|---|
@@ -118,8 +118,11 @@ cp -r agent-skills/skills/<分类>/<技能名> ~/.claude/skills/
 | `wechat-voice-lock` | 视频号开店的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
 | `wechat-wallet-lock` | 视频号开店的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
 | `wechatread-export` | 微信读书导出的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
+| `miniprogram-realtime-debug-tianbao` | 面向小程序开发的真机调试指南 |
+| `公众号原创转载合规核查-tianbao` | 面向微信公众号运营者的原创声明、授权转载与洗稿边界合规核查。输入一张采集表，输出含结论摘要、原创声明合规、授权转载合规、洗稿与抄袭边界、素材版权、转载连带责任、原创维权与整改清单的多段报告。适用于公众号图文原创声明滥用、未授权转载、洗稿雷同、配图字体音乐侵权等高频风险自查。 |
+| `wechat-cache-pitfall-tianbao` | 面向小程序开发的缓存坑点排查，覆盖存储/一致性/性能/安全四域 |
 
-### 📊 数据分析（18）
+### 📊 数据分析（42）
 
 | 技能 | 说明 |
 |---|---|
@@ -141,8 +144,32 @@ cp -r agent-skills/skills/<分类>/<技能名> ~/.claude/skills/
 | `user-retention-analysis` | 用户留存分析的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
 | `yoy-growth-calc` | 同比增长计算的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
 | `yoy-mom-formulas` | 同比环比公式的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
+| `git-conflict-resolve-tianbao` | 面向开发的 Git 合并冲突解决指南，覆盖识别/解决/收尾/预防四阶段 |
+| `git-rebase-workflow-tianbao` | 面向团队的 Git 变基与线性历史工作流指南，含安全强推与协作规范 |
+| `json-schema-design-tianbao` | 面向后端的 JSON Schema 设计规范指南 |
+| `jwt-security-audit-tianbao` | 面向开发的 JWT 使用安全审查，覆盖算法/声明/传输/撤销四域 |
+| `k8s-pod-debug-tianbao` | 面向运维的 K8s Pod 故障排查指南，覆盖定位/取证/处置/预防四阶段 |
+| `k8s-resource-quota-tianbao` | 面向运维的 K8s 资源配额与限额管理指南，防止单业务挤爆集群 |
+| `linux-log-triage-tianbao` | 面向运维的 Linux 日志分级排障指南，从盘点到固化的完整流程 |
+| `linux-perf-bottleneck-tianbao` | 面向运维的 Linux 性能瓶颈定位指南，USE 方法 + 工具组合拳 |
+| `linux-security-baseline-tianbao` | 面向运维的 Linux 安全基线核查，覆盖账号/服务/文件/审计四域 |
+| `mysql-index-design-tianbao` | 面向开发的 MySQL 索引设计与优化指南，从执行计划到变更验证 |
+| `nginx-config-audit-tianbao` | 面向运维与开发的 Nginx 配置审计核查，覆盖基础/响应头/TLS/访问控制四域 |
+| `pc-boot-slow-tianbao` | 电脑开机加速排查与硬件升级指引 |
+| `powershell-batch-audit-tianbao` | 面向 Windows 运维的 PowerShell 批处理脚本审计，覆盖编码/安全/健壮性/维护四域 |
+| `python-async-debug-tianbao` | 面向开发的 Python 异步协程调试指南，覆盖现象/定位/根因/修复四阶段 |
+| `redis-hotkey-tianbao` | 面向运维与开发的 Redis 热 key 与大 key 治理指南 |
+| `report-chart-pick-tianbao` | 汇报图表选型与设计原则指引 |
+| `rest-api-versioning-tianbao` | 面向后端的 REST API 版本管理策略指南 |
+| `sql-injection-scan-tianbao` | 面向开发的 SQL 注入风险代码审查，覆盖输入/ORM/账号/出口四域 |
+| `ssd-data-rescue-tianbao` | 数据抢救止损操作与软件恢复指引 |
+| `terraform-state-tianbao` | 面向 DevOps 的 Terraform State 安全管理指南 |
+| `tv-cast-issue-tianbao` | 电视投屏失败排查与画质优化指引 |
+| `wifi-weak-fix-tianbao` | WiFi 信号弱排查、组网升级与安全加固指引 |
+| `windows-printer-triage-tianbao` | 面向办公运维的 Windows 打印机故障排查核查，覆盖连接/服务/共享/质量四域 |
+| `zabbix-alert-tune-tianbao` | 面向运维的 Zabbix 告警治理与调优指南 |
 
-### 🎨 设计与媒体（19）
+### 🎨 设计与媒体（22）
 
 | 技能 | 说明 |
 |---|---|
@@ -165,8 +192,11 @@ cp -r agent-skills/skills/<分类>/<技能名> ~/.claude/skills/
 | `weibo-album-download` | 微博相册下载的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
 | `wifi-boost-pro` | wifi信号增强的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
 | `zhihu-answer-export` | 知乎回答导出的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
+| `phone-photo-skill-tianbao` | 手机摄影构图、光线、专业模式与后期技巧指引 |
+| `ppt-quick-build-tianbao` | PPT 快速搭建指引，从结构到风格到交付检查的全流程 |
+| `ppt-visual-polish-tianbao` | PPT 视觉美化指引，对齐、配色、数据呈现与高阶手法 |
 
-### 📱 常用 App 指南（29）
+### 📱 常用 App 指南（30）
 
 | 技能 | 说明 |
 |---|---|
@@ -199,8 +229,9 @@ cp -r agent-skills/skills/<分类>/<技能名> ~/.claude/skills/
 | `taobao-return-rules` | 淘宝退货规则：分步骤实操指南，含准备清单、标准流程、常见坑与自查清单。 |
 | `xiaohongshu-download-tianbao` | 输入小红书笔记链接，区分图文笔记与视频笔记，说明图片长按保存、视频官方保存、创作者后台与通用工具的适用情况，处理水印、图 |
 | `xiaohongshu-note-writing-tianbao` | 用数字、痛点、对比、悬念、身份标签五类公式拟标题，用钩子-共鸣-干货-行动四段搭正文，核查标题长度、关键词布局、极限词与 |
+| `tax-refund-app-tianbao` | 个税年度汇算退税申请操作与规划要点指引 |
 
-### 💼 商业运营（4）
+### 💼 商业运营（16）
 
 | 技能 | 说明 |
 |---|---|
@@ -208,8 +239,20 @@ cp -r agent-skills/skills/<分类>/<技能名> ~/.claude/skills/
 | `jiebei-loan-rate` | 支付宝借呗利率：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `webank-microlloan-rate` | 微粒贷利率：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `zhima-credit-score` | 支付宝芝麻信用：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
+| `inbox-triage-tianbao` | 邮件与待办分级处理指引，含四象限与批处理法 |
+| `interview-simulate-tianbao` | 面试模拟问答指引，覆盖自我介绍到薪资谈判 |
+| `invoice-check-tianbao` | 发票查验渠道、异常识别与报销规范指引 |
+| `meeting-minutes-write-tianbao` | 会议纪要撰写规范，从会前准备到会后归档全流程 |
+| `official-writing-tianbao` | 机关常用公文写作指引，含文种选择与格式规范 |
+| `qms-calibration-cert-tianbao` | 面向质量管理负责人的校准证书与测量溯源管理核查，覆盖证书/溯源/应用/档案四域 |
+| `qms-doc-numbering-tianbao` | 消防技术服务机构体系文件编号与受控管理指南，含换版与回收流程 |
+| `qms-form-generator-tianbao` | 依据 DB31/T 1380-2022 生成消防技术服务机构受控表单，含编号规则与版式要素 |
+| `resume-rebuild-tianbao` | 简历重写指引，含 STAR 法则量化与岗位匹配 |
+| `weekly-report-write-tianbao` | 周报撰写指引，含结构模板、写法要点与常见误区 |
+| `word-style-setup-tianbao` | Word 样式体系与自动化目录设置指引 |
+| `work-email-write-tianbao` | 工作邮件撰写与管理指引 |
 
-### 🏠 生活服务（1252）
+### 🏠 生活服务（1325）
 
 | 技能 | 说明 |
 |---|---|
@@ -1465,6 +1508,79 @@ cp -r agent-skills/skills/<分类>/<技能名> ~/.claude/skills/
 | `zhishixingqiu-video-tianbao` | 面向想把自己在知识星球加入的星主视频存到本地的用户，区分星主已公开内容、付费专享与私密内容，说明官方缓存、星主提供的原始 |
 | `zig-build-basics` | Zig 构建入门：分步骤实操指南，含准备清单、标准流程、常见坑与自查清单。 |
 | `zuoyou-video-download-tianbao` | 面向想和最右短视频存到本地的用户，区分自有作品、已授权素材与第三方作品，说明官方保存、创作者后台与合规边界，给出留存方式 |
+| `glass-hard-water-stain-tianbao` | 淋浴房玻璃与镜面水渍清除指南，含防雾处理 |
+| `guitar-chord-start-tianbao` | 吉他入门器材、基础和弦、节奏与练习计划指引 |
+| `gym-refund-tianbao` | 健身房预付卡退费维权材料核查，覆盖合同/证据/协商投诉三域 |
+| `health-checkup-read-tianbao` | 体检报告结构解读与就医判断指引 |
+| `hoa-rights-guide-tianbao` | 业主权益边界与物业沟通维权指引 |
+| `home-medicine-box-tianbao` | 家庭药箱配置与管理指引，含安全红线 |
+| `humidifier-scale-clean-tianbao` | 加湿器水垢清洗与消毒指南，含滤芯更换与水质要求 |
+| `insurance-claim-reject-tianbao` | 保险拒赔应对指引，含 12378 投诉路径 |
+| `kettle-scale-clean-tianbao` | 电水壶水垢清除操作指南，四种方案对比与操作步骤 |
+| `kid-fever-judge-tianbao` | 儿童发热程度判断与家庭处理指引，含就医红线 |
+| `kid-picture-book-tianbao` | 绘本共读方法与亲子阅读习惯养成指引 |
+| `kid-screen-limit-tianbao` | 儿童屏幕时间管理与风险防范指引 |
+| `kid-snack-pick-tianbao` | 儿童零食成分审阅与健康挑选指引 |
+| `kitchen-drawer-organize-tianbao` | 厨房抽屉分区收纳指南，含台面清空目标 |
+| `kitchen-grease-wall-tianbao` | 厨房墙面与瓷砖重油污清除指南，强调事前防护 |
+| `kitten-feed-tianbao` | 幼猫口粮选择、喂养节奏与健康信号指引 |
+| `labor-arbitration-tianbao` | 劳动仲裁申请指引，含时效核算与举证要点 |
+| `labor-contract-review-tianbao` | 劳动合同审查要点指引，覆盖必备条款/薪酬社保/风险/签署四阶段 |
+| `leather-shoes-care-tianbao` | 皮鞋清洁保养指南，含换季收纳与禁忌 |
+| `leather-sofa-care-tianbao` | 皮沙发清洁保养指南，含损伤修复与禁忌 |
+| `long-drive-prep-tianbao` | 长途驾驶车辆检查、路线规划与疲劳管理指引 |
+| `low-cal-meal-tianbao` | 低卡餐热量框架、食材替换与坚持策略指引 |
+| `marble-countertop-care-tianbao` | 大理石台面养护与渗色处理指南，强调酸性禁忌 |
+| `meal-plate-balance-tianbao` | 餐盘配比与三餐营养搭配指引 |
+| `medical-dispute-guide-tianbao` | 医疗纠纷处理路径指引，突出病历封存与复制 |
+| `microwave-grease-clean-tianbao` | 微波炉油污与异味清除指南，蒸汽软化法 |
+| `mortgage-choice-tianbao` | 房贷类型对比、成本测算与申请流程指引 |
+| `moving-check-list-tianbao` | 搬迁全流程清单管理指引 |
+| `neck-stretch-routine-tianbao` | 颈椎放松训练与日常习惯改善指引 |
+| `new-house-accept-tianbao` | 新房收房验房全流程指引 |
+| `no-contract-double-wage-tianbao` | 未签劳动合同双倍工资主张指引，覆盖关系证明/主张/补强三阶段 |
+| `noodle-dough-tianbao` | 面团原料、揉制手法、发酵与失败排查指引 |
+| `online-shopping-refund-tianbao` | 网购退货退款维权核查，覆盖证据/平台/升级路径三域 |
+| `oven-baking-start-tianbao` | 烤箱烘焙设备认知、基础配方与失败排查指引 |
+| `oven-grease-clean-tianbao` | 烤箱内腔油垢清除指南，含加热管防护 |
+| `parking-fee-dispute-tianbao` | 停车收费争议处理指引 |
+| `pet-bath-skill-tianbao` | 宠物洗澡操作与洗后护理指引 |
+| `pet-vomit-judge-tianbao` | 宠物呕吐分类观察与就医判断指引 |
+| `phone-battery-health-tianbao` | 手机电池保养、续航优化与更换判断指引 |
+| `phone-storage-clean-tianbao` | 手机存储空间分析与长期清理策略指引 |
+| `piano-note-read-tianbao` | 五线谱谱表、音位、时值与视奏练习入门指引 |
+| `postal-complaint-tianbao` | 邮政快递投诉办理指引，含 12305 申诉路径 |
+| `property-repair-fund-tianbao` | 住宅专项维修资金使用监督指引 |
+| `puppy-feed-tianbao` | 幼犬口粮选择、行为基础与健康信号指引 |
+| `range-hood-deep-clean-tianbao` | 抽油烟机深度清洗指南，含拆机防护与动平衡检查 |
+| `reno-budget-control-tianbao` | 装修预算分配、报价审阅与合同要点指引 |
+| `rent-contract-read-tianbao` | 租房合同审查与退租交割指引 |
+| `rent-deposit-refund-tianbao` | 租房押金退还维权核查，含损耗界定与催告路径 |
+| `sauce-mix-basic-tianbao` | 基础味型与常用酱汁调配配方指引 |
+| `silk-care-wash-tianbao` | 真丝衣物洗护指南，覆盖清洗/干燥/整烫/禁忌四阶段 |
+| `sing-breath-train-tianbao` | 唱歌呼吸支撑、发声练习与嗓音保护指引 |
+| `sink-hair-clog-tianbao` | 洗手盆毛发堵塞疏通指南，含过滤网预防 |
+| `sit-stand-habit-tianbao` | 久坐间断与微运动习惯养成指引 |
+| `sleep-hygiene-tianbao` | 睡眠卫生改善指引，含刺激控制与就医判断 |
+| `social-insurance-transfer-tianbao` | 社保跨地区转移接续办理与断缴影响指引 |
+| `solid-wood-floor-care-tianbao` | 实木地板保养与划痕修复指南 |
+| `stir-fry-basic-tianbao` | 家常炒菜备料、火候、调味与出品基本功指引 |
+| `storage-box-system-tianbao` | 收纳盒选型与标签体系搭建指南 |
+| `sugar-diet-control-tianbao` | 控糖饮食管理指引，含 GI 选择与外食策略 |
+| `tax-deduction-appeal-tianbao` | 个税专项附加扣除信息维护指引 |
+| `tax-refund-rejected-tianbao` | 退税申请被拒应对指引，覆盖拒因/申诉/跟进三阶段 |
+| `telecom-complaint-tianbao` | 电信业务投诉办理指引，含工信部升级路径 |
+| `toilet-clog-tianbao` | 马桶堵塞疏通指南，强调疏通剂混用禁忌 |
+| `toilet-scale-clean-tianbao` | 马桶水垢与尿垢清除指南，强调含氯清洁剂混用禁忌 |
+| `traffic-violation-recheck-tianbao` | 交通违章申诉复核材料准备与提交指引 |
+| `trash-odor-remove-tianbao` | 垃圾桶异味与防蝇处理指南，强调日清日结 |
+| `travel-agency-dispute-tianbao` | 旅行社纠纷维权指引 |
+| `veg-storage-tianbao` | 蔬菜分类储存、预处理与保鲜判断指引 |
+| `wall-mildew-clean-tianbao` | 墙面霉斑清除与防复发指南，强调基层干燥与防霉底漆 |
+| `wardrobe-renovation-tianbao` | 衣柜分区改造规划指南，含一进一出维持机制 |
+| `washer-seal-mildew-tianbao` | 洗衣机胶圈霉斑清除与筒体清洁指南 |
+| `wood-furniture-wax-tianbao` | 实木家具打蜡保养指南，含环境湿度控制 |
+| `work-injury-claim-tianbao` | 工伤认定申请办理指引，覆盖认定/鉴定/待遇/争议四阶段 |
 
 ## License
 
