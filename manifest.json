@@ -10778,5 +10778,579 @@
     "name": "Zabbix 告警治理与调优",
     "description": "面向运维的 Zabbix 告警治理与调优指南",
     "source_batch": "local-job"
+  },
+  {
+    "slug": "coal-yard-fire-tianbao",
+    "category": "fire-safety",
+    "name": "燃煤储运系统防火",
+    "description": "依据电力行业防火与运煤系统设计要求，生成清单：煤场堆放高度与压实、堆取料与消防设施配置、皮带输送机防火与沿线停线、煤粉制备系统惰化与防爆、温度监测与堆场计划。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "cold-work-environment-tianbao",
+    "category": "ehs-safety",
+    "name": "低温作业防护",
+    "description": "依据《低温作业分级》GB/T 14440 与防寒装备要求，生成清单：低温分级与暴露时长、个体防寒装备配备、作业轮换与取暖点、设备与介质防冻、手足冻伤处置与健康管理。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "construction-site-fire-tianbao",
+    "category": "fire-safety",
+    "name": "建设工程施工现场消防",
+    "description": "依据《建设工程施工现场消防安全技术规范》GB 50720，生成清单：总平面布置与消防车道、临时消防设施与给水、临时用房防火与疏散、动火作业管理与保温材料、临时用电与消防教育培训。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "counterfeit-part-prevention-tianbao",
+    "category": "quality-management",
+    "name": "假冒伪劣件防范",
+    "description": "依据防假冒件与供应链追溯要求，生成清单：可疑件定义与报告流程、供应商资质与授权链核验、到货外观与标识比对、开封检验与破坏性验证、隔离封存与溯源处置。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "cross-border-hiring-tianbao",
+    "category": "hr-recruitment",
+    "name": "异地与跨境雇佣合规",
+    "description": "依据劳动合同法与外籍人员就业管理规定，生成清单：用工主体与合同适用、社保公积金缴纳地、外国人工作许可与居留、个税扣缴与双边协定、数据与跨境远程管理。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "customer-factory-audit-tianbao",
+    "category": "quality-management",
+    "name": "顾客验厂与社会责任审核",
+    "description": "依据二方审核与社会责任守则要求，生成清单：审核范围与检查表确认、劳工与人权合规要点、健康安全与环境要求、文件与现场一致性、整改计划与回复时限。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "diversity-inclusion-tianbao",
+    "category": "hr-recruitment",
+    "name": "多元化与公平包容",
+    "description": "依据公平就业与包容性管理方法，生成清单：招聘JD 中性化与去偏见、面试评分结构化、晋升与薪酬公平性分析、反歧视投诉渠道、数据看板与问责机制。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "dual-prevention-tianbao",
+    "category": "ehs-safety",
+    "name": "双重预防机制建设",
+    "description": "依据《安全生产风险分级管控和隐患排查治理双重预防机制》要求，生成清单：风险点划分与辨识清单、风险评估分级与管控层级、责任人与管控措施、隐患排查清单与频次、信息化与动态更新。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "eia-management-tianbao",
+    "category": "ehs-safety",
+    "name": "环境影响评价与竣工环保验收",
+    "description": "依据《环境影响评价法》与建设项目竣工环保验收规定，生成清单：环评类别判定与文件层级、批复意见与三同时衔接、施工期环境监理、自主验收程序与公开、台账与后评价。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "electric-arc-protection-tianbao",
+    "category": "ehs-safety",
+    "name": "电弧灼伤与电气作业防护",
+    "description": "依据低压配电安全与电气作业防护要求，生成清单：电弧危害分析与计算、带电作业接近距离限制、防弧服与面部防护、工具绝缘与验电接地、警示标签与作业许可。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "emergency-response-team-tianbao",
+    "category": "ehs-safety",
+    "name": "应急救援队伍建设",
+    "description": "依据《生产安全事故应急条例》与专职队建设要求，生成清单：队伍组建与人员资质、装备配置与维护、培训训练与考核计划、值守联动与调度机制、经费保障与演练评估。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "employee-data-privacy-tianbao",
+    "category": "hr-recruitment",
+    "name": "员工个人信息保护合规",
+    "description": "依据《个人信息保护法》与劳动用工场景要求，生成清单：处理目的的必要性界定、告知同意与单独同意、敏感信息与健康信息处理边界、跨境传输与第三方共享、留存删除与安全事件响应。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "failure-analysis-tianbao",
+    "category": "quality-management",
+    "name": "失效分析技术与流程",
+    "description": "依据失效分析通用流程，生成清单：现场保护与失效现象收集、宏观检查与无损检测、断口与显微分析、机理分析与复现验证、纠正措施与水平展开。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "field-quality-analysis-tianbao",
+    "category": "quality-management",
+    "name": "售后与现场质量分析",
+    "description": "依据早期故障与市场失效分析方法，生成清单：故障信息采集与要素完整、失效件回收与检验、帕累托故障模式分布、浴盆曲线与浴盆期判断、改进闭环与顾客通报。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "fire-case-analysis-tianbao",
+    "category": "fire-safety",
+    "name": "火灾案例库与事故分析",
+    "description": "依据火灾事故调查规定与案例复盘方法，生成清单：案例信息要素结构化、起火原因与蔓延路径还原、管理原因与暴露问题、教训转化为检查条款、培训教材与定期复盘。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "fire-engineer-continuing-ed-tianbao",
+    "category": "fire-safety",
+    "name": "注册消防工程师继续教育",
+    "description": "依据注册消防工程师继续教育要求，生成清单：学时组成与年度要求、课程范围与标准更新、学习记录与证明留存、执业签章与执业档案、常见违规与信用风险。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "fire-monitor-system-tianbao",
+    "category": "fire-safety",
+    "name": "消防水炮与自动射流灭火系统",
+    "description": "依据《自动跟踪定位射流灭火系统》GB 25204，生成清单：场所适用性判定与选型、探测定位组件配置、供水压力与流量校核、联动控制与手动优先、调试验收与维护。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "fire-safety-grid-tianbao",
+    "category": "fire-safety",
+    "name": "消防安全网格化管理",
+    "description": "依据消防安全责任制实施办法与基层网格化管理要求，生成清单：网格划分与责任到人、基础台账与重点对象、日常巡查与隐患上报、宣传培训与演练、考核问责与通报。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "fire-standard-retrieval-tianbao",
+    "category": "fire-safety",
+    "name": "消防标准检索与应用",
+    "description": "依据现行工程建设标准体系，生成清单：检索渠道与现行有效性核对、强制性条文与推荐性条文区分、适用范围判定、标准冲突时的优先级、更新跟踪与清单维护。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "first-aid-responder-tianbao",
+    "category": "ehs-safety",
+    "name": "现场急救与救护员管理",
+    "description": "依据现场救护指南与 GB/T 相关培训要求，生成清单：救护员配置比例与持证、急救箱配置与药品效期、常见伤情处置流程、AED 配置与心肺复苏、送医绿色通道与演练。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "garage-fire-tianbao",
+    "category": "fire-safety",
+    "name": "汽车库与修车库防火",
+    "description": "依据《汽车库、修车库、停车场设计防火规范》GB 50067，生成清单：库类别划分与耐火等级、防火分区与人员疏散、机械停车设备防火、修车库动火与危废品存放、自动喷水与排烟。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "gas-detector-config-tianbao",
+    "category": "ehs-safety",
+    "name": "气体检测报警仪配置与管理",
+    "description": "依据《可燃气体探测器》GB 15322 与 GB 12358 有毒气体检测报警要求，生成清单：检测点布设与泄漏源识别、探测器选型与量程、报警值设定与联动、检定校准周期与台账、便携式仪器配备与使用记录。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "grain-storage-fire-tianbao",
+    "category": "fire-safety",
+    "name": "粮食仓储防火",
+    "description": "依据《粮食钢板筒仓设计规范》与粮库防火要求，生成清单：仓房耐火等级与防火间距、除尘与防爆、熏蒸药剂与火源管控、电气防火与防雷、消防设施与值班巡查。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "hazardous-chemical-transport-tianbao",
+    "category": "ehs-safety",
+    "name": "危化品运输安全",
+    "description": "依据《危险货物道路运输安全管理办法》与 JT/T 617，生成清单：承运单位与车辆资质、驾驶员押运员持证、包装标识与随车文件、装卸作业与防静电、应急预案与事故处置。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "headhunter-management-tianbao",
+    "category": "hr-recruitment",
+    "name": "猎头渠道管理",
+    "description": "依据采购与供应商管理逻辑，生成清单：猎头供应商准入与分级、费率与合同条款、推荐质量与流程规范、保密与人选冲突规则、季度复盘与淘汰。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "highrise-fire-tianbao",
+    "category": "fire-safety",
+    "name": "高层民用建筑防火",
+    "description": "依据《建筑设计防火规范》GB 50016，生成清单：建筑高度与分类判定、防火分区与安全疏散、避难层（间）与消防电梯、竖向管井与防火封堵、消防救援口与扑救面。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "hiring-decision-meeting-tianbao",
+    "category": "hr-recruitment",
+    "name": "录用决策会议机制",
+    "description": "依据集体决策与评价校准方法，生成清单：参会角色与决策权限、评价材料齐备性检查、独立打分与集体评议、异议处理与表决规则、录用结论与反馈时效。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "hiring-manager-enablement-tianbao",
+    "category": "hr-recruitment",
+    "name": "业务经理招聘赋能",
+    "description": "依据招聘协作机制设计方法，生成清单：用人标准共识与需求澄清、招聘时效承诺与分工、面试技能与反问环节训练、决策会议规则与异议处理、招聘结果纳入直线经理绩效。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "hotel-fire-tianbao",
+    "category": "fire-safety",
+    "name": "宾馆饭店防火",
+    "description": "依据《建筑设计防火规范》GB 50016 与旅馆建筑设计防火要求，生成清单：客房层疏散距离与安全出口、厨房与燃气用房分隔、内部装修材料燃烧性能、消防设施与应急广播、夜间巡查与客人疏散引导。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "hr-budget-tianbao",
+    "category": "hr-recruitment",
+    "name": "人力成本预算编制",
+    "description": "依据预算管理与 HR 财务分析逻辑，生成清单：岗位编制与人员计划、薪酬福利与五险一金测算、招聘培训与遣散成本、预算科目与部门分摊、执行监控与差异分析。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "indoor-air-quality-tianbao",
+    "category": "ehs-safety",
+    "name": "室内空气质量与新风管理",
+    "description": "依据《室内空气质量标准》GB/T 18883 与 GB 50325，生成清单：污染来源辨识、新风量与换气次数、空调系统清洗与滤网更换、检测点位与指标限值、超标治理与复测闭环。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "intern-management-tianbao",
+    "category": "hr-recruitment",
+    "name": "实习用工管理",
+    "description": "依据劳动法与实习相关规定，生成清单：实习协议与三方安排、岗位与导师配置、工时上限与安全防护、实习津贴与考勤、考核评价与转正通道。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "internal-mobility-tianbao",
+    "category": "hr-recruitment",
+    "name": "内部竞聘与岗位轮换",
+    "description": "依据人才发展通道设计方法，生成清单：内部岗位发布与报名资格、竞聘流程与评价标准、现岗位交接与放行、轮岗周期与目标、效果评估与保留。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "interviewer-certification-tianbao",
+    "category": "hr-recruitment",
+    "name": "面试官体系与认证",
+    "description": "依据结构化面试方法论，生成清单：面试官分级与资格标准、结构化题库与评分表、面试技能培训与演练、考官数量与回避规则、评价一致性与质量抽检。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "iso13485-system-tianbao",
+    "category": "quality-management",
+    "name": "医疗器械质量管理体系",
+    "description": "依据 YY/T 0287 / ISO 13485 与《医疗器械生产质量管理规范》，生成清单：风险管理贯穿全生命周期、设计与开发文档控制、洁净生产环境与确认、可追溯性与 UDI、上市后监督与不良事件报告。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "iso17025-system-tianbao",
+    "category": "quality-management",
+    "name": "检测实验室 ISO/IEC 17025 体系",
+    "description": "依据 CNAS-CL01 / ISO/IEC 17025，生成清单：公正性与保密承诺、人员能力与授权、方法选择与验证确认、设备计量溯源与期间核查、结果报告与申诉处理。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "iso22000-haccp-tianbao",
+    "category": "quality-management",
+    "name": "食品安全管理体系与 HACCP",
+    "description": "依据 GB/T 22000 / ISO 22000 与 HACCP 原理，生成清单：前提方案与良好操作规范、危害分析与 CCP 确定、关键限值与监控系统、纠偏与验证、追溯撤回与演练。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "lab-safety-tianbao",
+    "category": "ehs-safety",
+    "name": "实验室安全管理",
+    "description": "依据《高等学校实验室安全规范》与通用实验室安全管理要求，生成清单：危险源分类与台账、危化品采购领用与储存、通风柜与防护设施、人员培训与着装要求、废弃物处置与应急。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "labor-dispute-tianbao",
+    "category": "hr-recruitment",
+    "name": "劳动争议与仲裁应对",
+    "description": "依据《劳动争议调解仲裁法》与相关司法解释，生成清单：争议风险点梳理、证据收集与保存、协商调解流程、仲裁答辩与时限、合规整改与复盘。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "large-space-fire-tianbao",
+    "category": "fire-safety",
+    "name": "大空间与钢结构建筑防火",
+    "description": "依据 GB 50016 与《建筑钢结构防火技术规范》GB 51249，生成清单：钢结构耐火极限与防火涂料、防火分区面积折减与隔离带、自然排烟与机械排烟、大空间自动灭火选型、火源控制与疏散演练。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "laser-safety-tianbao",
+    "category": "ehs-safety",
+    "name": "激光设备作业安全",
+    "description": "依据《激光产品的安全》GB 7247.1，生成清单：激光等级判定与安全标识、防护围封与联锁装置、操作员培训与个体防护镜、光路布置与漫反射控制、警示标识与区域管控。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "mass-event-fire-tianbao",
+    "category": "fire-safety",
+    "name": "大型群众性活动临时消防",
+    "description": "依据《大型群众性活动安全管理条例》与临时建筑防火要求，生成清单：临时设施搭建材料燃烧性能、疏散通道宽度与人流控制、临时电气线路敷设、明火与烟花管控、现场执勤与应急疏散预案。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "metal-smelting-fire-tianbao",
+    "category": "fire-safety",
+    "name": "金属冶炼防火防爆",
+    "description": "依据《有色金属工程设计防火规范》与冶金企业安全要求，生成清单：熔融金属与水接触防控、炉窑冷却系统冗余与断电保障、液压站与油库防火、高温区域可燃物清理、钢包吊运与事故坑保障。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "npi-trial-run-tianbao",
+    "category": "quality-management",
+    "name": "新品试产管理",
+    "description": "依据先期质量策划与试产管控方法，生成清单：试产方案与准入条件、物料与工装准备确认、过程参数记录与偏差、试产问题清单与责任闭合、量产放行评审。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "oee-management-tianbao",
+    "category": "quality-management",
+    "name": "设备综合效率管理",
+    "description": "依据设备综合效率计算与损失分解方法，生成清单：时间开动率与停机损失、性能开动率与速度损失、合格品率与质量损失、数据采集口径与基准、损失排序与改善闭环。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "offboarding-process-tianbao",
+    "category": "hr-recruitment",
+    "name": "离职手续与交接管理",
+    "description": "依据劳动合同法离职管理要求，生成清单：离职申请与协商方式选择、工作交接清单与知识留存、资产回收与账号权限注销、薪资结算与竞业确认、离职证明与关系关闭。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "personnel-file-management-tianbao",
+    "category": "hr-recruitment",
+    "name": "人事档案与员工数据管理",
+    "description": "依据人事档案管理与个保合规要求，生成清单：档案目录与材料清单、入职材料核对与更新机制、借阅审批与保密权限、电子档案备份与留存期限、离职后档案转移。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "petrochemical-fire-tianbao",
+    "category": "fire-safety",
+    "name": "石化装置区消防",
+    "description": "依据《石油化工企业设计防火标准》GB 50160，生成清单：装置区消防车道与回车场地、消防站与车辆器材配置、泡沫站与固定喷淋、火灾报警与气体检测联动、装置检修动火与消防设施完好。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "pip-management-tianbao",
+    "category": "hr-recruitment",
+    "name": "绩效改进计划 PIP",
+    "description": "依据绩效管理与劳动合规实践，生成清单：适用情形与启动条件、目标设定与改进周期、过程辅导与书面记录、评价标准与证据留存、解除替代方案与合规风险。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "plant-traffic-safety-tianbao",
+    "category": "ehs-safety",
+    "name": "厂内交通与人车分流",
+    "description": "依据厂区道路与场内车辆安全要求，生成清单：道路宽度与转弯半径、人车分流与标志标线、限速与减速设施、车辆准入与驾驶员管理、路口盲区与作业区域隔离。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "pressure-pipeline-safety-tianbao",
+    "category": "ehs-safety",
+    "name": "压力管道安全",
+    "description": "依据《压力管道安全技术监察规程》与 TSG D0001，生成清单：管道级别与设计文件、安装告知与监督检验、在线检验与全面检验周期、安全附件与支吊架、腐蚀防护与隐患排查。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "pressure-vessel-safety-tianbao",
+    "category": "ehs-safety",
+    "name": "压力容器与锅炉安全",
+    "description": "依据《特种设备安全法》与 TSG 规程，生成清单：使用登记与检验周期、安全附件校验（安全阀/压力表）、作业人员持证、运行参数与巡回检查、应急预案与停用手续。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "psychosocial-risk-tianbao",
+    "category": "ehs-safety",
+    "name": "职业心理健康与压力管理",
+    "description": "依据职业健康促进与工作场所心理风险管理理念，生成清单：压力源识别与评估、工作量与角色冲突、管理支持与沟通机制、员工援助计划（EAP）、培训宣传与效果评估。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "public-health-emergency-tianbao",
+    "category": "ehs-safety",
+    "name": "突发公共卫生事件应急",
+    "description": "依据《突发公共卫生事件应急条例》，生成清单：应急组织与分级响应、监测报告与信息报送、隔离观察与密接管理、消杀通风与物资保障、复工复产与舆情沟通。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "pv-fire-tianbao",
+    "category": "fire-safety",
+    "name": "分布式屋顶光伏防火",
+    "description": "依据光伏电站安全与屋面防火要求，生成清单：组件与逆变器选型资质、直流拉弧与热斑防控、屋面布置与疏散通道、断电隔离与标识、运维检修与应急通道保障。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "quality-digitalization-tianbao",
+    "category": "quality-management",
+    "name": "质量信息化与系统建设",
+    "description": "依据质量管理体系信息化实施方法，生成清单：业务痛点与需求范围、数据模型与编码统一、系统集成接口（ERP/MES/PLM）、报表与看板设计、权限合规与数据备份。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "quality-escalation-tianbao",
+    "category": "quality-management",
+    "name": "重大质量问题升级与响应",
+    "description": "依据危机管理与顾客投诉处理要求，生成清单：升级判定标准与等级、响应组织架构与授权、时效要求与信息通报、围堵遏制与根因处理、客户沟通与复盘纠偏。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "quality-gate-review-tianbao",
+    "category": "quality-management",
+    "name": "质量门与阶段评审",
+    "description": "依据先期策划与阶段控制思路，生成清单：阶段划分与门禁标准、交付物清单与评审记录、风险项与开口问题跟踪、退出准则与放行权限、阶段复盘与经验库。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "racking-safety-tianbao",
+    "category": "ehs-safety",
+    "name": "仓储货架与堆垛安全",
+    "description": "依据仓储货架使用安全要求，生成清单：额定载荷标识与不超载、货架安装与地脚固定、横梁挂扣与安全销、货物堆码与平衡、定期巡检与变形报废。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "radiation-safety-tianbao",
+    "category": "ehs-safety",
+    "name": "放射与射线作业安全",
+    "description": "依据《放射性同位素与射线装置安全和防护条例》与 GB 18871，生成清单：辐射源许可与台账、场所分区与警示标志、个人剂量监测与体检、屏蔽与联锁防护、废源处置与运输。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "recycling-yard-fire-tianbao",
+    "category": "fire-safety",
+    "name": "再生资源堆场防火",
+    "description": "依据再生资源回收场所防火要求，生成清单：分区堆放与垛距通道、废纸塑料橡胶分类管控、易燃液体与危险废物隔离、消防水源与器材配置、电气线路与明火查禁。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "reliability-testing-tianbao",
+    "category": "quality-management",
+    "name": "可靠性试验与寿命验证",
+    "description": "依据可靠性试验标准 GB/T 5080 系列与 GB/T 2423 环境试验，生成清单：环境应力与工况剖面、试验方案与样本量、加速试验与失效判据、试验设备与监控、结果分析与寿命推断。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "remote-work-policy-tianbao",
+    "category": "hr-recruitment",
+    "name": "远程与混合办公管理",
+    "description": "依据劳动管理与信息安全要求，生成清单：适用岗位与审批流程、设备配置与费用承担、工时记录与成果考核、信息安全与数据防泄漏、劳动关系与工伤认定边界。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "requisition-approval-tianbao",
+    "category": "hr-recruitment",
+    "name": "招聘需求审批与编制管控",
+    "description": "依据编制与人效管理逻辑，生成清单：岗位必要性论证与替代方案、层级与薪酬区间核准、编制额度与总员控制、审批链条与权限阈值、超编例外审批与复盘。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "residential-community-fire-tianbao",
+    "category": "fire-safety",
+    "name": "住宅小区消防管理",
+    "description": "依据《消防法》与住宅物业消防管理要求，生成清单：消防设施日常维保与标识、疏散通道与电动车集中充电、物业管理履职与巡查频次、业主装修与明火管控、微型站与初期处置。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "retention-plan-tianbao",
+    "category": "hr-recruitment",
+    "name": "核心人才保留",
+    "description": "依据留才管理与离职预警方法，生成清单：关键岗位与流失风险识别、离职面谈与前兆信号、个性化保留包与职业发展、直线经理留才责任、保留效果复盘。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "safety-campaign-tianbao",
+    "category": "ehs-safety",
+    "name": "安全月与专项活动组织",
+    "description": "依据安全生产月活动与传统安全教育方法，生成清单：主题策划与目标设定、活动形式组合与参与度、宣传物料与阵地布置、关键人群与班组落地、成效评估与成果固化。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "safety-incentive-tianbao",
+    "category": "ehs-safety",
+    "name": "安全激励与举报奖励",
+    "description": "依据安全生产举报奖励与安全文化建设要求，生成清单：正负激励组合设计、举报渠道与匿名保护、奖励标准与兑现时效、结果型与行为型指标平衡、瞒报防范与负面效应控制。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "safety-observation-card-tianbao",
+    "category": "ehs-safety",
+    "name": "安全观察与隐患上报",
+    "description": "依据行为安全观察与全员隐患排查要求，生成清单：观察卡要素与填写规范、观察频次与覆盖面、沟通式反馈而非指责、数据聚合与趋势分析、整改闭环与趋势预警。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "safety-signage-tianbao",
+    "category": "ehs-safety",
+    "name": "安全标志标识设置",
+    "description": "依据《安全标志及其使用导则》GB 2894 与 GB 5768，生成清单：标志类型与适用场合、设置位置与视距、夜间可视与完好性、组合标志与辅助信息、维护记录与培训告知。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "sampling-plan-gb2828-tianbao",
+    "category": "quality-management",
+    "name": "GB/T 2828.1 抽样方案应用",
+    "description": "依据《计数抽样检验程序》GB/T 2828.1，生成清单：批量与样本量字码确定、检验水平与 AQL 选取、抽样方案检索与转移规则、批处置与不合格品处理、抽样记录与统计。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "shift-fatigue-tianbao",
+    "category": "ehs-safety",
+    "name": "轮班与疲劳风险管理",
+    "description": "依据疲劳风险管理（FRMS）方法，生成清单：排班时长与连续工作限制、夜班数量与倒班方向、休息间隔与加班上限、高危岗位疲劳监控、通勤安排与效果评估。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "stop-work-authority-tianbao",
+    "category": "ehs-safety",
+    "name": "停止作业权机制",
+    "description": "依据全员安全管理与不安全行为干预理念，生成清单：授权对象与适用范围、叫停流程与汇报要求、免责保护与反报复承诺、叫停后处置与恢复作业、数据统计与文化培育。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "supplier-quality-improvement-tianbao",
+    "category": "quality-management",
+    "name": "供应商质量提升与帮扶",
+    "description": "依据供应商开发与目标管理方法，生成清单：绩效排名与分级策略、共性缺陷与要因诊断、联合改善项目与目标、过程能力帮扶与验证、升级处置与退出机制。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "textile-fire-tianbao",
+    "category": "fire-safety",
+    "name": "纺织服装厂房防火",
+    "description": "依据《纺织工程设计防火规范》与丙类厂房防火要求，生成清单：原料与成品仓库防火、清梳并粗车间飞花粉尘清理、印染车间蒸汽与导热油、防火分区与安全疏散、电气防火与下班断电。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "toolbox-talk-tianbao",
+    "category": "ehs-safety",
+    "name": "班前会与作业安全交底",
+    "description": "依据班组管理与作业前交底要求，生成清单：当日任务与危险源交底、岗位防护与禁令提醒、交叉作业协调事项、交底签名与理解确认、新工序与新员工补充交底。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "tqm-management-tianbao",
+    "category": "quality-management",
+    "name": "全面质量管理 TQM",
+    "description": "依据 TQM 与卓越绩效评价准则 GB/T 19580，生成清单：领导作用与全员参与、过程导向与 PDCA 循环、质量方针目标层层展开、QC 小组与改善提案、自我评价与持续改进。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "visual-inspection-competency-tianbao",
+    "category": "quality-management",
+    "name": "目视检验与检验员能力验证",
+    "description": "依据检验人员能力管理要求，生成清单：视力与色觉要求、标准样件与缺陷限度样本、培训考核与持证上岗、检验照明与视角距离、复检轮岗与差错统计。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "warranty-management-tianbao",
+    "category": "quality-management",
+    "name": "保修与三包质量管理",
+    "description": "依据产品保修政策与家用汽车及消费品三包规定，生成清单：保修范围判定与免责条款、索赔数据统计分析、失效责任划分与供应商追偿、保修备件管理、政策修订与顾客沟通。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "wastewater-station-safety-tianbao",
+    "category": "ehs-safety",
+    "name": "污水处理设施安全",
+    "description": "依据有限空间作业与污水处理安全措施要求，生成清单：构筑物防护栏与盖板、有限空间作业审批与气体检测、加药间化学品存储与投加安全、用电与潮湿环境防护、污泥脱水间通风与职业健康。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "working-hours-management-tianbao",
+    "category": "hr-recruitment",
+    "name": "工时与加班管理",
+    "description": "依据《劳动法》工时制度规定，生成清单：标准工时与综合计算工时制审批、加班自愿与时长上限、考勤记录完整性、调休与加班费支付、超时预警与整改。",
+    "source_batch": "skillhub-local"
+  },
+  {
+    "slug": "yield-improvement-tianbao",
+    "category": "quality-management",
+    "name": "直通率与良率提升",
+    "description": "依据过程能力分析与损失分解方法，生成清单：良率漏斗与损失工序定位、缺陷 Pareto 与主要损失、要因验证与参数优化、标准化与防错导入、效果固化与再发防止。",
+    "source_batch": "skillhub-local"
   }
 ]
