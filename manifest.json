@@ -11702,5 +11702,243 @@
   "name": "老人手机设置",
   "description": "老人手机设置：分步骤实操指南",
   "source_batch": "batch13-blank"
+ },
+ {
+  "slug": "homestead-right-confirm-tianbao",
+  "category": "life-service",
+  "name": "宅基地确权办理",
+  "description": "宅基地确权办理：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "rural-medical-insurance-tianbao",
+  "category": "life-service",
+  "name": "农村合作医疗缴费",
+  "description": "农村合作医疗缴费：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "grain-subsidy-query-tianbao",
+  "category": "life-service",
+  "name": "粮补查询",
+  "description": "粮补查询：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "homestead-rebuild-approval-tianbao",
+  "category": "life-service",
+  "name": "宅基地翻建审批",
+  "description": "宅基地翻建审批：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "farm-subsidy-apply-tianbao",
+  "category": "life-service",
+  "name": "农业补贴申请",
+  "description": "农业补贴申请：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "rural-dangerous-house-tianbao",
+  "category": "life-service",
+  "name": "农村危房改造申请",
+  "description": "农村危房改造申请：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "fruit-tree-pruning-tianbao",
+  "category": "life-service",
+  "name": "果树剪枝",
+  "description": "果树剪枝：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "grain-storage-tianbao",
+  "category": "life-service",
+  "name": "粮食储存防潮",
+  "description": "粮食储存防潮：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "poultry-vaccine-tianbao",
+  "category": "life-service",
+  "name": "家禽防疫",
+  "description": "家禽防疫：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "full-moon-banquet-tianbao",
+  "category": "life-service",
+  "name": "满月酒流程",
+  "description": "满月酒流程：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "funeral-procedure-tianbao",
+  "category": "life-service",
+  "name": "白事流程指引",
+  "description": "白事流程指引：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "tomb-sweeping-booking-tianbao",
+  "category": "life-service",
+  "name": "祭扫预约",
+  "description": "祭扫预约：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "betrothal-gift-list-tianbao",
+  "category": "life-service",
+  "name": "彩礼嫁妆清单",
+  "description": "彩礼嫁妆清单：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "genealogy-compile-tianbao",
+  "category": "life-service",
+  "name": "族谱修编",
+  "description": "族谱修编：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "hospital-visit-gift-tianbao",
+  "category": "life-service",
+  "name": "探病送礼指南",
+  "description": "探病送礼指南：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "funeral-gift-etiquette-tianbao",
+  "category": "life-service",
+  "name": "丧事随礼规范",
+  "description": "丧事随礼规范：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "new-year-visit-order-tianbao",
+  "category": "life-service",
+  "name": "拜年顺序",
+  "description": "拜年顺序：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "teacher-thanks-banquet-tianbao",
+  "category": "life-service",
+  "name": "谢师宴筹备",
+  "description": "谢师宴筹备：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "spring-cleaning-tianbao",
+  "category": "life-service",
+  "name": "春节大扫除",
+  "description": "春节大扫除：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "kitchen-god-festival-tianbao",
+  "category": "life-service",
+  "name": "小年祭灶",
+  "description": "小年祭灶：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "new-year-eve-tianbao",
+  "category": "life-service",
+  "name": "除夕守岁安排",
+  "description": "除夕守岁安排：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "gas-meter-battery-tianbao",
+  "category": "life-service",
+  "name": "燃气表换电池",
+  "description": "燃气表换电池：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "gas-topup-tianbao",
+  "category": "life-service",
+  "name": "天然气充值",
+  "description": "天然气充值：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "ev-charger-install-tianbao",
+  "category": "life-service",
+  "name": "报装充电桩",
+  "description": "报装充电桩：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "neighbor-noise-complaint-tianbao",
+  "category": "life-service",
+  "name": "邻里噪音投诉",
+  "description": "邻里噪音投诉：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "falling-object-rights-tianbao",
+  "category": "life-service",
+  "name": "高空抛物维权",
+  "description": "高空抛物维权：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "deposit-refund-tianbao",
+  "category": "life-service",
+  "name": "押金退还",
+  "description": "押金退还：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "carbon-manager-exam-tianbao",
+  "category": "life-service",
+  "name": "碳排放管理师报名",
+  "description": "碳排放管理师报名：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "nutritionist-exam-tianbao",
+  "category": "life-service",
+  "name": "公共营养师报名",
+  "description": "公共营养师报名：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "tile-grouting-timing-tianbao",
+  "category": "life-service",
+  "name": "瓷砖美缝时机",
+  "description": "瓷砖美缝时机：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "life-insurance-beneficiary-tianbao",
+  "category": "life-service",
+  "name": "寿险受益人变更",
+  "description": "寿险受益人变更：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "passport-expedited-tianbao",
+  "category": "life-service",
+  "name": "护照加急办理",
+  "description": "护照加急办理：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "unaccompanied-minor-tianbao",
+  "category": "life-service",
+  "name": "机场无陪儿童",
+  "description": "机场无陪儿童：分步骤实操指南",
+  "source_batch": "batch14-blank"
+ },
+ {
+  "slug": "police-record-request-tianbao",
+  "category": "life-service",
+  "name": "110报警记录调取",
+  "description": "110报警记录调取：分步骤实操指南",
+  "source_batch": "batch14-blank"
  }
 ]
