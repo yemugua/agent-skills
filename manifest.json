@@ -17078,5 +17078,159 @@
   "name": "遗像制作",
   "description": "遗像制作：分步骤实操指南",
   "source_batch": "batch40-mega"
+ },
+ {
+  "slug": "bigcity-vs-hometown-tianbao",
+  "category": "life-service",
+  "name": "留大城市还是回老家",
+  "description": "留大城市还是回老家：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "yuesao-vs-center-tianbao",
+  "category": "life-service",
+  "name": "请月嫂还是去月子中心",
+  "description": "请月嫂还是去月子中心：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "grandparent-vs-selfcare-tianbao",
+  "category": "life-service",
+  "name": "公婆带娃还是自己带",
+  "description": "公婆带娃还是自己带：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "car-full-vs-loan-tianbao",
+  "category": "life-service",
+  "name": "全款还是贷款买车",
+  "description": "全款还是贷款买车：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "group-mute-setup-tianbao",
+  "category": "life-service",
+  "name": "群消息免打扰设置",
+  "description": "群消息免打扰设置：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "moments-group-visibility-tianbao",
+  "category": "life-service",
+  "name": "朋友圈分组可见",
+  "description": "朋友圈分组可见：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "co-alarm-install-tianbao",
+  "category": "life-service",
+  "name": "一氧化碳报警器",
+  "description": "一氧化碳报警器：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "security-window-pick-tianbao",
+  "category": "life-service",
+  "name": "防盗门窗选择",
+  "description": "防盗门窗选择：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "smart-lock-pros-cons-tianbao",
+  "category": "life-service",
+  "name": "智能门锁利弊",
+  "description": "智能门锁利弊：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "sololiving-safety-kit-tianbao",
+  "category": "life-service",
+  "name": "独居安全装置",
+  "description": "独居安全装置：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "fire-mask-home-tianbao",
+  "category": "life-service",
+  "name": "消防面罩配备",
+  "description": "消防面罩配备：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "home-extinguisher-tianbao",
+  "category": "life-service",
+  "name": "灭火器家庭配置",
+  "description": "灭火器家庭配置：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "smoke-alarm-home-tianbao",
+  "category": "life-service",
+  "name": "烟雾报警器",
+  "description": "烟雾报警器：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "water-leak-alarm-tianbao",
+  "category": "life-service",
+  "name": "水浸报警器",
+  "description": "水浸报警器：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "rainstorm-driving-tianbao",
+  "category": "life-service",
+  "name": "暴雨天开车",
+  "description": "暴雨天开车：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "windy-balcony-check-tianbao",
+  "category": "life-service",
+  "name": "大风天阳台检查",
+  "description": "大风天阳台检查：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "heatwave-work-protection-tianbao",
+  "category": "life-service",
+  "name": "高温天作业防护",
+  "description": "高温天作业防护：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "coldwave-travel-prep-tianbao",
+  "category": "life-service",
+  "name": "寒潮出行准备",
+  "description": "寒潮出行准备：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "duststorm-protection-tianbao",
+  "category": "life-service",
+  "name": "沙尘天防护",
+  "description": "沙尘天防护：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "thunderstorm-shower-tianbao",
+  "category": "life-service",
+  "name": "雷电天洗澡风险",
+  "description": "雷电天洗澡风险：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "fog-highway-tianbao",
+  "category": "life-service",
+  "name": "大雾高速",
+  "description": "大雾高速：分步骤实操指南",
+  "source_batch": "batch41-mega"
+ },
+ {
+  "slug": "icy-road-driving-tianbao",
+  "category": "life-service",
+  "name": "冰雪路面驾驶",
+  "description": "冰雪路面驾驶：分步骤实操指南",
+  "source_batch": "batch41-mega"
  }
 ]
