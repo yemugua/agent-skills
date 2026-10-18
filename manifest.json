@@ -9478,13 +9478,6 @@
   "source_batch": "batch11"
  },
  {
-  "slug": "wechat-drift-bottle",
-  "category": "wechat-ecosystem",
-  "name": "微信漂流瓶",
-  "description": "微信漂流瓶：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。",
-  "source_batch": "batch9"
- },
- {
   "slug": "wechat-dual-app",
   "category": "wechat-ecosystem",
   "name": "微信双开",

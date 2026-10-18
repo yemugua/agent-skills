@@ -78,7 +78,6 @@ cp -r agent-skills/skills/生活服务/技能名 ~/.claude/skills/   # Claude Co
 | `wechat-debt-claim-tianbao` | 把微信聊天记录转成欠款催款材料。本地扫描催款沟通记录，扫出借贷/货款/工程款三类债权要件命中与缺口、金额清单、催告质量评 |
 | `wechat-device-management` | 微信设备管理：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `wechat-dou-topup` | 视频号开店的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
-| `wechat-drift-bottle` | 微信漂流瓶：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `wechat-dual-app` | 微信双开：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `wechat-ecosystem-tianbao` | 覆盖微信支付、小程序、公众号、视频号、企业微信、账号安全与投诉维权的微信生态使用与排障助手，用「稳定入口 + 通用定位法 |
 | `wechat-evidence-chain-tianbao` | 把微信聊天记录变成能用的证据材料。当用户说"我要劳动仲裁""帮我整理证据""聊天记录能当证据吗""押金能不能要回来""这 |
