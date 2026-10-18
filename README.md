@@ -113,7 +113,6 @@ cp -r agent-skills/skills/生活服务/技能名 ~/.claude/skills/   # Claude Co
 | `wechat-mp-reward` | 公众号赞赏的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
 | `wechat-mp-traffic-ads` | 视频号开店的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
 | `wechat-multi-device-login` | 微信多设备登录：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
-| `wechat-nearby-off` | 微信附近的人关闭：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `wechat-newyear-greetings` | 微信拜年信息：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `wechat-one-way-friends` | 微信单向好友检测：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `wechat-opening-writing-tianbao` | 给出前 3 秒钩子的五种开头写法、开头信息密度控制标准、长短句节奏规则与需要避开的四类写法，核查开头与标题是否重复、首段 |
@@ -129,7 +128,6 @@ cp -r agent-skills/skills/生活服务/技能名 ~/.claude/skills/   # Claude Co
 | `wechat-remote-login-alert` | 微信异地登录：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `wechat-ringtone` | 微信来电铃声：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `wechat-scan-identify` | 微信扫一扫识物：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
-| `wechat-shake-off` | 微信摇一摇关闭：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `wechat-shift-roster-tianbao` | 把微信聊天记录转成排班考勤与加班费材料。本地扫描排班沟通记录，抽出夜班/白班/值班的起止时间与跨天时长，扫出排班、考勤、 |
 | `wechat-sports-donation` | 微信运动捐赠：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
 | `wechat-sports-ranking` | 微信运动排行：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。 |
@@ -1975,7 +1973,6 @@ cp -r agent-skills/skills/生活服务/技能名 ~/.claude/skills/   # Claude Co
 | `wedding-deposit-dispute-tianbao` | 婚庆定金纠纷：分步骤实操指南 |
 | `weibo-video-download-tianbao` | 输入微博视频链接，判断视频本源是否为秒拍等外部源，给出官方保存、微博创作中心与通用命令行工具的可用顺序，处理微博视频多为 |
 | `weight-loss-plateau` | 体重平台期：分步骤实操指南，含准备清单、标准流程、常见坑与自查清单。 |
-| `weishi-video-download-tianbao` | 面向想把微视短视频存到本地的用户，区分自有作品、已授权素材与第三方作品，说明官方保存、创作者后台与合规边界，给出留存方式 |
 | `well-drilling-permit-tianbao` | 水井打井审批：分步骤实操指南 |
 | `wework-approval-flow` | 企业微信审批的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |
 | `wework-attendance` | 企业微信考勤的实操指南：场景、分步流程、常见坑与注意事项，一次讲清。 |

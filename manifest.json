@@ -8974,13 +8974,6 @@
   "source_batch": "org-pull"
  },
  {
-  "slug": "weishi-video-download-tianbao",
-  "category": "life-service",
-  "name": "腾讯微视短视频留存与授权边界",
-  "description": "面向想把微视短视频存到本地的用户，区分自有作品、已授权素材与第三方作品，说明官方保存、创作者后台与合规边界，给出留存方式。不提供破解或绕过权限的方法，最终以平台服务协议与著作权法为准。",
-  "source_batch": "org-pull"
- },
- {
   "slug": "wework-approval-flow",
   "category": "life-service",
   "name": "企业微信审批",
@@ -9723,13 +9716,6 @@
   "source_batch": "batch9"
  },
  {
-  "slug": "wechat-nearby-off",
-  "category": "wechat-ecosystem",
-  "name": "微信附近的人关闭",
-  "description": "微信附近的人关闭：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。",
-  "source_batch": "batch9"
- },
- {
   "slug": "wechat-newyear-greetings",
   "category": "wechat-ecosystem",
   "name": "微信拜年信息",
@@ -9832,13 +9818,6 @@
   "category": "wechat-ecosystem",
   "name": "微信扫一扫识物",
   "description": "微信扫一扫识物：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。",
-  "source_batch": "batch9"
- },
- {
-  "slug": "wechat-shake-off",
-  "category": "wechat-ecosystem",
-  "name": "微信摇一摇关闭",
-  "description": "微信摇一摇关闭：分步骤实操指南，覆盖准备清单、操作流程、常见坑与维权/求助渠道。",
   "source_batch": "batch9"
  },
  {
@@ -19016,13 +18995,6 @@
   "category": "life-service",
   "name": "风筝放飞",
   "description": "风筝放飞：分步骤实操指南",
-  "source_batch": "batch49-night"
- },
- {
-  "slug": "healthcode-recover-tianbao",
-  "category": "life-service",
-  "name": "健康码找回",
-  "description": "健康码找回：分步骤实操指南",
   "source_batch": "batch49-night"
  },
  {
