@@ -1,8 +1,8 @@
-> **🇨🇳 13,736 个中文 AI Agent 技能库** | Claude Skills · Codex · Cursor · OpenCode 通用 | 免费下载 · MIT 开源
+> **🇨🇳 13,992 个中文 AI Agent 技能库** | Claude Skills · Codex · Cursor · OpenCode 通用 | 免费下载 · MIT 开源
 
 # Agent Skills 中文技能库（Chinese AI Agent Skills）
 
-目前**最大规模之一的中文 Agent Skills 开源合集**：**13,736 个 SKILL.md 技能**，覆盖life-service(10489)、real-estate(190)、funeral-services(128)、accessibility(110)、consumer-rights(110)、wechat-ecosystem(102)、veterans(72)、pet-disputes(72)等 20 个品类高频场景。
+目前**最大规模之一的中文 Agent Skills 开源合集**：**13,992 个 SKILL.md 技能**，覆盖life-service(10489)、real-estate(190)、funeral-services(128)、accessibility(110)、consumer-rights(110)、wechat-ecosystem(102)、veterans(72)、pet-disputes(72)等 20 个品类高频场景。
 适用于 **Claude Code、Claude、Codex CLI、Cursor、OpenCode、Windsurf、Cline** 等所有支持 Anthropic Agent Skills 规范的 AI 编程工具与 Agent 框架。
 
 ## ⚡ 快速安装（三种方式）
