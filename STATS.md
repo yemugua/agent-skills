@@ -1,23 +1,24 @@
 # 📊 仓库统计总览
 
-> 最后更新：2026-10-20（batch194）｜ 由脚本自动生成
+> 最后更新：2026-10-20（batch195）｜ 由脚本自动生成
 
 ## 技能总数
 
 | 统计口径 | 数量 |
 |---|---|
-| SKILL.md 文件数（真实库存） | **12,424** |
-| manifest.json 索引条目 | 12,429 |
+| SKILL.md 文件数（真实库存） | **12,760** |
+| manifest.json 索引条目 | 12,765 |
 
 ## 品类分布
 
 | 品类 | 数量 |
 |---|---|
-| life-service | 10,809 |
+| life-service | 10,817 |
+| side-hustle | 344 |
 | real-estate | 190 |
 | vehicle-services | 144 |
+| elder-care | 144 |
 | funeral-services | 128 |
-| side-hustle | 112 |
 | accessibility | 110 |
 | consumer-rights | 110 |
 | wechat-ecosystem | 102 |
@@ -27,7 +28,6 @@
 | legal-rights | 60 |
 | work-certificates | 56 |
 | cross-border | 48 |
-| elder-care | 48 |
 | data-analysis | 42 |
 | rental-disputes | 32 |
 | housing-finance | 32 |
