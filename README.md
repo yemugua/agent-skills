@@ -1,4 +1,32 @@
-> **🇨🇳 14,232 个中文 AI Agent 技能库** | Claude Skills · Codex · Cursor · OpenCode 通用 | 免费下载 · MIT 开源
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Skills](https://img.shields.io/badge/skills-14%2C232-blue)](https://github.com/yemugua/agent-skills)
+[![Platform](https://img.shields.io/badge/works%20on-Claude%20%7C%20Codex%20%7C%20Cursor%20%7C%20Gemini%20%7C%2055%2B%20agents-orange)](https://skills.sh)
+[![Mirror](https://img.shields.io/badge/国内镜像-Gitee-red)](https://gitee.com/liu-tianbao9088/agent-skills)
+
+> **🇨🇳 14,232 个中文 AI Agent 技能库** · **The largest Chinese AI Agent Skills collection** · Free · MIT
+
+# Agent Skills 中文技能库（Chinese AI Agent Skills）
+
+**English:** The largest open collection of Chinese-life AI agent skills — 14,232 SKILL.md packages covering daily-life services in China: government services, social insurance, real estate, healthcare, pets, cars, weddings, funerals, side hustles, elder care, consumer rights and more. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, Copilot and 55+ agents reading the open SKILL.md standard.
+
+**一键安装 / One-line install:**
+```bash
+npx skills add yemugua/agent-skills          # GitHub (global)
+npx skills add yemugua/agent-skills --skill '*' -a claude-code   # 只装进 Claude Code
+git clone https://gitee.com/liu-tianbao9088/agent-skills.git    # 国内镜像（无需科学上网）
+```
+
+## 📦 品类覆盖 / Categories
+
+life-service (10865) · side-hustle (344) · real-estate (190) · pet-disputes (160) · baby-consumer (152) · vehicle-services (144) · elder-care (144) · funeral-services (128) · renovation (128) · medical-beauty (128) · fitness-consumer (112) · accessibility (110)
+
+**共 43 个品类 / 43 categories** —— 精选导览见 [FEATURED.md](FEATURED.md) · 完整统计 [STATS.md](STATS.md) · 全量索引 [manifest.json](manifest.json)
+
+## 🇨🇳 特色 / Why Chinese Life Skills
+
+- **全网独一份**：政务办理、社保医保、涉农补贴、殡葬白事、军属优待、维权报案……这些"中国人一生必办"的场景，海外技能库完全空白
+- **强意图选题**：每个技能对应一个真实办事/消费/维权场景，含材料清单、办理时限、费用行情、避坑与维权路径
+- **每周更新**：流水线自动生成→审核→上架，持续补充新品类
 
 # Agent Skills 中文技能库（Chinese AI Agent Skills）
 
@@ -10,7 +38,7 @@
 ### 方式一：Git 克隆（推荐）
 ```bash
 git clone https://gitee.com/liu-tianbao9088/agent-skills.git
-cp -r agent-skills/skills/生活服务/技能名 ~/.claude/skills/   # Claude Code / Claude Desktop
+cp -r agent-skills/skills/life-service/<技能名> ~/.claude/skills/   # Claude Code / Claude Desktop
 ```
 
 ### 方式二：只拉单个技能
