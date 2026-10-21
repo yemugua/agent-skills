@@ -3,11 +3,11 @@
 [![Platform](https://img.shields.io/badge/works%20on-Claude%20%7C%20Codex%20%7C%20Cursor%20%7C%20Gemini%20%7C%2055%2B%20agents-orange)](https://skills.sh)
 [![Mirror](https://img.shields.io/badge/国内镜像-Gitee-red)](https://gitee.com/liu-tianbao9088/agent-skills)
 
-> **🇨🇳 14,232 个中文 AI Agent 技能库** · **The largest Chinese AI Agent Skills collection** · Free · MIT
+> **🇨🇳 14,381 个中文 AI Agent 技能库** · **The largest Chinese AI Agent Skills collection** · Free · MIT
 
 # Agent Skills 中文技能库（Chinese AI Agent Skills）
 
-**English:** The largest open collection of Chinese-life AI agent skills — 14,232 SKILL.md packages covering daily-life services in China: government services, social insurance, real estate, healthcare, pets, cars, weddings, funerals, side hustles, elder care, consumer rights and more. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, Copilot and 55+ agents reading the open SKILL.md standard.
+**English:** The largest open collection of Chinese-life AI agent skills — 14,381 SKILL.md packages covering daily-life services in China: government services, social insurance, real estate, healthcare, pets, cars, weddings, funerals, side hustles, elder care, consumer rights and more. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, Copilot and 55+ agents reading the open SKILL.md standard.
 
 **一键安装 / One-line install:**
 ```bash
@@ -30,7 +30,7 @@ life-service (10865) · side-hustle (344) · real-estate (190) · pet-disputes (
 
 # Agent Skills 中文技能库（Chinese AI Agent Skills）
 
-目前**最大规模之一的中文 Agent Skills 开源合集**：**14,232 个 SKILL.md 技能**，覆盖life-service(10489)、real-estate(190)、funeral-services(128)、accessibility(110)、consumer-rights(110)、wechat-ecosystem(102)、veterans(72)、pet-disputes(72)等 20 个品类高频场景。
+目前**最大规模之一的中文 Agent Skills 开源合集**：**14,381 个 SKILL.md 技能**，覆盖life-service(10489)、real-estate(190)、funeral-services(128)、accessibility(110)、consumer-rights(110)、wechat-ecosystem(102)、veterans(72)、pet-disputes(72)等 20 个品类高频场景。
 适用于 **Claude Code、Claude、Codex CLI、Cursor、OpenCode、Windsurf、Cline** 等所有支持 Anthropic Agent Skills 规范的 AI 编程工具与 Agent 框架。
 
 ## ⚡ 快速安装（三种方式）
