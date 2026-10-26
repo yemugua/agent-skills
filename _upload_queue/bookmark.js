@@ -16,7 +16,7 @@
     for(let i=0;i<LIST.length;i++){
       const it=LIST[i];
       try{
-        const gr=await fetch('https://raw.githubusercontent.com/yemugua/agent-skills/main/skills/'+it.category+'/'+it.slug+'/SKILL.md');
+        const gr=await fetch('https://fastly.jsdelivr.net/gh/yemugua/agent-skills@main/skills/'+it.category+'/'+it.slug+'/SKILL.md');
         if(!gr.ok){fail++;log('✗拉取 '+it.slug+' '+gr.status);continue;}
         const content=await gr.text();
         const b='----skh'+Date.now();
