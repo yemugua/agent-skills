@@ -1,5 +1,5 @@
 # Stats
 
-Total SKILL.md: 33774
-Manifest: 33779
-Updated: batch447-456 premium 100 series complete
+Total SKILL.md: 33804
+Manifest: 33809
+Updated: batch457-458 elder-care layers 251-252
