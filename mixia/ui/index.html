@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>秘匣</title>
+  <script>
+    // 在首屏绘制前把主题落到 data-theme 上，否则会先闪一下浅色。
+    // 首次运行跟随系统，之后由用户点的按钮决定。
+    (function () {
+      var saved = "auto";
+      try {
+        saved = localStorage.getItem("mixia-theme") || "auto";
+      } catch (err) {}
+      var dark =
+        saved === "dark" ||
+        (saved !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.dataset.theme = dark ? "dark" : "light";
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+
+    <button class="theme-toggle" id="theme-toggle-page" type="button" title="切换浅色 / 深色配色" aria-label="切换浅色或深色配色">
+      <svg class="ico-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a7.5 7.5 0 1 0 10.5 10.5Z"></path>
+      </svg>
+      <svg class="ico-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="12" cy="12" r="4.2"></circle>
+        <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4 7 7M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"></path>
+      </svg>
+    </button>
+
+    <section id="view-welcome" class="view welcome">
+      <div class="welcome-inner">
+        <div class="brand brand-lg">
+          <div class="brand-mark">
+            <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+              <rect x="4" y="10" width="16" height="11" rx="3" fill="currentColor"></rect>
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+            </svg>
+          </div>
+          <div>
+            <h1>秘匣</h1>
+            <p class="tagline">只在本机运行的加密保险库</p>
+          </div>
+        </div>
+
+        <p class="lead">把图片、视频和文档放进一个加密文件夹。密码只留在你的脑子里，数据不会离开这台电脑。</p>
+
+        <div class="welcome-actions">
+          <button class="action-card" id="btn-new" type="button">
+            <span class="action-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+            </span>
+            <span class="action-title">新建保险库</span>
+            <span class="action-desc">选择一个空文件夹，设置密码</span>
+          </button>
+          <button class="action-card" id="btn-open" type="button">
+            <span class="action-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"></path>
+              </svg>
+            </span>
+            <span class="action-title">打开已有保险库</span>
+            <span class="action-desc">选择包含 vault.json 的文件夹</span>
+          </button>
+        </div>
+
+        <div class="last-vault" id="last-vault" hidden>
+          <div class="last-vault-info">
+            <span class="label">上次打开</span>
+            <span class="path" id="last-vault-path"></span>
+          </div>
+          <button class="btn btn-ghost" id="btn-last" type="button">继续</button>
+        </div>
+
+        <p class="fineprint">Argon2id 派生密钥 · XChaCha20-Poly1305 分块加密 · 无网络请求</p>
+      </div>
+    </section>
+
+    <section id="view-unlock" class="view centered" hidden>
+      <div class="panel">
+        <button class="back" id="btn-unlock-back" type="button">← 返回</button>
+        <div class="vault-badge">
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+            <rect x="4" y="10" width="16" height="11" rx="3" fill="currentColor"></rect>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+          </svg>
+        </div>
+        <h2>解锁保险库</h2>
+        <p class="vault-path" id="unlock-path"></p>
+        <form id="unlock-form">
+          <label class="field">
+            <span>密码</span>
+            <input type="password" id="unlock-password" autocomplete="current-password" placeholder="输入保险库密码">
+          </label>
+          <p class="form-error" id="unlock-error" hidden></p>
+          <button class="btn btn-primary btn-block" id="unlock-submit" type="submit">解锁</button>
+        </form>
+        <p class="fineprint">密码不会写入磁盘。忘记密码将无法恢复保险库内容。</p>
+      </div>
+    </section>
+
+    <section id="view-create" class="view centered" hidden>
+      <div class="panel">
+        <button class="back" id="btn-create-back" type="button">← 返回</button>
+        <h2>新建保险库</h2>
+        <p class="muted">保险库就是一个普通文件夹，里面的内容会全部加密存储。</p>
+
+        <div class="location">
+          <div class="location-text">
+            <span class="label">位置</span>
+            <div class="path" id="create-path">尚未选择</div>
+          </div>
+          <button class="btn btn-ghost" id="btn-pick-create" type="button">选择文件夹</button>
+        </div>
+
+        <form id="create-form">
+          <label class="field">
+            <span>密码</span>
+            <input type="password" id="create-password" autocomplete="new-password" placeholder="至少 8 位，建议使用一句长口令">
+          </label>
+          <label class="field">
+            <span>确认密码</span>
+            <input type="password" id="create-confirm" autocomplete="new-password" placeholder="再输入一次">
+          </label>
+          <label class="ack">
+            <input type="checkbox" id="create-ack">
+            <span>我明白忘记密码后无法恢复，并且会自己备份这个文件夹</span>
+          </label>
+          <p class="form-error" id="create-error" hidden></p>
+          <button class="btn btn-primary btn-block" id="create-submit" type="submit">创建并解锁</button>
+        </form>
+        <p class="fineprint">密码只用于在本机派生密钥，我们无法帮你找回。</p>
+      </div>
+    </section>
+
+    <section id="view-vault" class="view" hidden>
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark small">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <rect x="4" y="10" width="16" height="11" rx="3" fill="currentColor"></rect>
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1 id="vault-name">保险库</h1>
+            <span id="vault-meta">0 个文件</span>
+          </div>
+        </div>
+        <div class="toolbar">
+          <input class="search" id="search" type="search" placeholder="搜索文件名" autocomplete="off" spellcheck="false">
+          <button class="btn btn-ghost" id="btn-select-all" type="button" title="选中当前显示的全部文件；再点一次取消">全选</button>
+          <button class="btn btn-ghost" id="btn-import-folder" type="button">导入文件夹</button>
+          <button class="btn btn-primary" id="btn-import-files" type="button">导入文件</button>
+          <button class="btn btn-ghost" id="btn-export-all" type="button">全部导出</button>
+          <button class="btn btn-ghost" id="btn-scan-originals" type="button" title="扫描一个文件夹，把已经安全加密进库的原件一次删掉">清理原件</button>
+          <button class="btn btn-ghost" id="btn-change-password" type="button">修改密码</button>
+          <button class="btn btn-ghost danger" id="btn-lock" type="button">锁定</button>
+          <button class="theme-toggle in-bar" id="theme-toggle-bar" type="button" title="切换浅色 / 深色配色" aria-label="切换浅色或深色配色">
+            <svg class="ico-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a7.5 7.5 0 1 0 10.5 10.5Z"></path>
+            </svg>
+            <svg class="ico-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <circle cx="12" cy="12" r="4.2"></circle>
+              <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4 7 7M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"></path>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <main class="content">
+        <div id="empty-state" class="empty" hidden>
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24" width="44" height="44" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+              <path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9Z"></path>
+              <path d="m3 7.5 9 4.5 9-4.5M12 12v9"></path>
+            </svg>
+          </div>
+          <h2>保险库还是空的</h2>
+          <p>导入图片、视频或文档，它们会以加密形式保存在这里。</p>
+          <button class="btn btn-primary" id="btn-import-empty" type="button">导入文件</button>
+        </div>
+        <nav id="breadcrumbs" class="breadcrumbs" hidden aria-label="当前位置"></nav>
+        <div id="groups"></div>
+        <div id="folder-empty" class="empty small" hidden>
+          <p>这个文件夹里没有文件</p>
+          <button class="btn btn-ghost" id="btn-folder-up" type="button">返回上一级</button>
+        </div>
+        <div id="no-results" class="empty small" hidden>
+          <p>没有匹配的文件</p>
+        </div>
+      </main>
+
+      <div id="selection-bar" class="selection-bar" hidden>
+        <span class="selection-text" id="selection-text">已选 0 个</span>
+        <div class="selection-actions">
+          <button class="btn btn-ghost" id="btn-select-none" type="button">取消选择</button>
+          <button class="btn btn-danger" id="btn-delete-selected" type="button">删除所选</button>
+        </div>
+      </div>
+
+      <footer class="statusbar">
+        <span id="status-text">已解锁</span>
+        <span id="autolock-info">Ctrl+L 立即锁定 · Esc 取消选择 / 返回上一级 · 无操作 10 分钟后自动锁定</span>
+      </footer>
+
+      <div id="drop-overlay" class="drop-overlay" hidden>
+        <div class="drop-card">松开鼠标，导入并加密</div>
+      </div>
+
+      <div id="import-panel" class="import-panel" hidden>
+        <div class="import-head">
+          <span id="import-title">正在加密导入…</span>
+          <span id="import-count"></span>
+          <button class="btn btn-ghost" id="btn-cancel-job" type="button">取消</button>
+        </div>
+        <div class="progress"><div id="import-bar" class="progress-bar"></div></div>
+        <div class="import-current" id="import-current"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <dialog id="rename-dialog" class="dialog">
+    <form id="rename-form">
+      <h3>重命名</h3>
+      <input id="rename-input" type="text" maxlength="200" autocomplete="off" spellcheck="false">
+      <p class="form-error" id="rename-error" hidden></p>
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" id="rename-cancel" type="button">取消</button>
+        <button class="btn btn-primary" id="rename-save" type="submit">保存</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-dialog" class="dialog">
+    <h3 id="confirm-title">删除文件？</h3>
+    <p class="muted" id="confirm-text"></p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" id="confirm-cancel" type="button">取消</button>
+      <button class="btn btn-danger" id="confirm-ok" type="button">删除</button>
+    </div>
+  </dialog>
+
+  <dialog id="cleanup-dialog" class="dialog">
+    <h3 id="cleanup-title">导入完成</h3>
+    <p class="muted" id="cleanup-text"></p>
+    <p class="cleanup-sample" id="cleanup-sample" hidden></p>
+    <label class="ack">
+      <input type="checkbox" id="cleanup-ack">
+      <span>删除这些原件。每个都会先验证密文确实能解开，验证通过才删。</span>
+    </label>
+    <p class="fineprint">保险库不是备份：它只有一份密文。确定能正常打开、并且你已经备份之前，删原件是有风险的。</p>
+    <div class="dialog-actions">
+      <button class="btn btn-ghost" id="cleanup-keep" type="button">保留原件</button>
+      <button class="btn btn-danger" id="cleanup-delete" type="button" disabled>删除原件</button>
+    </div>
+  </dialog>
+
+  <dialog id="password-dialog" class="dialog">
+    <form id="password-form">
+      <h3>修改密码</h3>
+      <p class="muted">只会重新包装主密钥，不会重新加密所有文件。</p>
+      <label class="field">
+        <span>新密码</span>
+        <input type="password" id="new-password" autocomplete="new-password" placeholder="至少 8 位">
+      </label>
+      <label class="field">
+        <span>确认新密码</span>
+        <input type="password" id="new-password-confirm" autocomplete="new-password" placeholder="再输入一次">
+      </label>
+      <p class="form-error" id="password-error" hidden></p>
+      <div class="dialog-actions">
+        <button class="btn btn-ghost" id="password-cancel" type="button">取消</button>
+        <button class="btn btn-primary" id="password-save" type="submit">修改</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+[package]
+name = "mixia"
+version = "0.1.0"
+description = "秘匣：只在本机运行的加密保险库"
+edition = "2021"
+rust-version = "1.77"
+autobins = false
+
+[lib]
+name = "mixia"
+path = "src/lib.rs"
+
+[[bin]]
+name = "mixia"
+path = "src/main.rs"
+
+[[bin]]
+name = "mixia-cli"
+path = "src/bin/mixia-cli.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chacha20poly1305 = "0.10"
+argon2 = "0.5"
+rand = "0.8"
+zeroize = { version = "1", features = ["derive"] }
+base64 = "0.22"
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "gif", "webp", "bmp"] }
+walkdir = "2"
+rfd = "0.15"
+open = "5"
+thiserror = "2"
+uuid = { version = "1", features = ["v4"] }
+mime_guess = "2"
+
+[dev-dependencies]
+tempfile = "3"
+
+# 发布产物是单个免安装 exe，体积直接影响「别人愿不愿意下载」，所以把链接期能省的都省掉。
+# 不动 opt-level：加解密与缩略图解码都在热路径上，宁可大一点也不要慢。
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = true
+
+[profile.dev.package.argon2]
+opt-level = 3
+
+[profile.dev.package.blake2]
+opt-level = 3
+
+[profile.dev.package.chacha20poly1305]
+opt-level = 3
+
+[profile.dev.package.chacha20]
+opt-level = 3
+
+[profile.dev.package.poly1305]
+opt-level = 3
+
+[profile.test.package.argon2]
+opt-level = 3
+
+[profile.test.package.blake2]
+opt-level = 3
+
+[profile.test.package.chacha20poly1305]
+opt-level = 3
+
+[profile.test.package.chacha20]
+opt-level = 3
+
+[profile.test.package.poly1305]
+opt-level = 3
