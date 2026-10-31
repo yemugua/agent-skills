@@ -63,8 +63,11 @@
 
 ```powershell
 Get-FileHash .\mixia-v0.1.0-windows-x64.zip -Algorithm SHA256
-# 与 Release 页面里 SHA256SUMS.txt 的对应行比对
+# 小写十六进制应与 Release 正文末尾的 SHA256 完全一致，不一致就别运行
 ```
+
+解压后包内另有 `SHA256SUMS.txt`（每个文件各自的哈希），Git Bash / WSL 里
+`sha256sum -c SHA256SUMS.txt` 可再核一遍。
 
 ### 关于"未知发布者"提示
 
@@ -73,7 +76,7 @@ Get-FileHash .\mixia-v0.1.0-windows-x64.zip -Algorithm SHA256
 可以做的验证：
 
 - 源码在本仓库，可自行构建比对
-- Release 附 SHA256 校验和
+- Release 正文附 SHA256 校验和
 - 用防火墙阻断该进程，功能完全正常 → 证明它不联网
 
 ## 构建
