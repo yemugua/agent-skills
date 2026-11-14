@@ -1,5 +1,7 @@
-# Stats
+# STATS
 
-Total SKILL.md: 34727
-Manifest: 33848
-Updated: batch461 (layer 255 dental)
+- 总量：**35419** 个技能
+- 最新批次：pipe39-46（中医养生/职场社保/厨房安全/用车/数码/家居/消费维权/旅行）
+- Gitee 最新 commit：53ee33964
+- GitHub 镜像：截至批38（422250cc2），后续批次推送间歇超时积压待补
+- 更新时间：2026-11-14
