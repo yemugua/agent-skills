@@ -256938,5 +256938,59 @@
   "description": "冷藏冷冻分层温度设定、各层放什么、除霜与耗电算例：一张表管住冰箱并算清电费差。",
   "tier": "quality",
   "source_batch": "biz-P6x"
+ },
+ {
+  "slug": "shoufei-bingtian-dianzifei",
+  "name": "shoufei-bingtian-dianzifei",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6y",
+  "description": "冷链食品收货与储运温度台账——家庭囤冻品验收温度计判废标准、冷藏冷冻分区温度记录表、断电应急预案与索赔依据。"
+ },
+ {
+  "slug": "yanglao-jigou-xuanze-duibi",
+  "name": "yanglao-jigou-xuanze-duibi",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6y",
+  "description": "养老机构月费构成与隐性收费——床位费/护理分级费/餐费/押金逐项拆解算例，压床等级套差与退住扣款识别清单。"
+ },
+ {
+  "slug": "gongyujia-hetong-xianci",
+  "name": "gongyujia-hetong-xianci",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6y",
+  "description": "公寓租房合同带家具条款与家电维修责任——家电清单附件模板、自然损耗界定标准、维修费用分担表与退租赔偿争议话术。"
+ },
+ {
+  "slug": "shouji-yingpan-huaise",
+  "name": "shouji-yingpan-huaise",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6y",
+  "description": "手机卡顿清灰与换电池决策——电池健康度临界点算例、官方换电池价目、第三方清灰报价核对、换机临界点公式。"
+ },
+ {
+  "slug": "yizhi-jibing-yufang-richang",
+  "name": "yizhi-jibing-yufang-richang",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6y",
+  "description": "认知症早期信号识别与家庭防护——10 项记忆自查表、MMSE 自测线索、防走失定位方案对比、公证授权与银行授权办理流程。"
+ },
+ {
+  "slug": "qiangzhixing-gongji-jindian",
+  "name": "qiangzhixing-gongji-jindian",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6y",
+  "description": "小区强电井与弱电箱改造费用核对——入户光纤改造流程、线材规格表、施工报价逐项核对清单与加价拦截话术。"
  }
 ]
