@@ -255473,5 +255473,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5w"
+ },
+ {
+  "slug": "pet-lab-report-reading",
+  "category": "health",
+  "name": "宠物化验单血检报告解读",
+  "description": "血常规/生化/SAA逐项判读表：重病箭头识别、应激假象区分、复查时机与费用参考，附向医生要书面答案的话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5x"
+ },
+ {
+  "slug": "dog-heart-disease-senior",
+  "category": "health",
+  "name": "老年犬心脏病家庭管理",
+  "description": "瓣膜退行性变分级表：睡眠呼吸率30红线自测、杂音分级随访节奏、按体重用药框架与月费用，随访vs抢救住院的成本对比。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5x"
+ },
+ {
+  "slug": "cat-hyperthyroidism-cost",
+  "category": "health",
+  "name": "猫甲亢识别与治疗费用对照",
+  "description": "老年猫多食消瘦的T4确诊路径、肾功能底数核查、四种疗法价目对照（口服/注射碘131/住院碘131/手术）与先药后碘决策规则。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5x"
+ },
+ {
+  "slug": "pet-preop-check-audit",
+  "category": "health",
+  "name": "宠物术前检查清单与报价审查",
+  "description": "按手术类型对照的术前必查/可选项清单、报价单逐项审查法（生化拆项/留置针/麻醉方式）、术中追加须电话确认与签字要点。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5x"
+ },
+ {
+  "slug": "pet-imaging-decision",
+  "category": "health",
+  "name": "宠物影像检查决策表",
+  "description": "X光/B超/CT/牙科片各自适配症状与价位、按症状对号入座的升级流程、拒绝影像打包的话术与二次复阅省钱路径。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5x"
+ },
+ {
+  "slug": "pet-hospital-bill-audit",
+  "category": "health",
+  "name": "宠物住院账单逐项核对",
+  "description": "住院计价规则表（笼位/输液操作费/给药/吸氧/监护）、每日清单制度、出院对账四步与12315投诉路径，附核减算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5x"
  }
 ]
