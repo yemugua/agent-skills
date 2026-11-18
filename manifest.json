@@ -256422,5 +256422,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6n"
+ },
+ {
+  "slug": "kuaiguigui-chaoshi-fei",
+  "name": "kuaiguigui-chaoshi-fei",
+  "description": "跨境购超时费与弃货核算：跨境电商包裹卡关超期仓储费/退运费逐日累加表、弃货损失与退运对比公式，附客服话术模板，一次使用即算清止损点。",
+  "tier": "quality",
+  "category": "tool",
+  "source_batch": "biz-P6o",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "jianfangnianka-zhuankachufei",
+  "name": "jianfangnianka-zhuankachufei",
+  "description": "健身年卡转卡与转让手续费核算：转卡费/冻结期/剩余天数折算公式、找接盘人定价与话术，附转卡前必核三张单据，一次使用即算清转卡到手净额。",
+  "tier": "quality",
+  "category": "legal",
+  "source_batch": "biz-P6o",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "youertuo-guanfei",
+  "name": "youertuo-guanfei",
+  "description": "幼儿托管班费用与退费核算：按月/按学期缴费对比、缺勤退费公式、请假与园方停课的退费规则，附退费申请话术模板，一次使用即算清应退金额。",
+  "tier": "quality",
+  "category": "finance",
+  "source_batch": "biz-P6o",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ranqire-shuiqi-anzhuang-jia",
+  "name": "ranqire-shuiqi-anzhuang-jia",
+  "description": "燃气热水器安装辅材加价核对：烟管/弯头/移位/排气管加价清单与行情表、下单前拦截话术、结算时逐项审价法，一次使用即拦住安装师傅的现场加价。",
+  "tier": "quality",
+  "category": "tool",
+  "source_batch": "biz-P6o",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "xiangzi-biaoqian-anquan",
+  "name": "xiangzi-biaoqian-anquan",
+  "description": "行李箱标签信息安全与挂锁选择：托盘标签该写/不该写的信息清单、TSA 锁海关编码识别与密码设置策略，一次核对即消除行李信息泄露与暴力开箱风险。",
+  "tier": "quality",
+  "category": "tool",
+  "source_batch": "biz-P6o",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "kongtiao-shoufei-jiazhijianpu",
+  "name": "kongtiao-shoufei-jiazhijianpu",
+  "description": "空调收氟移机后的价值折旧判断：收氟/移机对二手价的影响折价率表、是否值得移机的临界公式，附挂牌定价话术，一次使用即算清移机是省了还是亏了。",
+  "tier": "quality",
+  "category": "finance",
+  "source_batch": "biz-P6o",
+  "version": "2.0.0"
  }
 ]
