@@ -256095,5 +256095,53 @@
   "description": "重疾险理赔时间表、材料清单模板、多保单漏报案例与被拒申诉阶梯",
   "tier": "quality",
   "source_batch": "biz-P6h"
+ },
+ {
+  "slug": "guxi-hongli-shui-linjie",
+  "name": "股息红利税按持股期限核算：卖出前算清1/0.5/0免征临界与补扣机制",
+  "description": "一句话点题：股票分红到手多少不由券商说了算——持股超1年免税、1个月到1年减半、不到1月全额20%，卖出时点差一天，同一笔分红能差出一部手机钱。",
+  "category": "finance",
+  "tier": "quality",
+  "source_batch": "biz-P6i"
+ },
+ {
+  "slug": "shouji-zuji-vs-maiduan-nianhua",
+  "name": "租手机租电脑 vs 买断年化成本核算",
+  "description": "手机电脑租机月付看似便宜：按24期总付+买断款与电商价对比算真实年化，附提前买断、归还检测费追责话术。",
+  "category": "finance",
+  "tier": "quality",
+  "source_batch": "biz-P6i"
+ },
+ {
+  "slug": "licai-daoqi-xutou-juece",
+  "name": "银行理财到期日续投安排：自动赎回/卡点/空档期利息损失测算",
+  "description": "理财到期自动赎回卡在节假日资金站岗：算清T+1到账与空档天数损失，附到期前7天检查清单与续投话术。",
+  "category": "finance",
+  "tier": "quality",
+  "source_batch": "biz-P6i"
+ },
+ {
+  "slug": "jichang-tingche-vs-dache-hesuan",
+  "name": "机场停车 vs 打车往返核算：长途按天数算清临界点",
+  "description": "机场停车费首日高后续便宜：3天以上自驾通常反超打车，按天数+过路费算临界点，附各档价目与预约省钱法。",
+  "category": "tool",
+  "tier": "quality",
+  "source_batch": "biz-P6i"
+ },
+ {
+  "slug": "sangjia-tianshu-gongzi",
+  "name": "丧假天数与工资标准：直系亲属1-3天+路途假怎么算",
+  "description": "直系亲属死亡1-3天丧假、异地另给路途假工资照发：算清天数口径、按月薪折日工资，附请假申请与被扣工资追讨模板。",
+  "category": "legal",
+  "tier": "quality",
+  "source_batch": "biz-P6i"
+ },
+ {
+  "slug": "tanqinjia-shiyong-gonglve",
+  "name": "探亲假使用攻略：条件、天数、路费报销与是否已被替代",
+  "description": "符合条件职工探望配偶父母每年20-30天带薪探亲假+路费报销仍在生效：算清适用条件与替代方案，附申请话术。",
+  "category": "legal",
+  "tier": "quality",
+  "source_batch": "biz-P6i"
  }
 ]
