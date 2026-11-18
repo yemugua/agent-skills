@@ -256836,5 +256836,59 @@
   "category": "tool",
   "tier": "quality",
   "source_batch": "biz-P6v"
+ },
+ {
+  "slug": "yanglaojin-lingqu-diji",
+  "name": "yanglaojin-lingqu-diji",
+  "category": "finance",
+  "description": "养老金领取地归属判定与转移办理：户籍地兜底、缴费满十年地优先、多地十年取最后、转移接续办理路径与材料",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6w"
+ },
+ {
+  "slug": "shouji-shandian-kouliang",
+  "name": "shouji-shandian-kouliang",
+  "category": "tool",
+  "description": "手机闪电接口（Lightning）认证与三方线选购：MFi认证判别方法、快充功率衰减算例、PD快充头搭配与假线避坑",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6w"
+ },
+ {
+  "slug": "zhuangxiu-jieqi-shigong-shunxu",
+  "name": "zhuangxiu-jieqi-shigong-shunxu",
+  "category": "tool",
+  "description": "装修季节施工顺序与梅雨季应对：按季节排工序的决策表、雨季防潮工艺、冬季贴砖温度窗、返工损失算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6w"
+ },
+ {
+  "slug": "haishen-baoxian-jiaqiang",
+  "name": "haishen-baoxian-jiaqiang",
+  "category": "finance",
+  "description": "海外旅行保险申根签证要求：30万医疗保额硬门槛、紧急救援条款、常见拒赔点与理赔材料清单",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6w"
+ },
+ {
+  "slug": "kaoshi-baoxian-tuifei",
+  "name": "kaoshi-baoxian-tuifei",
+  "category": "legal",
+  "description": "驾考/资格考试报名费退费规则：缺考作废认定、按阶段退费比例算例、转考与异地考试办理、话术模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6w"
+ },
+ {
+  "slug": "xianyu-jiqi-taohua",
+  "name": "xianyu-jiqi-taohua",
+  "category": "legal",
+  "description": "闲鱼验机极验服务使用与纠纷应对：官方验机流程费用、卖家拒验话术应对、验机报告维权用法、资金安全红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6w"
  }
 ]
