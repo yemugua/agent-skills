@@ -254918,5 +254918,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5k"
+ },
+ {
+  "slug": "nianzhongjiang-critical-points",
+  "category": "finance",
+  "name": "年终奖临界点测算",
+  "description": "年终奖临界点测算：税率档表+六大盲区精确金额+拆分话术，谈薪当场省税。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5l"
+ },
+ {
+  "slug": "canbaojin-calculator",
+  "category": "finance",
+  "name": "残保金测算",
+  "description": "残保金测算：含工具表、公式、精确金额算例、可复制话术模板与红线提醒，一次使用即见效。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5l"
+ },
+ {
+  "slug": "price-fraud-evidence",
+  "category": "legal",
+  "name": "价格欺诈取证举报",
+  "description": "价格欺诈取证举报：含工具表、公式、精确金额算例、可复制话术模板与红线提醒，一次使用即见效。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5l"
+ },
+ {
+  "slug": "ershou-mianjiao-safecheck",
+  "category": "tool",
+  "name": "二手当面交易验机",
+  "description": "二手当面交易验机：含工具表、公式、精确金额算例、可复制话术模板与红线提醒，一次使用即见效。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5l"
+ },
+ {
+  "slug": "yangquan-dengji-checklist",
+  "category": "legal",
+  "name": "养犬登记狗证办理",
+  "description": "养犬登记狗证办理：含工具表、公式、精确金额算例、可复制话术模板与红线提醒，一次使用即见效。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5l"
+ },
+ {
+  "slug": "chujia-chuquan-guanjia",
+  "category": "tool",
+  "name": "新房除醛治理验收",
+  "description": "新房除醛治理验收：含工具表、公式、精确金额算例、可复制话术模板与红线提醒，一次使用即见效。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5l"
  }
 ]
