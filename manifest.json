@@ -256260,5 +256260,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6k"
+ },
+ {
+  "slug": "dialysis-reimbursement-calc",
+  "name": "尿毒症透析报销测算",
+  "description": "尿毒症患者年自付能算清，决策就不慌。先弄清三条报销通道：基本医保（住院+门诊透析，多地已将维持性血透/腹透纳入门诊特殊病种，报销比例常达90%以上）、大病保险（基本医保自付超起付线二次报销）、医疗救助（低保/低收入兜底）。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6l"
+ },
+ {
+  "slug": "chemo-whiteblood-gsf-cost",
+  "name": "化疗升白针费用决策",
+  "description": "化疗白细胞掉到I-IV度时是否打升白针，可以直接按费用算。聚乙二醇化重组人粒细胞刺激因子（长效）约1500-2500元/支，每周期1支；短效「瑞白/吉粒芬」约100-200元/支，可能连打2-4天。多数地区长效升白针已进医保乙类，报销后自付",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6l"
+ },
+ {
+  "slug": "picc-port-home-care",
+  "name": "PICC输液港居家维护",
+  "description": "化疗间歇期PICC导管和输液港出问题，多数花几千元解决，处理错可能拔管重置再花数千元。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6l"
+ },
+ {
+  "slug": "shoe-cleaning-quote-check",
+  "name": "洗鞋服务计价与赔偿核对",
+  "description": "送洗前先问清计价方式，能把一双鞋的洗护差价拉到3倍。市场三档：普通水洗15-40元/双、深度清洗+去氧化60-120元/双、修复类（补色/换底/中底去氧化）150-400元/双。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6l"
+ },
+ {
+  "slug": "sneaker-resale-quote-check",
+  "name": "球鞋回收估价避坑",
+  "description": "同一双鞋，三个渠道回收差价可达30%-60%。先算心理底价：热门款二手行情≈发售价×保值系数（当年热门AJ/椰子0.6-1.1，普通运动鞋0.2-0.35，老鞋0.1-0.2），再乘成色折扣。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6l"
+ },
+ {
+  "slug": "consignment-luxury-bag-check",
+  "name": "奢侈品包寄卖折价核对",
+  "description": "中古包寄卖的核心变量是「定价权归谁」和「回款周期」。主流三种模式：寄卖（卖掉后抽佣15-30%，周期1-3个月，卖不掉可取回）、买断（当场结算但压价狠，约为市场价5-6折）、自挂平台（扣佣约8-15%，自己定价）。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6l"
  }
 ]
