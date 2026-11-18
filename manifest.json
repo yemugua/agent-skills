@@ -254261,5 +254261,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4x"
+ },
+ {
+  "slug": "mingbiao-dianshang-huishou",
+  "category": "finance",
+  "name": "二手名表典当与回收价差核算",
+  "description": "同一块表典当行、回收商、寄售平台出价差30%——渠道折价系数表+扣减项公式+精确算例+谈价话术，签前算清到手价。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4y"
+ },
+ {
+  "slug": "chedidai-hechang",
+  "category": "finance",
+  "name": "车抵贷综合成本与结清解押核查",
+  "description": "「月息8厘」的综合年化常超20%——费用拆解表+真实年化公式+精确算例+签前五问话术+结清解押清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4y"
+ },
+ {
+  "slug": "baofei-daogua",
+  "category": "insurance",
+  "name": "保费倒挂与保额错配核查",
+  "description": "保额不抵累计保费就是倒挂——保额倒推公式表+倒挂判定式+已缴多年处置算例（退保/减额交清对比）+保单检视话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4y"
+ },
+ {
+  "slug": "dianzi-hetong-cunzheng",
+  "category": "legal",
+  "name": "电子合同签署与存证取证",
+  "description": "聊天记录≠合同书证——三种签署方式效力对照+可靠电子签名四要件+费用算例+催款函与时间戳取证模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4y"
+ },
+ {
+  "slug": "dangpiao-feilv-jiaochan",
+  "category": "finance",
+  "name": "典当行当票费率与赎当绝当核查",
+  "description": "月费2分5的典当综合年化可达50%——法定费率上限表+月息/绝当算例+签票必问清单+赎当协商话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4y"
  }
 ]
