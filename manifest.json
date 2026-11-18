@@ -259109,5 +259109,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8k"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hunche-zulin",
+  "name": "婚车租赁与车队比价",
+  "category": "finance",
+  "description": "婚车租赁比价与车队差价核算——头车跟车差价、公里数超算、押金条款逐项核对，含精确金额算例与比价表模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8l"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunli-xiongdi",
+  "name": "伴郎伴娘分工与答谢",
+  "category": "tool",
+  "description": "伴郎伴娘任务清单模板、红包答谢行情与服装费用处理——分工表直接抄，答谢金额给精确区间，避免人情账算糊涂。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8l"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hunli-fenzi",
+  "name": "份子钱记账与回礼",
+  "category": "finance",
+  "description": "婚礼份子钱人情账本模板与回礼对等原则——登记表直接抄、回礼金额算例算得清、长期往来账目三年不糊涂。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8l"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunli-xiangce-zhizuo",
+  "name": "婚礼相册定制与比价",
+  "category": "tool",
+  "description": "婚礼相册定制比价——本数与材质差价逐项核算、在线印刷vs实体影楼全包价对照，含真实金额算例与验收清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8l"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hunhou-guanxi",
+  "name": "婚后财产与户口迁移安排",
+  "category": "legal",
+  "description": "婚后财产登记与户口投靠迁移的实操时间轴——共同财产登记清单、夫妻投靠迁移材料清单、每一步时限，法律依据明确。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8l"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunli-huaxiao",
+  "name": "婚礼开支对账与超支复盘",
+  "category": "finance",
+  "description": "婚礼开支对账表与超支复盘——预算vs实支逐项对照模板、超支项归因分析、结余去向安排，含真实金额算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8l"
  }
 ]
