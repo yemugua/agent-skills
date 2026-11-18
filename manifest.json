@@ -255581,5 +255581,53 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5y"
+ },
+ {
+  "slug": "fixdeposit-renewal-interest",
+  "name": "定存到期利息结算与自动转存临界测算",
+  "description": "定存到期利息结算与自动转存临界测算：到期利息公式、逾期活期损失、自动转存利率下行陷阱与算例",
+  "tier": "quality",
+  "source_batch": "biz-P5z",
+  "category": "finance"
+ },
+ {
+  "slug": "bank-certificate-lost",
+  "name": "纸质存单遗失挂失与补办",
+  "description": "纸质存单遗失后口头/书面挂失、原开户网点补办、遗产简化提取的时效与费用对照",
+  "tier": "quality",
+  "source_batch": "biz-P5z",
+  "category": "tool"
+ },
+ {
+  "slug": "company-seal-reissue",
+  "name": "公司印章遗失补办与备案流程",
+  "description": "公司公章/财务章遗失后的报案、登报作废、公安备案重刻流程与费用，防止旧章冒用",
+  "tier": "quality",
+  "source_batch": "biz-P5z",
+  "category": "legal"
+ },
+ {
+  "slug": "commercial-bill-discount",
+  "name": "商业汇票（电票）收票验真与贴现成本测算",
+  "description": "收商业汇票前的承兑人资质查验、票面核验清单与贴现利息公式算例，商票拒付风险",
+  "tier": "quality",
+  "source_batch": "biz-P5z",
+  "category": "finance"
+ },
+ {
+  "slug": "appliance-repair-fee-breakdown",
+  "name": "家电维修上门费与开机费拆解比价",
+  "description": "家电维修上门费、开机检测费、拆装费、配件加价的行情表与算例，先报价后拆机的话术",
+  "tier": "quality",
+  "source_batch": "biz-P5z",
+  "category": "tool"
+ },
+ {
+  "slug": "ac-install-extrafee-check",
+  "name": "空调新装机安装费与辅材加价清单核对",
+  "description": "空调免费安装背后的铜管、支架、高空作业、打孔加价行情表与算例，收货前书面报价话术",
+  "tier": "quality",
+  "source_batch": "biz-P5z",
+  "category": "tool"
  }
 ]
