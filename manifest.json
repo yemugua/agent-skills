@@ -258545,5 +258545,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P8a",
   "category": "health"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-haiwai-wifi",
+  "name": "ertong-shucai-shuji-huayao-shengao-haiwai-wifi",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8b",
+  "description": "海外流量包vs当地SIM vs eSIM比价：流量单价换算公式、实名认证要求、开通时机决策"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-haiwai-huobi",
+  "name": "ertong-shucai-shengao-shuji-huayao-haiwai-huobi",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8b",
+  "description": "外汇现钞与刷卡选择：信用卡货币转换费率对比、ATM取现限额手续费、换汇时点策略"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-haiwai-zhengjian",
+  "name": "ertong-shucai-shuji-huayao-shengao-haiwai-zhengjian",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8b",
+  "description": "护照有效期与签证停留期核对：六个月规则、免签停留天数计算、逾期后果与补救"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-shuiwu-haiwai-yiliao",
+  "name": "ertong-shucai-shengao-huayao-shuiwu-haiwai-yiliao",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8b",
+  "description": "海外就医与保险直付：直付网络查询、自垫reimbursement理赔材料清单、紧急救援电话使用"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-haiwai-hangban",
+  "name": "ertong-shucai-shuji-huayao-shengao-haiwai-hangban",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8b",
+  "description": "国际航班转机与行李直挂：转机签证要求、行李直挂判断条件、最短衔接时间MCT核对"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-haiwai-shui",
+  "name": "ertong-shucai-shengao-shuji-huayao-haiwai-shui",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8b",
+  "description": "境外消费退税与免税店：退税单填写与海关验章流程、退税金额计算、支付方式对退款的影响"
  }
 ]
