@@ -257327,5 +257327,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7e"
+ },
+ {
+  "slug": "yangtai-zhongcai-rongqi",
+  "name": "yangtai-zhongcai-rongqi",
+  "description": "阳台种菜容器与光照需求：按朝向算有效日照小时，按生长期选容器尺寸与土量，附家庭产量算例与采购清单。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7f"
+ },
+ {
+  "slug": "ertong-turand-fashao",
+  "name": "ertong-turand-fashao",
+  "description": "幼儿热性惊厥与发热处置分级：退烧药该不该用、什么时候用，惊厥发作时做与不做的急救清单，就医红线标准。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7f"
+ },
+ {
+  "slug": "jiandao-xiuli-zeren",
+  "name": "jiandao-xiuli-zeren",
+  "description": "楼上漏水到楼下责任划分与索赔：先取证再定责的完整顺序，物业证明怎么开，维修基金与个人赔偿的边界，起诉路径与费用算例。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7f"
+ },
+ {
+  "slug": "chaoshi-manjian-yusuan",
+  "name": "chaoshi-manjian-yusuan",
+  "description": "超市满减凑单与囤货临界点：大包装单价陷阱怎么算，满减凑单的边际账，临期囤货的保质期临界表，附逐例金额核算。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7f"
+ },
+ {
+  "slug": "qiannian-biji-ben-tuijian",
+  "name": "qiannian-biji-ben-tuijian",
+  "description": "笔记本电脑配置选择与购机时点：CPU后缀含义速查、内存硬盘阈值、开学季/大促价格规律，附不同预算配置算例。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7f"
+ },
+ {
+  "slug": "yiliao-jiuzhen-jiaobi",
+  "name": "yiliao-jiuzhen-jiaobi",
+  "description": "医保就诊前问诊与科室选择避坑：挂错号自查表、避免重复检查的资料清单与话术、初诊复诊分流，附就医路径算例。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7f"
  }
 ]
