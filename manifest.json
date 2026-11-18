@@ -254216,5 +254216,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4w"
+ },
+ {
+  "slug": "court-online-filing-kit",
+  "category": "legal",
+  "name": "民事网上立案材料清单",
+  "description": "民事网上立案材料清单：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4x"
+ },
+ {
+  "slug": "flood-car-claim-full",
+  "category": "legal",
+  "name": "水淹车定损与全损理赔核算",
+  "description": "水淹车定损与全损理赔核算：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4x"
+ },
+ {
+  "slug": "personal-injury-comp-calc",
+  "category": "legal",
+  "name": "人身损害赔偿金计算器",
+  "description": "人身损害赔偿金计算器：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4x"
+ },
+ {
+  "slug": "sudden-death-claim-check",
+  "category": "insurance",
+  "name": "猝死理赔与意外险免责核查",
+  "description": "猝死理赔与意外险免责核查：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4x"
+ },
+ {
+  "slug": "study-insurance-claim-kit",
+  "category": "insurance",
+  "name": "学平险理赔材料与报销顺序",
+  "description": "学平险理赔材料与报销顺序：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4x"
  }
 ]
