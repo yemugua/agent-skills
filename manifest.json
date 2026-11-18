@@ -259001,5 +259001,59 @@
   "description": "电子结婚证在绝大多数政务和金融场景与纸质证同等效力，但部分场景（境外使用、部分公证）仍要纸质或公证件。",
   "tier": "quality",
   "source_batch": "biz-P8i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiating-chucun",
+  "category": "tool",
+  "name": "家庭重要文件归档与火险袋存放",
+  "description": "证件复印件/保单/房产证按清单归档、火险袋分存两处、扫描电子备份的完整操作。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8j"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiating-zhangben",
+  "category": "finance",
+  "name": "家庭账本与年度复盘",
+  "description": "月度8类分类记账、结余率/恩格尔系数公式、年度复盘砍项算例与记账工具选择。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8j"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiating-huiyi",
+  "category": "tool",
+  "name": "家庭会议与大事商定",
+  "description": "家庭会议40分钟议事规则、装修买车大额决策模板、家庭公约制定。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8j"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiating-jinji-lianxi",
+  "category": "tool",
+  "name": "紧急联系人卡与信息更新",
+  "description": "儿童书包卡/老人随身卡/家庭联系人表三层体系与每年两查更新机制。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8j"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiating-xiangce",
+  "category": "tool",
+  "name": "家庭照片备份与整理",
+  "description": "云相册+移动硬盘双备份、打印相册成本算例、手机相册清理节奏。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8j"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiating-shengzi",
+  "category": "tool",
+  "name": "家庭安全绳与应急演练",
+  "description": "火灾逃生路线主备双线、家庭成员分工表、每年演练与应急包清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8j"
  }
 ]
