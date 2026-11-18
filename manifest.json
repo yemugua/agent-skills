@@ -259493,5 +259493,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chuzhong-shiyong",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-chuzhong-shiyong",
+  "category": "tool",
+  "description": "初中入学与分班打听：对口直升/公办摇号/材料清单核对与打听话术工具",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chuzhong-jisuan",
+  "name": "ertong-shucai-shuji-huayao-shengao-chuzhong-jisuan",
+  "category": "finance",
+  "description": "初中学科难度衔接与辅导预算：数学英语落差测算/家教行情/性价比算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-qingchun-yingyang",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-qingchun-yingyang",
+  "category": "health",
+  "description": "青春期营养与运动搭配：钙铁锌摄入量/每天运动量/早餐搭配表",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-qingchun-dupin",
+  "name": "ertong-shucai-shuji-huayao-shengao-qingchun-dupin",
+  "category": "health",
+  "description": "青春期毒品与电子烟防范：伪装形态识别/拒绝话术/发现处置流程",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-qingchun-wangluo",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-qingchun-wangluo",
+  "category": "tool",
+  "description": "青春期网络交友风险与隐私：平台年龄规范/隐私红线清单/家长沟通话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chuzhong-zhufang",
+  "name": "ertong-shucai-shuji-huayao-shengao-chuzhong-zhufang",
+  "category": "finance",
+  "description": "初中寄宿与走读决策：住宿费/通勤时间成本/自理能力评估算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8s"
  }
 ]
