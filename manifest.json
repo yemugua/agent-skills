@@ -256890,5 +256890,53 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6w"
+ },
+ {
+  "slug": "yingtou-moxing-guige",
+  "name": "投影仪幕布尺寸与安装距离计算",
+  "category": "tool",
+  "description": "投射比公式、幕布尺寸对照与观看距离算例：一步算出幕布挂多大、机器放多远。",
+  "tier": "quality",
+  "source_batch": "biz-P6x"
+ },
+ {
+  "slug": "jianshenka-zhuanrang-fengxian",
+  "name": "健身卡私教课转让与跑路预判",
+  "category": "legal",
+  "description": "健身卡/私教课转给别人与接别人卡的风险测算：转让费行情、跑路前信号清单、倒闭前快闪维权步骤。",
+  "tier": "quality",
+  "source_batch": "biz-P6x"
+ },
+ {
+  "slug": "erji-xuanze-xianqian",
+  "name": "耳机有线无线降噪场景选购",
+  "category": "tool",
+  "description": "按通勤/办公/运动/游戏场景选耳机：单元类型、无线延时、降噪深度与各价格带对比表。",
+  "tier": "quality",
+  "source_batch": "biz-P6x"
+ },
+ {
+  "slug": "yangche-dianping-yuanyin",
+  "name": "车辆电瓶亏电救援与换电瓶比价",
+  "category": "finance",
+  "description": "电瓶亏电时救援费行情对比（保险免费/4S/路边店/自助）与换电瓶以旧换新差价核算。",
+  "tier": "quality",
+  "source_batch": "biz-P6x"
+ },
+ {
+  "slug": "xueyezhu-yingdi-shangyan",
+  "name": "业主硬地与开发商违约交房",
+  "category": "legal",
+  "description": "逾期交房违约金计算与验收拒收流程：发现质量问题如何合法拒收、拒收期间违约金是否照算。",
+  "tier": "quality",
+  "source_batch": "biz-P6x"
+ },
+ {
+  "slug": "bingxiang-tiaowen-shiyong",
+  "name": "冰箱温度分区储存与耗电优化",
+  "category": "tool",
+  "description": "冷藏冷冻分层温度设定、各层放什么、除霜与耗电算例：一张表管住冰箱并算清电费差。",
+  "tier": "quality",
+  "source_batch": "biz-P6x"
  }
 ]
