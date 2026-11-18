@@ -254351,5 +254351,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4z"
+ },
+ {
+  "slug": "taocanwai-liuliang-jifei-zhengyi",
+  "category": "tool",
+  "name": "套餐外流量计费核查",
+  "description": "套餐外流量计费核查：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5a"
+ },
+ {
+  "slug": "shebao-chongfu-jiaofei-tuifei",
+  "category": "legal",
+  "name": "社保重复缴费退费",
+  "description": "社保重复缴费退费：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5a"
+ },
+ {
+  "slug": "yidi-jizhen-baoxiao-beian",
+  "category": "health",
+  "name": "异地急诊备案与报销",
+  "description": "异地急诊备案与报销：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5a"
+ },
+ {
+  "slug": "jiuhuche-feiyong-yuanqian-jizhen",
+  "category": "health",
+  "name": "救护车与院前急救费用",
+  "description": "救护车与院前急救费用：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5a"
+ },
+ {
+  "slug": "renshen-sunhai-fujia-feiyong",
+  "category": "legal",
+  "name": "人身损害附加费索赔（营养费/伙食/交通）",
+  "description": "人身损害附加费索赔（营养费/伙食/交通）：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5a"
+ },
+ {
+  "slug": "shebao-bujiao-zhinajin-cesuan",
+  "category": "legal",
+  "name": "社保补缴滞纳金测算",
+  "description": "社保补缴滞纳金测算：工具表/公式/精确金额算例/可复制话术模板，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5a"
  }
 ]
