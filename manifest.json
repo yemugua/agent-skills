@@ -257058,5 +257058,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6z"
+ },
+ {
+  "slug": "yajia-tishui-qianyue",
+  "category": "legal",
+  "name": "房价下行期签约与定金保护",
+  "description": "房价下行期买房签约与定金保护：价保条款写法、逾期网签风险算例、定金/首付资金节点控制。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7a"
+ },
+ {
+  "slug": "xianyu-jiaoyi-gongji-jin",
+  "category": "legal",
+  "name": "闲鱼担保交易与验货宝选择",
+  "description": "闲鱼担保交易流程与验货宝选择决策：担保金冻结机制、到手刀应对话术、争议举证清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7a"
+ },
+ {
+  "slug": "zidian-xiuji-buchang",
+  "category": "finance",
+  "name": "字典笔/学习机保修与换新政策",
+  "description": "字典笔与学习机保修换新政策对比：官方保/店保差异、摔碰进水不保条款、维修换新算例与话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7a"
+ },
+ {
+  "slug": "ershouche-shigu-che-jianbie",
+  "category": "tool",
+  "name": "二手车事故车鉴别与查询通道",
+  "description": "二手车事故车现场鉴别清单与出险记录查询通道：结构件切割痕识别、保险出险记录核验、车价折减算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7a"
+ },
+ {
+  "slug": "yangshenghu-guandao-qingxi",
+  "category": "tool",
+  "name": "鱼缸水管与过滤棉更换周期",
+  "description": "鱼缸过滤棉与水管更换周期表：硝化系统保护、换水比例算例、分批清洗防翻缸操作表。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7a"
+ },
+ {
+  "slug": "ertong-huxing-xingming-gaiming",
+  "category": "legal",
+  "name": "成人改名流程与证件连锁更新",
+  "description": "成人改名全流程与证件连锁更新清单：户口本变更次序、银行卡/社保/学历/车证同步办理、曾用名衔接。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7a"
  }
 ]
