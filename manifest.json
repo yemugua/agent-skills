@@ -258137,5 +258137,65 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7t"
+ },
+ {
+  "slug": "ertong-shucai-huayao-yimiao-chengnian",
+  "name": "ertong-shucai-huayao-yimiao-chengnian",
+  "title": "18岁前后疫苗补种清单（HPV/乙肝/麻腮风补种窗口）",
+  "description": "18岁前后疫苗补种清单（HPV/乙肝/麻腮风补种窗口）",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-shengao-shiyong",
+  "name": "ertong-shucai-shuji-shengao-shiyong",
+  "title": "18岁身份证与银行卡升级（网银/手机银行/实名支付限额）",
+  "description": "18岁身份证与银行卡升级（网银/手机银行/实名支付限额）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-daxue-shengao",
+  "name": "ertong-shucai-shuji-daxue-shengao",
+  "title": "大学生医保与异地就医（学校参保vs老家参保/异地就医备案）",
+  "description": "大学生医保与异地就医（学校参保vs老家参保/异地就医备案）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-jiazhao",
+  "name": "ertong-shucai-shuji-huayao-jiazhao",
+  "title": "高考后学车与驾校选择（暑期班价格/约考周期/退费条款）",
+  "description": "高考后学车与驾校选择（暑期班价格/约考周期/退费条款）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-shengao-huayao",
+  "name": "ertong-shucai-shuji-shengao-huayao",
+  "title": "大学宿舍电脑与装备选购（笔记本预算/二手风险/宿舍功率限制）",
+  "description": "大学宿舍电脑与装备选购（笔记本预算/二手风险/宿舍功率限制）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shixi",
+  "name": "ertong-shucai-shuji-huayao-shixi",
+  "title": "大学生实习与三方协议（实习协议审查/工资下限/受伤责任）",
+  "description": "大学生实习与三方协议（实习协议审查/工资下限/受伤责任）",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7u"
  }
 ]
