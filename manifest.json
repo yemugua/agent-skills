@@ -253681,5 +253681,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4k"
+ },
+ {
+  "slug": "waimai-food-safety-claim",
+  "category": "consumer",
+  "name": "外卖吃出异物索赔",
+  "description": "外卖吃出异物/变质分级索赔：取证四件套、食安法148条10倍/1000元起赔算例、平台-12315话术模板。",
+  "tier": "quality",
+  "source_batch": "biz-P4l",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "renovation-tail-payment-settle",
+  "category": "legal",
+  "name": "装修尾款结算催收",
+  "description": "装修尾款拖扣应对：结算对账表模板、书面催告流程、小额诉讼算例与利息计算。",
+  "tier": "quality",
+  "source_batch": "biz-P4l",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "electric-meter-verification",
+  "category": "tool",
+  "name": "电表计量自测与校验",
+  "description": "电表走字异常自测法、95598免费校验流程表、退补电费算例与红线。",
+  "tier": "quality",
+  "source_batch": "biz-P4l",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "common-area-electricity-audit",
+  "category": "legal",
+  "name": "公摊电费核查分摊",
+  "description": "公摊电费公示核查清单、错摊剔除算例、拒付边界与12345/住建局投诉话术。",
+  "tier": "quality",
+  "source_batch": "biz-P4l",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "used-phone-fraud-claim",
+  "category": "consumer",
+  "name": "二手手机扩容翻新维权",
+  "description": "官换机/扩容机五码验机表、消保法55条退一赔三算例、12315话术与取证红线。",
+  "tier": "quality",
+  "source_batch": "biz-P4l",
+  "version": "2.0.0"
  }
 ]
