@@ -256692,5 +256692,53 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6s"
+ },
+ {
+  "slug": "chufang-shuidian-baoxiu",
+  "category": "tool",
+  "name": "厨房水电报修",
+  "description": "厨房水电报修｜上门费与拆检费核算：燃气/水路/电路拆检报价对照与砍价话术。带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6t",
+  "tier": "quality"
+ },
+ {
+  "slug": "yichang-tuikuan-liucheng",
+  "category": "legal",
+  "name": "异地退货寄回运费与时效",
+  "description": "异地退货寄回运费与时效｜线上买线下退/寄回险/丢件追偿的结算规则与算例。带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6t",
+  "tier": "quality"
+ },
+ {
+  "slug": "shuifang-xiaoshidai-zhuangxiu",
+  "category": "finance",
+  "name": "卫生间小改造快速施工报价",
+  "description": "卫生间小改造快速施工报价｜局部防水/换洁具的工期表与算例（不敲砖方案）。带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6t",
+  "tier": "quality"
+ },
+ {
+  "slug": "eryan-shili-jiaoyan",
+  "category": "health",
+  "name": "儿童视力筛查单解读与OK镜决策",
+  "description": "儿童视力筛查单解读与OK镜决策｜远视储备/眼轴读数对照与OK镜费用风险核算。带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6t",
+  "tier": "quality"
+ },
+ {
+  "slug": "chuchai-dianyuan-duochacong",
+  "category": "tool",
+  "name": "出差电源多口扩展选择",
+  "description": "出差电源多口扩展选择｜PD功率分配规则与酒店插座安全核查清单。带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6t",
+  "tier": "quality"
+ },
+ {
+  "slug": "yizhu-gongzheng-feiyong",
+  "category": "legal",
+  "name": "遗嘱公证与自书遗嘱效力对照",
+  "description": "遗嘱公证与自书遗嘱效力对照｜公证费标准/见证人规则与费用算例。带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6t",
+  "tier": "quality"
  }
 ]
