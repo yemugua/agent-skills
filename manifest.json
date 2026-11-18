@@ -259331,5 +259331,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P8o",
   "path": "tool/ertong-shucai-shuji-huayao-shengao-xinshenger-shuimian/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-furu-weiyang",
+  "category": "health",
+  "name": "母乳喂养与吸奶器使用",
+  "description": "母乳储存时长表/解冻加温规范/背奶装备与奶量算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8p"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-fuushi-tianjia",
+  "category": "health",
+  "name": "辅食添加时序与过敏观察",
+  "description": "6月龄起添加顺序/高铁米粉冲调/新食物3天法则",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8p"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ertong-tuiyao",
+  "category": "health",
+  "name": "婴幼儿退烧药安全",
+  "description": "对乙酰氨基酚vs布洛芬/体重剂量算例/就医红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8p"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yimiaoben-jiedu",
+  "category": "health",
+  "name": "疫苗本解读与补种安排",
+  "description": "预防接种证解读/漏针补种流程/入托入学查验",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8p"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ertong-niaobu",
+  "category": "tool",
+  "name": "纸尿裤尺码与比价",
+  "description": "尺码体重对照/日耗量囤货算例/大促比价策略",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8p"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-erwen",
+  "category": "tool",
+  "name": "婴幼儿洗澡与脐部护理",
+  "description": "水温38度流程/脐带脱落护理/湿疹保湿方案",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8p"
  }
 ]
