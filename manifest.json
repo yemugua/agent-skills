@@ -255756,5 +255756,68 @@
   "source_batch": "biz-P6b",
   "tier": "quality",
   "version": "2.0.0"
+ },
+ {
+  "slug": "xingzheng-fuyi-shenqing",
+  "category": "legal",
+  "name": "行政复议申请与期限自查",
+  "description": "行政复议申请：判断哪些处罚/决定可复议、60日申请期限计算、复议请求书写法与撤销/变更结果预期，附可复制申请书模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6c"
+ },
+ {
+  "slug": "kezhuanzhai-qiangshu-decision",
+  "category": "finance",
+  "name": "可转债强赎条款识别与卖出决策",
+  "description": "可转债强赎：识别强赎触发条件、倒计时公告解读、转股vs卖出价差测算与不操作的最大损失，附触发监控清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6c"
+ },
+ {
+  "slug": "juzhuquan-dengji-guide",
+  "category": "legal",
+  "name": "居住权登记与老人房产保障",
+  "description": "居住权登记：《民法典》366条居住权设立、合同要素与登记流程、对房产交易的影响与免费登记费用，附居住权合同模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6c"
+ },
+ {
+  "slug": "jijin-fenhong-fangshi-calc",
+  "category": "finance",
+  "name": "基金分红方式选择与红利再投测算",
+  "description": "基金分红：现金分红与红利再投的选择公式、除权日净值变化真相、分红是否是「额外收益」的算例澄清，附权益登记日操作清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6c"
+ },
+ {
+  "slug": "ganyanzheng-selfcheck",
+  "category": "health",
+  "name": "干眼症分级自查与人工泪液选择",
+  "description": "干眼症自查：OSDI量表自测分级、睑板腺功能障碍自查、人工泪液成分选择（玻璃酸钠/聚乙二醇/含防腐剂红线）与热敷方案。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6c"
+ },
+ {
+  "slug": "ershoufang-zijin-jianguan",
+  "category": "finance",
+  "name": "二手房资金监管与过户款支付顺序",
+  "description": "二手房资金监管：监管账户vs直付风险对比、定金-首付-尾款支付节点与解押过户顺序、被中介劝「免监管」时的损失算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6c"
+ },
+ {
+  "slug": "caichan-baoquan-shenqing",
+  "category": "legal",
+  "name": "财产保全申请与保险担保实操",
+  "description": "财产保全：诉前/诉中保全条件与48小时裁定、保全费封顶5000元计算、诉责险保费测算与保全错误的反赔风险，附保全申请书模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6c"
  }
 ]
