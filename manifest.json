@@ -257807,5 +257807,71 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7n"
+ },
+ {
+  "name": "ertong-jiazheng-xuanze",
+  "slug": "ertong-jiazheng-xuanze",
+  "display": "月嫂与育儿嫂面试题库（证件真伪查询/试工观察点/薪资区间）",
+  "description": "月嫂与育儿嫂面试题库（证件真伪查询/试工观察点/薪资区间）",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7o",
+  "path": "ertong-jiazheng-xuanze/SKILL.md"
+ },
+ {
+  "name": "ertong-shuru-shucai",
+  "slug": "ertong-shuru-shucai",
+  "display": "儿童秋季腹泻与轮状疫苗（口服时机/脱水判断/补液盐配比）",
+  "description": "儿童秋季腹泻与轮状疫苗（口服时机/脱水判断/补液盐配比）",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7o",
+  "path": "ertong-shuru-shucai/SKILL.md"
+ },
+ {
+  "name": "ertong-shucai-shengao",
+  "slug": "ertong-shucai-shengao",
+  "display": "儿童牛奶选择与饮奶量（鲜奶vs配方奶切换年龄/每日毫升量）",
+  "description": "儿童牛奶选择与饮奶量（鲜奶vs配方奶切换年龄/每日毫升量）",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7o",
+  "path": "ertong-shucai-shengao/SKILL.md"
+ },
+ {
+  "name": "ertong-huayao-jiemuyan",
+  "slug": "ertong-huayao-jiemuyan",
+  "display": "儿童干眼与眨眼频繁信号（视疲劳/抽动症鉴别/就医科室）",
+  "description": "儿童干眼与眨眼频繁信号（视疲劳/抽动症鉴别/就医科室）",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7o",
+  "path": "ertong-huayao-jiemuyan/SKILL.md"
+ },
+ {
+  "name": "ertong-shucai-xueyaoyan",
+  "slug": "ertong-shucai-xueyaoyan",
+  "display": "儿童蛀牙与窝沟封闭时机（乳牙龋处理/含氟牙膏用量表）",
+  "description": "儿童蛀牙与窝沟封闭时机（乳牙龋处理/含氟牙膏用量表）",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7o",
+  "path": "ertong-shucai-xueyaoyan/SKILL.md"
+ },
+ {
+  "name": "ertong-shuzhi-huawen",
+  "slug": "ertong-shuzhi-huawen",
+  "display": "儿童房装修与环保材料选择（甲醛检测标准/通风时长/入住前检测）",
+  "description": "儿童房装修与环保材料选择（甲醛检测标准/通风时长/入住前检测）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7o",
+  "path": "ertong-shuzhi-huawen/SKILL.md"
  }
 ]
