@@ -255301,7 +255301,8 @@
   "description": "营运车被撞停运损失索赔：法律依据、举证清单、计算公式与协商话术，一步算出能索赔多少天多少钱",
   "tier": "quality",
   "version": "2.0.0",
-  "source_batch": "biz-P5t"
+  "source_batch": "biz-P5t",
+  "slug": "yunying-tingyun-sunshi"
  },
  {
   "name": "xiuche-dan-shenjia",
@@ -255310,7 +255311,8 @@
   "description": "修车单逐项审价：工时费定额+配件加价率+旧件归属核查表，用4S店/修理厂报价单当场审出虚项",
   "tier": "quality",
   "version": "2.0.0",
-  "source_batch": "biz-P5t"
+  "source_batch": "biz-P5t",
+  "slug": "xiuche-dan-shenjia"
  },
  {
   "name": "xiuche-daibu-fei",
@@ -255319,7 +255321,8 @@
   "description": "私家车被撞修车期间的替代性交通费索赔：法院认定标准、金额上限、票据要求与协商模板",
   "tier": "quality",
   "version": "2.0.0",
-  "source_batch": "biz-P5t"
+  "source_batch": "biz-P5t",
+  "slug": "xiuche-daibu-fei"
  },
  {
   "name": "houxu-zhiliao-fei",
@@ -255328,7 +255331,8 @@
   "description": "交通事故后续治疗费与二次手术费索赔：一次性了结vs另案起诉的选择公式、鉴定预评估与协议免责红线",
   "tier": "quality",
   "version": "2.0.0",
-  "source_batch": "biz-P5t"
+  "source_batch": "biz-P5t",
+  "slug": "houxu-zhiliao-fei"
  },
  {
   "name": "kouche-jianyan-jianfei",
@@ -255337,7 +255341,8 @@
   "description": "事故后交警扣车的检验鉴定期限、停车费与鉴定费归属：法律规定谁担、超期停放谁付费、提车流程卡点",
   "tier": "quality",
   "version": "2.0.0",
-  "source_batch": "biz-P5t"
+  "source_batch": "biz-P5t",
+  "slug": "kouche-jianyan-jianfei"
  },
  {
   "slug": "bao-yang-bao-jia-he-suan",
@@ -255391,7 +255396,8 @@
   "version": "2.0.0",
   "source_batch": "biz-P5v",
   "description": "看牙报价逐项核对，识别过度治疗与拆分加价",
-  "display_name": "看牙报价单逐项核对：补牙/根管/牙冠/拔智齿合理价与过度治疗防线"
+  "display_name": "看牙报价单逐项核对：补牙/根管/牙冠/拔智齿合理价与过度治疗防线",
+  "slug": "dental-quote-check"
  },
  {
   "name": "jiaxiao-quote-audit",
@@ -255400,7 +255406,8 @@
   "version": "2.0.0",
   "source_batch": "biz-P5v",
   "description": "学车真实总花费核算，隐性收费识别",
-  "display_name": "学车报价拆解：全包价与补考费/模拟费隐性收费核对"
+  "display_name": "学车报价拆解：全包价与补考费/模拟费隐性收费核对",
+  "slug": "jiaxiao-quote-audit"
  },
  {
   "name": "jiaxiao-contract-audit",
@@ -255409,7 +255416,8 @@
   "version": "2.0.0",
   "source_batch": "biz-P5v",
   "description": "驾校合同退费/有效期/转校条款审查与退费计算",
-  "display_name": "驾校合同逐条审查：退费比例、学时有效期与转校条款"
+  "display_name": "驾校合同逐条审查：退费比例、学时有效期与转校条款",
+  "slug": "jiaxiao-contract-audit"
  },
  {
   "name": "zhongkao-sports-training-cost",
@@ -255418,7 +255426,8 @@
   "version": "2.0.0",
   "source_batch": "biz-P5v",
   "description": "体育中考培训按短板算课时预算，续费套路识别",
-  "display_name": "体育中考突击培训报价比价与课时核算"
+  "display_name": "体育中考突击培训报价比价与课时核算",
+  "slug": "zhongkao-sports-training-cost"
  },
  {
   "name": "kindergarten-fee-audit",
@@ -255427,7 +255436,8 @@
   "version": "2.0.0",
   "source_batch": "biz-P5v",
   "description": "幼儿园费用构成合规自查与按日退费计算",
-  "display_name": "幼儿园/托育费用核算：保教费伙食费与按日退费"
+  "display_name": "幼儿园/托育费用核算：保教费伙食费与按日退费",
+  "slug": "kindergarten-fee-audit"
  },
  {
   "slug": "tv-repair-price-audit",
@@ -255683,5 +255693,68 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6a"
+ },
+ {
+  "slug": "blood-use-reimburse",
+  "category": "health",
+  "name": "献血者及亲属用血费用直免报销",
+  "description": "献血者本人及亲属用血费用直免/报销：额度计算、直免办理路径与被拒应对话术。",
+  "source_batch": "biz-P6b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "bank-transfer-delay-recall",
+  "category": "finance",
+  "name": "银行转账延时到账与24小时撤回",
+  "description": "各渠道延时到账设置、撤回时限表与转错账/诈骗拦截的完整追回流程。",
+  "source_batch": "biz-P6b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "colorectal-screening-decision",
+  "category": "health",
+  "name": "结直肠癌筛查决策与肠镜随访计划",
+  "description": "按风险等级决定做不做肠镜、随访间隔表、费用对比与报告留存要点。",
+  "source_batch": "biz-P6b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "medical-insurance-retire-make-up",
+  "category": "health",
+  "name": "医保退休年限不足的补缴测算",
+  "description": "各地年限规则、一次性补缴金额公式、临界点测算与办理路径。",
+  "source_batch": "biz-P6b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "shangzhuan-gong-dk-calc",
+  "category": "finance",
+  "name": "商转公贷款办理与月供差测算",
+  "description": "商转公条件自查、月供差与总利息算例、办理窗口与被拒原因。",
+  "source_batch": "biz-P6b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "equity-transfer-tax-calc",
+  "category": "legal",
+  "name": "股权转让个税计算与申报",
+  "description": "20%个税公式、平价转让核定风险、先税后证申报路径与材料清单。",
+  "source_batch": "biz-P6b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "property-fee-lawsuit-defense",
+  "category": "legal",
+  "name": "被物业起诉欠费应诉与抗辩清单",
+  "description": "核对欠费水分、合法抗辩事由、应诉材料与庭审话术及和解金额决策。",
+  "source_batch": "biz-P6b",
+  "tier": "quality",
+  "version": "2.0.0"
  }
 ]
