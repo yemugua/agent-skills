@@ -257543,5 +257543,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7i"
+ },
+ {
+  "slug": "ertong-yandao-yiwu",
+  "name": "ertong-yandao-yiwu",
+  "description": "儿童鼻腔异物与耳道进虫处置：禁止抠挖的判断、豆粒/纽扣电池的危险分级与就医时机",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7j"
+ },
+ {
+  "slug": "ertong-turand-zhengjia",
+  "name": "ertong-turand-zhengjia",
+  "description": "儿童牙齿外伤脱落保存与再植：牛奶保存法、黄金30分钟、捏牙冠不捏牙根、全脱位再植时间窗",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7j"
+ },
+ {
+  "slug": "ertong-shuizi-dianyuan",
+  "name": "ertong-shuizi-dianyuan",
+  "description": "儿童插座防触电与家庭电路自查：防护盖选型、漏保跳闸排查三步法、手机充电口/插线板高危点",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7j"
+ },
+ {
+  "slug": "ertong-yujia-jingshen",
+  "name": "ertong-yujia-jingshen",
+  "description": "儿童鱼刺卡喉处置与错误土方法：吞饭喝醋的风险、正确咳嗽就医路径、内镜取出时机",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7j"
+ },
+ {
+  "slug": "ertong-fangjian-jiaoyu",
+  "name": "ertong-fangjian-jiaoyu",
+  "description": "儿童烫伤冲脱泡盖送五步法实操：水温流量、水疱挑破禁忌、衣物粘连处理、烧伤科就医分级",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7j"
+ },
+ {
+  "slug": "ertong-zhongdu-jihu",
+  "name": "ertong-zhongdu-jihu",
+  "description": "儿童误食药物与洗涤剂中毒急救：催吐禁忌清单、腐蚀性液体识别、送医携带样本、毒物信息卡",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7j"
  }
 ]
