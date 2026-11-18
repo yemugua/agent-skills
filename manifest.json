@@ -258257,5 +258257,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7v"
+ },
+ {
+  "slug": "ertong-shucai-huayao-yimiao-laonian",
+  "category": "health",
+  "name": "父母体检单与慢病报告解读（血压血糖尿酸阈值与复查时机）",
+  "description": "父母体检单与慢病报告解读：血压/血糖/尿酸等核心指标的分级判读表、复查时机阶梯与\"报告严重吗\"沟通话术模板，一次对照即知该不该跑医院",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7w"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-huixiang",
+  "category": "finance",
+  "name": "春节返乡车票与年货预算（抢票时段/年货清单/红包预算公式）",
+  "description": "春节返乡车票与年货预算：抢票放票时段表+候补成功率节奏、年货分级清单算例、拜年红包预算公式，一张表算出今年回家总成本",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7w"
+ },
+ {
+  "slug": "ertong-shucai-shuji-shengao-jia-lianhun",
+  "category": "tool",
+  "name": "带对象回家与见家长准备（礼物预算/话题避雷/红包回礼）",
+  "description": "带对象回家与见家长准备：礼物分档预算表（首见/已熟/谈婚论嫁）、话题避雷清单、红包与回礼金额算例，一张清单搞定春节带TA见家长",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7w"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-yimiao-liuhgan",
+  "category": "health",
+  "name": "流感季全家防护与疫苗时机（优先级/家庭消毒/隔离天数）",
+  "description": "流感季全家防护与疫苗时机：老人/儿童/孕妇优先级排序表、家庭消毒与隔离天数规则、奥司他韦48小时用药边界，一个清单管住全家这个冬天",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7w"
+ },
+ {
+  "slug": "ertong-shucai-shuji-daxue-huayao-weiji",
+  "category": "finance",
+  "name": "年夜饭预订与餐饮避坑（定金/菜单确认/包间最低消）",
+  "description": "年夜饭预订与餐饮避坑：定金订金法律区分、菜单确认清单、包间最低消与限时翻台应对，一张核对单守住年夜饭的钱和体面",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7w"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-suiwu",
+  "category": "legal",
+  "name": "烟花爆竹与儿童安全（禁放区/燃放距离/手持类风险）",
+  "description": "烟花爆竹与儿童安全：禁放区查询方法、燃放安全距离表、手持类烟花（加特林/仙女棒）的伤情数据与法律责任，一份清单守住孩子的手和眼睛",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7w"
  }
 ]
