@@ -256992,5 +256992,71 @@
   "version": "2.0.0",
   "source_batch": "biz-P6y",
   "description": "小区强电井与弱电箱改造费用核对——入户光纤改造流程、线材规格表、施工报价逐项核对清单与加价拦截话术。"
+ },
+ {
+  "slug": "yahuoji-shoufei-biaozhun",
+  "name": "yahuoji-shoufei-biaozhun",
+  "display_name": "雅高/汉庭等连锁酒店早餐与延时退房收费标准",
+  "title": "雅高/汉庭等连锁酒店早餐与延时退房收费标准",
+  "category": "tool",
+  "description": "连锁酒店早餐费与延迟退房收费对照表：会员等级权益时段、超时计费公式、前台议价话术与免收红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6z"
+ },
+ {
+  "slug": "ERTONG-shiyi-jiu-zhenliu",
+  "name": "ERTONG-shiyi-jiu-zhenliu",
+  "display_name": "儿童异物吞入紧急处置与就医分级",
+  "title": "儿童异物吞入紧急处置与就医分级",
+  "category": "health",
+  "description": "儿童吞入异物分级决策表：可居家观察清单、立即内镜/急诊红线、禁忌动作与观察期记录模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6z"
+ },
+ {
+  "slug": "shuiwei-baoxian-jiafei",
+  "name": "shuiwei-baoxian-jiafei",
+  "display_name": "水位保险与暴雨季车辆淹水预防",
+  "title": "水位保险与暴雨季车辆淹水预防",
+  "category": "finance",
+  "description": "暴雨季车辆淹水预防清单：地下车库水位评估、提前挪车时机、车损险报案时限与发动机进水免责条款",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6z"
+ },
+ {
+  "slug": "jiazheng-heyue-xiaoshijia",
+  "name": "jiazheng-heyue-xiaoshijia",
+  "display_name": "家政小时工计费方式对比",
+  "title": "家政小时工计费方式对比",
+  "category": "finance",
+  "description": "家政小时工按小时/包月/计件三种计费的临界点算例：什么家庭该选哪种、合同必写条款与加价陷阱",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6z"
+ },
+ {
+  "slug": "shouji-zhifu-jinbi-dingdan",
+  "name": "shouji-zhifu-jinbi-dingdan",
+  "display_name": "支付平台免密扣费排查关闭清单",
+  "title": "支付平台免密扣费排查关闭清单",
+  "category": "tool",
+  "description": "微信/支付宝/云闪付/App Store 免密扣费与自动续费的一次性排查路径、账单巡检法与追回话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6z"
+ },
+ {
+  "slug": "ertong-huxing-zhuanxue-zhuangxue",
+  "name": "ertong-huxing-zhuanxue-zhuangxue",
+  "display_name": "儿童姓名更改与转学学籍变更流程",
+  "title": "儿童姓名更改与转学学籍变更流程",
+  "category": "legal",
+  "description": "儿童改名后学籍系统同步流程：户口本/学籍系统双线材料清单、时间顺序、卡壳环节处理话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6z"
  }
 ]
