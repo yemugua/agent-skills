@@ -258029,5 +258029,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P7r",
   "description": "ertong-shucai-shuji-shengao-xinli"
+ },
+ {
+  "slug": "ertong-shucai-shengao-zhongkao",
+  "name": "中考体育项目与得分策略",
+  "description": "中考体育选项目策略、训练周期安排与各项目满分线对照，附算例与训练模板",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-gaokao",
+  "name": "高考报名与异地高考条件",
+  "description": "高考报名户籍学籍要求、随迁子女异地高考材料清单与年限算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-zhuanye",
+  "name": "高考志愿填报与专业选择",
+  "description": "分数位次法定位、冲稳保梯度设置、调剂风险控制与专业就业算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-daxue",
+  "name": "大学生生活费与预算方案",
+  "description": "一二线城市大学生月开销基准、记账习惯与兼职收入算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-sushe",
+  "name": "大学宿舍关系与物品清单",
+  "description": "入学必带清单、宿舍合购公摊方案与室友冲突话术模板",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7s"
+ },
+ {
+  "slug": "ertong-shucai-huayao-shiye",
+  "name": "大学生入伍与休学保留学籍",
+  "description": "大学生入伍保留学籍年限、复学流程与学费补偿代偿算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7s"
  }
 ]
