@@ -255293,5 +255293,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5s"
+ },
+ {
+  "name": "yunying-tingyun-sunshi",
+  "category": "legal",
+  "display_name": "营运车停运损失索赔",
+  "description": "营运车被撞停运损失索赔：法律依据、举证清单、计算公式与协商话术，一步算出能索赔多少天多少钱",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5t"
+ },
+ {
+  "name": "xiuche-dan-shenjia",
+  "category": "tool",
+  "display_name": "修车单逐项审价：工时配件旧件",
+  "description": "修车单逐项审价：工时费定额+配件加价率+旧件归属核查表，用4S店/修理厂报价单当场审出虚项",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5t"
+ },
+ {
+  "name": "xiuche-daibu-fei",
+  "category": "legal",
+  "display_name": "修车期间替代性交通费索赔",
+  "description": "私家车被撞修车期间的替代性交通费索赔：法院认定标准、金额上限、票据要求与协商模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5t"
+ },
+ {
+  "name": "houxu-zhiliao-fei",
+  "category": "legal",
+  "display_name": "二次手术费与一次性了结风险",
+  "description": "交通事故后续治疗费与二次手术费索赔：一次性了结vs另案起诉的选择公式、鉴定预评估与协议免责红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5t"
+ },
+ {
+  "name": "kouche-jianyan-jianfei",
+  "category": "legal",
+  "display_name": "事故扣车检验鉴定与费用归属",
+  "description": "事故后交警扣车的检验鉴定期限、停车费与鉴定费归属：法律规定谁担、超期停放谁付费、提车流程卡点",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5t"
  }
 ]
