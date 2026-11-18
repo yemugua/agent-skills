@@ -254700,5 +254700,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5g"
+ },
+ {
+  "slug": "shebaoka-guashi-buban",
+  "name": "社保卡挂失补办全流程",
+  "description": "一句话：社保卡丢了先电话挂失锁死医保账户，再线上补卡邮寄到家，全程7个工作日内、工本费最高20元，断缴就医报销一分不少。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5h",
+  "category": "tool"
+ },
+ {
+  "slug": "tuzhuan-pdf-saomaojian",
+  "name": "手机拍照转PDF扫描件",
+  "description": "一句话：手机拍照用微信/QQ自带「图片转PDF」或WPS扫描王，3分钟产出带矫正和去阴影的合规扫描件，避免复印件被退件。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5h",
+  "category": "tool"
+ },
+ {
+  "slug": "excel-jiating-zhangben",
+  "name": "Excel家庭账本模板",
+  "description": "一句话：一张Excel表用SUMIFS自动汇总分类支出，月底5分钟看清钱去哪了，配合「3个账户法」当月结余立涨500-2000元。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5h",
+  "category": "finance"
+ },
+ {
+  "slug": "fangzu-yajin-jiaojiedan",
+  "name": "房租押金交接单与取证",
+  "description": "一句话：退租被扣押金的根子在入住当天没做交接单+水电拍照——一张入住记录单让押金争议胜率从五五开变成九成以上。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5h",
+  "category": "legal"
+ },
+ {
+  "slug": "ertong-tuixiaoyao-jiliang",
+  "name": "儿童退烧药剂量速算",
+  "description": "一句话：儿童退烧只认对乙酰氨基酚和布洛芬两种，剂量按体重算不按年龄算，记熟15mg/kg和10mg/kg两个数就不用每次慌。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5h",
+  "category": "health"
+ },
+ {
+  "slug": "jijin-dingtou-zhiying",
+  "name": "基金定投止盈测算",
+  "description": "一句话：定投不止盈=坐过山车，用「目标收益率法」或「回撤止盈法」设定机械卖点，一个公式决定何时落袋。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5h",
+  "category": "finance"
  }
 ]
