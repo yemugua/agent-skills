@@ -255338,5 +255338,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5t"
+ },
+ {
+  "slug": "bao-yang-bao-jia-he-suan",
+  "category": "finance",
+  "name": "汽车保养报价核算",
+  "description": "汽车保养报价核算：4S店/连锁快修/汽配城三渠道工时与配件对照表，用同一张报价单逐项比价，算出每年保养真实支出。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5u"
+ },
+ {
+  "slug": "etc-kou-fei-yi-chang-tui-fei",
+  "category": "tool",
+  "name": "ETC扣费异常核查与退费",
+  "description": "ETC扣费异常核查与退费：对账三步法定位多扣/错扣/跟车误扣，话术模板+投诉阶梯，单次追回几十元到几百元。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5u"
+ },
+ {
+  "slug": "xing-li-tuo-yun-sun-huai-li-pei",
+  "category": "legal",
+  "name": "航空行李托运损坏与丢失理赔",
+  "description": "航空行李托运损坏与丢失理赔：时限红线7天/21天，当场记录+限额规则+保价差价算法，最高能拿回多少钱一张表算清。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5u"
+ },
+ {
+  "slug": "chuang-lian-ding-zhi-ji-jia-yong-liao",
+  "category": "tool",
+  "name": "窗帘定制计价与用料测算",
+  "description": "窗帘定制计价与用料测算：宽幅褶皱倍率公式+耗材清单+报价单逐项核查，一套三房算出300-2000元差价在哪。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5u"
+ },
+ {
+  "slug": "xin-yong-ka-dao-shua-zhi-fu-ju-fu",
+  "category": "finance",
+  "name": "信用卡盗刷止损与拒付申诉",
+  "description": "信用卡盗刷止损与拒付申诉：冻结→换卡→非本人交易争议单三步表+举证清单+全额赔付条件，48小时定成败。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5u"
  }
 ]
