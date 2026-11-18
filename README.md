@@ -3,11 +3,11 @@
 [![Platform](https://img.shields.io/badge/works%20on-Claude%20%7C%20Codex%20%7C%20Cursor%20%7C%20Gemini%20%7C%2055%2B%20agents-orange)](https://skills.sh)
 [![Mirror](https://img.shields.io/badge/国内镜像-Gitee-red)](https://gitee.com/liu-tianbao9088/agent-skills)
 
-> **🇨🇳 36,855 个中文 AI Agent 技能库** · **The largest Chinese AI Agent Skills collection** · Free · MIT
+> **🇨🇳 37,111 个中文 AI Agent 技能库** · **The largest Chinese AI Agent Skills collection** · Free · MIT
 
 # Agent Skills 中文技能库（Chinese AI Agent Skills）
 
-**English:** The largest open collection of Chinese-life AI agent skills — 36,855 SKILL.md packages covering daily-life services in China: government services, social insurance, real estate, healthcare, pets, cars, weddings, funerals, side hustles, elder care, consumer rights and more. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, Copilot and 55+ agents reading the open SKILL.md standard.
+**English:** The largest open collection of Chinese-life AI agent skills — 37,111 SKILL.md packages covering daily-life services in China: government services, social insurance, real estate, healthcare, pets, cars, weddings, funerals, side hustles, elder care, consumer rights and more. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, Copilot and 55+ agents reading the open SKILL.md standard.
 
 **一键安装 / One-line install:**
 ```bash
@@ -30,7 +30,7 @@ life-service (10865) · side-hustle (344) · real-estate (190) · pet-disputes (
 
 # Agent Skills 中文技能库（Chinese AI Agent Skills）
 
-目前**最大规模之一的中文 Agent Skills 开源合集**：**36,855 个 SKILL.md 技能**，覆盖life-service(10489)、real-estate(190)、funeral-services(128)、accessibility(110)、consumer-rights(110)、wechat-ecosystem(102)、veterans(72)、pet-disputes(72)等 20 个品类高频场景。
+目前**最大规模之一的中文 Agent Skills 开源合集**：**37,111 个 SKILL.md 技能**，覆盖life-service(10489)、real-estate(190)、funeral-services(128)、accessibility(110)、consumer-rights(110)、wechat-ecosystem(102)、veterans(72)、pet-disputes(72)等 20 个品类高频场景。
 适用于 **Claude Code、Claude、Codex CLI、Cursor、OpenCode、Windsurf、Cline** 等所有支持 Anthropic Agent Skills 规范的 AI 编程工具与 Agent 框架。
 
 ## ⚡ 快速安装（三种方式）
@@ -1102,7 +1102,7 @@ cp -r agent-skills/skills/life-service/<技能名> ~/.claude/skills/   # Claude 
 | `grain-subsidy-query-tianbao` | 粮补查询：分步骤实操指南 |
 | `grave-relocation-tianbao` | 迁坟手续：分步骤实操指南 |
 | `gre-text-completion-tianbao` | 用信号词表判定空格的逻辑方向（同向/反向/解释），按单空、双空、三空给出解题顺序，并核查词汇背诵覆盖率与每日新词量。 |
-| `green-factory-tianbao` | 依据《绿色工厂评价导则》GB/T 36132，生成清单：基本要求与合规性、基础设施与能源资源投入、产品生态设计、环境排放 |
+| `green-factory-tianbao` | 依据《绿色工厂评价导则》GB/T 37111，生成清单：基本要求与合规性、基础设施与能源资源投入、产品生态设计、环境排放 |
 | `greenhouse-vegetable-rotation-tianbao` | 按大棚茬次表安排一年多茬生产，逐茬核对同科连作年限、土壤盐分与休耕间隔，给出常见茬口搭配表与连作障碍的判断口径。含茬口排 |
 | `groomsman-duties` | 伴郎任务：分步骤实操指南，含准备清单、标准流程、常见坑与自查清单。 |
 | `grpc-retry-policy` | gRPC 重试策略：分步骤实操指南，含准备清单、标准流程、常见坑与自查清单。 |
