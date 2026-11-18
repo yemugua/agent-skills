@@ -1,5 +1,5 @@
 ---
-name: ERTONG-huayao-shucai
+name: ertong-huayao-shucai
 title: 儿童含氟牙膏用量与刷牙指导
 description: 米粒vs豌豆量分龄用量表、各年龄段刷牙次数与家长代刷节点、氟斑牙误读澄清
 category: health

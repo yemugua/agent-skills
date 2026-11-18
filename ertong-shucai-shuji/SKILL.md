@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-shuji
+name: ertong-shucai-shuji
 title: 儿童书包选购与重量管理
 description: 书包重量10%体重红线、宽肩带护脊参数核对、拉杆书包适用场景决策表
 category: tool

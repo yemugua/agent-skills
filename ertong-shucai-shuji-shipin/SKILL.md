@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-shuji-shipin
+name: ertong-shucai-shuji-shipin
 title: 儿童零食分级与选择（红黄绿灯+钠阈值+配料表避坑）
 description: 红黄绿灯零食分类表、钠/糖阈值数字、配料表五步避坑法，可直接照抄执行
 category: tool

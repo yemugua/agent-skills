@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-lijiao
+name: ertong-shucai-lijiao
 title: 儿童分离焦虑与入园适应实操
 description: 入园分离焦虑的预演模式、告别仪式与教师沟通话术，含过渡期时间表与红线
 category: health

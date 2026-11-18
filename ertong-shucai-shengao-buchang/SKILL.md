@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-shengao-buchang
+name: ertong-shucai-shengao-buchang
 title: 儿童补钙与维生素D过量风险
 description: 各年龄段钙与维D剂量上限、过量结石风险、食补优先的实操表
 category: health

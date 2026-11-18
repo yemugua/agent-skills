@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-shuji-shengao
+name: ertong-shucai-shuji-shengao
 title: 儿童运动与长高关系实操
 description: 跳绳合理量、篮球游泳长高争议澄清、睡眠与生长激素分泌时段表，附每日运动处方
 category: health
