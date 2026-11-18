@@ -256740,5 +256740,53 @@
   "description": "遗嘱公证与自书遗嘱效力对照｜公证费标准/见证人规则与费用算例。带可直接复制使用的模板、公式与清单，一次使用即见效。",
   "source_batch": "biz-P6t",
   "tier": "quality"
+ },
+ {
+  "slug": "zuche-shigu-cheli",
+  "category": "legal",
+  "name": "租车事故车辆折旧费与停运费条款",
+  "description": "租车事故车辆折旧费与停运费条款｜合同免責/押金扣押应对，带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6u",
+  "tier": "quality"
+ },
+ {
+  "slug": "xianhuo-haixian-baojian",
+  "category": "legal",
+  "name": "海鲜鲜活死亡拒收与冰鲜定价",
+  "description": "海鲜鲜活死亡拒收与冰鲜定价｜死蟹死虾折价规则/称重水分，带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6u",
+  "tier": "quality"
+ },
+ {
+  "slug": "jiating-sheshi-weibao-zhouqi",
+  "category": "tool",
+  "name": "家庭设施维保周期表",
+  "description": "家庭设施维保周期表｜净水滤芯/油烟机/空调清洗/地漏年检，带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6u",
+  "tier": "quality"
+ },
+ {
+  "slug": "youeryuan-zhuancha-yuanfei",
+  "category": "finance",
+  "name": "幼儿园转园学费退转核算",
+  "description": "幼儿园转园学费退转核算｜转园退费比例/学期末时间点，带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6u",
+  "tier": "quality"
+ },
+ {
+  "slug": "shuma-huisou-shujing-huifu",
+  "category": "finance",
+  "name": "数码硬盘数据恢复报价与自恢复边界",
+  "description": "数码硬盘数据恢复报价与自恢复边界｜开盘费/软件恢复对比，带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6u",
+  "tier": "quality"
+ },
+ {
+  "slug": "shenfenzheng-shixiao-yitijiao",
+  "category": "tool",
+  "name": "身份证过期异地换领流程",
+  "description": "身份证过期异地换领流程｜异地办理/临时证加急/银行金融业务影响，带可直接复制使用的模板、公式与清单，一次使用即见效。",
+  "source_batch": "biz-P6u",
+  "tier": "quality"
  }
 ]
