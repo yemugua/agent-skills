@@ -258953,5 +258953,53 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-geren-suode",
+  "category": "finance",
+  "name": "年度个税汇算清缴操作",
+  "description": "个税年度汇算清缴是每年3-6月对上一年综合所得的多退少补，会操作的人平均能拿回数百到数千元退税。",
+  "tier": "quality",
+  "source_batch": "biz-P8i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-geren-yanglao",
+  "category": "finance",
+  "name": "个人养老金账户开户与抵税",
+  "description": "个人养老金每年最高12000元税前扣除，2024年12月起全国推开，税率越高省得越多，开户到抵扣全流程可线上完成。",
+  "tier": "quality",
+  "source_batch": "biz-P8i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yiliao-yibaodan",
+  "category": "health",
+  "name": "医保电子凭证与亲情账户",
+  "description": "医保电子凭证是国家医保APP/微信/支付宝里的电子医保卡，扫码就能挂号买药；亲情账户让老人小孩看病不用带实体卡。",
+  "tier": "quality",
+  "source_batch": "biz-P8i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuiwu-app",
+  "category": "finance",
+  "name": "个税APP专项附加扣除填报",
+  "description": "个税APP里7项专项附加扣除每项都能省税，漏报一项一年可能多缴数千元，填错分摊比例还可能被稽核。",
+  "tier": "quality",
+  "source_batch": "biz-P8i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhengfu-fuwu",
+  "category": "tool",
+  "name": "政务服务平台常用功能",
+  "description": "国家政务服务平台APP/小程序把社保、公积金、电子证件、跨省办事集中到一个入口，高频事项基本不用跑线下大厅。",
+  "tier": "quality",
+  "source_batch": "biz-P8i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianzi-jiezhi",
+  "category": "legal",
+  "name": "电子结婚证与电子证件效力",
+  "description": "电子结婚证在绝大多数政务和金融场景与纸质证同等效力，但部分场景（境外使用、部分公证）仍要纸质或公证件。",
+  "tier": "quality",
+  "source_batch": "biz-P8i"
  }
 ]
