@@ -256638,5 +256638,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6r"
+ },
+ {
+  "slug": "yaopin-daigou-haiguan",
+  "name": "海外药品代购与入境海关红线",
+  "category": "legal",
+  "description": "海外药品代购与入境海关红线——个人自用限量、禁运清单与违规后果",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6s"
+ },
+ {
+  "slug": "dianli-zhenghu-hudong",
+  "name": "电费阶梯临界月与家电错峰策略",
+  "category": "finance",
+  "description": "电费阶梯临界月与家电错峰策略——阶梯档位月度分布与空调错峰算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6s"
+ },
+ {
+  "slug": "weixiu-piaoju-liushui",
+  "name": "维修保留旧件与票据凭证清单",
+  "category": "legal",
+  "description": "维修保留旧件与票据凭证清单——保修期举证与旧件归属规则",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6s"
+ },
+ {
+  "slug": "shuiguopu-xuanze-heyan",
+  "name": "水果拼盘外卖卫生与果切风险",
+  "category": "health",
+  "description": "水果拼盘外卖卫生与果切风险——果切变质信号与现切对比",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6s"
+ },
+ {
+  "slug": "laohuji-ertong-shiyong",
+  "name": "儿童平板使用时长管控设置",
+  "category": "tool",
+  "description": "儿童平板使用时长管控设置——防沉迷、家长锁与护眼参数",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6s"
+ },
+ {
+  "slug": "hunqian-caichan-mingxi",
+  "name": "婚前财产明细与婚后混同风险",
+  "category": "legal",
+  "description": "婚前财产明细与婚后混同风险——房产、存款混同规则与判例要点",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6s"
  }
 ]
