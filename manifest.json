@@ -257435,5 +257435,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7g"
+ },
+ {
+  "slug": "ertong-huangjin-buji",
+  "category": "health",
+  "name": "儿童补维生素D与佝偻病信号",
+  "description": "儿童维生素D补充剂量表、日光合成效率与常见补充剂品牌对比，附佝偻病预警信号自查与就医标准。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7h"
+ },
+ {
+  "slug": "ertong-jijin-fei-yusuan",
+  "category": "finance",
+  "name": "幼儿园兴趣班费用与退班规则",
+  "description": "幼儿园外聘兴趣班报名前的合同审查清单、试听决策标准、退班退费比例算例与可复制沟通话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7h"
+ },
+ {
+  "slug": "ertong-haishui-yongpin",
+  "category": "tool",
+  "name": "儿童防晒衣与海边装备清单",
+  "description": "儿童海边装备核验清单：UPF50防晒衣挑选标准、沙滩凉鞋与浮潜装备选择、价格对照与购买避坑。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7h"
+ },
+ {
+  "slug": "ertong-jiazheng-shoufei",
+  "category": "finance",
+  "name": "儿童托管接送与晚托计费",
+  "description": "小学生接送到晚托的打包价拆解、临时加时与单次委托计费算例，附比价表和可复制议价话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7h"
+ },
+ {
+  "slug": "ertong-jiemuyan-fanfu",
+  "category": "health",
+  "name": "儿童近视防控与离焦镜选择",
+  "description": "儿童近视防控手段价格对比：0.01%阿托品滴眼液、离焦框架镜与OK镜的年成本算例与适配条件。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7h"
+ },
+ {
+  "slug": "ertong-xueyaoyan-hongyan",
+  "category": "health",
+  "name": "儿童红眼病与手足口家庭隔离",
+  "description": "儿童红眼病与手足口的家庭隔离天数标准、玩具消毒方法、二孩家庭传播阻断流程与返园条件。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7h"
  }
 ]
