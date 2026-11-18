@@ -254126,5 +254126,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4u"
+ },
+ {
+  "slug": "jijin-shuhui-fei-suan",
+  "category": "finance",
+  "name": "基金赎回费测算",
+  "description": "基金赎回费测算：按持有天数分档计算赎回费与实际到手金额，附临界天数表与算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4v"
+ },
+ {
+  "slug": "kuajing-huikuan-shouxufei-bijiao",
+  "category": "finance",
+  "name": "跨境汇款手续费对比",
+  "description": "跨境汇款手续费对比：中转行/电报费/汇差三笔账，附 5 万美元汇款四渠道算例与省钱临界表。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4v"
+ },
+ {
+  "slug": "jiaotong-shigu-zeren-fuhe",
+  "category": "legal",
+  "name": "交通事故责任复核",
+  "description": "交通事故责任复核：3 日内申请、写清\"事实不清/证据不足\"两大理由，附复核申请书模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4v"
+ },
+ {
+  "slug": "jianshen-sike-tuifei-weiquan",
+  "category": "legal",
+  "name": "健身私教课退费",
+  "description": "健身私教课退费：课时折算公式、违约金上限、7 天冷静期与投诉话术模板，附谈判阶梯。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4v"
+ },
+ {
+  "slug": "daxinzhai-dashouyi-suanfa",
+  "category": "finance",
+  "name": "可转债打新收益测算",
+  "description": "可转债打新收益测算：中签缴款、首日卖出公式与破发风险判断，附 10 手算例与顶格申购策略。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4v"
  }
 ]
