@@ -254405,5 +254405,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5a"
+ },
+ {
+  "slug": "xyk-yuqi-faxi-jisuan",
+  "name": "信用卡逾期罚息违约金测算",
+  "description": "信用卡逾期罚息违约金测算。含工具表、精确金额算例、可复制话术模板与红线段。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5b"
+ },
+ {
+  "slug": "fenggu-dianjia-shiyong",
+  "name": "峰谷电价申请与省钱测算",
+  "description": "峰谷电价申请与省钱测算。含工具表、精确金额算例、可复制话术模板与红线段。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5b"
+ },
+ {
+  "slug": "jieti-shuijia-chaiwei",
+  "name": "出租屋阶梯水价与水电拆分",
+  "description": "出租屋阶梯水价与水电拆分。含工具表、精确金额算例、可复制话术模板与红线段。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5b"
+ },
+ {
+  "slug": "xyk-zhangdan-quantian-faxi",
+  "name": "信用卡账单分期与最低还款利息对照",
+  "description": "信用卡账单分期与最低还款利息对照。含工具表、精确金额算例、可复制话术模板与红线段。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5b"
+ },
+ {
+  "slug": "12378-tousu-liucheng",
+  "name": "银行保险投诉12378热线实操",
+  "description": "银行保险投诉12378热线实操。含工具表、精确金额算例、可复制话术模板与红线段。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5b"
+ },
+ {
+  "slug": "chuzu-shuibiao-chaobiao",
+  "name": "出租屋水表电表抄表结算清单",
+  "description": "出租屋水表电表抄表结算清单。含工具表、精确金额算例、可复制话术模板与红线段。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5b"
  }
 ]
