@@ -253946,5 +253946,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4q"
+ },
+ {
+  "slug": "home-ev-charging-cost-safety",
+  "name": "电动车充电安全与费用核算",
+  "description": "电动车充电安全与费用核算：可执行表格、金额算例、话术模板与红线，一次使用即见效。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4r"
+ },
+ {
+  "slug": "gas-appliance-audit",
+  "name": "燃气灶具使用年限与检漏自查",
+  "description": "燃气灶具使用年限与检漏自查：可执行表格、金额算例、话术模板与红线，一次使用即见效。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4r"
+ },
+ {
+  "slug": "fridge-food-shelflife-audit",
+  "name": "冰箱食品保存期与变质识别",
+  "description": "冰箱食品保存期与变质识别：可执行表格、金额算例、话术模板与红线，一次使用即见效。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4r"
+ },
+ {
+  "slug": "wedding-bride-price-ledger",
+  "name": "结婚彩礼流程账与凭证管理",
+  "description": "结婚彩礼流程账与凭证管理：可执行表格、金额算例、话术模板与红线，一次使用即见效。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4r"
+ },
+ {
+  "slug": "ceiling-leak-liability-triage",
+  "name": "天花板渗水责任定位与索赔",
+  "description": "天花板渗水责任定位与索赔：定位三步表、责任出资表、取证清单与催告话术模板。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4r"
  }
 ]
