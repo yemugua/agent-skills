@@ -256368,5 +256368,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6m"
+ },
+ {
+  "slug": "mini-storage-pricing",
+  "name": "迷你仓自助仓计价与选仓避坑",
+  "description": "迷你仓按立方米计价+首月促销价+不保价丢损是三大坑，先列家具清单选最小整仓型，一年能省上千元且索赔有据。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6n"
+ },
+ {
+  "slug": "kids-eye-protection-lamp",
+  "name": "儿童护眼台灯选购AA级核验",
+  "description": "认国标AA级照度+RG0蓝光+无可视频闪三硬指标，不为护眼噱头付溢价，一盏合格台灯200-400元封顶。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6n"
+ },
+ {
+  "slug": "lock-cylinder-replacement-pricing",
+  "name": "换锁换锁芯报价核对与备案核查",
+  "description": "开锁换芯先电话锁总价+查公安备案，C级锁芯自购约200元封顶，防上门翻倍加价。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6n"
+ },
+ {
+  "slug": "auto-litter-box-selection",
+  "name": "自动猫砂盆选档与安全避坑",
+  "description": "按猫数与体重选档+年成本核算（售价/寿命+耗材），防夹方案与延迟转动是硬门槛，幼猫禁用。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6n"
+ },
+ {
+  "slug": "dictionary-pen-learning-device",
+  "name": "词典笔点读笔学习机决策对比",
+  "description": "先选品类再选型号：词典笔300-800元覆盖到高中，点读笔先验绘本兼容，学习机核资源可导出，防同功能多付3500元。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6n"
+ },
+ {
+  "slug": "massage-chair-selection",
+  "name": "按摩椅选档与体验店砍价",
+  "description": "按机芯代数+SL导轨+质保写进报价单，年成本核算对比按摩店回本点，禁忌人群禁用，防医院同款话术溢价。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6n"
  }
 ]
