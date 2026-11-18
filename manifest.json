@@ -255248,5 +255248,50 @@
   "source_batch": "biz-P5r",
   "tier": "quality",
   "version": "2.0.0"
+ },
+ {
+  "slug": "zhuangxiu-cailiao-yongliang-jisuan",
+  "name": "装修主材用量测算",
+  "category": "finance",
+  "description": "瓷砖乳胶漆地板壁纸用量公式与损耗率，精确算例拦截商家多买套路",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5s"
+ },
+ {
+  "slug": "quedian-duanliang-quzheng",
+  "name": "缺斤短两取证与举报",
+  "category": "legal",
+  "description": "电子秤作弊识别、复秤留证四步、消法退一赔三话术与12315模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5s"
+ },
+ {
+  "slug": "jiadian-anzhuang-fujiafei-hedui",
+  "name": "家电安装附加费核对",
+  "category": "finance",
+  "description": "高空作业费打孔费支架辅材旧机拆运行情表与下单前四句话拦截进场加价",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5s"
+ },
+ {
+  "slug": "zhuangxiu-zhongting-jiesuan",
+  "name": "装修中途停工结算",
+  "category": "legal",
+  "description": "停工跑路时已完工程量实量折算、违约责任划分与取证路径",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5s"
+ },
+ {
+  "slug": "huangjin-yihuan-gongfei-hesuan",
+  "name": "黄金以旧换新工费测算",
+  "category": "finance",
+  "description": "折旧费工费损耗扣重三笔账反算真实换新成本，30元/克判断线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5s"
  }
 ]
