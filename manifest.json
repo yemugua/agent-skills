@@ -253771,5 +253771,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4m"
+ },
+ {
+  "slug": "baiyi-fangzhi-hetong-baojia",
+  "name": "白蚁防治合同与报价核算",
+  "description": "单价公式、包治年限、免费复治条款与砍价话术",
+  "category": "home-service",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4n"
+ },
+ {
+  "slug": "gangqin-tiaolv-zhouqi-feiyong",
+  "name": "钢琴调律周期与费用核算",
+  "description": "按使用频率定次数、市场价对照、选技师核查表与话术",
+  "category": "home-service",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4n"
+ },
+ {
+  "slug": "tongzhuangshui-dinggou-bijia",
+  "name": "桶装水订购比价与押桶金核算",
+  "description": "升价公式、年支出算例、预充值风险与凭证清单",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4n"
+ },
+ {
+  "slug": "yugang-shangmen-yanghu-taocan",
+  "name": "鱼缸上门养护套餐核算",
+  "description": "月费公式、耗材加价识别、全包合同条款与砍价话术",
+  "category": "home-service",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4n"
+ },
+ {
+  "slug": "baohao-tingji-san-changjing-feiyong",
+  "name": "手机号宽带报停保号费用对照",
+  "description": "三场景月费表、年省金额算例、换绑红线与客服话术",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4n"
  }
 ]

@@ -3,11 +3,11 @@
 [![Platform](https://img.shields.io/badge/works%20on-Claude%20%7C%20Codex%20%7C%20Cursor%20%7C%20Gemini%20%7C%2055%2B%20agents-orange)](https://skills.sh)
 [![Mirror](https://img.shields.io/badge/国内镜像-Gitee-red)](https://gitee.com/liu-tianbao9088/agent-skills)
 
-> **🇨🇳 36,643 个中文 AI Agent 技能库** · **The largest Chinese AI Agent Skills collection** · Free · MIT
+> **🇨🇳 36,648 个中文 AI Agent 技能库** · **The largest Chinese AI Agent Skills collection** · Free · MIT
 
 # Agent Skills 中文技能库（Chinese AI Agent Skills）
 
-**English:** The largest open collection of Chinese-life AI agent skills — 36,643 SKILL.md packages covering daily-life services in China: government services, social insurance, real estate, healthcare, pets, cars, weddings, funerals, side hustles, elder care, consumer rights and more. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, Copilot and 55+ agents reading the open SKILL.md standard.
+**English:** The largest open collection of Chinese-life AI agent skills — 36,648 SKILL.md packages covering daily-life services in China: government services, social insurance, real estate, healthcare, pets, cars, weddings, funerals, side hustles, elder care, consumer rights and more. Works with Claude Code, Codex CLI, Cursor, Gemini CLI, Copilot and 55+ agents reading the open SKILL.md standard.
 
 **一键安装 / One-line install:**
 ```bash
@@ -30,7 +30,7 @@ life-service (10865) · side-hustle (344) · real-estate (190) · pet-disputes (
 
 # Agent Skills 中文技能库（Chinese AI Agent Skills）
 
-目前**最大规模之一的中文 Agent Skills 开源合集**：**36,643 个 SKILL.md 技能**，覆盖life-service(10489)、real-estate(190)、funeral-services(128)、accessibility(110)、consumer-rights(110)、wechat-ecosystem(102)、veterans(72)、pet-disputes(72)等 20 个品类高频场景。
+目前**最大规模之一的中文 Agent Skills 开源合集**：**36,648 个 SKILL.md 技能**，覆盖life-service(10489)、real-estate(190)、funeral-services(128)、accessibility(110)、consumer-rights(110)、wechat-ecosystem(102)、veterans(72)、pet-disputes(72)等 20 个品类高频场景。
 适用于 **Claude Code、Claude、Codex CLI、Cursor、OpenCode、Windsurf、Cline** 等所有支持 Anthropic Agent Skills 规范的 AI 编程工具与 Agent 框架。
 
 ## ⚡ 快速安装（三种方式）
@@ -915,7 +915,7 @@ cp -r agent-skills/skills/life-service/<技能名> ~/.claude/skills/   # Claude 
 | `fire-control-room-remote-tianbao` | 依据《消防控制室通用技术要求》GB 25506 与建筑消防设施的维护管理 GB 25201，生成消防控制室清单：设施接入 |
 | `fire-design-review-tianbao` | 依据《建设工程消防设计审查验收管理暂行规定》，生成清单：审查范围与申报资料、设计文件完整性与深度、总平面与建筑防火审查、 |
 | `fire-door-check-tianbao` | 面向消防维保人员的防火门与防火卷帘巡查核查，覆盖门体/卷帘/五金/维护四大域。。触发词：消防维保、巡检、防火门、卷帘 |
-| `fire-door-shutter-tianbao` | 依据 GB 12955《防火门》与 GB 14102《防火卷帘》，生成清单：防火门等级与开启方向、闭门器与顺序器、常开防 |
+| `fire-door-shutter-tianbao` | 依据 GB 12955《防火门》与 GB 14152《防火卷帘》，生成清单：防火门等级与开启方向、闭门器与顺序器、常开防 |
 | `fire-drill-evaluation-tianbao` | 依据《消防法》与《机关团体企业事业单位消防安全管理规定》（公安部61号令），生成消防演练评估清单：演练计划/方案、演练类 |
 | `fire-drill-plan-tianbao` | 社会单位灭火和应急疏散演练方案编制指南，覆盖策划/实施/评估。。触发词：消防演练、疏散演练、方案 |
 | `fire-duty-record-tianbao` | 消防控制室值班记录类表单生成指南，覆盖记录要素/填写规范/检查要点。。触发词：消防、值班记录、表单、消控室 |
@@ -972,7 +972,7 @@ cp -r agent-skills/skills/life-service/<技能名> ~/.claude/skills/   # Claude 
 | `fire-smoke-detector-check-tianbao` | 面向消控室值班与维保人员的火灾自动报警系统巡查核查，覆盖探测器/联动/主机备电/值班四大域。。触发词：消防维保、巡检、烟 |
 | `fire-smoke-exhaust-check-tianbao` | 面向消防维保人员的防排烟系统巡查核查，覆盖风机/风口阀门/联动/维护四大域。。触发词：消防维保、巡检、防排烟、风机 |
 | `fire-sprinkler-check-tianbao` | 面向消防维保人员的自动喷水灭火系统巡查核查，覆盖喷头/报警阀组/水泵/维护记录四大域。。触发词：消防维保、巡检、喷淋 |
-| `fire-stopping-tianbao` | 依据《建筑防火封堵应用技术标准》GB/T 51410，生成清单：封堵部位识别（贯穿孔口/缝隙/竖向井道）、封堵材料与构件 |
+| `fire-stopping-tianbao` | 依据《建筑防火封堵应用技术标准》GB/T 51415，生成清单：封堵部位识别（贯穿孔口/缝隙/竖向井道）、封堵材料与构件 |
 | `fire-tech-agency-check-tianbao` | 依据《消防技术服务机构从业条件》（应急〔2019〕88号）与《社会消防技术服务管理规定》（应急管理部7号令），核对机构/ |
 | `fire-testing-report-check-tianbao` | 建筑消防设施年度检测报告与维保记录的核查：机构从业条件与备案核验、报告七要点核查、按场所必备检测项目清单、检测周期红线、 |
 | `fire-training-assembly-tianbao` | 面向人员密集场所消防控制室与安保负责人的培训课件生成，突出分流疏散。。触发词：消防培训、人员密集、课件、公共场所 |
