@@ -255097,5 +255097,53 @@
   "description": "照片冲印与相册书成本测算",
   "tier": "quality",
   "source_batch": "biz-P5o"
+ },
+ {
+  "name": "到手工资速算与五险一金测算",
+  "slug": "salary-take-home-calc",
+  "category": "finance",
+  "description": "谈 Offer 别只看月薪数字——五险一金个人扣缴+个税一扣，「税前15K」到手可能只有11K多，先用本表算清再签字。",
+  "tier": "quality",
+  "source_batch": "biz-P5p"
+ },
+ {
+  "name": "累计预扣法跳档与月度个税测算",
+  "slug": "monthly-tax-bracket-jump",
+  "category": "finance",
+  "description": "工资是按「累计预扣法」逐月算税的——收入集中在年初或年中涨薪会让后几个月税率跳档，月到手逐月变少不是公司扣错，先算再说。",
+  "tier": "quality",
+  "source_batch": "biz-P5p"
+ },
+ {
+  "name": "房东出租住房报税与开票税费测算",
+  "slug": "landlord-rent-tax-filing",
+  "category": "finance",
+  "description": "个人房东出租住房要交增值税+个税+房产税，综合税负约 5%-8%，但多数房东没申报；租客要发票时才知道怎么算、报多少，一张表算清。",
+  "tier": "quality",
+  "source_batch": "biz-P5p"
+ },
+ {
+  "name": "商业医疗险报销顺序与免赔额分摊",
+  "slug": "medical-insurance-reimburse-order",
+  "category": "finance",
+  "description": "商业医疗险不是「花多少报多少」——1万免赔额怎么抵扣、先医保后商保的顺序、未经医保结算只报60%，三个规则差出一大截钱，按本条顺序走能多报几千。",
+  "tier": "quality",
+  "source_batch": "biz-P5p"
+ },
+ {
+  "name": "工伤一次性待遇三金测算",
+  "slug": "work-injury-three-payments",
+  "category": "legal",
+  "description": "评上伤残等级后，「三金」算法完全不同——一次性伤残补助金看全国统一月数、就业/医疗补助金看各省月数，按本表算出总价再谈私了，别被 5 折话术打发。",
+  "tier": "quality",
+  "source_batch": "biz-P5p"
+ },
+ {
+  "name": "房贷收入流水准备与月供覆盖测算",
+  "slug": "mortgage-income-proof",
+  "category": "finance",
+  "description": "房贷审批卡人最多的不是征信而是「收入流水」——月供2倍覆盖、流水要「过夜余额」不要「即进即出」，按本条提前3个月准备一次过。",
+  "tier": "quality",
+  "source_batch": "biz-P5p"
  }
 ]
