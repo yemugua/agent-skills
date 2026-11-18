@@ -258083,5 +258083,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shijian",
+  "category": "tool",
+  "name": "暑假时间表与作业分配：前紧后松一张表",
+  "description": "暑假作业前紧后松排期公式、每日时段模板、收心周安排，含总页数倒排算例与打卡模板，可直接抄用。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huodong",
+  "category": "finance",
+  "name": "暑假研学营与游学比价：资质、合同与退费条款",
+  "description": "研学机构资质核验清单、合同退费条款逐条审法、单日成本比价算例，含退费话术模板，可直接抄用。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7t"
+ },
+ {
+  "slug": "ertong-shucai-huayao-shuji-youyong",
+  "category": "tool",
+  "name": "暑假游泳班与安全守则：选班、验教练、防溺水急救",
+  "description": "游泳班型对比表、教练资质核验、溺水识别与岸上急救流程，含真实价格区间与水质自检法，可直接抄用。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-dianzi",
+  "category": "tool",
+  "name": "暑假屏幕时间公约：分龄时长、家长控制设置与替代活动",
+  "description": "分龄屏幕时长标准、手机/平板家长控制逐项设置路径、家庭公约模板与替代活动清单，可直接抄用。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-jiaotong",
+  "category": "tool",
+  "name": "暑假独自乘车与交通安全：规则、走失应对与儿童手表定位",
+  "description": "地铁公交乘车规则、走失后黄金 10 分钟应对流程、儿童电话手表定位设置与资费，含演练脚本，可直接抄用。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-shengao-jia",
+  "category": "tool",
+  "name": "暑假在家独处安全：门锁管理、燃气电器禁令与紧急联系卡",
+  "description": "儿童独自在家年龄判断、门锁与访客管理规则、燃气电器禁用清单、紧急联系人卡模板与应急演练，可直接抄用。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7t"
  }
 ]
