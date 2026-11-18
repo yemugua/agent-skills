@@ -259385,5 +259385,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8p"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yery-xuanze",
+  "name": "幼儿园选择与考察清单",
+  "description": "公办vs民办对比、师资配比红线、距离通勤算例与实地考察清单，选园决策一次做对",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yery-fexiao",
+  "name": "幼儿园学费构成与补贴",
+  "description": "保教费伙食费构成拆解、地方补贴申领算例与学费账单逐项核对方法，一年省出几千元",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yery-ruyuan",
+  "name": "入园准备与分离焦虑缓解",
+  "description": "入园物品清单、两周作息倒推调整表、接送沟通话术与分离焦虑应对，孩子哭闹周期缩短一半",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zaojiao-kechen",
+  "name": "早教班选择与退费规则",
+  "description": "体验课评估表、课时包单价算例、机构跑路预判信号与退费维权阶梯，一次报课不踩坑",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ertong-huihua",
+  "name": "儿童疫苗接种证查验与补办",
+  "description": "入托入学查验流程、接种证丢失补办步骤与异地接种记录合并方法，入园前一次办结",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-anquan-yidi",
+  "name": "幼儿园接送安全与委托接领",
+  "description": "固定接领人备案、委托书模板、接送卡管理与交接核对清单，把接送漏洞一次堵死",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8q"
  }
 ]
