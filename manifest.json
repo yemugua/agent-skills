@@ -258311,5 +258311,65 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7w"
+ },
+ {
+  "slug": "ertong-shucai-huayao-kanwang",
+  "name": "ertong-shucai-huayao-kanwang",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7x",
+  "title": "ertong-shucai-huayao-kanwang",
+  "description": "春节走亲戚与拜年红包礼数：亲戚称呼表、红包金额梯度、回礼规矩，附可直接照抄的话术。"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-paiwei",
+  "name": "ertong-shucai-shuji-huayao-paiwei",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7x",
+  "title": "ertong-shucai-shuji-huayao-paiwei",
+  "description": "年夜饭座位与敬酒礼节：主宾位次图、敬酒顺序、不会喝酒的替代话术，附圆桌位次速记。"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-suiwu-xiaofang",
+  "name": "ertong-shucai-shengao-huayao-suiwu-xiaofang",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7x",
+  "title": "ertong-shucai-shengao-huayao-suiwu-xiaofang",
+  "description": "家庭聚会厨房火灾与油锅起火处置：盖锅盖、灭火器选型对照、逃生路线规划，含逃生包清单。"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-weijifankui",
+  "name": "ertong-shucai-shuji-huayao-weijifankui",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7x",
+  "title": "ertong-shucai-shuji-huayao-weijifankui",
+  "description": "春节抢票与候补成功率：12306 候补规则、放票时间表、跨站买票算例，附捡漏时段清单。"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-huixiang-saohce",
+  "name": "ertong-shucai-shengao-huayao-huixiang-saohce",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7x",
+  "title": "ertong-shucai-shengao-huayao-huixiang-saohce",
+  "description": "春节大扫除与断舍离清单：旧物处置渠道对照、回收价区间、旧衣回收出口，附逐房间清单模板。"
+ },
+ {
+  "slug": "ertong-shucai-shuji-shengao-huayao-bank",
+  "name": "ertong-shucai-shuji-shengao-huayao-bank",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7x",
+  "title": "ertong-shucai-shuji-shengao-huayao-bank",
+  "description": "春节期间银行与政务服务时间：网点营业规律、线上业务可用清单、ATM 取现限额与手续费算例。"
  }
 ]
