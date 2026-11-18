@@ -256530,5 +256530,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6p"
+ },
+ {
+  "slug": "chengzhangjin-cunguan-jihua",
+  "name": "儿童成长金存管规划（防挪用专户）",
+  "category": "finance",
+  "description": "儿童教育金专户设立：家长单方存管组合（定期+保险）、挪用红线自我约束表、按年龄倒推的目标金额算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6q"
+ },
+ {
+  "slug": "laoren-shouji-qingyin-moshi",
+  "name": "老人手机简易模式与防诈设置",
+  "category": "tool",
+  "description": "老人智能手机一次性安全配置清单：字体放大/简易桌面、免密支付关闭、骚扰拦截白名单、亲属远程协助设置",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6q"
+ },
+ {
+  "slug": "jiazhengshifu-lijirenhe",
+  "name": "家政阿姨离职交接清单",
+  "category": "legal",
+  "description": "家政阿姨离职交接清单模板：钥匙移交表、药品与物品盘点表、工资尾款与押金结算顺序、门锁密码更换时点",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6q"
+ },
+ {
+  "slug": "jingmai-quzhang-xuanze",
+  "name": "静脉曲张袜压力等级选购",
+  "category": "health",
+  "description": "医用静脉曲张袜一级/二级/三级压力对照与场景选择、腿围测量定尺码方法、真假医用袜鉴别与价格",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6q"
+ },
+ {
+  "slug": "chexian-dijia-toubei",
+  "name": "车险低价投保陷阱",
+  "category": "legal",
+  "description": "车险低价投保常见套路：三者保额缩水、驾乘险搭售充当商业险、电销渠道免赔条款、报价单逐项核对法",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6q"
+ },
+ {
+  "slug": "juzhu-zheng-dianjia-zhuanhuan",
+  "name": "居住证积分与电价阶梯户籍影响",
+  "category": "legal",
+  "description": "租房办居住证对积分落户入学的作用、居民阶梯电价档位与合租/租房电价误区、户籍与用电户号的关系",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6q"
  }
 ]
