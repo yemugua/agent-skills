@@ -257705,5 +257705,53 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7l"
+ },
+ {
+  "slug": "ertong-jiazheng-banban",
+  "category": "legal",
+  "name": "托管班资质与消防审蓝检查（看护点黑班风险）",
+  "description": "托管班资质与消防审蓝检查：办学许可、消防验收、看护点黑班识别，附核查话术与退出维权模板，一次使用即见效。",
+  "source_batch": "biz-P7m",
+  "tier": "quality"
+ },
+ {
+  "slug": "ertong-huayao-shuiyin",
+  "category": "health",
+  "name": "儿童游泳池与水上乐园卫生自检（余氯/足浸/传染病信号）",
+  "description": "儿童泳池与水上乐园卫生自检：余氯合格值、足浸消毒池、传染病信号识别，附现场核查清单与投诉模板，一次使用即见效。",
+  "source_batch": "biz-P7m",
+  "tier": "quality"
+ },
+ {
+  "slug": "ertong-huayi-baiji",
+  "category": "tool",
+  "name": "儿童衣服绳带与GB31702国标安全检查",
+  "description": "儿童衣服绳带与国标安全检查：GB31701绳带红线、帽绳剪刀处置、退换投诉话术，一次使用即见效。",
+  "source_batch": "biz-P7m",
+  "tier": "quality"
+ },
+ {
+  "slug": "ertong-wanju-renzheng",
+  "category": "tool",
+  "name": "玩具3C认证与年龄标志解读（小零件/电池仓）",
+  "description": "玩具3C认证与年龄标志解读：小零件窒息测试、纽扣电池仓检查、退换投诉话术，一次使用即见效。",
+  "source_batch": "biz-P7m",
+  "tier": "quality"
+ },
+ {
+  "slug": "ertong-canting-weisheng",
+  "category": "tool",
+  "name": "亲子餐厅与儿童餐具卫生检查（消毒标志/自带餐具）",
+  "description": "亲子餐厅与儿童餐具卫生：餐具消毒三步判别、餐椅安全检查、自带餐具清单与维权模板，一次使用即见效。",
+  "source_batch": "biz-P7m",
+  "tier": "quality"
+ },
+ {
+  "slug": "ertong-huawen-jiacu",
+  "category": "tool",
+  "name": "儿童床围与床品安全（缝隙卡夹/软床垫窒息风险）",
+  "description": "儿童床围与床品安全：缝隙≤25mm标准、软床品窒息分级、实体店检查法与错误用法纠正，一次使用即见效。",
+  "source_batch": "biz-P7m",
+  "tier": "quality"
  }
 ]
