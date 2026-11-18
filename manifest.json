@@ -258899,5 +258899,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P8g",
   "path": "ertong-shucai-shuji-huayao-shengao-huiyuan-gongxiang/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhengjian-zhao",
+  "category": "tool",
+  "name": "证件照拍摄与尺寸规格",
+  "description": "证件照拍摄与尺寸规格：白底蓝底用途对照表、手机自拍工具路径、打印价格算例，一次拍对不再重拍。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zhengjian-banli",
+  "category": "legal",
+  "name": "居住证办理与材料清单",
+  "description": "居住证办理条件与材料清单自查表、办理路径、签注续签时间点，过期半年即作废的硬时限一次讲清。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-gongji-jizhang",
+  "category": "finance",
+  "name": "公积金年度对账与余额查询",
+  "description": "公积金年度对账与余额查询全路径：线上线下查询入口、结息规则、对账单核对清单，每年30分钟盯住这笔钱。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shebao-dingzhen",
+  "category": "health",
+  "name": "社保定点医院变更与选定",
+  "description": "社保定点医院选定数量、变更时间规则、异地备案联动，选错定点多花钱的自查与改绑路径。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dangan-diaodang",
+  "category": "legal",
+  "name": "人事档案调转与存档",
+  "description": "人事档案存放地查询、调档函全流程、死档激活路径，考公落户评职称前必须理顺的一纸档案。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-gongjijin-zufang",
+  "category": "finance",
+  "name": "公积金租房提取年度规划",
+  "description": "公积金租房提取额度标准、所需材料、办理频率规划与购房提取互斥规则，把租房损失从公积金账户里补回来。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8h"
  }
 ]
