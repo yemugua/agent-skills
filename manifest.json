@@ -253906,5 +253906,45 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4p"
+ },
+ {
+  "slug": "credit-card-points-value",
+  "name": "信用卡积分价值变现与清零前核算：单分价值公式、兑换对照表与客服话术",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4q"
+ },
+ {
+  "slug": "house-transfer-tax-compare",
+  "name": "房产买卖/赠与/继承三种过户方式税费对比与隐藏成本测算",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4q"
+ },
+ {
+  "slug": "gold-buyback-spread",
+  "name": "黄金回收价差核算：大盘价基准、渠道折价对照与防掉包清单",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4q"
+ },
+ {
+  "slug": "merchant-qr-payment-tax",
+  "name": "商家收款码费率与个人码合规风险：成本算账、换码条件与防调包自查",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4q"
+ },
+ {
+  "slug": "water-bill-surge-audit",
+  "name": "水费突增三步核查：关阀测试定位、马桶漏水自查与退补申诉话术",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4q"
  }
 ]
