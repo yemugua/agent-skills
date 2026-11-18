@@ -254920,15 +254920,6 @@
   "source_batch": "biz-P5k"
  },
  {
-  "slug": "nianzhongjiang-critical-points",
-  "category": "finance",
-  "name": "年终奖临界点测算",
-  "description": "年终奖临界点测算：税率档表+六大盲区精确金额+拆分话术，谈薪当场省税。",
-  "tier": "quality",
-  "version": "2.0.0",
-  "source_batch": "biz-P5l"
- },
- {
   "slug": "canbaojin-calculator",
   "category": "finance",
   "name": "残保金测算",
