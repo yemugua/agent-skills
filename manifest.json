@@ -256197,5 +256197,68 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6j"
+ },
+ {
+  "slug": "shoubiao-huandianchi",
+  "name": "手表换电池避坑与防水检测",
+  "category": "tool",
+  "description": "石英表换电池三渠道比价与防水圈更换，10-500元差价逐项核对",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6k"
+ },
+ {
+  "slug": "yurongbei-xuangou",
+  "name": "羽绒被选购充绒与蓬松度核算",
+  "category": "tool",
+  "description": "羽绒被三参数定价公式与验货动作，虚标鹅绒被一眼见底",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6k"
+ },
+ {
+  "slug": "ruhumen-genghuan",
+  "name": "入户门更换费用清单与等级核对",
+  "category": "tool",
+  "description": "换入户门全费用清单、甲级钢印等级核对与增项审查话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6k"
+ },
+ {
+  "slug": "lutai-huayuan-gaizao",
+  "name": "露台屋顶花园改造预算与防水施工核算",
+  "category": "tool",
+  "description": "露台改花园防水/荷载/排水三前提与分项预算表",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6k"
+ },
+ {
+  "slug": "xiwanji-haocai",
+  "name": "洗碗机耗材成本核算与选型",
+  "category": "tool",
+  "description": "洗碗机单次洗涤成本核算表，洗碗块vs洗碗粉年差价测算",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6k"
+ },
+ {
+  "slug": "laonian-huafei-taocan",
+  "name": "老年人话费套餐核对与降档",
+  "category": "finance",
+  "description": "给父母查话费套餐多扣与降档，代办话术与维权依据",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6k"
+ },
+ {
+  "slug": "kuaidi-shengming-jiazhi",
+  "name": "快递保价声明价值与理赔上限核算",
+  "category": "legal",
+  "description": "声明价值填写规则与保价理赔上限核算，12305申诉话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6k"
  }
 ]
