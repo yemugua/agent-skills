@@ -255185,5 +255185,68 @@
   "description": "保险断缴三档时间线自救：宽限期60天/中止2年/终止的损失算例与复效必问三句。",
   "tier": "quality",
   "source_batch": "biz-P5q"
+ },
+ {
+  "slug": "print-cost-per-page",
+  "category": "tool",
+  "name": "打印机单页成本测算",
+  "description": "原装/兼容耗材单页成本公式、墨盒硒鼓容量换算与月打印量决策表",
+  "source_batch": "biz-P5r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "home-safe-emergency-open",
+  "category": "tool",
+  "name": "保险箱应急开锁与费用",
+  "description": "密码/钥匙遗失后的应急开启流程、正规开锁费用区间与物权凭证话术",
+  "source_batch": "biz-P5r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "camera-footage-recovery",
+  "category": "tool",
+  "name": "监控录像恢复与取证导出",
+  "description": "录像覆盖/误删后的恢复可行性、TF卡恢复方法与司法取证级导出流程",
+  "source_batch": "biz-P5r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "no-receipt-return",
+  "category": "legal",
+  "name": "无小票退货规则与凭证替代",
+  "description": "电子发票/支付流水等凭证替代优先级、各渠道退货实操与客服话术",
+  "source_batch": "biz-P5r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ktv-bill-dispute",
+  "category": "legal",
+  "name": "KTV账单明细核对与消费纠纷",
+  "description": "包厢计费时段核对、酒水加价与最低消费争议应对话术与留证清单",
+  "source_batch": "biz-P5r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "washing-machine-transport",
+  "category": "tool",
+  "name": "洗衣机搬运运输固定指南",
+  "description": "运输螺栓安装、直立运输要求、保价与验收话术",
+  "source_batch": "biz-P5r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "rangehood-deep-clean-price",
+  "category": "tool",
+  "name": "油烟机深度拆洗计价与自拆判断",
+  "description": "拆洗报价分档对照、增价陷阱、自拆可行性判断与验收标准",
+  "source_batch": "biz-P5r",
+  "tier": "quality",
+  "version": "2.0.0"
  }
 ]
