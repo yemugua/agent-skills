@@ -254963,5 +254963,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5l"
+ },
+ {
+  "slug": "gongzitiao-hexin",
+  "name": "工资条逐项核对：社保公积金个税扣款与加班费核算",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5m",
+  "description": "工资条逐项核对：社保公积金个税扣款与加班费核算"
+ },
+ {
+  "slug": "linghuojiuye-shebao-cesuan",
+  "name": "灵活就业社保缴费测算：与职工社保的成本对比与选择",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5m",
+  "description": "灵活就业社保缴费测算：与职工社保的成本对比与选择"
+ },
+ {
+  "slug": "ranqi-fei-tuzeng-chaoyan",
+  "name": "燃气费突增核查与燃气表校验：三步定位与退费申诉",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5m",
+  "description": "燃气费突增核查与燃气表校验：三步定位与退费申诉"
+ },
+ {
+  "slug": "jipiao-tuigai-qianfei",
+  "name": "机票退改签费用测算与规则拆解：舱位折扣决定退改成本",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5m",
+  "description": "机票退改签费用测算与规则拆解：舱位折扣决定退改成本"
+ },
+ {
+  "slug": "diandongche-yijiu-huanxin",
+  "name": "电动车以旧换新补贴核算：国补/省补叠加与旧车估价",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5m",
+  "description": "电动车以旧换新补贴核算：国补/省补叠加与旧车估价"
+ },
+ {
+  "slug": "qiche-zhaohui-yingdui",
+  "name": "汽车召回核查与维权：VIN查询、缺陷线索与补偿争取",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5m",
+  "description": "汽车召回核查与维权：VIN查询、缺陷线索与补偿争取"
  }
 ]
