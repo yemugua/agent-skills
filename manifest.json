@@ -257921,5 +257921,59 @@
   "category": "health",
   "tier": "quality",
   "source_batch": "biz-P7p"
+ },
+ {
+  "slug": "ertong-shucai-shuji-yingyang",
+  "name": "儿童早餐搭配与上学日15分钟快手方案",
+  "description": "蛋白质+主食+果蔬早餐公式、分龄份量表、上学日15分钟时间轴与5天备餐清单，附精确金额算例与话术模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7q",
+  "category": "health"
+ },
+ {
+  "slug": "ertong-shucai-huayao-xuexiao",
+  "name": "学校体检单解读与复查决策",
+  "description": "视力/脊柱/血常规异常信号的分级判读表、必须复查的红色信号清单与复查流程话术模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7q",
+  "category": "health"
+ },
+ {
+  "slug": "ertong-shucai-huayao-feiyong",
+  "name": "儿童打疫苗与体检费用清单",
+  "description": "自费疫苗总价测算表、入园入学体检项目与费用、哪些自费项值得打的优先级排序。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7q",
+  "category": "finance"
+ },
+ {
+  "slug": "ertong-shucai-shengao-yujia",
+  "name": "儿童跳绳与长高运动计划",
+  "description": "分龄每日跳绳个数处方、热身流程、护膝选择标准与长高运动的科学边界（哪些运动真的有用）。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7q",
+  "category": "tool"
+ },
+ {
+  "slug": "ertong-shucai-huayao-huxi",
+  "name": "儿童打呼噜与腺样体肥大信号判断",
+  "description": "张口呼吸/打呼/憋气的分级信号表、手术指征与保守观察的决策规则、就医科室与费用参考。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7q",
+  "category": "health"
+ },
+ {
+  "slug": "ertong-shucai-shuji-shucai",
+  "name": "儿童零花钱与财商启蒙实操",
+  "description": "按周给vs按次的决策表、金额分龄标准、记账习惯养成模板与压岁钱参与决策的分级放权方案。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7q",
+  "category": "finance"
  }
 ]
