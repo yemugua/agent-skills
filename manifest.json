@@ -255629,5 +255629,59 @@
   "tier": "quality",
   "source_batch": "biz-P5z",
   "category": "tool"
+ },
+ {
+  "slug": "mortgage-payoff-and-lien-release",
+  "category": "finance",
+  "display_name": "房贷结清后解押与抵押注销全流程",
+  "description": "一句话点题：房贷最后一期扣款成功≠房已经完全是你的——必须拿到结清证明、办理解押注销，否则卖房二次抵押都会卡住。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6a"
+ },
+ {
+  "slug": "notice-deposit-interest-calc",
+  "category": "finance",
+  "display_name": "通知存款计息规则与1天7天档收益测算",
+  "description": "一句话点题：通知存款比活期利率高4-8倍、比定期灵活，但1天/7天档计息规则和提前支取按活期计息的坑，90%的人不知道。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6a"
+ },
+ {
+  "slug": "train-pass-commuter-plan",
+  "category": "tool",
+  "display_name": "12306计次票定期票适用判断与回本测算",
+  "description": "一句话点题：12306计次票和定期票只对固定区间高频通勤者省钱，买错品种反而比单买还贵——一张表算清什么情况下该买。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6a"
+ },
+ {
+  "slug": "flight-lowprice-calendar-plan",
+  "category": "tool",
+  "display_name": "机票低价日历与错峰购票省钱测算",
+  "description": "一句话点题：同一航班不同日期价差可达3-5倍，「低价日历+错峰规则」是唯一能把机票成本砍到最低的系统方法，不需要抢票软件。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6a"
+ },
+ {
+  "slug": "flight-itinerary-receipt-guide",
+  "category": "tool",
+  "display_name": "机票行程单报销开具与遗失补打指引",
+  "description": "一句话点题：机票行程单（航空运输电子客票行程单）是机票唯一的增值税报销凭证——丢了不能重开只能补打，且开票主体是承运航司不是购票平台。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6a"
+ },
+ {
+  "slug": "train-passenger-id-verification",
+  "category": "tool",
+  "display_name": "12306乘车人证件核验与信息不符处置",
+  "description": "一句话点题：12306乘车人姓名/证件号与证件不符（改名、换护照、身份证重办）会导致进站刷证失败——提前在App核验修改，别到闸机前才发现。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6a"
  }
 ]
