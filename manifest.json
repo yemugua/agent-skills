@@ -259163,5 +259163,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8l"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hunli-miyu",
+  "name": "婚假天数与工资",
+  "category": "legal",
+  "description": "婚假天数与工资——法定3天+地方晚婚奖励差异对照、婚假期间工资计算算例、跨省结婚适用地规则与维权话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunqian-tijian",
+  "name": "婚前检查与领证材料",
+  "category": "health",
+  "description": "婚前检查与领证材料——免费婚检项目清单、户口本身份证等材料核对表、婚检+领证一天办完的预约流程。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hunli-hongbao",
+  "name": "婚礼红包发放清单",
+  "category": "finance",
+  "description": "婚礼红包发放清单——改口费/伴娘堵门/四大金刚/工作人员行情价对照表、红包提前分装技巧、总预算算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-miyue-yuding",
+  "name": "月嫂预订与合同",
+  "category": "finance",
+  "description": "月嫂预订与合同——预产期前3个月预订时间表、服务范围核对清单、定金与退换条款审查要点、价格算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hunfang-buzhi",
+  "name": "婚房布置与仪式感预算",
+  "category": "tool",
+  "description": "婚房布置与仪式感预算——气球拉花/床品四件套/喜字物料采购清单、500元总预算分配算例、布置时间与拆除安排。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunli-chuche",
+  "name": "婚礼车队路线与停车安排",
+  "category": "tool",
+  "description": "婚礼车队路线与停车安排——接亲路线规划原则、酒店停车协调清单、堵车与限行备用方案、时间表算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8m"
  }
 ]
