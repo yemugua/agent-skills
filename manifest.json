@@ -255936,5 +255936,68 @@
   "tier": "quality",
   "source_batch": "biz-P6e",
   "version": "2.0.0"
+ },
+ {
+  "slug": "zhongcheng-xieyi-xiaoli",
+  "name": "忠诚协议效力认定",
+  "description": "签忠诚协议前必看：哪些条款无效、哪些被法院支持、净身出户条款的司法态度，附条款审查清单与可复制协议框架。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6f"
+ },
+ {
+  "slug": "ruyuan-tijian-qingdan",
+  "name": "儿童入园体检清单",
+  "description": "幼儿园入园体检全流程：必查项目、费用区间、结果异常怎么办，附携带材料清单与体检前准备对照表。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6f"
+ },
+ {
+  "slug": "chongwu-xinpian-dengji",
+  "name": "宠物芯片登记指南",
+  "description": "犬猫芯片注射与登记全流程：费用、办理地点、芯片号查询渠道、跨市搬家与出境怎么办，附办理前自查表。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6f"
+ },
+ {
+  "slug": "jiawu-buchang-1088",
+  "name": "家务劳动补偿1088",
+  "description": "民法典1088条家务劳动补偿：谁有资格要、给多少、怎么举证，附可复制的主张清单与判例金额对照表。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6f"
+ },
+ {
+  "slug": "lao-zhaopian-shuzihua",
+  "name": "老照片数字化保存",
+  "description": "老照片翻拍/扫描/修复三条路径的成本与效果对比，附手机翻拍参数设置、AI修复工具清单与保存归档规范。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6f"
+ },
+ {
+  "slug": "kuandai-xiaohu-tuifei",
+  "name": "宽带销户退费流程",
+  "description": "宽带销户全流程：合约违约金怎么算、话费余额与预存款怎么退、光猫押金怎么要回，附可复制的客服话术与投诉路径。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6f"
+ },
+ {
+  "slug": "bashi-nai-xuangou",
+  "name": "巴氏奶常温奶选购",
+  "description": "巴氏奶/常温奶/复原乳的成分与保质期对照、配料表识读方法、儿童老人饮用量建议，附奶价与营养性价比算例。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6f"
  }
 ]
