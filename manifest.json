@@ -256314,5 +256314,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6l"
+ },
+ {
+  "slug": "ershoufang-tax-calculation",
+  "name": "二手房买卖税费测算",
+  "description": "二手房过户前先算清买卖双方合计税费，契税、增值税、个税三税差价可超过五位数。同一套房\"满五唯一\"与否，100万总价的税差约5.3万。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6m"
+ },
+ {
+  "slug": "credit-thin-file-first-card",
+  "name": "征信白户首卡起步与信用积累",
+  "description": "白户不是信用好而是信用空白，首卡选对、用满6个月、按时还款是最快破白路径；多申卡养征信反而让查询爆表。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6m"
+ },
+ {
+  "slug": "online-course-refund-rights",
+  "name": "网课与知识付费退费维权",
+  "description": "网课退费成功率取决于付款方式和购买渠道而非吵架音量，按比例退还公式+12315阶梯可直接照抄。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6m"
+ },
+ {
+  "slug": "house-subscription-deposit-refund",
+  "name": "认购书定金与退认购金决策",
+  "description": "定金/订金/认购金一字之差决定退不退得回，签字前10分钟核对清单可避免全额没收。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6m"
+ },
+ {
+  "slug": "atm-error-recovery",
+  "name": "ATM吞钞吞卡与无卡存取款",
+  "description": "吞钞等2分钟、保留凭条、当天报故障单是追回关键，故障单号让72小时到账成为常态。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6m"
+ },
+ {
+  "slug": "renovation-add-on-contract-lock",
+  "name": "装修增项与口头承诺落合同",
+  "description": "签合同前把12类高频增项钉进补充条款+增项上限10%，能把装修支出锁死在报价±10%内。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6m"
  }
 ]
