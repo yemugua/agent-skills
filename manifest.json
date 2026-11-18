@@ -255017,5 +255017,45 @@
   "version": "2.0.0",
   "source_batch": "biz-P5m",
   "description": "汽车召回核查与维权：VIN查询、缺陷线索与补偿争取"
+ },
+ {
+  "name": "定期存款提前支取利息损失测算",
+  "slug": "dingqi-cunzhuan-tiqian-zhiqu",
+  "category": "finance",
+  "description": "定期存款提前支取利息损失测算",
+  "tier": "quality",
+  "source_batch": "biz-P5n"
+ },
+ {
+  "name": "预付卡商家跑路余额追回操作",
+  "slug": "yufuka-paolu-weiquan",
+  "category": "legal",
+  "description": "预付卡商家跑路余额追回操作",
+  "tier": "quality",
+  "source_batch": "biz-P5n"
+ },
+ {
+  "name": "空调移机拆装与加氟费用核对",
+  "slug": "kongtiao-yiji-jiafu-hesuan",
+  "category": "tool",
+  "description": "空调移机拆装与加氟费用核对",
+  "tier": "quality",
+  "source_batch": "biz-P5n"
+ },
+ {
+  "name": "感冒药成分重复与对乙酰氨基酚过量核对",
+  "slug": "gannmaoyao-chengfen-chongfu",
+  "category": "health",
+  "description": "感冒药成分重复与对乙酰氨基酚过量核对",
+  "tier": "quality",
+  "source_batch": "biz-P5n"
+ },
+ {
+  "name": "二手车过户费用与代办差价核对",
+  "slug": "ershouche-guohu-feiyong",
+  "category": "legal",
+  "description": "二手车过户费用与代办差价核对",
+  "tier": "quality",
+  "source_batch": "biz-P5n"
  }
 ]
