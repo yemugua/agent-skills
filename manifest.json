@@ -254459,5 +254459,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5b"
+ },
+ {
+  "slug": "haoyi-tongcheng-chuxian",
+  "name": "好意同乘出险与责任划分",
+  "description": "好意同乘出险与责任划分：精品指南（biz-P5c）",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5c"
+ },
+ {
+  "slug": "jianyan-jieguo-huren",
+  "name": "检验检查结果跨院互认",
+  "description": "检验检查结果跨院互认：精品指南（biz-P5c）",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5c"
+ },
+ {
+  "slug": "siche-gongyong-baoxiao",
+  "name": "私车公用报销与风险",
+  "description": "私车公用报销与风险：精品指南（biz-P5c）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5c"
+ },
+ {
+  "slug": "zhuyuan-jintie-lipei",
+  "name": "住院津贴险按天赔付理赔",
+  "description": "住院津贴险按天赔付理赔：精品指南（biz-P5c）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5c"
+ },
+ {
+  "slug": "jiaban-dache-baoxiao",
+  "name": "加班打车报销凭证与合规",
+  "description": "加班打车报销凭证与合规：精品指南（biz-P5c）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5c"
+ },
+ {
+  "slug": "manbing-fuzhen-jihua",
+  "name": "慢病复诊随访计划表",
+  "description": "慢病复诊随访计划表：精品指南（biz-P5c）",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5c"
  }
 ]
