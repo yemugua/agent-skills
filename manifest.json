@@ -257273,5 +257273,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7d"
+ },
+ {
+  "slug": "shuguo-yunying-baojian",
+  "name": "蔬果保鲜与冰箱分区存放",
+  "description": "乙烯催熟名单、抽屉湿度档设置与存放禁忌",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7e"
+ },
+ {
+  "slug": "ertong-gandao-yichang",
+  "name": "儿童身高发育曲线自查与干预时点",
+  "description": "生长曲线百分位判读、骨龄检测年龄与干预阶梯",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7e"
+ },
+ {
+  "slug": "dianzi-chengnuo-shu",
+  "name": "电子承诺书与手写签名效力对比",
+  "description": "电子签平台选择、异地签字风险与证据固定要点",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7e"
+ },
+ {
+  "slug": "yajin-tuidang-shijian",
+  "name": "押金退还时限与扣押金抗辩清单",
+  "description": "法定时限对照、合理损耗折旧话术与维权阶梯",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7e"
+ },
+ {
+  "slug": "xigua-xuanbao-jifa",
+  "name": "西瓜挑瓜与含糖量信号",
+  "description": "拍音听法、纹路瓜蒂判断与甜度对照表",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7e"
+ },
+ {
+  "slug": "shiyong-dianci-luzha",
+  "name": "电磁炉故障代码与自检",
+  "description": "E0-E7含义速查、常见报错自救与面板失灵应对",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7e"
  }
 ]
