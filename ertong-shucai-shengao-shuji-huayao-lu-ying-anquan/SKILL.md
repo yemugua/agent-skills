@@ -1,6 +1,6 @@
 ---
 name: ertong-shucai-shengao-shuji-huayao-lu-ying-anquan
-slug: ERTONG-shucai-shengao-shuji-huayao-lu-ying-anquan
+slug: ertong-shucai-shengao-shuji-huayao-lu-ying-anquan
 category: health
 tier: quality
 version: 2.0.0

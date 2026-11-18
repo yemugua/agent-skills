@@ -258601,7 +258601,7 @@
   "description": "境外消费退税与免税店：退税单填写与海关验章流程、退税金额计算、支付方式对退款的影响"
  },
  {
-  "slug": "ERTONG-shucai-shuji-huayao-shengao-lu-ying",
+  "slug": "ertong-shucai-shuji-huayao-shengao-lu-ying",
   "category": "finance",
   "name": "露营装备清单与首露营预算",
   "description": "露营装备清单与首露营预算：精品算例条目，含工具表/算例/话术与红线段。",
@@ -258610,7 +258610,7 @@
   "source_batch": "biz-P8c"
  },
  {
-  "slug": "ERTONG-shucai-shengao-shuji-huayao-lu-ying-anquan",
+  "slug": "ertong-shucai-shengao-shuji-huayao-lu-ying-anquan",
   "category": "health",
   "name": "露营地选择与天气风险",
   "description": "露营地选择与天气风险：精品算例条目，含工具表/算例/话术与红线段。",
@@ -258619,7 +258619,7 @@
   "source_batch": "biz-P8c"
  },
  {
-  "slug": "ERTONG-shucai-shuji-huayao-shengao-yueye",
+  "slug": "ertong-shucai-shuji-huayao-shengao-yueye",
   "category": "tool",
   "name": "越野骑行与儿童平衡车进阶",
   "description": "越野骑行与儿童平衡车进阶：精品算例条目，含工具表/算例/话术与红线段。",
@@ -258628,7 +258628,7 @@
   "source_batch": "biz-P8c"
  },
  {
-  "slug": "ERTONG-shucai-shengao-shuji-huayao-diaoyu",
+  "slug": "ertong-shucai-shengao-shuji-huayao-diaoyu",
   "category": "tool",
   "name": "亲子钓鱼与装备入门",
   "description": "亲子钓鱼与装备入门：精品算例条目，含工具表/算例/话术与红线段。",
@@ -258637,7 +258637,7 @@
   "source_batch": "biz-P8c"
  },
  {
-  "slug": "ERTONG-shucai-shuji-huayao-shengao-huaxue",
+  "slug": "ertong-shucai-shuji-huayao-shengao-huaxue",
   "category": "finance",
   "name": "滑雪场选择与装备租赁vs购买",
   "description": "滑雪场选择与装备租赁vs购买：精品算例条目，含工具表/算例/话术与红线段。",
@@ -258646,7 +258646,7 @@
   "source_batch": "biz-P8c"
  },
  {
-  "slug": "ERTONG-shucai-shengao-shuji-huayao-huaxue-anquan",
+  "slug": "ertong-shucai-shengao-shuji-huayao-huaxue-anquan",
   "category": "health",
   "name": "滑雪受伤与救援常识",
   "description": "滑雪受伤与救援常识：精品算例条目，含工具表/算例/话术与红线段。",

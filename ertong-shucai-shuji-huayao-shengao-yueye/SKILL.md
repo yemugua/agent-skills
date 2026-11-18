@@ -1,6 +1,6 @@
 ---
 name: ertong-shucai-shuji-huayao-shengao-yueye
-slug: ERTONG-shucai-shuji-huayao-shengao-yueye
+slug: ertong-shucai-shuji-huayao-shengao-yueye
 category: tool
 tier: quality
 version: 2.0.0

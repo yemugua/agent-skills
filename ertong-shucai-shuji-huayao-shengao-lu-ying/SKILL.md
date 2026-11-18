@@ -1,6 +1,6 @@
 ---
 name: ertong-shucai-shuji-huayao-shengao-lu-ying
-slug: ERTONG-shucai-shuji-huayao-shengao-lu-ying
+slug: ertong-shucai-shuji-huayao-shengao-lu-ying
 category: finance
 tier: quality
 version: 2.0.0
