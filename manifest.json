@@ -259439,5 +259439,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xiaoxue-ruxue",
+  "name": "小学报名与学区核实",
+  "description": "学区房年限核对、报名材料清单与统筹规则推演，用一套核查表把\"被统筹\"风险提前算出来",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xiaoxue-shuji",
+  "name": "书包文具清单与选购",
+  "description": "护脊书包参数核对、铅笔型号选择与开学文具预算算例，照抄清单一次买齐不踩坑",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xiaoxue-kehou",
+  "name": "课后延时服务与托管衔接",
+  "description": "课后延时费用标准、退出机制条款核对与家庭接送时间算例，算清\"报延时还是请托管\"哪边更省",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xiaoxue-shiyi",
+  "name": "小学生视力保护与配镜时点",
+  "description": "远视储备判读、筛查单指标解读与配镜预算算例，答准\"要不要配镜、什么时候配、配多少价位的\"",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xiaoxue-xingqu",
+  "name": "兴趣班坚持与止损判断",
+  "description": "继续还是放弃的信号清单、课时包折算公式与退费谈判话术，把沉没成本算成账再做决定",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xiaoxue-shengao",
+  "name": "儿童生长发育监测与骨龄",
+  "description": "身高曲线自查方法、骨龄检查时机判断与性早熟预警信号，用数据决定\"要不要去医院\"而不是焦虑",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8r"
  }
 ]
