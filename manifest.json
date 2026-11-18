@@ -253726,5 +253726,50 @@
   "tier": "quality",
   "source_batch": "biz-P4l",
   "version": "2.0.0"
+ },
+ {
+  "slug": "credit-grace-period-check",
+  "category": "finance",
+  "name": "信用卡免息期与容时容差",
+  "description": "信用卡免息期计算与容时容差：最长/最短刷卡日公式、1万元消费21天vs51天算例、容时3天容差10元自查表、逾期豁免话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4m"
+ },
+ {
+  "slug": "credit-card-bill-calendar",
+  "category": "finance",
+  "name": "信用卡多卡账单日错峰管理",
+  "description": "多张信用卡账单日错峰管理：账单日调整渠道与次数、错峰刷卡免息期差13天算例、双卡还款日历表、以卡养卡红线。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4m"
+ },
+ {
+  "slug": "fx-card-conversion-fee",
+  "category": "tool",
+  "name": "境外刷卡货币转换费核算",
+  "description": "境外刷卡DCC识别与货币转换费核算：三类费率表、1000欧消费差价507元算例、拒绝DCC话术、DCC争议退差价流程、境外ATM取现成本。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4m"
+ },
+ {
+  "slug": "wechat-fund-choice-compare",
+  "category": "finance",
+  "name": "零钱通与余额宝活期理财对比",
+  "description": "零钱通/余额宝/银行现金理财三仓对比表：到账速度与1万限额约束、1万元收益180vs150元算例、按支付场景选主仓规则、七日年化核对方法。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4m"
+ },
+ {
+  "slug": "debt-payoff-order-calc",
+  "category": "finance",
+  "name": "多笔债务还款顺序测算",
+  "description": "多笔债务还款顺序测算：债务清单表、雪崩vs雪球路线利息对比、分期手续费IRR真实年化16.2%折算、提前还款三条款核查、行动清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4m"
  }
 ]
