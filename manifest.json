@@ -258431,5 +258431,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P7y",
   "title": "节后剩菜处置与冰箱管理"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yuanxiao",
+  "category": "tool",
+  "name": "元宵节汤圆选购与煮制",
+  "description": "元宵节汤圆选购与煮制：含糖量对比、无糖陷阱识别、煮制火候与破皮规避、剩汤圆保存，附含糖量算例与选购话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-yimiao-shuiwu",
+  "category": "health",
+  "name": "元宵灯会与庙会拥挤踩踏预防",
+  "description": "元宵灯会与庙会拥挤踩踏预防：人流密度预警信号、走失应对集合点、儿童电话手表定位设置，附人流自查方法与应急话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-shengao-huayao-hongbao",
+  "category": "finance",
+  "name": "压岁钱收发与回礼账本",
+  "description": "压岁钱收发与回礼账本：金额梯度参考、亲戚来回账记录表、代管协议模板，附记账算例与给回话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-yuanxiao-shiying",
+  "category": "tool",
+  "name": "元宵猜灯谜与亲子活动清单",
+  "description": "元宵猜灯谜与亲子活动：家庭灯谜库（含答案与年龄段分级）、手工灯笼制作、一日活动预算表，附主持人串场话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jieri-weiji",
+  "category": "tool",
+  "name": "节后返工首日与请假衔接",
+  "description": "节后返工首日与请假衔接：调休规则速查、返工交接清单、年假余额查询路径，附请假话术与倒班调休算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-chuzhi-suiwu",
+  "category": "tool",
+  "name": "春节垃圾清运与年花处置",
+  "description": "春节垃圾清运与年花处置：节后清扫时间表、年花年桔回收点、大件垃圾预约流程，附各城市查询路径与费用算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7z"
  }
 ]
