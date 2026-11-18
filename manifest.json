@@ -257172,5 +257172,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P7b",
   "path": "xiyiji-shendu-qingjie/SKILL.md"
+ },
+ {
+  "slug": "tisheng-yigui-shoufei",
+  "name": "电梯应急困人救援与维保检查",
+  "description": "电梯困人自救步骤、30分钟救援时限、物业维保责任与投诉话术模板，含罚款金额与追责路径。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7c"
+ },
+ {
+  "slug": "rentong-zhengxing-houtian",
+  "name": "儿童矫正鞋与足内翻足外翻选型",
+  "description": "儿童扁平足筛查方法、足内外翻判断标准、矫正鞋与定制矫形器价格区间及验配避坑。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7c"
+ },
+ {
+  "slug": "jiayong-duiuyiji-duibi",
+  "name": "家用投影仪与电视选择决策",
+  "description": "客厅观影设备决策模型：亮度流明换算、观看距离公式、护眼对比与同预算电视投影算例。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7c"
+ },
+ {
+  "slug": "guoji-jiazhao-banli",
+  "name": "护照办理与签证材料清单",
+  "description": "首次办理/换发/补发材料差异、全国通办与领区材料差异、费用时限与签证材料自查清单。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7c"
+ },
+ {
+  "slug": "shipin-tianjiacichaxun",
+  "name": "食品添加剂与配料表解读",
+  "description": "常见防腐剂甜味剂着色剂的风险分级表、配料表排序规则、GB 2760限量与婴童回避清单。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7c"
+ },
+ {
+  "slug": "chaxun-jiazheng-gongsi",
+  "name": "家政公司资质与保险核验",
+  "description": "家政公司营业执照与资质核验路径、雇主责任险与意外险区别、家政合同必写条款审查清单。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7c"
  }
 ]
