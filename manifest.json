@@ -259271,5 +259271,65 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8n"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xinshenger-yimiao",
+  "name": "新生儿疫苗计划与接种证",
+  "description": "新生儿乙肝疫苗/卡介苗接种时点、满月社区接种流程、接种证办理与补种规则。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8o",
+  "path": "health/ertong-shucai-shengao-shuji-huayao-shengao-xinshenger-yimiao/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xinshenger-shanghu",
+  "name": "新生儿参保与医保报销",
+  "description": "新生儿落地参保流程、住院费用报销比例与材料清单、参保时限红线。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8o",
+  "path": "finance/ertong-shucai-shuji-huayao-shengao-xinshenger-shanghu/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xinshenger-hukou",
+  "name": "新生儿户口与出生证办理",
+  "description": "出生医学证明签发/补办、新生儿户口申报时限与材料清单、姓名登记规则。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8o",
+  "path": "legal/ertong-shucai-shengao-shuji-huayao-shengao-xinshenger-hukou/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xinshenger-naipin",
+  "name": "新生儿奶粉选择与冲调规范",
+  "description": "新生儿一段奶粉选购与比价方法、冲调水温规范、按体重喂养量算例。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8o",
+  "path": "tool/ertong-shucai-shuji-huayao-shengao-xinshenger-naipin/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xinshenger-huangdan",
+  "name": "新生儿黄疸观察与就医时点",
+  "description": "生理性与病理性黄疸区分、皮测胆红素参考值、居家观察方法与就医红线。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8o",
+  "path": "health/ertong-shucai-shengao-shuji-huayao-shengao-xinshenger-huangdan/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xinshenger-shuimian",
+  "name": "新生儿睡眠安全与仰卧",
+  "description": "新生儿仰卧防窒息要点、襁褓包裹方法、睡眠环境安全清单与夜间喂养安排。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8o",
+  "path": "tool/ertong-shucai-shuji-huayao-shengao-xinshenger-shuimian/SKILL.md"
  }
 ]
