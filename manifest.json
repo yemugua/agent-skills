@@ -254606,5 +254606,45 @@
   "description": "物业费催缴函与违约金应对：催缴函合法性审查、违约金上限核算与减免谈判模板",
   "source_batch": "biz-P5e",
   "tier": "quality"
+ },
+ {
+  "slug": "zhuangxiu-baozhengjin-tuihuan",
+  "category": "legal",
+  "name": "装修保证金与退押核算",
+  "description": "装修保证金与退押核算：协议要点表、扣款事由凭证规则与退押话术模板",
+  "source_batch": "biz-P5f",
+  "tier": "quality"
+ },
+ {
+  "slug": "chewei-zulin-hetong",
+  "category": "legal",
+  "name": "车位租赁合同避坑与租金临界点",
+  "description": "车位租赁合同避坑：租期上限、涨租条款、买卖不破租赁与人防车位识别",
+  "source_batch": "biz-P5f",
+  "tier": "quality"
+ },
+ {
+  "slug": "wuye-genghuan-biaojue",
+  "category": "legal",
+  "name": "更换物业公司表决与票数测算",
+  "description": "更换物业公司全流程：民法典278条票数公式、临界点测算与公告模板",
+  "source_batch": "biz-P5f",
+  "tier": "quality"
+ },
+ {
+  "slug": "gongnuan-huifu-yongre",
+  "category": "tool",
+  "name": "供暖恢复用热申请与费用测算",
+  "description": "供暖报停后恢复用热：申请窗口、按天计费公式与恢复临界点算例",
+  "source_batch": "biz-P5f",
+  "tier": "quality"
+ },
+ {
+  "slug": "liefeng-shenjiang-zeren",
+  "category": "legal",
+  "name": "房屋裂缝判定与沉降索赔",
+  "description": "房屋裂缝分类判定表：结构缝与抹灰缝识别、责任方与索赔话术",
+  "source_batch": "biz-P5f",
+  "tier": "quality"
  }
 ]
