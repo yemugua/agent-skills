@@ -258709,7 +258709,7 @@
   "source_batch": "biz-P8d"
  },
  {
-  "slug": "ERTONG-shucai-shengao-shuji-huayao-shengao-mima",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-mima",
   "name": "ERTONG-shucai-shengao-shuji-huayao-shengao-mima",
   "title": "账号密码管理与密码器选择",
   "description": "密码管理器对比、两步验证配置、泄露查询与应急卡模板",
@@ -258719,7 +258719,7 @@
   "source_batch": "biz-P8e"
  },
  {
-  "slug": "ERTONG-shucai-shuji-huayao-shengao-shouji-shoufei",
+  "slug": "ertong-shucai-shuji-huayao-shengao-shouji-shoufei",
   "name": "ERTONG-shucai-shuji-huayao-shengao-shouji-shoufei",
   "title": "老年手机套餐与流量包",
   "description": "子女代付设置、定向流量陷阱识别与降档算例",
@@ -258729,7 +258729,7 @@
   "source_batch": "biz-P8e"
  },
  {
-  "slug": "ERTONG-shucai-shengao-shuji-huayao-shengao-shoufei",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shoufei",
   "name": "ERTONG-shucai-shengao-shuji-huayao-shengao-shoufei",
   "title": "ERTONG-shucai-shengao-shuji-huayao-shengao-shoufei",
   "description": "",
@@ -258739,7 +258739,7 @@
   "source_batch": "biz-P8e"
  },
  {
-  "slug": "ERTONG-shucai-shuji-huayao-shengao-shouji-jiu",
+  "slug": "ertong-shucai-shuji-huayao-shengao-shouji-jiu",
   "name": "ERTONG-shucai-shuji-huayao-shengao-shouji-jiu",
   "title": "旧手机数据彻底清除与出售",
   "description": "恢复出厂≠清除的原理、回收价算例与平台比价",
@@ -258749,7 +258749,7 @@
   "source_batch": "biz-P8e"
  },
  {
-  "slug": "ERTONG-shucai-shengao-shuji-huayao-shengao-dianzi-fapiao",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dianzi-fapiao",
   "name": "ERTONG-shucai-shengao-shuji-huayao-shengao-dianzi-fapiao",
   "title": "电子发票开具与报销归档",
   "description": "抬头税号核对、红冲流程与报销归期规则",
@@ -258759,7 +258759,7 @@
   "source_batch": "biz-P8e"
  },
  {
-  "slug": "ERTONG-shucai-shuji-huayao-shengao-shouji-diu",
+  "slug": "ertong-shucai-shuji-huayao-shengao-shouji-diu",
   "name": "ERTONG-shucai-shuji-huayao-shengao-shouji-diu",
   "title": "手机丢失与远程锁定处置",
   "description": "找回模式启用顺序、SIM挂失与支付冻结清单",
