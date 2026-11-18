@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-shengao-shuji-huayao-shengao-shengyu-jin
+name: ertong-shucai-shengao-shuji-huayao-shengao-shengyu-jin
 category: finance
 description: 生育津贴申领：单位申报流程、158天vs98天计算、月均工资算法与到账金额算例。
 tier: quality

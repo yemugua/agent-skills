@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-shengao-shuji-huayao-shengao-yunqian-buchong
+name: ertong-shucai-shengao-shuji-huayao-shengao-yunqian-buchong
 category: health
 description: 备孕营养素清单：叶酸0.4mg剂量选择、维生素D与铁蛋白目标值、每月成本算例与药店话术。
 tier: quality

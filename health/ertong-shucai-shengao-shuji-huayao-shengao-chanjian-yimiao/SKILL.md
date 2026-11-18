@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-shengao-shuji-huayao-shengao-chanjian-yimiao
+name: ertong-shucai-shengao-shuji-huayao-shengao-chanjian-yimiao
 category: health
 description: 孕前疫苗与TORCH筛查：麻腮风/乙肝表抗何时打、TORCH查什么不查什么、项目费用对照表。
 tier: quality

@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-shuji-huayao-shengao-chanjian-baoxiao
+name: ertong-shucai-shuji-huayao-shengao-chanjian-baoxiao
 category: health
 description: 产检建卡与医保报销：建卡材料清单、产检报销比例、自费金额算例与异地报销要点。
 tier: quality

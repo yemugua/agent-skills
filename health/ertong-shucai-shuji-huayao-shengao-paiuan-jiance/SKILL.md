@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-shuji-huayao-shengao-paiuan-jiance
+name: ertong-shucai-shuji-huayao-shengao-paiuan-jiance
 category: health
 description: 排卵监测与验孕时点：LH试纸测法、基础体温曲线、验孕棒最早检出日算例与浪费的试纸钱。
 tier: quality

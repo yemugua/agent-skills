@@ -1,5 +1,5 @@
 ---
-name: ERTONG-shucai-shuji-huayao-shengao-chanhou-taican
+name: ertong-shucai-shuji-huayao-shengao-chanhou-taican
 category: finance
 description: 月子餐与月嫂分工：月子中心vs居家vs月嫂三方案比价、月子餐菜单预算与合同红线。
 tier: quality
