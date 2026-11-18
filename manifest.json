@@ -255873,5 +255873,68 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6d"
+ },
+ {
+  "slug": "car-dashboard-warning-lights",
+  "category": "tool",
+  "name": "汽车仪表盘故障灯自查",
+  "description": "红黄绿三色分级、OBD读码消码验证与维修报价话术的故障灯自查。",
+  "tier": "quality",
+  "source_batch": "biz-P6e",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "central-ac-cleaning-quote",
+  "category": "tool",
+  "name": "中央空调风管盘管清洗报价",
+  "description": "按部位单价表拆解中央空调清洗报价，含加价项识别、验收标准与合同话术。",
+  "tier": "quality",
+  "source_batch": "biz-P6e",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "kids-fluoride-toothpaste",
+  "category": "health",
+  "name": "儿童含氟牙膏用量与选购",
+  "description": "各年龄段含氟牙膏浓度与用量表、吞咽安全临界算例与选购四查。",
+  "tier": "quality",
+  "source_batch": "biz-P6e",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "mortgage-repricing-date",
+  "category": "tool",
+  "name": "房贷利率重定价日与月供重算",
+  "description": "重定价日选择、月供重算公式与精确算例、重定价周期变更与存量房贷调整。",
+  "tier": "quality",
+  "source_batch": "biz-P6e",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "kids-lucky-money-finance",
+  "category": "tool",
+  "name": "压岁钱归属与儿童账户理财",
+  "description": "压岁钱法律归属、儿童账户开立路径、按年龄分层配置表与财商教学模板。",
+  "tier": "quality",
+  "source_batch": "biz-P6e",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "car-fuse-selfcheck",
+  "category": "tool",
+  "name": "汽车保险丝与点烟器失电自查",
+  "description": "保险丝定位自查流程、规格对照与成本、查明过载根因避免反复熔断。",
+  "tier": "quality",
+  "source_batch": "biz-P6e",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "hrv-filter-replacement",
+  "category": "tool",
+  "name": "新风系统滤芯更换周期与成本",
+  "description": "各级滤芯更换周期表、原厂vs第三方成本算例、更换自检与异常排查。",
+  "tier": "quality",
+  "source_batch": "biz-P6e",
+  "version": "2.0.0"
  }
 ]
