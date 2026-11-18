@@ -255145,5 +255145,53 @@
   "description": "房贷审批卡人最多的不是征信而是「收入流水」——月供2倍覆盖、流水要「过夜余额」不要「即进即出」，按本条提前3个月准备一次过。",
   "tier": "quality",
   "source_batch": "biz-P5p"
+ },
+ {
+  "slug": "credit-repay-order-check",
+  "category": "finance",
+  "name": "信用卡还款顺序与溢缴款纠错",
+  "description": "信用卡还款顺序自查：取现、利息、账单、分期的抵扣优先级与溢缴款纠错，避免白付利息。",
+  "tier": "quality",
+  "source_batch": "biz-P5q"
+ },
+ {
+  "slug": "credit-installment-irr",
+  "category": "finance",
+  "name": "信用卡分期真实年化与提前结清",
+  "description": "信用卡分期真实年化折算与提前结清决策：费率→IRR换算表、算例与结清前必问两句。",
+  "tier": "quality",
+  "source_batch": "biz-P5q"
+ },
+ {
+  "slug": "gold-price-spread-check",
+  "category": "finance",
+  "name": "黄金按克计价与回收点差对照",
+  "description": "黄金购入克价对照与回收点差：一口价金饰折算公式、投资金条vs金饰保值算例、回收验货红线。",
+  "tier": "quality",
+  "source_batch": "biz-P5q"
+ },
+ {
+  "slug": "train-ticket-invoice-guide",
+  "category": "tool",
+  "name": "火车票报销凭证与电子发票办理",
+  "description": "火车票报销凭证开具三条路径：180天时限、电子发票抬头填报、丢失补打与重复报销红线。",
+  "tier": "quality",
+  "source_batch": "biz-P5q"
+ },
+ {
+  "slug": "flight-change-cost-math",
+  "category": "tool",
+  "name": "机票退改签费用测算与免费退改情形",
+  "description": "机票退改签费用对照表与决策公式：舱位费率结构、改签vs重买算例、航变免费退改话术。",
+  "tier": "quality",
+  "source_batch": "biz-P5q"
+ },
+ {
+  "slug": "insurance-lapse-rescue",
+  "category": "finance",
+  "name": "保险断缴宽限期与复效自救时间线",
+  "description": "保险断缴三档时间线自救：宽限期60天/中止2年/终止的损失算例与复效必问三句。",
+  "tier": "quality",
+  "source_batch": "biz-P5q"
  }
 ]
