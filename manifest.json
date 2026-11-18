@@ -253816,5 +253816,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4n"
+ },
+ {
+  "slug": "mortgage-payment-calc",
+  "category": "finance",
+  "name": "房贷月供速算与提前还款临界点",
+  "description": "房贷月供速算：等额本息/本金公式、120万30年精确算例、提前还款减年限vs减月供省钱对比与违约金红线。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4o"
+ },
+ {
+  "slug": "shared-powerbank-billing",
+  "category": "legal",
+  "name": "共享充电宝计费争议申诉与自证",
+  "description": "共享充电宝扣费争议：主流品牌计费封顶表、归还失败三种坑的自证取证法、免单申诉话术模板与金额算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4o"
+ },
+ {
+  "slug": "phone-pc-file-transfer",
+  "category": "tool",
+  "name": "手机电脑文件互传方案对比",
+  "description": "手机电脑互传：数据线/LocalSend/AirDrop/微信方案速度与无损对比表、50GB导出算例、微信绕过压缩技巧与安全红线。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4o"
+ },
+ {
+  "slug": "insurance-claim-vs-private-settle",
+  "category": "finance",
+  "name": "出险还是私了的保费账",
+  "description": "出险决策：保费上浮额与维修费临界点公式、无责不上浮规则、4000元年保费三场景算例、私了一次性了结字据模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4o"
+ },
+ {
+  "slug": "judgment-enforcement-apply",
+  "category": "legal",
+  "name": "判决后强制执行申请指引",
+  "description": "判决生效后强制执行：申请要素表、申请书可复制模板、迟延履行利息0.0175%/天算例、2年时效与终本后恢复执行规则。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4o"
  }
 ]
