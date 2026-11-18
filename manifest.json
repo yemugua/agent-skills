@@ -254558,5 +254558,53 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5d"
+ },
+ {
+  "slug": "fapiao-chonghong-caozuo",
+  "category": "tool",
+  "name": "发票开错与红字冲红实操",
+  "description": "发票开错与红字冲红实操：红字冲红流程、时间窗与税款影响，带可直接抄的申请话术",
+  "source_batch": "biz-P5e",
+  "tier": "quality"
+ },
+ {
+  "slug": "shixiaozhongduan-caozuo",
+  "category": "legal",
+  "name": "诉讼时效中断与重启实操",
+  "description": "诉讼时效中断与重启实操：时效起算点、中断证据链与过期补救，带可复制的中断文书模板",
+  "source_batch": "biz-P5e",
+  "tier": "quality"
+ },
+ {
+  "slug": "wuyefei-tiaojia-kangbian",
+  "category": "legal",
+  "name": "物业费调价合规审查与抗辩",
+  "description": "物业费调价合规审查与抗辩：调价程序审查清单、双过半表决核算与拒涨话术模板",
+  "source_batch": "biz-P5e",
+  "tier": "quality"
+ },
+ {
+  "slug": "tingchefei-tiaojia-kangbian",
+  "category": "legal",
+  "name": "小区停车费调价合规与抗辩",
+  "description": "小区停车费调价合规与抗辩：产权车位/人防车位/临时停车分类下的涨价合法边界与抗辩核算",
+  "source_batch": "biz-P5e",
+  "tier": "quality"
+ },
+ {
+  "slug": "yezhu-zhiqingquan-shenqing",
+  "category": "legal",
+  "name": "业主知情权与物业收支公开申请",
+  "description": "业主知情权与物业收支公开申请：民法典943条公开清单、申请书模板与拒公开的追责路径",
+  "source_batch": "biz-P5e",
+  "tier": "quality"
+ },
+ {
+  "slug": "wuyefei-cuijiaohan-yingdui",
+  "category": "legal",
+  "name": "物业费催缴函与违约金应对",
+  "description": "物业费催缴函与违约金应对：催缴函合法性审查、违约金上限核算与减免谈判模板",
+  "source_batch": "biz-P5e",
+  "tier": "quality"
  }
 ]
