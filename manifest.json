@@ -258197,5 +258197,65 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-daxue-kaoyan",
+  "name": "ertong-shucai-shuji-daxue-kaoyan",
+  "title": "考研与就业决策（读研成本算例/应届生身份/二战风险）",
+  "description": "考研与就业决策（读研成本算例/应届生身份/二战风险）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-liuxue",
+  "name": "ertong-shucai-shuji-huayao-liuxue",
+  "title": "留学申请与中介选择（DIYvs中介费用/合同审查/退费条款）",
+  "description": "留学申请与中介选择（DIYvs中介费用/合同审查/退费条款）",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-shengao-gongzi",
+  "name": "ertong-shucai-shuji-shengao-gongzi",
+  "title": "第一份工作与劳动合同审查（试用期/五险一金基数/违约金）",
+  "description": "第一份工作与劳动合同审查（试用期/五险一金基数/违约金）",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-daxue-zufang",
+  "name": "ertong-shucai-shuji-daxue-zufang",
+  "title": "毕业生租房避坑（押一付三/中介费/合租分摊算例）",
+  "description": "毕业生租房避坑（押一付三/中介费/合租分摊算例）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-tijian",
+  "name": "ertong-shucai-shengao-huayao-tijian",
+  "title": "入职体检与复查决策（转氨酶升高/心电图异常/复查自费算例）",
+  "description": "入职体检与复查决策（转氨酶升高/心电图异常/复查自费算例）",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-shengao-gongzi-daiyu",
+  "name": "ertong-shucai-shuji-shengao-gongzi-daiyu",
+  "title": "offer比较与薪酬包拆解（base/年终/股票折现/五险一金差异算例）",
+  "description": "offer比较与薪酬包拆解（base/年终/股票折现/五险一金差异算例）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7v"
  }
 ]
