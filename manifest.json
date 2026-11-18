@@ -234297,10 +234297,12 @@
  },
  {
   "slug": "hukou-qianyi-liucheng",
-  "category": "gov/hukou",
-  "name": "户口迁移办理指南",
-  "description": "户口迁移办理指南：条件与流程。实操指南。",
-  "source_batch": "batch469"
+  "category": "legal",
+  "name": "户口迁移与跨市落户材料清单",
+  "description": "户口迁移三步顺序、人才/购房/随迁材料清单对照表、一站式迁移时限与预检话术。",
+  "source_batch": "biz-P7d",
+  "tier": "quality",
+  "version": "2.0.0"
  },
  {
   "slug": "zhuanben-baoming-liucheng",
@@ -257226,5 +257228,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7c"
+ },
+ {
+  "slug": "kongtiao-zhiling-qingxi",
+  "category": "tool",
+  "name": "空调自清洁功能与人工拆洗对比",
+  "description": "空调自清洁功能与人工拆洗对比：蒸发器结霜/出风异味信号判断、自清洁与拆洗边界、拆洗报价核对与省钱决策。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7d"
+ },
+ {
+  "slug": "yuer-erji-huli-baojian",
+  "category": "health",
+  "name": "幼儿耳部进水与中耳炎预警",
+  "description": "幼儿耳部进水处理、掏耳禁忌、哭闹抓耳中耳炎预警信号与就医分级，附观察记录表。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7d"
+ },
+ {
+  "slug": "zulin-huozhu-fangjian",
+  "category": "legal",
+  "name": "租房隔断房与消防合规检查",
+  "description": "租隔断房合法性边界、隔断墙材料与消防通道检查清单、违建认定后免违约退房话术与押金追回模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7d"
+ },
+ {
+  "slug": "huoli-shangdian-hesuan",
+  "category": "finance",
+  "name": "便利店临期食品折扣时段与比价",
+  "description": "便利店晚8点后临期折扣时段规律、保质期红线对照表、每元营养比价公式与省钱算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7d"
+ },
+ {
+  "slug": "shouji-dianchijiankang",
+  "category": "tool",
+  "name": "手机电池健康度与换电时点",
+  "description": "手机电池健康度查看方法、80%阈值换电决策公式、官方与第三方换电价格算例与换电自检清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7d"
  }
 ]
