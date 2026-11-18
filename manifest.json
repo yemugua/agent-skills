@@ -256143,5 +256143,59 @@
   "category": "legal",
   "tier": "quality",
   "source_batch": "biz-P6i"
+ },
+ {
+  "slug": "zuke-yiliu-wupin",
+  "category": "legal",
+  "name": "租客遗留物品处置",
+  "description": "租客退租后遗留物品的处置：房东与租客双方的合法流程、保管责任、费用追偿与可复制告知模板，避免\"扔了被告\"或\"拖着吃亏\"。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6j"
+ },
+ {
+  "slug": "yimiao-yichang-fanying-buchang",
+  "category": "health",
+  "name": "预防接种异常反应补偿申请",
+  "description": "接种疫苗后出现严重异常反应的就医处置、异常反应诊断鉴定流程、补偿标准与申请材料清单，含一类/二类疫苗补偿差异。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6j"
+ },
+ {
+  "slug": "qidaixue-chucun-juece",
+  "category": "finance",
+  "name": "脐带血储存决策",
+  "description": "自存脐带血还是捐赠公共库的决策框架：自体库20年费用测算、自用概率与医学边界、公共库捐赠政策，附条款审查清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6j"
+ },
+ {
+  "slug": "minying-yinhang-bijia",
+  "category": "finance",
+  "name": "民营银行存款利率比价",
+  "description": "民营银行/智能存款的利率比价、存款保险覆盖核验与流动性规则：同样50万怎么摆利率最高，附三步核实法与真实算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6j"
+ },
+ {
+  "slug": "ertong-dianhua-shoubiao",
+  "category": "tool",
+  "name": "儿童电话手表选购与资费",
+  "description": "儿童电话手表的硬件功能取舍、资费套餐真实年成本、隐私安全设置与防走失定位实测，附三档预算比价表和开通清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6j"
+ },
+ {
+  "slug": "licai-fengxian-ceping-weiquan",
+  "category": "finance",
+  "name": "理财风险测评与适当性维权",
+  "description": "银行理财风险测评等级（R1-R5）的含义、超风险购买的违规认定、亏损后以\"适当性义务\"主张赔偿的取证与话术模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6j"
  }
 ]
