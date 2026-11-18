@@ -257112,5 +257112,65 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7a"
+ },
+ {
+  "slug": "hufu-pinpaan-pingdai",
+  "name": "hufu-pinpaan-pingdai",
+  "description": "护肤品平替成分对照与敏感肌警示",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7b",
+  "path": "hufu-pinpaan-pingdai/SKILL.md"
+ },
+ {
+  "slug": "zulin-shenfen-maoyong",
+  "name": "zulin-shenfen-maoyong",
+  "description": "租房身份证复印件防盗用与签注模板",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7b",
+  "path": "zulin-shenfen-maoyong/SKILL.md"
+ },
+ {
+  "slug": "xiaomi-shoudian-yuanjian",
+  "name": "xiaomi-shoudian-yuanjian",
+  "description": "手电筒与应急灯停电常备清单",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7b",
+  "path": "xiaomi-shoudian-yuanjian/SKILL.md"
+ },
+ {
+  "slug": "erya-yimiao-jiezhong-biao",
+  "name": "erya-yimiao-jiezhong-biao",
+  "description": "成人二类自费疫苗接种优先级与价表",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7b",
+  "path": "erya-yimiao-jiezhong-biao/SKILL.md"
+ },
+ {
+  "slug": "yajin-dianzi-shouju",
+  "name": "yajin-dianzi-shouju",
+  "description": "押金电子收据与转账凭证效力取证",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7b",
+  "path": "yajin-dianzi-shouju/SKILL.md"
+ },
+ {
+  "slug": "xiyiji-shendu-qingjie",
+  "name": "xiyiji-shendu-qingjie",
+  "description": "洗衣机槽深度清洁与拆洗报价审查",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7b",
+  "path": "xiyiji-shendu-qingjie/SKILL.md"
  }
 ]
