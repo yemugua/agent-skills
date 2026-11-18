@@ -254646,5 +254646,59 @@
   "description": "房屋裂缝分类判定表：结构缝与抹灰缝识别、责任方与索赔话术",
   "source_batch": "biz-P5f",
   "tier": "quality"
+ },
+ {
+  "slug": "rent-invoice-evidence",
+  "name": "房租发票与租金凭证：代开成本、个税扣除测算与转账留痕",
+  "description": "房租发票与租金凭证",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5g"
+ },
+ {
+  "slug": "work-injury-paid-leave",
+  "name": "工伤停工留薪期工资核算：按原工资福利待遇算钱",
+  "description": "工伤停工留薪期工资核算",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5g"
+ },
+ {
+  "slug": "housing-fund-offset",
+  "name": "公积金冲还贷测算：月冲减现金流出、年冲省总利息",
+  "description": "公积金冲还贷测算",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5g"
+ },
+ {
+  "slug": "rent-exit-inspection",
+  "name": "租房退租定损与交接单：押金扣款逐项抗辩模板",
+  "description": "租房退租定损与交接单",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5g"
+ },
+ {
+  "slug": "year-end-bonus-tax-choice",
+  "name": "年终奖计税方式选择：单独计税 vs 并入临界点测算",
+  "description": "年终奖计税方式选择",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5g"
+ },
+ {
+  "slug": "credit-card-cash-cost",
+  "name": "信用卡取现真实成本：日息手续费与年化测算",
+  "description": "信用卡取现真实成本",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5g"
  }
 ]
