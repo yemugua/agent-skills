@@ -258371,5 +258371,65 @@
   "source_batch": "biz-P7x",
   "title": "ertong-shucai-shuji-shengao-huayao-bank",
   "description": "春节期间银行与政务服务时间：网点营业规律、线上业务可用清单、ATM 取现限额与手续费算例。"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jieri",
+  "category": "finance",
+  "name": "节后返程票与错峰策略",
+  "description": "返程高峰日判断、改签与退票手续费算例、错峰出行节省金额测算，附候补与改签话术模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7y",
+  "title": "节后返程票与错峰策略"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-jiehou",
+  "category": "health",
+  "name": "节后综合征与收心调整",
+  "description": "春节假期后成人睡眠回调、饮食清肠与儿童开学适应的逐日计划表，含作息倒推公式与就医红线。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7y",
+  "title": "节后综合征与收心调整"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-yaowu",
+  "category": "health",
+  "name": "春节备药与家庭药箱盘点",
+  "description": "春节前家庭药箱分类盘点清单、儿童退烧药剂量公式、效期检查表与药店歇业期的备药算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7y",
+  "title": "春节备药与家庭药箱盘点"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-cheliang",
+  "category": "tool",
+  "name": "春节自驾长途与疲劳驾驶",
+  "description": "春节长途自驾的行前检查清单、疲劳驾驶节奏表、服务区停留算例与儿童安全座椅复核要点。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7y",
+  "title": "春节自驾长途与疲劳驾驶"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-chongwu",
+  "category": "finance",
+  "name": "春节宠物寄养与上门喂养比价",
+  "description": "春节宠物寄养/上门喂养全成本算例、两种方式临界天数测算、应激预防清单与协议要点。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7y",
+  "title": "春节宠物寄养与上门喂养比价"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-chuzhi",
+  "category": "health",
+  "name": "节后剩菜处置与冰箱管理",
+  "description": "节后剩菜分类存放时限表、回热中心温度标准、亚硝酸盐常见误区澄清与冰箱分区复盘清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7y",
+  "title": "节后剩菜处置与冰箱管理"
  }
 ]
