@@ -255428,5 +255428,50 @@
   "source_batch": "biz-P5v",
   "description": "幼儿园费用构成合规自查与按日退费计算",
   "display_name": "幼儿园/托育费用核算：保教费伙食费与按日退费"
+ },
+ {
+  "slug": "tv-repair-price-audit",
+  "category": "tool",
+  "name": "电视维修报价核对",
+  "description": "电视维修上门报价核对：屏幕/主板/背光故障判别+官方与第三方价格对照表+逐项审价话术，防止被“换板”套路多花冤枉钱。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5w"
+ },
+ {
+  "slug": "pet-medication-at-home",
+  "category": "tool",
+  "name": "宠物在家喂药给药安全",
+  "description": "猫狗在家喂药实操：片剂/胶囊/液体/眼药/外用药的喂法步骤、喂药器选择、按体重剂量换算与禁喂清单，喂不进不硬来。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5w"
+ },
+ {
+  "slug": "eye-pressure-glaucoma-check",
+  "category": "health",
+  "name": "眼压监测与青光眼早期自查",
+  "description": "40岁以上眼压自查与青光眼早筛：家用眼压计选购与读数表、医院检查项目清单、确诊前不必重复花钱的检查顺序。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5w"
+ },
+ {
+  "slug": "wedding-package-addon-audit",
+  "category": "legal",
+  "name": "婚庆套餐增项审查",
+  "description": "婚庆合同增项审查：四大金刚常见加价点清单、套餐外费用测算表、签合同前必问的15个问题与逐条堵漏话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5w"
+ },
+ {
+  "slug": "pet-night-emergency-triage",
+  "category": "health",
+  "name": "宠物夜间急诊分诊判断",
+  "description": "猫狗半夜突发症状的就医分级表：立即冲急诊的红名单、可等到天亮的绿名单、24h医院查找与就诊前准备清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5w"
  }
 ]
