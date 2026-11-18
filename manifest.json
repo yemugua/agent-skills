@@ -256584,5 +256584,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6q"
+ },
+ {
+  "slug": "haishui-yongpin-fangxian",
+  "name": "海边游玩防水用品准备与防晒计算",
+  "description": "防水袋IPX等级表、SPF补涂公式、装备金额算例与出发清单模板",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6r"
+ },
+ {
+  "slug": "gaoya-guo-dingjian",
+  "name": "高压锅泄压阀故障判断与换件",
+  "description": "症状判断表、密封圈/安全阀更换周期、20元内自修成本算例与年检记录模板",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6r"
+ },
+ {
+  "slug": "yidong-shuju-kuawang-daili",
+  "name": "跨境流量包vs当地SIM卡比价",
+  "description": "三渠道成本表、临界天数公式、泰国/欧洲/日本算例与出国上网决策模板",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6r"
+ },
+ {
+  "slug": "pianke-shoushu-daijian",
+  "name": "门诊小手术代检陪护与请假",
+  "description": "局麻小手术时间表、病假条要点与请假话术模板、自费金额与术后照护清单",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6r"
+ },
+ {
+  "slug": "zhucai-songhuo-yanshou",
+  "name": "装修主材送货验收节点",
+  "description": "瓷砖色号/木门含水率等六类主材当场核对表、损耗公式与验收单模板",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6r"
+ },
+ {
+  "slug": "ertong-huxing-dingzhi",
+  "name": "儿童姓名生僻字与户口登记",
+  "description": "公安字库/通用规范汉字表核查路径、社保卡银行卡影响与改名代价案例、取名自查模板",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6r"
  }
 ]
