@@ -254306,5 +254306,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4y"
+ },
+ {
+  "slug": "hospital-bill-audit",
+  "category": "legal",
+  "name": "住院费用清单核对与多收费追回",
+  "description": "一句话：出院结算单不是终局——住院费用清单逐项核对一次，多收、重复计费、自费换项目平均能追回数百到数千元。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4z"
+ },
+ {
+  "slug": "dividend-realization-rate-check",
+  "category": "finance",
+  "name": "分红实现率与万能账户结算利率查询",
+  "description": "一句话：买了分红险/万能险别只听演示利率——查「分红实现率」和「实际结算利率」两个数字，立刻知道这份保单真实收益打了几折",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4z"
+ },
+ {
+  "slug": "internet-hospital-refill",
+  "category": "tool",
+  "name": "互联网医院线上复诊与慢病续方",
+  "description": "一句话：高血压/糖尿病等慢病不用每次跑医院——互联网医院线上复诊30元以内挂号费，医保能报销，一次可开4-12周长处方。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4z"
+ },
+ {
+  "slug": "generic-drug-switch",
+  "category": "health",
+  "name": "仿制药替代原研药省钱对照",
+  "description": "一句话：慢病长期用药换「一致性评价」仿制药，每月药费常能省70%-90%，但有一类药别自行换。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4z"
+ },
+ {
+  "slug": "family-policy-inventory",
+  "category": "tool",
+  "name": "家庭保单托管与保障台账",
+  "description": "一句话：把全家保单做进一张台账（10分钟），保费断缴、重复投保、理赔时找不到单——这三类损失一次避免。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4z"
  }
 ]
