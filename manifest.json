@@ -257651,5 +257651,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P7k",
   "description": "孩子户外被蚊虫叮咬和蜱虫咬伤的处理：按月龄选驱蚊剂浓度、蜱虫正确拔除与禁忌、乙脑疫苗与就医信号。"
+ },
+ {
+  "slug": "ertong-huayi-jiage",
+  "name": "ertong-huayi-jiage",
+  "category": "finance",
+  "description": "儿童羽绒服充绒量与含绒量比价：90绒vs95绒差异、充绒量克重算例与同价位横评",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7l"
+ },
+ {
+  "slug": "ertong-xiezi-chima",
+  "name": "ertong-xiezi-chima",
+  "category": "tool",
+  "description": "儿童鞋码测量与换季囤货：脚长测量法、半码预留原则与换季折扣时点表",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7l"
+ },
+ {
+  "slug": "ertong-shengao-yuce",
+  "name": "ertong-shengao-yuce",
+  "category": "health",
+  "description": "儿童身高预测与生长激素问诊边界：遗传靶身高公式、骨龄检测时机与滥用风险",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7l"
+ },
+ {
+  "slug": "ertong-yaopin-guige",
+  "name": "ertong-yaopin-guige",
+  "category": "health",
+  "description": "儿童退烧药与抗生素使用红线：布洛芬vs对乙酰氨基酚剂量表、自行加量风险与就医界线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7l"
+ },
+ {
+  "slug": "ertong-jingshi-jiage",
+  "name": "ertong-jingshi-jiage",
+  "category": "finance",
+  "description": "儿童近视配镜避坑：镜片折射率选择、离焦镜片价格带、验光单解读与配镜预算算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7l"
+ },
+ {
+  "slug": "ertong-shuixiang-jiage",
+  "name": "ertong-shuixiang-jiage",
+  "category": "tool",
+  "description": "儿童书桌与学习椅高度调节：桌面/座椅高度公式、坐姿标准与成长桌价格带算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7l"
  }
 ]
