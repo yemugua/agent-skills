@@ -256788,5 +256788,53 @@
   "description": "身份证过期异地换领流程｜异地办理/临时证加急/银行金融业务影响，带可直接复制使用的模板、公式与清单，一次使用即见效。",
   "source_batch": "biz-P6u",
   "tier": "quality"
+ },
+ {
+  "slug": "chengren-yimiao-chengrenhai",
+  "name": "chengren-yimiao-chengrenhai",
+  "description": "成人疫苗自费接种清单",
+  "category": "health",
+  "tier": "quality",
+  "source_batch": "biz-P6v"
+ },
+ {
+  "slug": "kongtiao-waimiji-jiaxin",
+  "name": "kongtiao-waimiji-jiaxin",
+  "description": "空调外机安装位与防盗窗改造费用",
+  "category": "tool",
+  "tier": "quality",
+  "source_batch": "biz-P6v"
+ },
+ {
+  "slug": "gongyu-gongtan-shuidian",
+  "name": "gongyu-gongtan-shuidian",
+  "description": "公寓合租水电网费分摊合同条款",
+  "category": "legal",
+  "tier": "quality",
+  "source_batch": "biz-P6v"
+ },
+ {
+  "slug": "shouji-neicun-kuorong",
+  "name": "shouji-neicun-kuorong",
+  "description": "手机存储不够 vs 云盘会员成本对比",
+  "category": "finance",
+  "tier": "quality",
+  "source_batch": "biz-P6v"
+ },
+ {
+  "slug": "xiaofeizhe-xiehui-tousu-jigou",
+  "name": "xiaofeizhe-xiehui-tousu-jigou",
+  "description": "消协/市场监管/12315投诉渠道三级阶梯与模板",
+  "category": "legal",
+  "tier": "quality",
+  "source_batch": "biz-P6v"
+ },
+ {
+  "slug": "jiaju-banji-shouming",
+  "name": "jiaju-banji-shouming",
+  "description": "家具板材与软体家具寿命更换周期表",
+  "category": "tool",
+  "tier": "quality",
+  "source_batch": "biz-P6v"
  }
 ]
