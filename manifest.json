@@ -256047,5 +256047,53 @@
   "description": "电热水器拆洗除垢报价核对：清洗周期表、深度清洗成本拆解、上门加价套路对照与砍价话术",
   "tier": "quality",
   "source_batch": "biz-P6g"
+ },
+ {
+  "slug": "gjj-loan-quota-calc",
+  "name": "公积金贷款额度测算（余额×倍数/月缴存/认房认贷）",
+  "category": "tool",
+  "description": "公积金贷款额度三口径测算：余额倍数/月缴存反推/最高上限公式、组合贷月供算例与断缴红线",
+  "tier": "quality",
+  "source_batch": "biz-P6h"
+ },
+ {
+  "slug": "gjj-base-underpaid-claim",
+  "name": "公积金基数被压低（单位按最低基数缴的核查与投诉）",
+  "category": "legal",
+  "description": "公积金基数被压低：应缴实缴差额公式、证据清单、稽核投诉阶梯与补缴话术",
+  "tier": "quality",
+  "source_batch": "biz-P6h"
+ },
+ {
+  "slug": "resign-payroll-settle-check",
+  "name": "离职工资结算单核对（离职当月工资/加班费/年假折算逐项算清）",
+  "category": "finance",
+  "description": "离职工资结算逐项核对：当月工资21.75折算、未休年假300%、加班费与年终奖比例支付公式与算例",
+  "tier": "quality",
+  "source_batch": "biz-P6h"
+ },
+ {
+  "slug": "medical-period-dismissal-check",
+  "name": "医疗期满解除与病假被辞退应对（医疗期计算+解雇保护核查）",
+  "category": "legal",
+  "description": "医疗期时长表、医疗期内解除违法性核查、2N vs N+1 算例与应对话术",
+  "tier": "quality",
+  "source_batch": "biz-P6h"
+ },
+ {
+  "slug": "city-move-socsec-bridge",
+  "name": "换城市工作社保公积金衔接（社保转移/公积金异地转移/医保余额/断缴风险）",
+  "category": "finance",
+  "description": "换城市社保公积金衔接顺序表、医保等待期与养老金领取地风险、线上办理路径",
+  "tier": "quality",
+  "source_batch": "biz-P6h"
+ },
+ {
+  "slug": "critical-illness-claim-deadline",
+  "name": "重疾险理赔时效与材料清单（确诊后 30 天动手，别拖过诉讼时效）",
+  "category": "legal",
+  "description": "重疾险理赔时间表、材料清单模板、多保单漏报案例与被拒申诉阶梯",
+  "tier": "quality",
+  "source_batch": "biz-P6h"
  }
 ]
