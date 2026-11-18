@@ -255819,5 +255819,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6c"
+ },
+ {
+  "slug": "tongye-cundan-zhishu-jijin",
+  "category": "finance",
+  "name": "同业存单指数基金选购与活钱升级测算",
+  "description": "同业存单指数基金：与货币基金/短债基金收益波动对比、费率与规模四查、10万元年化差额算例与7天持有期红线。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6d"
+ },
+ {
+  "slug": "kezhuanzhai-huishou-xiuxiu",
+  "category": "finance",
+  "name": "可转债回售与下修博弈策略",
+  "description": "可转债回售条款：回售/下修/强赎三价识别、下修博弈105元买入算例、三条件选债规则与不下修止损纪律。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6d"
+ },
+ {
+  "slug": "yizhu-zhixingren-yichan-guanliren",
+  "category": "legal",
+  "name": "遗嘱执行人与遗产管理人职责落地",
+  "description": "遗嘱执行人：民法典1147条遗产管理人六项职责、家人vs律师方案成本对比、200万房产过户周期算例与遗嘱授权条款模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6d"
+ },
+ {
+  "slug": "shuiyou-jiankangxian-dishui",
+  "category": "finance",
+  "name": "税优健康险抵税测算与申报操作",
+  "description": "税优健康险：2400元限额按边际税率抵税算例（3%-45%档）、税优识别码两步申报、收入纳税明细查漏方法。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6d"
+ },
+ {
+  "slug": "chedai-tiqian-jieqing",
+  "category": "finance",
+  "name": "车贷提前结清违约金与利息核算",
+  "description": "车贷提前结清：等本等息vs等额本息计息差异、12万贷款提前结清反多付2万算例、结清明细话术与解押流程红线。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6d"
+ },
+ {
+  "slug": "shineng-laoren-dengji-pinggu",
+  "category": "health",
+  "name": "失能老人照护等级评估与长护险待遇申领",
+  "description": "失能等级评估：ADL十项量表自查打分、申请流程与材料、上海重度失能月省2000元算例、评估当天表现与复评策略。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P6d"
  }
 ]
