@@ -257755,7 +257755,7 @@
   "tier": "quality"
  },
  {
-  "slug": "ERTONG-shucai-pinduan",
+  "slug": "ertong-shucai-pinduan",
   "name": "ERTONG-shucai-pinduan",
   "description": "儿童偏食与辅食引入时点：铁强化米粉首口、每样新食材等待2-3天观察过敏、偏食纠正话术与加铁食谱",
   "category": "health",
@@ -257764,7 +257764,7 @@
   "source_batch": "biz-P7n"
  },
  {
-  "slug": "ERTONG-shuimian-guili",
+  "slug": "ertong-shuimian-guili",
   "name": "ERTONG-shuimian-guili",
   "description": "儿童睡眠时长与夜醒干预：各年龄睡眠量表、白天小睡切割时点、夜奶戒断周计划与话术",
   "category": "health",
@@ -257773,7 +257773,7 @@
   "source_batch": "biz-P7n"
  },
  {
-  "slug": "ERTONG-shuji-baojian",
+  "slug": "ertong-shuji-baojian",
   "name": "ERTONG-shuji-baojian",
   "description": "学步车与跳跳椅风险：AAP 禁用依据、坠落与O型腿机制、oxford型学步带替代方案与选购检查",
   "category": "tool",
@@ -257782,7 +257782,7 @@
   "source_batch": "biz-P7n"
  },
  {
-  "slug": "ERTONG-shuzhi-yisuan",
+  "slug": "ertong-shuzhi-yisuan",
   "name": "ERTONG-shuzhi-yisuan",
   "description": "儿童电子产品距离与20-20-20法则：观看距离标准、屏幕高度对位、分年龄时长分级与护眼设置清单",
   "category": "tool",
@@ -257791,7 +257791,7 @@
   "source_batch": "biz-P7n"
  },
  {
-  "slug": "ERTONG-huayao-paomo",
+  "slug": "ertong-huayao-paomo",
   "name": "ERTONG-huayao-paomo",
   "description": "泡泡机与水枪玩具安全：泡泡液入眼冲洗步骤、纽扣电池仓螺丝检查、3C标志核验与选购红线",
   "category": "tool",
@@ -257800,7 +257800,7 @@
   "source_batch": "biz-P7n"
  },
  {
-  "slug": "ERTONG-shucai-baojian",
+  "slug": "ertong-shucai-baojian",
   "name": "ERTONG-shucai-baojian",
   "description": "儿童餐椅与安全带使用：倾倒风险数据、五点式安全带卡扣检查、二手餐椅验伤清单与立规话术",
   "category": "tool",
