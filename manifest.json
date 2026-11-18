@@ -258767,5 +258767,71 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yunying-shang",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-yunying-shang",
+  "title": "运营商携号转网全流程（携转条件/话术/余额转移）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8f",
+  "description": "运营商携号转网全流程（携转条件/话术/余额转移）",
+  "path": "ertong-shucai-shengao-shuji-huayao-shengao-yunying-shang/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yunying-zengzhi",
+  "name": "ertong-shucai-shuji-huayao-shengao-yunying-zengzhi",
+  "title": "话费账单增值业务排查（自动续费/短信订购/退订代码）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8f",
+  "description": "话费账单增值业务排查（自动续费/短信订购/退订代码）",
+  "path": "ertong-shucai-shuji-huayao-shengao-yunying-zengzhi/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-wangpan",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-wangpan",
+  "title": "云盘与本地备份策略（3-2-1原则/免费额度对比/照片迁移）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8f",
+  "description": "云盘与本地备份策略（3-2-1原则/免费额度对比/照片迁移）",
+  "path": "ertong-shucai-shengao-shuji-huayao-shengao-wangpan/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yunying-xiaohu",
+  "name": "ertong-shucai-shuji-huayao-shengao-yunying-xiaohu",
+  "title": "手机号注销与余额退还（靓号协议/合约期违约金/关联账号解绑）",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8f",
+  "description": "手机号注销与余额退还（靓号协议/合约期违约金/关联账号解绑）",
+  "path": "ertong-shucai-shuji-huayao-shengao-yunying-xiaohu/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dianchi-chongdian",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-dianchi-chongdian",
+  "title": "充电宝租借与自购决策（每小时封顶/押金/买断算例）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8f",
+  "description": "充电宝租借与自购决策（每小时封顶/押金/买断算例）",
+  "path": "ertong-shucai-shengao-shuji-huayao-shengao-dianchi-chongdian/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-wifi-shexiang",
+  "name": "ertong-shucai-shuji-huayao-shengao-wifi-shexiang",
+  "title": "家用摄像头隐私与密码安全（默认密码/访客权限/回放存储收费）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8f",
+  "description": "家用摄像头隐私与密码安全（默认密码/访客权限/回放存储收费）",
+  "path": "ertong-shucai-shuji-huayao-shengao-wifi-shexiang/SKILL.md"
  }
 ]
