@@ -257381,5 +257381,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7f"
+ },
+ {
+  "slug": "ertong-yachi-huan-ya",
+  "name": "ertong-yachi-huan-ya",
+  "description": "儿童换牙期护理与乳牙滞留处理：六龄齿窝沟封闭最佳窗口、乳牙滞留拔牙时机判断表、恒牙萌出异常对照，附费用算例与话术。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7g"
+ },
+ {
+  "slug": "dianfei-fenggu-cuowu",
+  "name": "dianfei-fenggu-cuowu",
+  "description": "电费户号与银行代扣失败处理：余额不足重扣机制、户号绑定纠错、代扣失败滞纳金规则，附阶梯电价算例与客服话术。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7g"
+ },
+ {
+  "slug": "ershou-fang-xuefang-hu",
+  "name": "ershou-fang-xuefang-hu",
+  "description": "二手房学位被占用核实与合同条款：学位查询渠道、卖家学位承诺书模板、违约金条款设计，附真实判例金额算例。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7g"
+ },
+ {
+  "slug": "ertong-ershou-shu-antai",
+  "name": "ertong-ershou-shu-antai",
+  "description": "儿童安全座椅型号与安装误判：i-Size/欧标I-Size认证识别、安装方向与接口常见误判、二手座椅为什么不能买，附价格算例。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7g"
+ },
+ {
+  "slug": "ertong-xinli-shuxu",
+  "name": "ertong-xinli-shuxu",
+  "description": "儿童分房睡与入学焦虑引导：各年龄窗口与过渡步骤、入学前焦虑信号分级对照、家长话术模板，附就医转介标准。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7g"
+ },
+ {
+  "slug": "ertong-jiazheng-shouhuang",
+  "name": "ertong-jiazheng-shouhuang",
+  "description": "儿童二手玩具消毒与选购：塑料/毛绒/木质分材质清洗剂与流程、召回查询渠道、价格算例与红线，附清洗剂配比表。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7g"
  }
 ]
