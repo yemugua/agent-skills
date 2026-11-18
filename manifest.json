@@ -255527,5 +255527,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5x"
+ },
+ {
+  "slug": "bp-home-reading-guide",
+  "category": "health",
+  "name": "血压自测报告解读",
+  "description": "家庭血压分级对照表、测量规范自检、就医阈值与随访费用测算，附7天记录模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5y"
+ },
+ {
+  "slug": "thyroid-function-report-reading",
+  "category": "health",
+  "name": "甲状腺功能报告解读",
+  "description": "TSH/FT3/FT4/抗体组合判读表、四种常见异常处理路径、复查费用测算与就诊自查模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5y"
+ },
+ {
+  "slug": "liver-function-report-reading",
+  "category": "health",
+  "name": "肝功能报告解读",
+  "description": "按ALT升高倍数分级的处理路径表、分组判读、居家诱因排查清单与复查费用测算。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5y"
+ },
+ {
+  "slug": "cbc-anemia-report-reading",
+  "category": "health",
+  "name": "血常规贫血报告解读",
+  "description": "血红蛋白分级、MCV三分法与缺铁/地贫鉴别路径、补铁疗程费用测算与复诊记录模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5y"
+ },
+ {
+  "slug": "ecg-report-reading",
+  "category": "health",
+  "name": "心电图报告解读",
+  "description": "常见心电图术语分级对照表、危险信号分流清单、进一步检查费用测算与就诊描述模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5y"
+ },
+ {
+  "slug": "mortgage-prepay-penalty-calc",
+  "category": "finance",
+  "name": "房贷提前还款违约金测算",
+  "description": "违约金规则对照、缩期vs减月供省息算例、还款理财临界点与预约实操流程，附核算模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5y"
  }
 ]
