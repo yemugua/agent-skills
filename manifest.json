@@ -258653,5 +258653,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8c"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-lu-ying-shiwu",
+  "name": "露营食材与户外烹饪",
+  "description": "露营食材与户外烹饪：保温箱保冷时长速查、卡式炉安全四条红线、食材量精确算例与采购模板",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-lu-ying-shuiwu",
+  "name": "亲子露营地预订与退款",
+  "description": "亲子露营地预订与退款：渠道退改规则对比、天气取消维权算例、周末溢价判断与预订确认话术",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-paobu",
+  "name": "亲子跑步与儿童体测达标",
+  "description": "亲子跑步与儿童体测达标：体测项目对照训练表、儿童配速表、跑鞋选购与三周达标计划",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-lanyao",
+  "name": "羽毛球与篮球场地预订比价",
+  "description": "羽毛球与篮球场地预订比价：时段定价规律、散客包场会员卡回本算例、拼场话术与预付费红线",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yongyong-ban",
+  "name": "游泳班选择与学员进度",
+  "description": "游泳班选择与学员进度：班型单价算例、教练比试课清单、包课退费算例与进度自评表",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-qixie",
+  "name": "家庭健身器材与替代方案",
+  "description": "家庭健身器材与替代方案：器材性价比对比、跑步机闲置成本算例、二手残值与零器材训练组合",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8d"
  }
 ]
