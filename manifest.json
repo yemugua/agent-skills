@@ -258833,5 +258833,71 @@
   "source_batch": "biz-P8f",
   "description": "家用摄像头隐私与密码安全（默认密码/访客权限/回放存储收费）",
   "path": "ertong-shucai-shuji-huayao-shengao-wifi-shexiang/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-huiyuan-zidong",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-huiyuan-zidong",
+  "title": "会员自动续费排查与关闭",
+  "description": "全面排查各渠道自动续费订阅、逐平台关闭路径与年度扣费清单算例。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8g",
+  "path": "ertong-shucai-shengao-shuji-huayao-shengao-huiyuan-zidong/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huiyuan-shichang",
+  "name": "ertong-shucai-shuji-huayao-shengao-huiyuan-shichang",
+  "title": "视频平台会员比价与拼车",
+  "description": "单平台vs年卡vs联合会员单价算例与拼车方案风险清单。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8g",
+  "path": "ertong-shucai-shuji-huayao-shengao-huiyuan-shichang/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shumadian",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-shumadian",
+  "title": "数码点卡与虚拟商品退款",
+  "description": "未成年人充值退款法律依据、证据清单、金额折算与逐渠道申诉话术。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8g",
+  "path": "ertong-shucai-shengao-shuji-huayao-shengao-shumadian/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huiyuan-tiyan",
+  "name": "ertong-shucai-shuji-huayao-shengao-huiyuan-tiyan",
+  "title": "体验课与低价引流课退费",
+  "description": "9.9元体验课升级话术拆解、合同条款审查、课时折算退费公式与投诉阶梯。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8g",
+  "path": "ertong-shucai-shuji-huayao-shengao-huiyuan-tiyan/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dianshang-yongjin",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-dianshang-yongjin",
+  "title": "电商省钱工具与比价插件",
+  "description": "历史价格曲线判断真降价、价保退差与凑单叠加算例、下单前4步流程。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8g",
+  "path": "ertong-shucai-shengao-shuji-huayao-shengao-dianshang-yongjin/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huiyuan-gongxiang",
+  "name": "ertong-shucai-shuji-huayao-shengao-huiyuan-gongxiang",
+  "title": "家庭共享与账号安全",
+  "description": "官方家庭组分摊算例、共享账号风险清单、设备管理与分摊话术模板。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8g",
+  "path": "ertong-shucai-shuji-huayao-shengao-huiyuan-gongxiang/SKILL.md"
  }
 ]
