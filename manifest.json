@@ -257597,5 +257597,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7j"
+ },
+ {
+  "slug": "ertong-haishui-yongdian",
+  "name": "海边游泳与潮汐安全（儿童版）：离岸流识别/涨退潮时间表/浮潜禁区",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7k",
+  "description": "带孩子去海边游泳前的安全清单：离岸流识别与自救、涨退潮时间表查法、浮潜禁区与看护站位。"
+ },
+ {
+  "slug": "ertong-huwai-pashan",
+  "name": "亲子徒步与山地装备清单（儿童版）：负重上限/失温信号/路线难度分级",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7k",
+  "description": "带孩子徒步登山前的装备清单与安全边界：儿童背包负重上限、失温信号识别、路线难度分级挑选。"
+ },
+ {
+  "slug": "ertong-haishui-baiji",
+  "name": "海边水母蜇伤儿童处理：禁淡水冲洗/明矾水/就医信号",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7k",
+  "description": "孩子在海边被水母蜇伤的正确处理步骤：为什么不能用淡水冲、明矾水怎么用、哪些情况必须去医院。"
+ },
+ {
+  "slug": "ertong-huwai-fangshu",
+  "name": "儿童户外中暑分级与补水节奏：中暑分级/电解质配比/降温动作",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7k",
+  "description": "孩子户外玩耍/徒步/体育课的中暑识别分级、补水与电解质配比节奏、现场降温动作与就医线。"
+ },
+ {
+  "slug": "ertong-haishui-shaihou",
+  "name": "儿童晒伤修复与退皮处理：晒伤分级/芦荟使用时机/退皮撕除禁忌",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7k",
+  "description": "孩子海边/户外暴晒后的分级处理：晒伤深浅判断、芦荟与芦荟冻使用时机、退皮为什么不能撕、何时就医。"
+ },
+ {
+  "slug": "ertong-huwai-chongyao",
+  "name": "儿童蚊虫叮咬、蜱虫与驱蚊剂选择：避蚊胺浓度/蜱虫拔除禁忌/乙脑风险",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7k",
+  "description": "孩子户外被蚊虫叮咬和蜱虫咬伤的处理：按月龄选驱蚊剂浓度、蜱虫正确拔除与禁忌、乙脑疫苗与就医信号。"
  }
 ]
