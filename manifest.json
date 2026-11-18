@@ -254513,5 +254513,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5c"
+ },
+ {
+  "slug": "hezushui-dian-fentan-jisuan",
+  "name": "合租水电燃气网费分摊算例表",
+  "description": "合租公共费用扯皮的根源是没算清——按人头还是按表、谁来垫付、退租怎么结，用一张分摊表+结算模板一次定死。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5d"
+ },
+ {
+  "slug": "baoxian-yiwai-shangcan-peifulv",
+  "name": "意外险伤残等级赔付对照表",
+  "description": "意外险身故赔100%保额，伤残却是按1-10级赔10%-100%——十级只赔10%，先对照《人身保险伤残评定标准》查等级，再算能赔多少，材料没备齐鉴定费都白花。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5d"
+ },
+ {
+  "slug": "huofei-zhangdan-zhukou-paicha",
+  "name": "话费账单增值业务排查与退订",
+  "description": "话费突然从39涨到80，多半不是流量超标，是账单里藏了5-30元/月的增值业务或SP代收费——逐项排查、退订、追讨近3个月，一次能要回几十到几百元。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5d"
+ },
+ {
+  "slug": "lianhuo-shuide-ranqi-zhinajin",
+  "name": "水电燃气欠费违约金测算与减免",
+  "description": "水电气欠费不是只补本金——违约金按「欠费额×万分之几×逾期天数」滚，封顶规则各市不同，先算清再申请减免，几十到几百元能省下。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5d"
+ },
+ {
+  "slug": "zhengxin-niandu-zicha-yiyi",
+  "name": "个人征信年度自查与异议申请",
+  "description": "央行征信每年2次免费自查，逾期记录自结清日起只留5年——先自查摸清底数，发现「被贷款」「冒名办卡」走异议申请20天内必有答复，别花冤枉钱找「征信修复」中介。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5d"
  }
 ]
