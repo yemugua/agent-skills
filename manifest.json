@@ -259547,5 +259547,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-gaozhong-yingkao",
+  "category": "finance",
+  "name": "中考择校与高中签约",
+  "description": "统招线/签约班型/住宿费算例，附志愿梯度模板与签约话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-gaozhong-xuanke",
+  "category": "tool",
+  "name": "新高考选科与赋分策略",
+  "description": "3+1+2组合/赋分换算/专业覆盖算例与选科确认单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-gaozhong-xuefei",
+  "category": "finance",
+  "name": "民办高中与国际班费用拆解",
+  "description": "学费/住宿/杂费/三年总账算例与退费条款审查。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-gaozhong-xinli",
+  "category": "health",
+  "name": "高中生心理压力与家长沟通",
+  "description": "考试焦虑信号分级/沟通话术/就医时点判断。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shengxue-bing",
+  "category": "finance",
+  "name": "学生平安险与意外理赔",
+  "description": "学平险保额/理赔材料/医保报销顺序算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-gaozhong-jiaxiao",
+  "category": "tool",
+  "name": "高中阶段家校沟通与成绩单解读",
+  "description": "排名百分比换算/家长会准备/有效提问清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8t"
  }
 ]
