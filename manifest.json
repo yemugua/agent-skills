@@ -255383,5 +255383,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P5u"
+ },
+ {
+  "name": "dental-quote-check",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5v",
+  "description": "看牙报价逐项核对，识别过度治疗与拆分加价",
+  "display_name": "看牙报价单逐项核对：补牙/根管/牙冠/拔智齿合理价与过度治疗防线"
+ },
+ {
+  "name": "jiaxiao-quote-audit",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5v",
+  "description": "学车真实总花费核算，隐性收费识别",
+  "display_name": "学车报价拆解：全包价与补考费/模拟费隐性收费核对"
+ },
+ {
+  "name": "jiaxiao-contract-audit",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5v",
+  "description": "驾校合同退费/有效期/转校条款审查与退费计算",
+  "display_name": "驾校合同逐条审查：退费比例、学时有效期与转校条款"
+ },
+ {
+  "name": "zhongkao-sports-training-cost",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5v",
+  "description": "体育中考培训按短板算课时预算，续费套路识别",
+  "display_name": "体育中考突击培训报价比价与课时核算"
+ },
+ {
+  "name": "kindergarten-fee-audit",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5v",
+  "description": "幼儿园费用构成合规自查与按日退费计算",
+  "display_name": "幼儿园/托育费用核算：保教费伙食费与按日退费"
  }
 ]
