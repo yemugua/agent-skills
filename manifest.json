@@ -255179,14 +255179,6 @@
   "source_batch": "biz-P5q"
  },
  {
-  "slug": "flight-change-cost-math",
-  "category": "tool",
-  "name": "机票退改签费用测算与免费退改情形",
-  "description": "机票退改签费用对照表与决策公式：舱位费率结构、改签vs重买算例、航变免费退改话术。",
-  "tier": "quality",
-  "source_batch": "biz-P5q"
- },
- {
   "slug": "insurance-lapse-rescue",
   "category": "finance",
   "name": "保险断缴宽限期与复效自救时间线",
