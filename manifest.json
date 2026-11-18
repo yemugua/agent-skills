@@ -257489,5 +257489,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7h"
+ },
+ {
+  "slug": "laonian-danbing-guanli",
+  "category": "health",
+  "name": "老人胆结石无症状与手术决策",
+  "description": "老人胆结石无症状期随访、保胆取石争议、急性发作饮食与手术时机的家庭决策清单与就医话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7i"
+ },
+ {
+  "slug": "ertong-jingshi-shiyong",
+  "category": "health",
+  "name": "儿童进食呛咳与海姆立克急救",
+  "description": "儿童异物卡喉分级判断、1岁以内与1岁以上海姆立克手法差异、气道梗阻急救步骤与就医边界。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7i"
+ },
+ {
+  "slug": "jiadian-huishou-baoji",
+  "category": "finance",
+  "name": "家电以旧换新补贴叠加与回收价",
+  "description": "家电以旧换新国补与地方补贴叠加规则、旧机回收比价方法、真实价格算例与补贴资格避坑。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7i"
+ },
+ {
+  "slug": "ertong-shuiyuan-xiuguan",
+  "category": "health",
+  "name": "儿童水源性与水痘疫苗接种区别",
+  "description": "水痘减毒活疫苗与水痘-带状疱疹联合疫苗（水痘灭活/联苗）区别、两针间隔、自费值不值的费用测算。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7i"
+ },
+ {
+  "slug": "ertong-jiazheng-xinrenshu",
+  "category": "legal",
+  "name": "儿童独自在家与留守安全守则",
+  "description": "儿童可独自在家的年龄红线、留守儿童看护责任法律边界、陌生人敲门应对脚本与应急预案模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7i"
+ },
+ {
+  "slug": "ertong-huxing-jiaoyu",
+  "category": "legal",
+  "name": "儿童姓氏随谁家与父姓母姓选择",
+  "description": "儿童随父姓或母姓的法律规则、出生登记时限与材料、改姓流程与抚养权争议中的姓氏处理。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P7i"
  }
 ]
