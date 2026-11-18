@@ -259217,5 +259217,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8m"
+ },
+ {
+  "slug": "ERTONG-shucai-shengao-shuji-huayao-shengao-yunqian-buchong",
+  "category": "health",
+  "name": "备孕营养素清单",
+  "description": "备孕营养素清单：叶酸0.4mg剂量、维D与铁蛋白目标值、每月成本算例与药店话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8n"
+ },
+ {
+  "slug": "ERTONG-shucai-shuji-huayao-shengao-paiuan-jiance",
+  "category": "health",
+  "name": "排卵监测与验孕时点",
+  "description": "排卵监测与验孕时点：LH试纸测法、基础体温、验孕棒最早检出日算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8n"
+ },
+ {
+  "slug": "ERTONG-shucai-shengao-shuji-huayao-shengao-chanjian-yimiao",
+  "category": "health",
+  "name": "孕前疫苗与TORCH筛查",
+  "description": "孕前疫苗与TORCH筛查：麻腮风/乙肝表抗时点、筛查项目费用表与结果解读。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8n"
+ },
+ {
+  "slug": "ERTONG-shucai-shuji-huayao-shengao-chanjian-baoxiao",
+  "category": "health",
+  "name": "产检建卡与医保报销",
+  "description": "产检建卡与医保报销：建卡材料清单、报销比例、自费算例与异地备案。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8n"
+ },
+ {
+  "slug": "ERTONG-shucai-shengao-shuji-huayao-shengao-shengyu-jin",
+  "category": "finance",
+  "name": "生育津贴申领",
+  "description": "生育津贴申领：单位申报流程、天数与月均工资算法、到账金额算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8n"
+ },
+ {
+  "slug": "ERTONG-shucai-shuji-huayao-shengao-chanhou-taican",
+  "category": "finance",
+  "name": "月子餐与月嫂分工",
+  "description": "月子餐与月嫂分工：月子中心vs居家vs月嫂三方案比价、合同红线。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8n"
  }
 ]
