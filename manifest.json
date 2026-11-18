@@ -254754,5 +254754,61 @@
   "version": "2.0.0",
   "source_batch": "biz-P5h",
   "category": "finance"
+ },
+ {
+  "slug": "quanshang-menzhen-suopei",
+  "category": "legal",
+  "name": "犬伤门诊费用索赔",
+  "description": "犬伤门诊费用索赔：工具/公式/算例/话术模板一页可用。",
+  "source_batch": "biz-P5i",
+  "tier": "quality"
+ },
+ {
+  "slug": "baiwanyiliao-julai-shensu",
+  "category": "finance",
+  "name": "百万医疗险拒赔申诉",
+  "description": "百万医疗险拒赔申诉：工具/公式/算例/话术模板一页可用。",
+  "source_batch": "biz-P5i",
+  "tier": "quality"
+ },
+ {
+  "slug": "hugongfei-hangqing-yijia",
+  "category": "health",
+  "name": "护工费行情与议价",
+  "description": "护工费行情与议价：工具/公式/算例/话术模板一页可用。",
+  "source_batch": "biz-P5i",
+  "tier": "quality"
+ },
+ {
+  "slug": "zhuangxiu-gongqi-yanwu-suopei",
+  "category": "legal",
+  "name": "装修工期延误索赔",
+  "description": "装修工期延误索赔：工具/公式/算例/话术模板一页可用。",
+  "source_batch": "biz-P5i",
+  "tier": "quality"
+ },
+ {
+  "slug": "chexian-bijia-ncd-linjie",
+  "category": "finance",
+  "name": "车险比价与NCD临界点",
+  "description": "车险比价与NCD临界点：工具/公式/算例/话术模板一页可用。",
+  "source_batch": "biz-P5i",
+  "tier": "quality"
+ },
+ {
+  "slug": "zhuangxiu-yanshou-dan-muban",
+  "category": "tool",
+  "name": "装修分阶段验收单模板",
+  "description": "装修分阶段验收单模板：工具/公式/算例/话术模板一页可用。",
+  "source_batch": "biz-P5i",
+  "tier": "quality"
+ },
+ {
+  "slug": "yanglaoyuan-yajin-tuifei",
+  "category": "finance",
+  "name": "养老院押金与退住结算",
+  "description": "养老院押金与退住结算：工具/公式/算例/话术模板一页可用。",
+  "source_batch": "biz-P5i",
+  "tier": "quality"
  }
 ]
