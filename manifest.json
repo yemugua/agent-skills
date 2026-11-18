@@ -253861,5 +253861,50 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P4o"
+ },
+ {
+  "slug": "sell-second-house-full-flow",
+  "category": "finance",
+  "name": "卖二手房全流程",
+  "description": "卖二手房全流程：定价·中介费·资金监管",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4p"
+ },
+ {
+  "slug": "ac-energy-cost-calc",
+  "category": "finance",
+  "name": "空调冰箱能效省电测算",
+  "description": "空调冰箱能效省电测算：一级vs三级年电费差",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4p"
+ },
+ {
+  "slug": "hotel-noncancel-clause",
+  "category": "legal",
+  "name": "酒店不可取消条款维权与退款申诉",
+  "description": "酒店不可取消条款维权与退款申诉",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4p"
+ },
+ {
+  "slug": "car-film-coating-quote",
+  "category": "tool",
+  "name": "汽车贴膜与隐形车衣报价拆分避坑",
+  "description": "汽车贴膜与隐形车衣报价拆分避坑",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4p"
+ },
+ {
+  "slug": "overseas-tuition-payment",
+  "category": "finance",
+  "name": "留学学费跨境缴费",
+  "description": "留学学费跨境缴费：渠道与手续费对比",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P4p"
  }
 ]
