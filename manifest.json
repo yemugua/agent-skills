@@ -258485,5 +258485,65 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P7z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuiwu-qiandao",
+  "name": "ertong-shucai-shuji-huayao-shengao-shuiwu-qiandao",
+  "title": "景区淡季错峰游与门票比价",
+  "description": "淡季门票价格对比、联票vs单票算例、预约平台规则，帮助亲子家庭算清淡季出行的真实成本",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8a",
+  "category": "finance"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-lvyou-baoxian",
+  "name": "ertong-shucai-shengao-shuji-huayao-lvyou-baoxian",
+  "title": "旅行险与意外险选择（亲子版）",
+  "description": "亲子旅行险怎么选：医疗险保额、高原/潜水免责条款、行程取消险与申根签证要求，含保费算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8a",
+  "category": "finance"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shuiwu-hangdian",
+  "name": "ertong-shucai-shuji-huayao-shuiwu-hangdian",
+  "title": "亲子航班选座与婴儿票规则",
+  "description": "婴儿票/儿童票规则、安全座椅申请流程、亲子选座策略与转机时长计算，含票价算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8a",
+  "category": "tool"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-shuiwu-gaoyuan",
+  "name": "ertong-shucai-shengao-huayao-shuiwu-gaoyuan",
+  "title": "高原反应：儿童与老人预防实操",
+  "description": "带儿童老人上高原的上升节奏、氧气预订、服药时机与红旗症状识别，含行程算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8a",
+  "category": "health"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zhu",
+  "name": "ertong-shucai-shuji-huayao-shengao-zhu",
+  "title": "民宿与酒店选择对比（亲子版）",
+  "description": "民宿vs酒店的卫生检查清单、退改政策对比、亲子设施成本算例，帮助家庭出行选对住宿",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8a",
+  "category": "tool"
+ },
+ {
+  "slug": "ertong-shucai-shengao-huayao-shuiwu-shiwu",
+  "name": "ertong-shucai-shengao-huayao-shuiwu-shiwu",
+  "title": "旅途中儿童饮食与水土不服应对",
+  "description": "旅行中儿童瓶装水选择、路边摊风险评估、水土不服预防与常备药清单，含应急处理流程",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8a",
+  "category": "health"
  }
 ]
