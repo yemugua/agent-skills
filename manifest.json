@@ -254810,5 +254810,59 @@
   "description": "养老院押金与退住结算：工具/公式/算例/话术模板一页可用。",
   "source_batch": "biz-P5i",
   "tier": "quality"
+ },
+ {
+  "slug": "suipingxian-decision",
+  "category": "tool",
+  "name": "手机碎屏险值不值",
+  "description": "手机碎屏险值不值：工具表+金额算例+可复制话术，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5j"
+ },
+ {
+  "slug": "fangshui-bulou-baojia",
+  "category": "finance",
+  "name": "防水补漏报价避坑",
+  "description": "防水补漏报价避坑：工具表+金额算例+可复制话术，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5j"
+ },
+ {
+  "slug": "banjiafei-cesuan",
+  "category": "finance",
+  "name": "搬家费测算避坑",
+  "description": "搬家费测算避坑：工具表+金额算例+可复制话术，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5j"
+ },
+ {
+  "slug": "tuihuo-yunfeixian",
+  "category": "finance",
+  "name": "退货运费险精算",
+  "description": "退货运费险精算：工具表+金额算例+可复制话术，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5j"
+ },
+ {
+  "slug": "gaosu-jiuyuan-tuochefei",
+  "category": "tool",
+  "name": "高速救援拖车费规则",
+  "description": "高速救援拖车费规则：工具表+金额算例+可复制话术，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5j"
+ },
+ {
+  "slug": "weixin-zhangdan-daochu",
+  "category": "tool",
+  "name": "微信账单导出取证",
+  "description": "微信账单导出取证：工具表+金额算例+可复制话术，含红线提醒。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P5j"
  }
 ]
