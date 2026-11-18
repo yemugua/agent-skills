@@ -255999,5 +255999,53 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P6f"
+ },
+ {
+  "slug": "shiyijin-yueshu-cesuan",
+  "name": "失业金能领几个月与金额测算",
+  "category": "finance",
+  "description": "失业金能领几个月与每月多少钱：缴费年限→月数对照表、领取金额计算公式、精确算例、网上申领路径与停发红线",
+  "tier": "quality",
+  "source_batch": "biz-P6g"
+ },
+ {
+  "slug": "jiachengxian-vs-zuoweixian",
+  "name": "驾乘险vs车上人员责任险怎么选",
+  "category": "insurance",
+  "description": "驾乘险vs车上人员责任险怎么选：两种形态（跟人/跟车）差异表、保额保费精确对比、理赔场景判定清单与投保话术",
+  "tier": "quality",
+  "source_batch": "biz-P6g"
+ },
+ {
+  "slug": "zhongji-baoe-gap",
+  "name": "重疾险保额缺口测算",
+  "category": "insurance",
+  "description": "重疾险保额缺口测算：收入替代+费用覆盖双公式、保额档次对照表、年保费预算红线与加保顺序",
+  "tier": "quality",
+  "source_batch": "biz-P6g"
+ },
+ {
+  "slug": "mattress-verify-price",
+  "name": "床垫真假鉴别与价格拆解",
+  "category": "tool",
+  "description": "床垫真假鉴别与价格拆解：乳胶/椰棕/弹簧造假对照表、成本构成公式、砍价算例与退货维权模板",
+  "tier": "quality",
+  "source_batch": "biz-P6g"
+ },
+ {
+  "slug": "quankong-dengju-yusuan",
+  "name": "全屋灯具预算与报价单核查",
+  "category": "tool",
+  "description": "全屋灯具预算与报价单核查：各空间照度/瓦数对照表、灯具成本拆解公式、安装增项核查清单与砍价模板",
+  "tier": "quality",
+  "source_batch": "biz-P6g"
+ },
+ {
+  "slug": "water-heater-clean-quote",
+  "name": "电热水器拆洗除垢报价核对",
+  "category": "tool",
+  "description": "电热水器拆洗除垢报价核对：清洗周期表、深度清洗成本拆解、上门加价套路对照与砍价话术",
+  "tier": "quality",
+  "source_batch": "biz-P6g"
  }
 ]
