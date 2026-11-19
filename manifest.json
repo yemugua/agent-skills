@@ -261989,5 +261989,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10l"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-caishichang-bijia",
+  "category": "finance",
+  "name": "菜市场vs超市比价",
+  "description": "单品价对比/混合采购周预算算例｜菜市场vs超市比价",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-bingxian-cunchu",
+  "category": "tool",
+  "name": "冰箱分区与食材保存期",
+  "description": "存放位置决策/保存天数速查表｜冰箱分区与食材保存期",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-waicang-tuang",
+  "category": "finance",
+  "name": "外卖满减与凑单策略",
+  "description": "满减梯度拆解/凑单拐点算例｜外卖满减与凑单策略",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shengxian-huiyuan",
+  "category": "finance",
+  "name": "生鲜平台会员值不值",
+  "description": "免配送费门槛/回本临界点算例｜生鲜平台会员值不值",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shipin-tuihuo",
+  "category": "legal",
+  "name": "生鲜坏果与缺重赔付",
+  "description": "称重复核取证/赔付算例话术｜生鲜坏果与缺重赔付",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yuezhi-shicai",
+  "category": "health",
+  "name": "预制菜与现做比价",
+  "description": "性价比/钠含量取舍算例｜预制菜与现做比价",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10m"
  }
 ]
