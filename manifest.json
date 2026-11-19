@@ -259601,5 +259601,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-daxue-suxiao",
+  "category": "tool",
+  "name": "大学宿舍选舍友与矛盾处理",
+  "description": "作息/卫生公约模板/调宿申请流程/矛盾沟通话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-daxue-jiangxuejin",
+  "category": "finance",
+  "name": "奖学金申请与评定规则",
+  "description": "国奖/励志/校奖金额表/GPA算法/申请材料时间线。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-daxue-jianzhi",
+  "category": "finance",
+  "name": "大学生兼职与防骗",
+  "description": "家教/奶茶店时薪算例/刷单骗局识别/劳务协议要点。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-daxue-huafei",
+  "category": "finance",
+  "name": "大学四年费用预算总表",
+  "description": "学费/生活费/考证/恋爱开支/四年总账算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-daxue-shezheng",
+  "category": "tool",
+  "name": "大学英语四六级与考证规划",
+  "description": "四级刷分策略/6算算例/证书性价比表/报考时间线。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-daxue-yanbao",
+  "category": "tool",
+  "name": "保研考研出国三条路对比",
+  "description": "GPA要求/时间线/成本对比算例/决策树。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8u"
  }
 ]
