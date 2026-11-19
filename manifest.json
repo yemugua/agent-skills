@@ -260531,5 +260531,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P9k",
   "path": "health/ertong-shucai-shuji-huayao-shengao-shequ-yimiao/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xiashu-shangjia",
+  "category": "finance",
+  "name": "闲鱼上架与定价策略",
+  "description": "闲鱼上架与定价策略：同款比价定位、定价锚点、曝光算例与可复制话术模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9l"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ershens-shuji",
+  "category": "finance",
+  "name": "二手书回收与卖书比价",
+  "description": "二手书回收与卖书比价：多抓鱼/孔网/线下渠道价差算例与决策表。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9l"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-erxi-shouhuo",
+  "category": "finance",
+  "name": "二手奢侈品鉴定与寄卖",
+  "description": "二手奢侈品鉴定与寄卖：鉴定点位、寄卖费率对比与回款算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9l"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-erxi-zuji",
+  "category": "finance",
+  "name": "二手家电回收价陷阱",
+  "description": "二手家电回收价陷阱：拆机件/翻新机套路、合理回收价算例与砍价话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9l"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xiayu-jiujing",
+  "category": "legal",
+  "name": "闲鱼纠纷与平台介入",
+  "description": "闲鱼纠纷与平台介入：举证清单、小法庭攻防与退款金额算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9l"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-mianjiao-gongli",
+  "category": "tool",
+  "name": "二手面交安全与付款方式",
+  "description": "二手面交安全与付款方式：地点分级、验货流程与付款方式算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9l"
  }
 ]
