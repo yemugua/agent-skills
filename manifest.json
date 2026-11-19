@@ -262151,5 +262151,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10o"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-changtu-jiash",
+  "category": "tool",
+  "name": "长途自驾与疲劳驾驶全流程（休息点规划/保险覆盖/油费算例）",
+  "description": "长途自驾返程必看：按2.5小时强制休息节奏排休息点，疲劳驾驶保险免责条款核对，含油费与时间成本算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10p"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-gaote-bu",
+  "category": "tool",
+  "name": "高速服务区与拥堵避峰全攻略（错峰时刻表/加油比价/拥堵算例）",
+  "description": "高速服务区加油排队时长估算与错峰时段表，节假日拥堵高峰数据与提前出发算例，服务区消费避坑。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10p"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiejiayou",
+  "category": "finance",
+  "name": "节假日高速免费与绕行决策（免费时段规则/油费过路费算例）",
+  "description": "高速免费时段判定规则（下高速时间为准）与绕行国道的油费-过路费对比算例，判断绕行是否真省钱。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10p"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zujia-huan",
+  "category": "finance",
+  "name": "异地还车与取还点比价全流程（异地费拆解/比价算例/免押攻略）",
+  "description": "租车异地还车费的真实构成与各平台对比，取还点位置对总价的影响算例，押金与免押渠道核对清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10p"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chuxing-lian",
+  "category": "finance",
+  "name": "多人拼车与费用分摊完整方案（拼车平台/分摊公式/争议话术）",
+  "description": "自驾拼车的三种分摊公式对比与算例，顺风车/拼车平台规则与安全核对，朋友拼车不伤感情的结算话术模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10p"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiaotong-yiwai",
+  "category": "legal",
+  "name": "交通意外应急与保险报案全流程（现场处置/报案算例/理赔时限）",
+  "description": "轻微事故与重大事故的分级处置流程、交强险/商业险报案话术模板、各理赔环节的法定时限表与算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10p"
  }
 ]
