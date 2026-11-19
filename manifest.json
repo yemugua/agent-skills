@@ -262961,5 +262961,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yanglao-y",
+  "category": "finance",
+  "name": "养老院选型与收费比价",
+  "description": "养老院月费构成拆解与6档机构比价表，护理等级评定、押金上限规则与退住条款算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shangmen-zh",
+  "category": "finance",
+  "name": "上门照护与保姆比价",
+  "description": "住家保姆/护理公司/钟点三种用工时薪换算与比价表，替班成本折算算例与雇佣合同要点",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shiyi-f",
+  "category": "legal",
+  "name": "失能评估与长护险申请",
+  "description": "长护险失能评估申请流程、等级待遇报销算例与复评异议路径",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yanglao-j",
+  "category": "finance",
+  "name": "养老金领取与测算",
+  "description": "养老金基础+个人账户计算公式、精确到元测算算例与退休核查清单",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shiyang-q",
+  "category": "legal",
+  "name": "适老化签约与养老合同陷阱",
+  "description": "养老合同高危条款对照表、示范文本核查清单与改条款话术模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-laoren-s",
+  "category": "tool",
+  "name": "老人智能手机与防诈设置",
+  "description": "老人手机10项防诈设置逐条路径、家庭检查表模板与三句防骗口诀",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11e"
  }
 ]
