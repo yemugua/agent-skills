@@ -262799,5 +262799,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11a"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xinyong-k",
+  "name": "信用卡选卡与权益比价",
+  "description": "年费规则对表、权益变现算例、免年费刷免条件核对与退卡时机",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11b"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-fenqi-sh",
+  "name": "账单分期与最低还款陷阱",
+  "description": "分期真实年化利率公式、最低还款利息算例、提前结清手续费规则",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11b"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jifen-dui",
+  "name": "积分兑换与里程变现",
+  "description": "积分价值测算表、兑换渠道比价算例、里程变现路径与防封规则",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11b"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-tixian-ji",
+  "name": "取现手续费与免息期陷阱",
+  "description": "取现成本逐项拆解算例、免息期最长56天算法、账单日修改技巧",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11b"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yuqi-ji",
+  "name": "逾期协商与征信修复",
+  "description": "逾期后协商分期话术、停息挂账申请条件、征信异议修复流程与算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11b"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-fengxian-j",
+  "name": "风控降额与解封申诉",
+  "description": "降额封卡触发规则、申诉解封话术模板、恢复额度的时间线与算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11b"
  }
 ]
