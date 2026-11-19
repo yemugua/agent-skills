@@ -263177,5 +263177,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dianping-c",
+  "category": "finance",
+  "name": "电动车选型与电池比价",
+  "description": "ertong-shucai-shengao-shuji-huayao-shengao-dianping-c：电动车选型与电池比价，含公式、精确金额算例、可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianping-s",
+  "category": "legal",
+  "name": "电动车上牌与合规要求",
+  "description": "ertong-shucai-shuji-huayao-shengao-dianping-s：电动车上牌与合规要求，含公式、精确金额算例、可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dianping-c2",
+  "category": "tool",
+  "name": "充电安全与换电柜费用",
+  "description": "ertong-shucai-shengao-shuji-huayao-shengao-dianping-c2：充电安全与换电柜费用，含公式、精确金额算例、可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianping-w",
+  "category": "legal",
+  "name": "电动车事故与保险责任",
+  "description": "ertong-shucai-shuji-huayao-shengao-dianping-w：电动车事故与保险责任，含公式、精确金额算例、可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zixing-c",
+  "category": "finance",
+  "name": "自行车通勤与保养年账",
+  "description": "ertong-shucai-shengao-shuji-huayao-shengao-zixing-c：自行车通勤与保养年账，含公式、精确金额算例、可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianping-d",
+  "category": "tool",
+  "name": "电动车被盗与防盗措施",
+  "description": "ertong-shucai-shuji-huayao-shengao-dianping-d：电动车被盗与防盗措施，含公式、精确金额算例、可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11i"
  }
 ]
