@@ -262691,5 +262691,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10y"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiudian-bi",
+  "name": "酒店预订平台比价与取消政策",
+  "description": "同一间房各平台差价可达30%：比价路径、取消政策分级表与改期损失算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-minsu-wei",
+  "name": "民宿维权与货不对板",
+  "description": "民宿与图片严重不符时的取证清单、平台投诉话术与退款比例算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-huiyuan-jiu",
+  "name": "酒店会员与积分房晚",
+  "description": "酒店集团会员等级权益对照、积分换房价值公式与薅点路径算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianfei-ya",
+  "name": "住店押金与迷你吧争议",
+  "description": "押金退还时限、迷你吧误触发的拒付话术与扣款争议处理算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-lvyou-ji",
+  "name": "旅行急救与海外就医",
+  "description": "出行急救分级处置、境外就医保险报销路径与费用算例",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xingli-q",
+  "name": "行李寄存与机场过夜攻略",
+  "description": "各类寄存点价格对比、机场过夜省钱方案与花费算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10z"
  }
 ]
