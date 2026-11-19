@@ -263447,5 +263447,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xiaofei-y",
+  "name": "校园卡与生活费月度预算",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11n",
+  "description": "大学生校园卡充值/饭补/水电费的月度预算表与生活费分配公式，含精确算例与超支自救话术。"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-sushe-h",
+  "name": "宿舍合租与室友公约",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11n",
+  "description": "大学宿舍/校外合租的室友公约模板、费用分摊表与冲突处理话术，可直接复制签字使用。"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiaofu-f",
+  "name": "教材二手与电子书省钱",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11n",
+  "description": "大学教材二手循环/电子书正版渠道/打印成本测算，一年省下几百元教材费的精确算例。"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jianzhi-j",
+  "name": "校内兼职与勤工俭学岗位",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11n",
+  "description": "校内勤工助学岗位类型/时薪标准/月收入算例与校外兼职防骗清单，附工时记账表。"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xuesheng-d",
+  "name": "学生优惠与认证薅羊毛清单",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11n",
+  "description": "大学生可领的学生认证优惠清单：视频会员/云盘/交通/软件，含年省金额算例与认证路径。"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xiaoyuan-p",
+  "name": "校园贷陷阱与反诈举报",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11n",
+  "description": "识别校园贷/培训贷/注销校园贷骗局的年化利息算例、拒绝话术与举报渠道，含法律红线。"
  }
 ]
