@@ -264170,5 +264170,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P12a"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ertong-m",
+  "category": "health",
+  "name": "儿童疫苗与体检日程（算例）",
+  "description": "儿童疫苗与体检日程：0-6岁国家免疫规划疫苗时间表、自费疫苗选择决策、社区体检项目清单与漏种补种算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12b"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-y",
+  "category": "health",
+  "name": "儿童牙科涂氟窝沟封闭（算例）",
+  "description": "儿童牙科涂氟窝沟封闭：适龄时间表、公立/私立比价算例、医保与惠民项目报销路径、防龋效果数据。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12b"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ertong-s",
+  "category": "health",
+  "name": "儿童视力筛查与远视储备（算例）",
+  "description": "儿童视力筛查与远视储备：各年龄段正常值对照表、验光单解读、户外时长与近视风险算例、配镜避坑。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12b"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-x",
+  "category": "tool",
+  "name": "兴趣班冲突与孩子意愿沟通（话术）",
+  "description": "兴趣班冲突与孩子意愿沟通：想放弃/不愿试听/多班冲突的对话话术模板、试听决策表、退费沟通模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12b"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ertong-b",
+  "category": "finance",
+  "name": "儿童意外险与门急诊报销（算例）",
+  "description": "儿童意外险与门急诊报销：学平险/意外险选购算例、社保+意外险叠加报销顺序与金额演示、理赔材料清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12b"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-h",
+  "category": "finance",
+  "name": "二胎家庭物资复用与比价（算例）",
+  "description": "二胎家庭物资复用与比价：可复用/必须换新清单、二手平台买卖算例、奶粉纸尿裤批量比价与年度账。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12b"
  }
 ]
