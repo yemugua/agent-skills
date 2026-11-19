@@ -259763,5 +259763,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P8w",
   "description": "油耗实测方法与油钱月账：通勤油耗算例、92vs95标号选择依据、月油钱测算表，加满跳枪与表显偏差修正。"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ershouche-gouche-bi",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-ershouche-gouche-bi",
+  "description": "二手车vs新车决策测算：折旧曲线、三年持有成本算例，一张表算清买哪个更划算。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8x"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huanche-zhixuan",
+  "name": "ertong-shucai-shuji-huayao-shengao-huanche-zhixuan",
+  "description": "置换补贴与旧车处理对比：4S置换vs二手车平台卖车差价算例，补贴真能补上差价吗，一算便知。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8x"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xinnyuangou-che",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-xinnyuangou-che",
+  "description": "新能源车选购与保值率：续航虚标识别、充电条件自查、五年保值算例，买电车前算清这笔账。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8x"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chewe-gou",
+  "name": "ertong-shucai-shuji-huayao-shengao-chewe-gou",
+  "description": "车位购买vs长期租赁测算：产权车位价格、月租、收益率算例，算出你的城市买还是租更划算。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8x"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chezhliang-guo",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-chezhliang-guo",
+  "description": "车辆过户流程与费用：过户费明细、牌证办理步骤、材料清单，一次跑完不跑第二趟。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8x"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiaqiang-xianshi",
+  "name": "ertong-shucai-shuji-huayao-shengao-jiaqiang-xianshi",
+  "description": "家庭多车分工与用车成本分摊：两车保险、油电成本、谁开哪辆的算例，把全家用车账算明白。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8x"
  }
 ]
