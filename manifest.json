@@ -263750,5 +263750,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-cheng",
+  "name": "成人高考报名与费用对比",
+  "description": "成人高考报名费、学费、教材费全口径测算，用精确算例对比不同院校/层次总花费，附报名避坑话术",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zikao-b",
+  "name": "自考报班与自学成本对比",
+  "description": "自考报班与纯自学成本对比测算，用精确金额算例算出报班的真实溢价与回本条件，附报班合同审查要点",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xueli-j",
+  "name": "学历提升机构骗局与退费",
+  "description": "学历提升机构骗局类型识别与退费维权实操，含退费金额计算算例、投诉路径阶梯与可复制投诉模板",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xueshi-w",
+  "name": "学位英语与论文答辩攻略",
+  "description": "学位英语备考与成考论文答辩通关模板，含60分拆解得分表、论文降重排期与答辩问答话术",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhengshu-g",
+  "name": "证书挂靠风险与合规求职",
+  "description": "证书挂靠的法律风险拆解与合规求职替代路径，含挂靠收益风险比算例与离职合规话术模板",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jixu-j",
+  "name": "继续教育个税抵扣申报",
+  "description": "继续教育个税专项附加扣除的申报条件、金额测算与个税APP操作步骤，含扣除额算例与夫妻分摊策略",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11t"
  }
 ]
