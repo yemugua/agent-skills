@@ -260255,5 +260255,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9f"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yueguang-zhili",
+  "name": "月光族强制储蓄计划",
+  "description": "月光族强制储蓄计划：先存后花自动划转，三档比例表+一年结余34,216元算例+执行清单+话术模板。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9g"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huobi-licai",
+  "name": "货币基金与活期理财选择",
+  "description": "货币基金与活期理财选择：七日年化/赎回速度/快赎限额对比表，10万元年收益1,600vs2,200vs100元算例。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9g"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dingdan-jinji",
+  "name": "定投入门与止盈纪律",
+  "description": "定投入门与止盈纪律：月定投额测算表+目标止盈与回撤止盈法，三年72,000元本金落袋9,000-14,400元算例。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9g"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xinyongka-fen",
+  "name": "信用卡分期真实利率",
+  "description": "信用卡分期真实利率：月费率0.6%换算IRR真实年化约13%，与消费贷差637元算例+提前结清话术。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9g"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jijin-dai",
+  "name": "基金定投 vs 一次性买入",
+  "description": "基金定投vs一次性买入：V型/单边上涨/先涨后跌三情形回测算例，差出±1.2万-1.5万，含心理账户拆分规则。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9g"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-baoxian-sidajian",
+  "name": "保险四大件配置顺序",
+  "description": "保险四大件配置顺序：医疗/重疾/意外/定期寿险配置表，30岁夫妻带娃年保费13,200元占收入6.6%算例。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9g"
  }
 ]
