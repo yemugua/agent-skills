@@ -261827,5 +261827,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P10i",
   "description": "读书会与知识付费甄别指南"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-lifa-bijia",
+  "name": "理发店办卡与单价核算指南",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10j",
+  "description": "理发店办卡与单价核算指南"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-toufa-wei",
+  "name": "烫染发价格与药水识别指南",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10j",
+  "description": "烫染发价格与药水识别指南"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-huazhuang-pin",
+  "name": "化妆品正伪鉴别与代购避坑指南",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10j",
+  "description": "化妆品正伪鉴别与代购避坑指南"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-mei-rong-yuan",
+  "name": "医美项目价格与机构资质核验指南",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10j",
+  "description": "医美项目价格与机构资质核验指南"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shengao-hufupin-xuan",
+  "name": "护肤品成分表解读与踩雷避坑指南",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10j",
+  "description": "护肤品成分表解读与踩雷避坑指南"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-mei-fa-dian",
+  "name": "美甲美睫消费计价与卸除避坑指南",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10j",
+  "description": "美甲美睫消费计价与卸除避坑指南"
  }
 ]
