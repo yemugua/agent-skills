@@ -261287,5 +261287,59 @@
   "tier": "quality",
   "source_batch": "biz-P9y",
   "created": "2026-11-19"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shengxian-bijia",
+  "category": "finance",
+  "name": "生鲜电商比价与会员划算测算",
+  "description": "叮咚/朴朴/山姆配送费与会员算例：免运费门槛、会员回本临界点、每周总账单对比",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shicai-dingdan",
+  "category": "tool",
+  "name": "每周菜谱与采购清单生成",
+  "description": "一周5菜谱骨架+分类采购清单，人均餐标与一周315元预算算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shipin-baozhi",
+  "category": "tool",
+  "name": "食品保质期与冰箱收纳管理",
+  "description": "先进先出法+冷冻期对照表+月省72元浪费算例，分区贴标模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianshang-shengxian",
+  "category": "legal",
+  "name": "电商生鲜坏果赔付维权",
+  "description": "开箱即拍取证流程+赔付话术模板，坏果比例赔付算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shequ-tuang",
+  "category": "finance",
+  "name": "社区团购自提与售后指南",
+  "description": "团长佣金结构、凑单免运临界点算例、缺斤短两维权话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-lingshi-jiankang",
+  "category": "health",
+  "name": "零食饮料配料表解读",
+  "description": "糖/钠/反式脂肪/NRV四步读表法+陷阱对照表+性价比算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9z"
  }
 ]
