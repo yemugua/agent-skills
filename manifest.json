@@ -263912,5 +263912,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chufang-d",
+  "name": "厨具选购与不粘锅比价算例",
+  "description": "厨具选购决策表+不粘锅材质寿命成本公式+3档预算精确算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11w"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-liaoli-k",
+  "name": "空气炸锅烤箱料理机比价算例",
+  "description": "空气炸锅/烤箱/料理机功能覆盖表+电费成本公式+三口之家精确算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11w"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-diaoliao-f",
+  "name": "调料选购与配料表陷阱识别",
+  "description": "调料配料表逐行解读法+氨基酸态氮分级+单价克价换算算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11w"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chufang-a",
+  "name": "厨房烫伤切伤急救与燃气事故处置",
+  "description": "烫伤五步法/切伤按压止血分级/燃气泄漏三禁三做/就医费用阶梯",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11w"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-waimai-c",
+  "name": "厨房小家电保修与退换维权算例",
+  "description": "三包期判定表+维修vs换新临界点公式+维权话术模板与算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11w"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiac-cai",
+  "name": "家常年菜菜单与采购清单模板",
+  "description": "8菜年菜结构表+人均量公式+按D-3到D-day时间轴的采购清单",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11w"
  }
 ]
