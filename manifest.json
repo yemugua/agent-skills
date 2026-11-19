@@ -260801,5 +260801,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9p"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jia",
+  "category": "finance",
+  "name": "教育金定投与测算",
+  "description": "教育金定投与测算（biz-P9q精品）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-baoxian",
+  "category": "finance",
+  "name": "儿童保险配置顺序",
+  "description": "儿童保险配置顺序（biz-P9q精品）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yacian-baoxian",
+  "category": "finance",
+  "name": "压岁钱管理与儿童理财",
+  "description": "压岁钱管理与儿童理财（biz-P9q精品）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-yanjing",
+  "category": "finance",
+  "name": "儿童视力与近视防控成本",
+  "description": "儿童视力与近视防控成本（biz-P9q精品）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ertong-guage",
+  "category": "health",
+  "name": "儿童身高骨龄与发育评估",
+  "description": "儿童身高骨龄与发育评估（biz-P9q精品）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-qinzi-shijian",
+  "category": "tool",
+  "name": "亲子时间规划与班后陪伴",
+  "description": "亲子时间规划与班后陪伴（biz-P9q精品）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9q"
  }
 ]
