@@ -259709,5 +259709,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8v"
+ },
+ {
+  "slug": "shucai-shengao-shuji-huayao-shengao-gouche-lidai",
+  "name": "买车贷款vs全款测算",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8w",
+  "description": "买车贷款与全款的成本对比测算：利率/手续费/强制装潢搭售识别、资金机会成本算例，附决策公式与砍价话术。"
+ },
+ {
+  "slug": "shucai-shuji-huayao-shengao-gouche-baoxian-xuan",
+  "name": "新车保险组合与报价对比",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8w",
+  "description": "新车保险怎么买不花冤枉钱：交强险/三者300万/车损/免赔选择的金额算例、渠道差价对比与拒赔陷阱清单。"
+ },
+ {
+  "slug": "shucai-shengao-shuji-huayao-shengao-gouche-tijiao",
+  "name": "提车验车清单",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8w",
+  "description": "提车验车完整清单：漆面/里程/生产日期/随车资料逐项核验表，库存车与事故车判定标准，当场发现问题的话术与退换依据。"
+ },
+ {
+  "slug": "shucai-shuji-huayao-shengao-yangche-nianjian",
+  "name": "年检预约与流程",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8w",
+  "description": "汽车年检预约与流程：6年免检政策边界、上线检测项目与一次过技巧、材料清单与费用算例，脱审风险提醒。"
+ },
+ {
+  "slug": "shucai-shengao-shuji-huayao-shengao-yangche-baoyang-zhou",
+  "name": "保养周期与项目避坑",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8w",
+  "description": "汽车保养周期与项目避坑：机油更换里程判定、各项目真实价格表、过度保养与缩水配件识别，附工单核对清单。"
+ },
+ {
+  "slug": "shucai-shuji-huayao-shengao-yangche-youhao",
+  "name": "油耗实测与油钱月账",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8w",
+  "description": "油耗实测方法与油钱月账：通勤油耗算例、92vs95标号选择依据、月油钱测算表，加满跳枪与表显偏差修正。"
  }
 ]
