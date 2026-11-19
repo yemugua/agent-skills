@@ -264020,5 +264020,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11x"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-kuaidi-s",
+  "category": "legal",
+  "name": "快递丢失损坏索赔全流程",
+  "description": "快递丢失损坏的保价与未保价赔付规则、举证步骤与索赔话术模板，含精确金额算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11y"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-kuaidi-f",
+  "category": "finance",
+  "name": "快递保价与运费比价",
+  "description": "各快递公司保价费率对照、保价额怎么填最划算的公式与算例，附比价模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11y"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-daofu-p",
+  "category": "legal",
+  "name": "到付与货到付款诈骗识别",
+  "description": "到付包裹39元茶叶纪念币骗局的话术拆解、拒绝签收步骤与追损路径",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11y"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-haiwai-g",
+  "category": "finance",
+  "name": "海外代购清关与关税",
+  "description": "个人行邮税税率表、免税额50元规则与分箱避税算例，附合规范本",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11y"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-kuaidi-g",
+  "category": "tool",
+  "name": "驿站代收与丢件责任划分",
+  "description": "快递未经同意放驿站柜的责任归属、丢件追赔流程与算例，附投诉模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11y"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dazhuang-h",
+  "category": "finance",
+  "name": "大件家具物流搬运比价",
+  "description": "沙发床垫衣柜等大件物流的零担vs专车vs搬家公司的计价规则与算例，附比价表",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11y"
  }
 ]
