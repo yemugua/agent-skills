@@ -263588,5 +263588,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P11p",
   "description": "合租分摊与AA记账模板——含工具表、金额算例与可复制模板"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jujia-o",
+  "category": "finance",
+  "name": "居家办公设备配置预算",
+  "description": "居家办公桌椅、显示器、外设的设备配置预算测算，含分档清单、回本公式与报销话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yuancheng-r",
+  "category": "tool",
+  "name": "远程会议工具与网络优化",
+  "description": "远程会议工具选型对比与家庭网络优化方案，含带宽算例、设备清单与卡顿排查表",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiaju-s",
+  "category": "health",
+  "name": "书桌护腰与人体工学选购",
+  "description": "书桌椅人体工学选购要点与坐姿护腰方案，含尺寸参数表、腰痛算例与工间操模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yuancheng-d",
+  "category": "legal",
+  "name": "远程办公工伤与加班认定",
+  "description": "居家办公工伤认定要件、加班认定证据留存与赔偿项目算例，含取证清单与沟通话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiaju-g",
+  "category": "tool",
+  "name": "工作区隔断与采光改造",
+  "description": "居家工作区隔断方案与采光改造测算，含成本对比表、照度算例与租房可执行清单",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunhe-b",
+  "category": "tool",
+  "name": "混合办公考勤与沟通规则",
+  "description": "混合办公考勤规则与异步沟通模板，含排班表、响应时限矩阵与团队公约模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11q"
  }
 ]
