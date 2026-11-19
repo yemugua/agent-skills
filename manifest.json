@@ -259871,5 +259871,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8y"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiuzhen-guahao-er",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-jiuzhen-guahao-er",
+  "category": "tool",
+  "description": "儿童医院挂号与科室选择（儿童医院vs综合儿科/挂错科改签/号源时段算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zhuyuan-pei",
+  "name": "ertong-shucai-shuji-huayao-shengao-zhuyuan-pei",
+  "category": "tool",
+  "description": "儿童住院陪护与物品清单（陪护床/雾化/日常用品/费用预算算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yibao-erke",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-yibao-erke",
+  "category": "finance",
+  "description": "儿童医保门诊与住院报销（门诊统筹/住院起付线/报销算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-fufang-jilu",
+  "name": "ertong-shucai-shuji-huayao-shengao-fufang-jilu",
+  "category": "tool",
+  "description": "复诊随访与病历整理（检查报告归档/随访时间表/问医生清单）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yihu-gongxi",
+  "name": "ertong-shucai-shuji-huayao-shengao-yihu-gongxi",
+  "category": "legal",
+  "description": "全家共享陪护假与轮流看护（陪产假/护理假/排班表算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8z"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiuzhen-dai",
+  "name": "ertong-shucai-shuji-huayao-shengao-jiuzhen-dai",
+  "category": "finance",
+  "description": "异地就医儿童备案与直结（备案流程/直接结算/自费垫付算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8z"
  }
 ]
