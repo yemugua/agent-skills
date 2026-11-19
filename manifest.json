@@ -262313,5 +262313,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ruanzhuang-yus",
+  "category": "finance",
+  "name": "软装预算与配色方案：软硬装比例与预算算例",
+  "description": "软硬装资金比例、软装分项预算与配色三色法则，含8万元软装算例（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiaju-xuang",
+  "category": "finance",
+  "name": "家具选购与材质比价：实木板材区别与预算算例",
+  "description": "实木/多层板/颗粒板材质对比、环保等级与家具分项预算算例（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chuanglian",
+  "category": "tool",
+  "name": "窗帘灯具与全屋灯带选型指南：参数与点位算例",
+  "description": "窗帘遮光率/灯具色温流明选择与全屋灯带点位预算算例（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiaju-songz",
+  "category": "legal",
+  "name": "家具送装与退换：运费破损赔偿规则与算例",
+  "description": "家具送装费构成、破损拒收取证与退换运费承担规则，含赔偿算例（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-quanwu-dian",
+  "category": "finance",
+  "name": "全屋定制与木工比价：投影面积与展开面积算例",
+  "description": "全屋定制计价方式对比、增项识别与木工打柜比价，含精确实例（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ruanzhuang-pei",
+  "category": "tool",
+  "name": "软装避坑与清单模板：必买缓买分级与预算算例",
+  "description": "软装必买/缓买/别买分级清单与分期预算算例（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10s"
  }
 ]
