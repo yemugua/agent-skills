@@ -264368,5 +264368,59 @@
   "description": "境外就医流程决策树、医疗费用区间表、保险直付网络使用与病情描述模板",
   "tier": "quality",
   "source_batch": "biz-P12e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hufu-p",
+  "category": "finance",
+  "name": "护肤品成分与平替比价",
+  "description": "护肤品成分对照与平替比价：活性成分对照表、单克成本公式、精确金额算例与避坑话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12f"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hufu-j",
+  "category": "finance",
+  "name": "医美项目比价与机构资质",
+  "description": "医美项目比价与机构资质核验：正版价格区间表、资质查询步骤、议价话术与维权阶梯。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12f"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hufu-h",
+  "category": "legal",
+  "name": "护肤品过敏与维权",
+  "description": "护肤品过敏处置与维权：紧急处理步骤、证据固定清单、赔偿计算与投诉话术模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12f"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-meibai-p",
+  "category": "health",
+  "name": "美白祛斑产品避坑",
+  "description": "美白祛斑产品避坑指南：有效成分浓度表、祛斑产品备案核验、算例与违规宣称识别。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12f"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-fangshai-p",
+  "category": "tool",
+  "name": "防晒选购与用量计算",
+  "description": "防晒选购与用量计算：SPF/PA选择公式、面部用量算例、年成本对比与补涂话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12f"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-lifei-y",
+  "category": "finance",
+  "name": "护肤月度预算与囤货策略",
+  "description": "护肤月度预算与囤货策略：分级预算公式、开封后效期表、大促囤货算例与止损话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12f"
  }
 ]
