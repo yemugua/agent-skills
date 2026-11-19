@@ -261611,5 +261611,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-qijia-tuihuo",
+  "name": "七天无理由退货实操",
+  "description": "网购维权带·七天无理由退货实操：适用范围/运费/算例/话术",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10f"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiahuo-peifu",
+  "name": "假一赔十与假货维权",
+  "description": "网购维权带·假一赔十与假货维权：举证/平台介入/算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10f"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yufu-kuai",
+  "name": "预售定金与尾款规则",
+  "description": "网购维权带·预售定金与尾款规则：定金不退/算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10f"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianpu-pao",
+  "name": "店铺跑路与退款追回",
+  "description": "网购维权带·店铺跑路与退款追回：担保交易/算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10f"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shua-dan-pian",
+  "name": "刷单诈骗识别与止损",
+  "description": "网购维权带·刷单诈骗识别与止损：套路/报警/算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10f"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-wanggou-jiage",
+  "name": "网购价格保护与比价",
+  "description": "网购维权带·网购价格保护与比价：价保规则/历史价/算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10f"
  }
 ]
