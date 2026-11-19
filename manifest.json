@@ -260363,5 +260363,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-laoren-shouji",
+  "category": "tool",
+  "name": "老人智能手机设置与大字模式",
+  "description": "老人智能手机设置与大字模式：字体放大、常用APP大桌面、家人远程协助，一步一图设置路径。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-laoren-fangzha",
+  "category": "tool",
+  "name": "老人防诈红黄线与话术",
+  "description": "老人防诈红黄线与应对话术：保健品、中奖、冒充公检法、虚假客服四大套路拆解与子女沟通脚本。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-laoren-tijian",
+  "category": "health",
+  "name": "老人年度体检重点项",
+  "description": "老人年度体检重点项：心脑血管、骨密度、肿瘤标志物的取舍与套餐选择算例，不花冤枉钱。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-laoren-yundong",
+  "category": "health",
+  "name": "老人安全运动方案",
+  "description": "老人安全运动方案：太极/快走强度计算、防跌倒装备清单与预算算例，运动不受伤。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-laoren-yiyao",
+  "category": "health",
+  "name": "老人用药管理与药盒",
+  "description": "老人用药管理与药盒：多药并行整理、漏服错服防范、用药清单模板与提醒工具选择。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-laoren-yanglao",
+  "category": "finance",
+  "name": "居家养老vs社区养老vs机构比价",
+  "description": "居家/社区/机构养老三种方式比价：费用构成、政府补贴与月开销算例，按失能程度选。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9i"
  }
 ]
