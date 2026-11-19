@@ -259655,5 +259655,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-luizhi-shibi",
+  "category": "legal",
+  "name": "离职手续与背调应对",
+  "description": "离职手续与背调应对：职场新人实操精品，含工具表/算例/可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shiyong-jin",
+  "category": "legal",
+  "name": "试用期权益与转正谈判",
+  "description": "试用期权益与转正谈判：职场新人实操精品，含工具表/算例/可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-gongjijin-dk",
+  "category": "finance",
+  "name": "公积金断缴续缴与贷款影响",
+  "description": "公积金断缴续缴与贷款影响：职场新人实操精品，含工具表/算例/可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-wuye-gongji",
+  "category": "finance",
+  "name": "五险一金基数与到手工资核对",
+  "description": "五险一金基数与到手工资核对：职场新人实操精品，含工具表/算例/可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhize-shengzhi",
+  "category": "tool",
+  "name": "岗位职责与晋升述职准备",
+  "description": "岗位职责与晋升述职准备：职场新人实操精品，含工具表/算例/可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shebao-yidi",
+  "category": "finance",
+  "name": "社保异地转移与合并",
+  "description": "社保异地转移与合并：职场新人实操精品，含工具表/算例/可复制话术与红线段。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8v"
  }
 ]
