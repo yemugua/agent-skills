@@ -264422,5 +264422,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P12f"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-banjia-b",
+  "category": "finance",
+  "name": "搬家公司比价与合同条款核对",
+  "description": "同城搬家报价八项拆解、总价公式与算例、合同必写条款与低价引流加价红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12g"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-banjia-s",
+  "category": "finance",
+  "name": "跨城搬家物流比价与费用测算",
+  "description": "按体积/重量/整车三种计费方式、临界点公式、800公里一居算例与报价五问",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12g"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-banjia-p",
+  "category": "legal",
+  "name": "搬家物品损坏索赔与保价话术",
+  "description": "当场取证四步、保价与未保价赔偿标准算例、12315与起诉的阶梯话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12g"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zufang-j",
+  "category": "tool",
+  "name": "接房验房清单与押金自保",
+  "description": "逐房验房清单、水电气表读数拍照、损坏登记表模板与退押金率公式",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12g"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zufang-h",
+  "category": "finance",
+  "name": "合租水电网费分摊记账",
+  "description": "水电燃气网分摊方式选择表、空调计量插座算例、月度账单与规则前置话术模板",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12g"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zufang-b",
+  "category": "legal",
+  "name": "退租恢复原状与扣押金应对话术",
+  "description": "退租前两周清单、常见扣钱名目应对表、交接顺序与催押金话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12g"
  }
 ]
