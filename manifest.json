@@ -260909,5 +260909,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhuangxiu-yusuan",
+  "name": "装修预算分项与增项控制",
+  "description": "装修预算硬装/软装/家电比例分配、增项识别与算例控制",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zhuangxiu-hetong",
+  "name": "装修合同与付款节点",
+  "description": "装修合同分期付款比例、保修条款与付款节点算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhuangxiu-cailiao",
+  "name": "主材选购与环保等级",
+  "description": "板材/乳胶漆/瓷砖环保等级鉴别与比价算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zhuangxiu-yanshou",
+  "name": "装修验收节点与整改清单",
+  "description": "水电/防水/竣工验收清单与整改费用算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhuangxiu-jiangu",
+  "name": "监理与增项维权",
+  "description": "第三方监理费用对比、增项维权话术与算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ruzhu-chufeng",
+  "name": "新居除甲醛与通风晾晒",
+  "description": "甲醛检测费/治理费/通风时间算例与安全入住决策",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9s"
  }
 ]
