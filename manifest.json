@@ -262637,5 +262637,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10x"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-silu-fenl",
+  "name": "力量训练计划与分化（三分化）",
+  "description": "力量训练三分化/五分化怎么选：含8周模板、每组配重递进算例与平台期判断标准",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10y"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-danbai-fen",
+  "name": "蛋白粉与补剂比价（克价算例）",
+  "description": "乳清/增肌粉/肌酸克价换算方法与算例：按每克蛋白质单价比较，附全年补剂预算表",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10y"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-pao-bu-xie",
+  "name": "跑鞋选型与更换周期（里程算例）",
+  "description": "跑鞋按体重/足弓/跑量选型对照表，600公里更换成本算例与折旧计价方法",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10y"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jianshen-fan",
+  "name": "健身餐备餐与外食比价（每餐成本算例）",
+  "description": "备餐 vs 外卖单餐成本对比表、每周3小时备餐流程模板与蛋白质达标算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10y"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-silu-shang",
+  "name": "力量训练受伤与康复就医（成本阶梯算例）",
+  "description": "训练受伤分级处置表：先停练自查→理疗→影像→康复科，附各级费用算例与医保报销口径",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10y"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jianshen-dak",
+  "name": "健身打卡与习惯养成（计划模板）",
+  "description": "用\"最小剂量+固定锚点+21天自记表\"把健身变成习惯：含可复制打卡模板与中断重启规则",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10y"
  }
 ]
