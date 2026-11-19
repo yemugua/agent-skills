@@ -263858,5 +263858,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dayin-j",
+  "name": "打印机选型与耗材成本：墨仓vs激光算例",
+  "description": "家庭打印选墨仓还是激光的单页成本账——含购置+耗材年成本算例、临界点公式与采购话术",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-mojia-h",
+  "name": "墨盒加粉与第三方耗材风险算例",
+  "description": "原装/加粉/连供/兼容四条路省钱账与风险清单——含烧机期望成本算例与保修vs省钱决策",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-wenju-c",
+  "name": "文具开学季囤货清单与比价算例",
+  "description": "开学季文具囤货清单+三渠道比价算例+全年用量表，附比价表模板直接抄",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huayuan-b",
+  "name": "画材与乐器入门预算算例",
+  "description": "孩子学画画/乐器的入门装备+课时三年总预算算例，含先试学再买装备顺序与谈判话术",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hangwu-p",
+  "name": "办公耗材采购与报销话术模板",
+  "description": "办公耗材采购比价流程+报销申请话术模板+供应商比价表，直接抄用",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ershou-d",
+  "name": "二手办公设备交易验货与合同算例",
+  "description": "二手打印机复印机验货清单+估价公式+交易话术与维权路径",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11v"
  }
 ]
