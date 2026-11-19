@@ -264224,5 +264224,53 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P12b"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shouji-x",
+  "category": "finance",
+  "name": "手机选型与处理器续航对比",
+  "description": "处理器天梯+单位性能价格公式，2000/3500/5000元档算例与砍价话术",
+  "tier": "quality",
+  "source_batch": "biz-P12c"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shouji-h",
+  "category": "finance",
+  "name": "换机周期与以旧换新折算",
+  "description": "年均持有成本公式+旧机残值表，判断换机时机的精确算例",
+  "tier": "quality",
+  "source_batch": "biz-P12c"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-biji-b",
+  "category": "finance",
+  "name": "笔记本选型与内存硬盘升级",
+  "description": "可升级性清单+官方升配vs自购内存成本算例与防拒保话术",
+  "tier": "quality",
+  "source_batch": "biz-P12c"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-pingb-p",
+  "category": "finance",
+  "name": "平板与学习机比价",
+  "description": "学习机溢价拆解+3年总成本算例与续费坑话术",
+  "tier": "quality",
+  "source_batch": "biz-P12c"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuma-w",
+  "category": "legal",
+  "name": "数码维修与保修争议",
+  "description": "保内拒保举证话术三段式+保外维修费用对比+12315路径",
+  "tier": "quality",
+  "source_batch": "biz-P12c"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-erj-m",
+  "category": "tool",
+  "name": "耳机音箱入门比价",
+  "description": "场景选型表+三年持有成本算例+参数陷阱清单",
+  "tier": "quality",
+  "source_batch": "biz-P12c"
  }
 ]
