@@ -260045,5 +260045,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P9b",
   "path": "finance/ertong-shucai-shuji-huayao-shengao-chongwu-laoke/SKILL.md"
+ },
+ {
+  "name": "墙面渗水发霉处理",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuiqiang-shenlou",
+  "description": "墙面渗水发霉处理：渗水源定位、铲除重做流程与费用算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9c"
+ },
+ {
+  "name": "地下室返潮与除湿方案",
+  "slug": "ertong-shucai-shuji-huayao-shengao-dijiao-fanwei",
+  "description": "地下室返潮与除湿方案：除湿机选型、防水涂层与电费算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9c"
+ },
+ {
+  "name": "门窗密封条更换与隔音",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chuang-huanfeng",
+  "description": "门窗密封条更换与隔音：老化判断、型号选择与费用算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9c"
+ },
+ {
+  "name": "空气开关跳闸排查与更换",
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianxiang-rong",
+  "description": "空气开关跳闸排查与更换：过载vs短路、安数选择与电工费算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9c"
+ },
+ {
+  "name": "马桶漏水与水箱维修",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-mashan-sun",
+  "description": "马桶漏水与水箱维修：进水阀/排水阀/法兰定位与配件价格算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9c"
+ },
+ {
+  "name": "沙发翻新vs换新决策",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shafa-fabu",
+  "description": "沙发翻新vs换新决策：布艺/真皮翻新价与换新经济性算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9c"
  }
 ]
