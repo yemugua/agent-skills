@@ -263285,5 +263285,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11j"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hunli-y",
+  "name": "婚宴酒店比价与档期谈判",
+  "description": "婚宴酒店比价与档期谈判：桌价拆解、算例、砍价话术与档期锁定条款",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11k"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunsha-s",
+  "name": "婚纱摄影套餐与底片陷阱",
+  "description": "婚纱摄影套餐与底片陷阱：精修张数、底片归属、二次消费清单与算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11k"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-sijia-y",
+  "name": "四大金刚选人与比价",
+  "description": "四大金刚选人与比价：司仪/摄影/摄像/化妆的报价算例与试看要点",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11k"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunli-h",
+  "name": "婚礼合同与定金退款",
+  "description": "婚礼合同与定金退款：定金/订金/预付款区别、违约金算例与退款话术",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11k"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-sanhin-g",
+  "name": "三金首饰选购与保值",
+  "description": "三金首饰选购与保值：金价构成拆解、克价算例与回收保值对比",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11k"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunli-y2",
+  "name": "婚礼预算总控与超支预案",
+  "description": "婚礼预算总控与超支预案：Excel预算表模板、超支临界点与砍项优先级",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11k"
  }
 ]
