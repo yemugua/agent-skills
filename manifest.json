@@ -261233,5 +261233,59 @@
   "tier": "quality",
   "source_batch": "biz-P9x",
   "created": "2026-11-19"
+ },
+ {
+  "slug": "finance/ertong-shucai-shengao-shuji-huayao-shengao-jipiao-te",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-jipiao-te",
+  "description": "机票特价与购票时机实操：提前天数临界点、比价平台组合、往返拆分算例，附降价监控话术模板。",
+  "category": "finance",
+  "tier": "quality",
+  "source_batch": "biz-P9y",
+  "created": "2026-11-19"
+ },
+ {
+  "slug": "tool/ertong-shucai-shuji-huayao-shengao-huoche-piaopai",
+  "name": "ertong-shucai-shuji-huayao-shengao-huoche-piaopai",
+  "description": "火车票候补与抢票实操：12306候补成功率要素、抢票软件风险、购票时间轴算例与操作模板。",
+  "category": "tool",
+  "tier": "quality",
+  "source_batch": "biz-P9y",
+  "created": "2026-11-19"
+ },
+ {
+  "slug": "finance/ertong-shucai-shengao-shuji-huayao-shengao-tuipian-gaiqian",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-tuipian-gaiqian",
+  "description": "退票改签费测算：铁路与民航各时间档费率表、改签规则差异与精确金额算例、话术模板。",
+  "category": "finance",
+  "tier": "quality",
+  "source_batch": "biz-P9y",
+  "created": "2026-11-19"
+ },
+ {
+  "slug": "finance/ertong-shucai-shuji-huayao-shengao-hangban-yanwu",
+  "name": "ertong-shucai-shuji-huayao-shengao-hangban-yanwu",
+  "description": "航班延误理赔与改签实操：延误险赔付触发条件、航司补偿标准对照、索赔算例与话术模板。",
+  "category": "finance",
+  "tier": "quality",
+  "source_batch": "biz-P9y",
+  "created": "2026-11-19"
+ },
+ {
+  "slug": "finance/ertong-shucai-shengao-shuji-huayao-shengao-hangcheng-bijia",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-hangcheng-bijia",
+  "description": "酒店机票套餐比价：自由行打包价 vs 单订拆分算例、比价步骤与砍价话术模板。",
+  "category": "finance",
+  "tier": "quality",
+  "source_batch": "biz-P9y",
+  "created": "2026-11-19"
+ },
+ {
+  "slug": "legal/ertong-shucai-shuji-huayao-shengao-chuyou-baoxian",
+  "name": "ertong-shucai-shuji-huayao-shengao-chuyou-baoxian",
+  "description": "旅游险选购与理赔：保额/免赔/免责对照表、理赔材料清单与金额算例、报案话术模板。",
+  "category": "legal",
+  "tier": "quality",
+  "source_batch": "biz-P9y",
+  "created": "2026-11-19"
  }
 ]
