@@ -263534,5 +263534,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11o"
+ },
+ {
+  "name": "中介费砍价与跳单风险",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhongjie-f",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11p",
+  "description": "中介费砍价与跳单风险——含工具表、金额算例与可复制模板"
+ },
+ {
+  "name": "二房东转租陷阱与合同效力",
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-sh",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11p",
+  "description": "二房东转租陷阱与合同效力——含工具表、金额算例与可复制模板"
+ },
+ {
+  "name": "押金条与水电押金清单",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zufang-d",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11p",
+  "description": "押金条与水电押金清单——含工具表、金额算例与可复制模板"
+ },
+ {
+  "name": "退房清洁与损耗扣款争议",
+  "slug": "ertong-shucai-shuji-huayao-shengao-zufang-t",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11p",
+  "description": "退房清洁与损耗扣款争议——含工具表、金额算例与可复制模板"
+ },
+ {
+  "name": "网签备案与租金监管",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hetong-w",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11p",
+  "description": "网签备案与租金监管——含工具表、金额算例与可复制模板"
+ },
+ {
+  "name": "合租分摊与AA记账模板",
+  "slug": "ertong-shucai-shuji-huayao-shengao-hexu-y",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11p",
+  "description": "合租分摊与AA记账模板——含工具表、金额算例与可复制模板"
  }
 ]
