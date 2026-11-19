@@ -241788,13 +241788,6 @@
   "source_batch": "pipe14"
  },
  {
-  "slug": "haizi-shuimian",
-  "category": "parenting/sleep",
-  "name": "孩子夜醒与睡眠",
-  "description": "孩子夜醒与睡眠：流程与避坑。实操指南。",
-  "source_batch": "pipe14"
- },
- {
   "slug": "tiaosheng-xunlian",
   "category": "sport/fitness",
   "name": "跳绳选购与训练",
@@ -242227,13 +242220,6 @@
   "name": "乒乓球入门",
   "description": "乒乓球入门：流程与避坑。实操指南。",
   "source_batch": "pipe17"
- },
- {
-  "slug": "renzhi-zhaohu",
-  "category": "care/dementia",
-  "name": "认知症（老年痴呆）照护",
-  "description": "认知症（老年痴呆）照护：流程与避坑。实操指南。",
-  "source_batch": "pipe18"
  },
  {
   "slug": "laoren-niaoshi",
@@ -244816,13 +244802,6 @@
   "category": "elder/digital",
   "name": "老人手机教学",
   "description": "老人手机教学：流程与避坑。实操指南。",
-  "source_batch": "pipe48"
- },
- {
-  "slug": "shilaohua-gaizao",
-  "category": "elder/home",
-  "name": "居家适老化改造",
-  "description": "居家适老化改造：流程与避坑。实操指南。",
   "source_batch": "pipe48"
  },
  {
@@ -263501,5 +263480,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P11n",
   "description": "识别校园贷/培训贷/注销校园贷骗局的年化利息算例、拒绝话术与举报渠道，含法律红线。"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-tansh",
+  "category": "finance",
+  "name": "探店博主与达人折扣逻辑（算例）",
+  "description": "探店达人折扣、博主探店免费餐与商家成本账：折扣率分档、置换vs付费、商家ROI算例、谈判话术与红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11o"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dazhong-p",
+  "category": "tool",
+  "name": "点评平台会员与霸王餐规则（算例）",
+  "description": "大众点评/美团会员等级、霸王餐报名与中奖规则、VNR贡献值算例、套餐划算临界点、避坑红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11o"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-paiji",
+  "category": "tool",
+  "name": "排队叫号与等位策略（算例）",
+  "description": "餐厅排队取号/远程排队/等位时长估算公式、翻台率算例、错峰时刻表、等位抵扣羊毛与红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11o"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-canyin-w",
+  "category": "legal",
+  "name": "餐厅服务纠纷与食品异物维权（算例）",
+  "description": "吃出异物/服务纠纷的取证步骤、食品安全法148条赔偿算例、12315投诉模板、协商话术与红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11o"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zizhu-c",
+  "category": "finance",
+  "name": "自助餐回本策略与浪费费（算例）",
+  "description": "自助餐回本的菜品成本率选择公式、浪费费规则合法性、回本临界点算例、避坑红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11o"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hai-di",
+  "category": "tool",
+  "name": "火锅烤肉蘸料与点单公式（人均算例）",
+  "description": "火锅烤肉蘸料配方表、点单公式（人数×荤素比×锅底）、人均控价算例、隐藏加价项与红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11o"
  }
 ]
