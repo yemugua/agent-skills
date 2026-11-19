@@ -260963,5 +260963,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jianli-youhua",
+  "name": "简历优化与投递节奏",
+  "description": "儿童书才求职简历优化与投递节奏：投递渠道选择、回复率提升、简历模板算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-mianshi-luoli",
+  "name": "面试流程与薪资谈判",
+  "description": "儿童书才求职面试流程与薪资谈判：面经准备、期望薪资话术、offer算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-offer-bijiao",
+  "name": "offer比较与选择",
+  "description": "儿童书才求职offer比较与选择：薪资、五险一金基数、通勤成本总账算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ruzhi-shouxu",
+  "name": "入职手续与试用期约定",
+  "description": "儿童书才入职手续与试用期约定：合同条款、试用期工资、社保起缴算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-beijing-diaocha",
+  "name": "背调与竞业条款应对",
+  "description": "儿童书才背调与竞业条款应对：背调范围、竞业补偿标准、算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ruzhi-daijian",
+  "name": "入职体检与报告解读",
+  "description": "入职体检与报告解读：体检项目选择、费用、异常指标复查算例",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9t"
  }
 ]
