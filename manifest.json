@@ -262205,5 +262205,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10p"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-mao-liang",
+  "category": "finance",
+  "name": "猫粮狗粮月度开销账（月费/算例）",
+  "description": "猫粮狗粮月度开销三段式测算：口粮用量与月费算例、主粮档次比价与囤货省钱、辅食与零食附加开销，附预算表模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-xun",
+  "category": "finance",
+  "name": "宠物训练班与自训比价（课时费/算例）",
+  "description": "宠物训练班三种模式（门店班/上门课/寄训班）课时费行情与算例，自训免费方案与资源清单，选班避坑话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-xi",
+  "category": "finance",
+  "name": "宠物洗澡美容频次与费用（自洗vs门店算例）",
+  "description": "猫狗洗澡美容合理频次表、在家自洗设备投入与单次成本算例、门店洗澡/美容/药浴价格行情与会员卡话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-zheng",
+  "category": "legal",
+  "name": "宠物证件与养犬登记（办证流程/费用算例）",
+  "description": "养犬登记办证流程与年审费用算例，犬证材料清单与线上办理入口，禁养犬种与违规养犬的处罚风险。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-lao",
+  "category": "health",
+  "name": "宠物老年照护与慢性病（体检频次/月费算例）",
+  "description": "猫狗老年判定标准与体检频次表，慢性病（肾病/心脏病/关节炎/糖尿病）月费算例，居家照护改造与花销预算模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10q"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-yi",
+  "category": "tool",
+  "name": "宠物临终与安葬服务（安乐/火化算例）",
+  "description": "宠物安乐死决策标准与费用算例，遗体火化（集体/单独）价格行情与流程，安葬方式合规要求与情感处理清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10q"
  }
 ]
