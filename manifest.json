@@ -261179,5 +261179,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P9w",
   "description": "精品：离婚带方向——离婚后单亲生活重启（住房/预算/社交重建算例）"
+ },
+ {
+  "slug": "finance/ertong-shucai-shengao-shuji-huayao-shengao-shoushu-xfy",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-shoushu-xfy",
+  "description": "儿童手术费用拆解与比价：住院总费用构成、自费比例与耗材费差异、跨院报价对比算例，含审价话术。",
+  "category": "finance",
+  "tier": "quality",
+  "source_batch": "biz-P9x",
+  "created": "2026-11-19"
+ },
+ {
+  "slug": "finance/ertong-shucai-shuji-huayao-shengao-chuyuan-jielong",
+  "name": "ertong-shucai-shuji-huayao-shengao-chuyuan-jielong",
+  "description": "儿童出院结算与医嘱执行：结算清单逐项核对、带药费用与替代购药比价、复诊安排，含核对算例与追回话术。",
+  "category": "finance",
+  "tier": "quality",
+  "source_batch": "biz-P9x",
+  "created": "2026-11-19"
+ },
+ {
+  "slug": "legal/ertong-shucai-shuji-huayao-shengao-bingli-fuxin",
+  "name": "ertong-shucai-shuji-huayao-shengao-bingli-fuxin",
+  "description": "儿童病历复印与二次诊疗意见全流程：复印材料与费用、封存流程、二次意见的选择与费用算例，含申请模板。",
+  "category": "legal",
+  "tier": "quality",
+  "source_batch": "biz-P9x",
+  "created": "2026-11-19"
+ },
+ {
+  "slug": "tool/ertong-shucai-shengao-shuji-huayao-shengao-guahao-jifa",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-guahao-jifa",
+  "description": "儿童看病挂号技巧与专家号比价：普通号vs专家号的场景选择、黄牛号风险与举报路径、含挂号费与误工成本算例。",
+  "category": "tool",
+  "tier": "quality",
+  "source_batch": "biz-P9x",
+  "created": "2026-11-19"
+ },
+ {
+  "slug": "health/ertong-shucai-shuji-huayao-shengao-manbing-fang",
+  "name": "ertong-shucai-shuji-huayao-shengao-manbing-fang",
+  "description": "儿童慢病长处方与门诊统筹实操：长处方申请条件、门诊统筹与慢病待遇叠加报销算例、随访提醒模板。",
+  "category": "health",
+  "tier": "quality",
+  "source_batch": "biz-P9x",
+  "created": "2026-11-19"
+ },
+ {
+  "slug": "legal/ertong-shucai-shuji-huayao-shengao-yibao-yidika",
+  "name": "ertong-shucai-shuji-huayao-shengao-yibao-yidika",
+  "description": "儿童随迁异地就医备案流程、直接结算规则与报销比例算例，含手工报销兜底与红线提醒",
+  "category": "legal",
+  "tier": "quality",
+  "source_batch": "biz-P9x",
+  "created": "2026-11-19"
  }
 ]
