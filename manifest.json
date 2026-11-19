@@ -260585,5 +260585,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9l"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-waimai-hongbao",
+  "category": "finance",
+  "name": "外卖红包与满减叠加",
+  "description": "外卖平台券+商家券+满减叠加规则详解，含单均省钱算例与凑单临界点公式。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-waimai-pingjia",
+  "category": "tool",
+  "name": "外卖差评与商家沟通",
+  "description": "外卖错送漏送与商家沟通话术模板，含退款比例算例与平台介入时机。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhucan-bijia",
+  "category": "finance",
+  "name": "堂食vs外卖vs自灶成本对比",
+  "description": "堂食、外卖、自己做饭单餐真实成本算例与月度对比表，含临界点公式。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-canyin-taochan",
+  "category": "finance",
+  "name": "餐饮团购券使用与退改",
+  "description": "团购券有效期/周末节假日限制/过期退规则与退券算例，含超期维权路径。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-huiyuan-canyin",
+  "category": "finance",
+  "name": "餐饮会员储值与跑路预判",
+  "description": "餐饮会员储值折扣测算、门店倒闭前兆信号清单与余额风险算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shipin-baoz",
+  "category": "legal",
+  "name": "外卖食安问题取证与投诉",
+  "description": "外卖异物/变质取证清单、平台投诉流程与12315投诉算例，含食品安全法赔偿依据。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9m"
  }
 ]
