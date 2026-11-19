@@ -262745,5 +262745,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yinhang-pn",
+  "name": "银行网点预约与免排队",
+  "description": "网点预约渠道、免排队业务清单、VIP通道合规借用与等候时间算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11a"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dinghu-c",
+  "name": "大额存单与定期比价",
+  "description": "大额存单与定期存款利率对比、利息算例、额度抢购与转让技巧",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11a"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-kuakuan-fe",
+  "name": "跨行转账与手续费减免",
+  "description": "手机银行转账限额、跨行手续费规则、大额转账路径与费用算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11a"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yinhang-g",
+  "name": "银行卡遗失与盗刷应急",
+  "description": "挂失冻结时效、盗刷止损步骤、资金追回申诉路径与损失算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11a"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-fangdai-ji",
+  "name": "房贷提前还款测算",
+  "description": "提前还款违约金规则、等额本息/本金省息算例、缩期vs减月供决策表",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11a"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yinhang-t",
+  "name": "银行投诉与银保监申诉",
+  "description": "银行投诉三级阶梯、国家金融监督管理总局申诉流程、时限与算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11a"
  }
 ]
