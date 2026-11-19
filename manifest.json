@@ -262259,5 +262259,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhaijin-bi",
+  "category": "finance",
+  "name": "债券基金与债基波动：回撤算例与波动应对",
+  "description": "债券基金回撤测算与债基波动应对，含精确金额算例（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huangjin-dq",
+  "category": "finance",
+  "name": "黄金定投与积存：克重账与价差算例",
+  "description": "黄金积存定投克重账与价差算例，渠道费率对比（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-gupiao-hu",
+  "category": "finance",
+  "name": "股票账户开通与费率：佣金算例",
+  "description": "股票开户流程与佣金费率算例，交易成本测算（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zishui-pei",
+  "category": "finance",
+  "name": "资产配置四笔钱：比例算例",
+  "description": "家庭资产四笔钱分层配置与比例算例（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-feifa-lic",
+  "category": "legal",
+  "name": "非法集资与高息骗局：识别清单与算例",
+  "description": "非法集资识别四问与高息骗局现金流算例（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jizhang-xig",
+  "category": "tool",
+  "name": "记账习惯与月度复盘：APP选择与复盘模板",
+  "description": "记账APP选择与月度复盘模板，含结余率算例（儿童财商进阶）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10r"
  }
 ]
