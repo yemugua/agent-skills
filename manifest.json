@@ -259979,5 +259979,71 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9a"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-shishi",
+  "name": "宠物呕吐腹泻分级处置",
+  "category": "health",
+  "description": "犬猫呕吐腹泻禁食时长/观察指标/就医红线分级处置",
+  "keywords": "禁食 观察指标 就医红线 细小 猫瘟 脱水",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9b",
+  "path": "health/ertong-shucai-shengao-shuji-huayao-shengao-chongwu-shishi/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-yaopin",
+  "name": "宠物家庭常备药与禁忌",
+  "category": "health",
+  "description": "宠物家庭常备药清单与人用药禁忌黑名单/剂量原则",
+  "keywords": "常备药 人药禁忌 对乙酰氨基酚 布洛芬 剂量",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9b",
+  "path": "health/ertong-shucai-shuji-huayao-shengao-chongwu-yaopin/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-xishao",
+  "name": "宠物洗澡频率与用品",
+  "category": "tool",
+  "description": "犬猫洗澡频率差异/沐浴露选择/在家洗vs宠物店算例",
+  "keywords": "洗澡 频率 沐浴露 吹干 算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9b",
+  "path": "tool/ertong-shucai-shengao-shuji-huayao-shengao-chongwu-xishao/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-shipin",
+  "name": "猫粮狗粮选购与喂养量",
+  "category": "tool",
+  "description": "成分表解读/日喂量速算/月开销算例/换粮7天过渡",
+  "keywords": "猫粮 狗粮 成分表 喂养量 换粮 过渡",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9b",
+  "path": "tool/ertong-shucai-shuji-huayao-shengao-chongwu-shipin/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-shaiya",
+  "name": "宠物中暑与应急降温",
+  "category": "health",
+  "description": "中暑症状分级/黄金10分钟降温步骤/就医时点",
+  "keywords": "中暑 应急降温 短鼻犬 41度 就医时点",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9b",
+  "path": "health/ertong-shucai-shengao-shuji-huayao-shengao-chongwu-shaiya/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-laoke",
+  "name": "老年宠物照护与慢病管理",
+  "category": "finance",
+  "description": "老年猫狗体检频率/关节保健/慢病筛查/月开销算例",
+  "keywords": "老年宠物 体检频率 关节保健 慢病 月开销",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9b",
+  "path": "finance/ertong-shucai-shuji-huayao-shengao-chongwu-laoke/SKILL.md"
  }
 ]
