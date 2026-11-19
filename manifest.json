@@ -264476,5 +264476,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P12g"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuizu-k",
+  "category": "finance",
+  "name": "水族箱开缸与设备比价",
+  "description": "水族箱开缸流程与全套设备比价算例：60缸配置清单、开销分项计算、养水周期与省钱临界点，附预算模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuizu-y",
+  "category": "health",
+  "name": "观赏鱼选鱼与检疫",
+  "description": "观赏鱼选购健康判别表、入缸检疫流程与常见病处理算例：病鱼成本、药钱、死鱼损失量化，附检疫期排期模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuizu-s",
+  "category": "legal",
+  "name": "水族死鱼维权与商家话术",
+  "description": "水族死鱼与器材质量问题维权：死因取证流程、责任界定、与商家/平台交涉话术模板与赔偿标准算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuizu-h",
+  "category": "finance",
+  "name": "水草造景与耗材月账",
+  "description": "水草缸造景耗材清单与月度成本账：CO2/肥料/电费/水费逐项算例、开缸一次性投入与年账对比、省钱替代方案表。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuizu-j",
+  "category": "tool",
+  "name": "净水剂药剂安全使用",
+  "description": "水族净水剂与鱼药安全使用工具页：常见药剂对照表、按水体投药量计算公式与算例、禁忌组合表、安全操作模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuizu-t",
+  "category": "tool",
+  "name": "乌龟爬宠饲养与冬眠",
+  "description": "乌龟与爬宠饲养工具页：冬眠条件判断表、加热过冬设备算例、常见饲养器材清单与月账、冬眠风险自查模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12h"
  }
 ]
