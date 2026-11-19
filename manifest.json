@@ -264584,5 +264584,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P12i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-peihu-g",
+  "name": "护工比价与合同条款",
+  "description": "老人居家护工/保姆的渠道比价、工资构成、合同必写条款与算例。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12j"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-peihu-y",
+  "name": "老人跌倒应急与居家防滑",
+  "description": "老人跌倒后的正确处置步骤、就医判断标准与居家防滑改造算例。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12j"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-peihu-y2",
+  "name": "老人用药管理与漏服处理",
+  "description": "多药同服的老人用药清单管理、漏服/误服处理规则与分药盒采购算例。",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12j"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-peihu-f",
+  "name": "护理床辅具采购比价",
+  "description": "老人护理床、轮椅、助行器等辅具的选购参数、渠道比价与预算算例。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12j"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-peihu-h",
+  "name": "护工纠纷与责任划分",
+  "description": "老人护工服务中磕碰、走失、财物纠纷的责任划分框架与维权话术。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12j"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-peihu-x",
+  "name": "老人心理陪伴与沟通话术",
+  "description": "探望频次安排、应对老人消极情绪的沟通话术模板与远程陪伴方法。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12j"
  }
 ]
