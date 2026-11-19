@@ -263123,5 +263123,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11g"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xiangji-x",
+  "category": "finance",
+  "name": "相机选型与镜头比价",
+  "description": "ertong-shucai-shengao-shuji-huayao-shengao-xiangji-x：一句话——先定预算再定画幅，用总持有成本公式算出机身+镜头+配件的真实花费，比单看机身价省数千元。含预算分档算例与比价话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ershou-t",
+  "category": "tool",
+  "name": "二手镜头交易与验货",
+  "description": "ertong-shucai-shuji-huayao-shengao-ershou-t：一句话——镜头二手价约为全新 55%~75%，当面 10 分钟验货清单（霉斑/对焦/光圈/雾气）能挡住九成坑。含验货步骤、算例与交易话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-cunchi-k",
+  "category": "tool",
+  "name": "存储卡与备份方案",
+  "description": "ertong-shucai-shengao-shuji-huayao-shengao-cunchi-k：一句话——存储卡按写入速度而不是容量选，双卡备份+3-2-1 原则，一张好卡多花的 100 元能保住一场婚礼素材。含容量/速度算例与备份模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xiangji-w",
+  "category": "legal",
+  "name": "相机维修与保修纠纷",
+  "description": "ertong-shucai-shuji-huayao-shengao-xiangji-w：一句话——分清\"保修范围/进水摔机/第三方拆修\"三种处理路径，官方报价单逐项核对，拒保就按三包向 12315 投诉。含费用算例与维权模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-paishe-k",
+  "category": "finance",
+  "name": "约拍收费与版权话术",
+  "description": "ertong-shucai-shengao-shuji-huayao-shengao-paishe-k：一句话——按\"底价=时薪×耗时×2+器材折旧+后期时长\"报价，书面约定张数/修图张数/授权范围，加片加钱、商用另议。含报价算例与合同话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-houqi-ru",
+  "category": "finance",
+  "name": "后期软件订阅与买断比价",
+  "description": "ertong-shucai-shuji-huayao-shengao-houqi-ru：一句话——用\"总成本=月费×实际使用月数\"和\"买断价÷月费=回本月数\"两条公式判断订阅还是买断，轻度用户买断、重度用户订阅。含算例与省钱路径。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11h"
  }
 ]
