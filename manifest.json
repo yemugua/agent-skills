@@ -264638,5 +264638,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P12j"
+ },
+ {
+  "name": "七天无理由退货实操（算例）",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-tuihuo-l",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12k",
+  "description": "七天无理由退货实操：儿童图书绘本消毒拆封后能否退、算例与话术"
+ },
+ {
+  "name": "运费险与退货运费比价（算例）",
+  "slug": "ertong-shucai-shuji-huayao-shengao-tuihuo-y",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12k",
+  "description": "儿童图书网购运费险与退货运费比价：算例与投保决策公式"
+ },
+ {
+  "name": "拒收与签收争议处理（话术）",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-tuihuo-j",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12k",
+  "description": "儿童图书签收拒收与破损争议处理：话术模板与举证清单"
+ },
+ {
+  "name": "换货周期与备机策略（算例）",
+  "slug": "ertong-shucai-shuji-huayao-shengao-huanhu-p",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12k",
+  "description": "儿童图书换货周期与备机策略（备书替代方案）：算例与工具表"
+ },
+ {
+  "name": "双11预售退货与定金规则（算例）",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-tuihuo-s",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12k",
+  "description": "双11预售退货与定金规则：定金不退边界、尾款期退货算例"
+ },
+ {
+  "name": "平台客服升级与12315投诉（话术）",
+  "slug": "ertong-shucai-shuji-huayao-shengao-tuihuo-p",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12k",
+  "description": "图书退货客服升级路径与12315投诉实操：话术模板与材料清单"
  }
 ]
