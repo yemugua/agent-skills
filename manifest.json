@@ -263966,5 +263966,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11w"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-linju-z",
+  "category": "legal",
+  "name": "邻居噪音沟通与投诉流程话术",
+  "description": "楼上脚步声狗叫装修噪音的分级沟通话术、分贝标准与投诉流程，含报警/物业/12345路径与算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11x"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-linju-c",
+  "category": "legal",
+  "name": "楼上漏水取证与索赔流程",
+  "description": "楼上漏水从关阀排查到取证、定损、协商、诉讼的完整流程，含维修费/家具损失算例与话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11x"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-linju-h",
+  "category": "tool",
+  "name": "邻里互助与份子钱边界话术",
+  "description": "代收快递、临时看娃、份子钱随礼的互助边界与回礼公式，含模板与金额表",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11x"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-louti-d",
+  "category": "legal",
+  "name": "楼道堆物与消防投诉流程",
+  "description": "楼道堆鞋柜纸箱电动车的法规依据、举报流程与举证清单，含罚款金额算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11x"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yejian-g",
+  "category": "tool",
+  "name": "夜间施工与装修时间规定",
+  "description": "装修扰民的法定时间表、物业装修押金规则与投诉话术，含违约金算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11x"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-linju-j",
+  "category": "finance",
+  "name": "小区群团购与拼单技巧",
+  "description": "社区团购比价公式、团长抽成机制与避坑清单，含拼单省钱算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11x"
  }
 ]
