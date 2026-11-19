@@ -260099,5 +260099,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9c"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-youyanji-qingxi",
+  "category": "tool",
+  "name": "油烟机清洗周期与方法决策",
+  "description": "油烟机清洗周期、自拆vs上门拆洗算账、油网自洗步骤与费用算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ranshuiqi-shou",
+  "category": "tool",
+  "name": "燃气热水器安全与更换决策",
+  "description": "燃气热水器判废年限、一氧化碳报警器安装、换新费用算例与选型",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-weibo-lu",
+  "category": "finance",
+  "name": "微波炉故障与修换决策",
+  "description": "微波炉磁控管故障排查、加热不均处理、维修vs换新费用算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianfanguo",
+  "category": "tool",
+  "name": "电饭煲内胆涂层脱落与换新决策",
+  "description": "涂层脱落风险判断、原装内胆更换渠道与费用算例、修换公式",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jinguidui",
+  "category": "finance",
+  "name": "净水器滤芯更换周期与年成本核算",
+  "description": "PP棉/活性炭/RO膜周期表、年耗材成本算例与副厂滤芯比价",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chenguzhi",
+  "category": "finance",
+  "name": "厨房小家电闲置断舍离与变现",
+  "description": "闲置自测清单、二手定价公式与变现算例、处置优先级清单",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9d"
  }
 ]
