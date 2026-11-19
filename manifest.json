@@ -260639,5 +260639,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yinyue-vip",
+  "category": "finance",
+  "name": "音乐会员三平台比价",
+  "description": "音乐会员三平台比价：年度价/音质/家庭组算例，帮家长算清给孩子报听书/升身高定制的音乐会员哪档最省。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9n"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianshi-vip",
+  "category": "finance",
+  "name": "视频会员年卡vs连续包月",
+  "description": "视频会员年卡vs连续包月：折算月价/自动续费坑/算例，家长给孩子买动画片单前先算清哪种付费方式真省。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9n"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-wangpan-huiyuan",
+  "category": "finance",
+  "name": "网盘会员需求评估",
+  "description": "网盘会员需求评估：空间/速度/替代方案算例，存孩子身高定制资料/听书音频前先算清要不要买会员。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9n"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zhifu-bao-huiyuan",
+  "category": "finance",
+  "name": "支付宝微信会员权益盘点",
+  "description": "支付宝微信会员权益盘点：提现额度/积分兑换/年收益算例，把两个支付App的免费权益榨干再谈花钱。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9n"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dianzi-shu",
+  "category": "finance",
+  "name": "电子书会员与购书比价",
+  "description": "电子书会员与购书比价：月费vs单本/藏书量算例，给孩子囤身高定制读物前先算哪种阅读方式真省。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9n"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huiyuan-tuib",
+  "category": "finance",
+  "name": "会员自动续费退款话术",
+  "description": "会员自动续费退款话术：误扣申请/平台客服流程/退款到账算例，会员误扣期被自动续费坑后照模板追回。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9n"
  }
 ]
