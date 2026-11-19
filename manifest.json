@@ -261881,5 +261881,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P10j",
   "description": "美甲美睫消费计价与卸除避坑指南"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chanhou-kangfu",
+  "category": "finance",
+  "name": "产后康复项目比价",
+  "description": "产后康复项目比价：盆底肌/腹直肌合理价区间、医院vs私立差价算例与议价话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10k"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-buru-wei",
+  "category": "health",
+  "name": "哺乳期用药与就医",
+  "description": "哺乳期用药与就医：L1-L2 安全药物速查、RID 公式与哺乳后服药错峰算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10k"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-baojian-pin",
+  "category": "finance",
+  "name": "母婴保健品囤货与甄别",
+  "description": "母婴保健品囤货与甄别：该买/不该买速查表、批准文号三步甄别与套餐智商税算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10k"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-tui",
+  "category": "health",
+  "name": "儿童退烧与就医时机",
+  "description": "儿童退烧与就医时机：退烧药公斤体重剂量算例、急诊指征清单与家庭备药成本。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10k"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yuezi-zh",
+  "category": "finance",
+  "name": "月子中心vs月嫂比价",
+  "description": "月子中心vs月嫂：折算日费公式、18000元差价算例与退款条款比价清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10k"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-shui",
+  "category": "tool",
+  "name": "儿童睡眠训练与夜醒",
+  "description": "儿童睡眠训练与夜醒：月龄-方法决策表、7天记录模板与自练省4200元算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10k"
  }
 ]
