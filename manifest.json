@@ -260471,5 +260471,65 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9j"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shequ-zheng",
+  "name": "社区证明开具与盖章",
+  "category": "legal",
+  "description": "居住证明/亲属关系等社区证明开具流程、材料清单、时限与免费红线，含申请模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9k",
+  "path": "legal/ertong-shucai-shengao-shuji-huayao-shengao-shequ-zheng/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yexu-gongji",
+  "name": "业委会成立与维权流程",
+  "category": "legal",
+  "description": "业委会成立时间线、业主大会双过半表决算例、物业维权阶梯与申请书模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9k",
+  "path": "legal/ertong-shucai-shuji-huayao-shengao-yexu-gongji/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shequ-huodong",
+  "name": "社区活动与邻里关系",
+  "category": "tool",
+  "description": "业主群公约、社区活动预算分摊算例与报名接龙模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9k",
+  "path": "tool/ertong-shucai-shengao-shuji-huayao-shengao-shequ-huodong/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-liudong-renkou",
+  "name": "流动人口登记与居住证积分",
+  "category": "legal",
+  "description": "居住登记7日时限、居住证6个月公式、积分材料清单与滞登风险对照。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9k",
+  "path": "legal/ertong-shucai-shuji-huayao-shengao-liudong-renkou/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-linyang-zheng",
+  "name": "领养证与宠物领养流程",
+  "category": "legal",
+  "description": "领养协议必备条款、回访规则、首年费用算例与免费领养陷阱避坑。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9k",
+  "path": "legal/ertong-shucai-shengao-shuji-huayao-shengao-linyang-zheng/SKILL.md"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shequ-yimiao",
+  "name": "社区卫生服务中心服务清单",
+  "category": "health",
+  "description": "家庭医生签约收益算例、免费筛查清单、慢病长处方与转诊模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9k",
+  "path": "health/ertong-shucai-shuji-huayao-shengao-shequ-yimiao/SKILL.md"
  }
 ]
