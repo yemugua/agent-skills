@@ -263393,5 +263393,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11l"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-daache-j",
+  "category": "finance",
+  "name": "打车平台比价与安全设置",
+  "description": "打车平台比价方法、安全设置开启清单与通勤算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yewan-d",
+  "category": "tool",
+  "name": "夜间出行安全清单",
+  "description": "夜间出行出发前清单、防尾随与求助话术模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dijia-z",
+  "category": "finance",
+  "name": "地铁公交卡与月票省钱",
+  "description": "交通卡折扣、月票/周期票选择算例与换乘优惠叠加。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-diu-shi",
+  "category": "tool",
+  "name": "地铁丢物找回流程",
+  "description": "地铁失物找回四步、登记模板与挂失止损算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-daxing-j",
+  "category": "health",
+  "name": "大型活动散场与踩踏避险",
+  "description": "大型活动散场时机、人流自保动作与呼救话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11m"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiaotong-s",
+  "category": "legal",
+  "name": "交通事故私了与报警抉择",
+  "description": "交通事故私了决策表、协议流程与保险理赔算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11m"
  }
 ]
