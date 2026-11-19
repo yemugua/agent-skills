@@ -262367,5 +262367,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-wangshang-gouy",
+  "category": "legal",
+  "name": "网上药店与处方药购买：合规流程与比价算例",
+  "description": "网上药店资质核验、处方药线上购买合规流程与线上线下比价算例（儿童财商进阶·医疗购药带）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yao-pin-bi",
+  "category": "finance",
+  "name": "药品集采与院内院外比价：集采药差价算例",
+  "description": "国家集采药原理、院内院外渠道比价方法与差价测算算例（儿童财商进阶·医疗购药带）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jia-yao",
+  "category": "legal",
+  "name": "假药劣药识别与举报：批号查验与索赔算例",
+  "description": "假药劣药的区分标准、药品批号与追溯码查验方法、举报渠道与赔偿算例（儿童财商进阶·医疗购药带）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-yongy",
+  "category": "health",
+  "name": "儿童用药与剂量：换算公式与算例",
+  "description": "儿童按体重/年龄的用药剂量换算公式、常见退热药剂量对照表与算例（儿童财商进阶·医疗购药带）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jia-yong",
+  "category": "tool",
+  "name": "家庭药箱清单与过期处理：常备药盘点与成本算例",
+  "description": "家庭常备药分类清单、过期药品识别与处理渠道、年度补货成本算例（儿童财商进阶·医疗购药带）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10t"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yibao-gouy",
+  "category": "finance",
+  "name": "医保个人账户购药与定点：报销范围与算例",
+  "description": "医保个人账户余额使用、定点药店购药报销范围与统筹/个账算例（儿童财商进阶·医疗购药带）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10t"
  }
 ]
