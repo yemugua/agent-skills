@@ -261071,5 +261071,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiayou-bijia",
+  "name": "加油站比价与加油卡",
+  "description": "加油站油价差异与加油卡折扣全解：油价每日变动规律、加油卡/会员/支付渠道叠加折扣、年省金额精确算例与办卡避坑。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-weizhang-chali",
+  "name": "违章查询与罚款缴纳",
+  "description": "违章查询与罚款缴纳全流程：扣分记分周期规则、线上办理渠道（交管12123等）、滞纳金精确算例与异地违章处理要点。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-che-xianjin",
+  "name": "车险理赔与定损",
+  "description": "车险理赔与定损全流程：报案时限与流程、定损争议应对、赔付金额精确算例、免赔与折旧规则解读。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-che-pengzhuang",
+  "name": "轻微事故处理与私了判断",
+  "description": "轻微事故处理与私了判断：快处快赔流程、私了适用情形与风险、常见剐蹭维修价格与私了金额算例、协议模板。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-daijia-daiyou",
+  "name": "代驾与代审服务比价",
+  "description": "代驾与代审服务比价：各平台代驾计费规则对比、夜间/长途加价算例、车辆年检代办（代审）渠道与黄牛风险、省钱组合方案。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-che-nei-pin",
+  "name": "车内用品与改装避坑",
+  "description": "车内用品选购与改装避坑：脚垫/行车记录仪/贴膜等核心用品选购标准与预算、常见改装合法性边界、年检算例与恢复费用。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9v"
  }
 ]
