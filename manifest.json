@@ -259817,5 +259817,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8x"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ziyjia-chuxing",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-ziyjia-chuxing",
+  "category": "tool",
+  "description": "家庭自驾长途规划：服务区节奏/夜间行车/ETC与油费算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8y"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-gaotie-daiwa",
+  "name": "ertong-shucai-shuji-huayao-shengao-gaotie-daiwa",
+  "category": "tool",
+  "description": "高铁带娃出行攻略：儿童票规则/选座/车上安抚清单",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8y"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-feiji-daiwa",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-feiji-daiwa",
+  "category": "tool",
+  "description": "飞机带娃与婴儿摇篮：婴儿票/摇篮申请/耳压缓解算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8y"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zujia-you",
+  "name": "ertong-shucai-shuji-huayao-shengao-zujia-you",
+  "category": "finance",
+  "description": "租车自驾游与保险选择：日租价/不计免赔/取还车验车算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8y"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-lu-youtu-zhufang",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-lu-youtu-zhufang",
+  "category": "finance",
+  "description": "旅途中转住宿与酒店选择：机场酒店/高铁站酒店/性价比算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8y"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-lu-you-jixian",
+  "name": "ertong-shucai-shuji-huayao-shengao-lu-you-jixian",
+  "category": "tool",
+  "description": "旅行应急包与儿童药品清单：分场景配置/药品剂量/预算算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P8y"
  }
 ]
