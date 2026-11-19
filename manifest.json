@@ -261181,7 +261181,7 @@
   "description": "精品：离婚带方向——离婚后单亲生活重启（住房/预算/社交重建算例）"
  },
  {
-  "slug": "finance/ertong-shucai-shengao-shuji-huayao-shengao-shoushu-xfy",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shoushu-xfy",
   "name": "ertong-shucai-shengao-shuji-huayao-shengao-shoushu-xfy",
   "description": "儿童手术费用拆解与比价：住院总费用构成、自费比例与耗材费差异、跨院报价对比算例，含审价话术。",
   "category": "finance",
@@ -261190,7 +261190,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "finance/ertong-shucai-shuji-huayao-shengao-chuyuan-jielong",
+  "slug": "ertong-shucai-shuji-huayao-shengao-chuyuan-jielong",
   "name": "ertong-shucai-shuji-huayao-shengao-chuyuan-jielong",
   "description": "儿童出院结算与医嘱执行：结算清单逐项核对、带药费用与替代购药比价、复诊安排，含核对算例与追回话术。",
   "category": "finance",
@@ -261199,7 +261199,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "legal/ertong-shucai-shuji-huayao-shengao-bingli-fuxin",
+  "slug": "ertong-shucai-shuji-huayao-shengao-bingli-fuxin",
   "name": "ertong-shucai-shuji-huayao-shengao-bingli-fuxin",
   "description": "儿童病历复印与二次诊疗意见全流程：复印材料与费用、封存流程、二次意见的选择与费用算例，含申请模板。",
   "category": "legal",
@@ -261208,7 +261208,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "tool/ertong-shucai-shengao-shuji-huayao-shengao-guahao-jifa",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-guahao-jifa",
   "name": "ertong-shucai-shengao-shuji-huayao-shengao-guahao-jifa",
   "description": "儿童看病挂号技巧与专家号比价：普通号vs专家号的场景选择、黄牛号风险与举报路径、含挂号费与误工成本算例。",
   "category": "tool",
@@ -261217,7 +261217,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "health/ertong-shucai-shuji-huayao-shengao-manbing-fang",
+  "slug": "ertong-shucai-shuji-huayao-shengao-manbing-fang",
   "name": "ertong-shucai-shuji-huayao-shengao-manbing-fang",
   "description": "儿童慢病长处方与门诊统筹实操：长处方申请条件、门诊统筹与慢病待遇叠加报销算例、随访提醒模板。",
   "category": "health",
@@ -261226,7 +261226,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "legal/ertong-shucai-shuji-huayao-shengao-yibao-yidika",
+  "slug": "ertong-shucai-shuji-huayao-shengao-yibao-yidika",
   "name": "ertong-shucai-shuji-huayao-shengao-yibao-yidika",
   "description": "儿童随迁异地就医备案流程、直接结算规则与报销比例算例，含手工报销兜底与红线提醒",
   "category": "legal",
@@ -261235,7 +261235,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "finance/ertong-shucai-shengao-shuji-huayao-shengao-jipiao-te",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jipiao-te",
   "name": "ertong-shucai-shengao-shuji-huayao-shengao-jipiao-te",
   "description": "机票特价与购票时机实操：提前天数临界点、比价平台组合、往返拆分算例，附降价监控话术模板。",
   "category": "finance",
@@ -261244,7 +261244,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "tool/ertong-shucai-shuji-huayao-shengao-huoche-piaopai",
+  "slug": "ertong-shucai-shuji-huayao-shengao-huoche-piaopai",
   "name": "ertong-shucai-shuji-huayao-shengao-huoche-piaopai",
   "description": "火车票候补与抢票实操：12306候补成功率要素、抢票软件风险、购票时间轴算例与操作模板。",
   "category": "tool",
@@ -261253,7 +261253,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "finance/ertong-shucai-shengao-shuji-huayao-shengao-tuipian-gaiqian",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-tuipian-gaiqian",
   "name": "ertong-shucai-shengao-shuji-huayao-shengao-tuipian-gaiqian",
   "description": "退票改签费测算：铁路与民航各时间档费率表、改签规则差异与精确金额算例、话术模板。",
   "category": "finance",
@@ -261262,7 +261262,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "finance/ertong-shucai-shuji-huayao-shengao-hangban-yanwu",
+  "slug": "ertong-shucai-shuji-huayao-shengao-hangban-yanwu",
   "name": "ertong-shucai-shuji-huayao-shengao-hangban-yanwu",
   "description": "航班延误理赔与改签实操：延误险赔付触发条件、航司补偿标准对照、索赔算例与话术模板。",
   "category": "finance",
@@ -261271,7 +261271,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "finance/ertong-shucai-shengao-shuji-huayao-shengao-hangcheng-bijia",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hangcheng-bijia",
   "name": "ertong-shucai-shengao-shuji-huayao-shengao-hangcheng-bijia",
   "description": "酒店机票套餐比价：自由行打包价 vs 单订拆分算例、比价步骤与砍价话术模板。",
   "category": "finance",
@@ -261280,7 +261280,7 @@
   "created": "2026-11-19"
  },
  {
-  "slug": "legal/ertong-shucai-shuji-huayao-shengao-chuyou-baoxian",
+  "slug": "ertong-shucai-shuji-huayao-shengao-chuyou-baoxian",
   "name": "ertong-shucai-shuji-huayao-shengao-chuyou-baoxian",
   "description": "旅游险选购与理赔：保额/免赔/免责对照表、理赔材料清单与金额算例、报案话术模板。",
   "category": "legal",
