@@ -261503,5 +261503,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10c"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yingtui-xuanz",
+  "category": "finance",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-yingtui-xuanz",
+  "description": "婴儿推车选购比价：伞车vs高景观怎么选、预算分配算例、二手避坑话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-anquanzu-yi",
+  "category": "legal",
+  "name": "ertong-shucai-shuji-huayao-shengao-anquanzu-yi",
+  "description": "安全座椅选购与法规：i-Size认证、安装方式比价、正反向临界点与费用算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yingbao-chuxing",
+  "category": "tool",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-yingbao-chuxing",
+  "description": "宝宝出行清单与应急处理：随身包分层装法、突发状况处置流程、补货成本算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-qinzi-fangd",
+  "category": "finance",
+  "name": "ertong-shucai-shuji-huayao-shengao-qinzi-fangd",
+  "description": "亲子房与家庭房比价：加床费规则、家庭房算例、订房前必问话术",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-feiji-ying",
+  "category": "tool",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-feiji-ying",
+  "description": "带婴儿坐飞机实务：婴儿票/摇篮申请、耳压应对、票价与行李算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-haiwai-daiwa",
+  "category": "legal",
+  "name": "ertong-shucai-shuji-huayao-shengao-haiwai-daiwa",
+  "description": "带娃出国签证与疫苗：儿童签证材料、疫苗证明、费用与办理周期算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10d"
  }
 ]
