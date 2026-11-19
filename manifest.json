@@ -261665,5 +261665,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10f"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shouji-taoan",
+  "category": "finance",
+  "name": "手机套餐比价与降档",
+  "description": "流量需求测算、保号套餐、降档话术与年省算例，一次降档年省数百元",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10g"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-kuanbang-jiaofei",
+  "category": "finance",
+  "name": "宽带办理与续费比价",
+  "description": "融合套餐vs单独宽带判定公式、续费砍价话术与年费算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10g"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shouji-hui",
+  "category": "tool",
+  "name": "旧手机回收与数据清除",
+  "description": "三渠道估价对比、数据清除流程与差价算例，多卖几百元",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10g"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shouji-weixiu",
+  "category": "finance",
+  "name": "手机维修与碎屏险",
+  "description": "分故障官方vs第三方决策表、碎屏险期望值算例与送修自保流程",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10g"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuangkaha",
+  "category": "finance",
+  "name": "双卡与副卡配置",
+  "description": "主副卡/eSIM/独立副卡月费对比、共享封顶规则与算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10g"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-luoyao-haoma",
+  "category": "tool",
+  "name": "携号转网流程与套餐",
+  "description": "条件自查短信、授权码办理流程、挽留话术与年省算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10g"
  }
 ]
