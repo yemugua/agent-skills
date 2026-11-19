@@ -263642,5 +263642,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jia-y",
+  "category": "finance",
+  "name": "家宴菜单设计与成本控制",
+  "description": "家庭聚餐菜单设计与人均成本控制，含采购公式与精确算例，适用于8-12人家宴预算规划。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jie",
+  "category": "tool",
+  "name": "节庆家宴备菜与时间表",
+  "description": "节庆家宴T-3天倒推备菜时间表模板，含可预做/必须现做分类表，避免开饭前手忙脚乱。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-canju-b",
+  "category": "finance",
+  "name": "餐具桌布采购与租赁比价",
+  "description": "家宴餐具桌布买与租的比价决策模型与算例，算清人数临界点，避免为一次性聚餐多花钱。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shiwu-a",
+  "category": "legal",
+  "name": "聚餐食物中毒应急与追责",
+  "description": "聚餐食物中毒的应急处置步骤、证据固定清单与追责路径算例，含赔偿金额计算方式。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shengcai-c",
+  "category": "health",
+  "name": "剩菜保存与再加热安全",
+  "description": "家宴剩菜分类保存时限表与再加热安全清单，防亚硝酸盐与细菌性中毒，附丢弃判断标准。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-haiwai-m",
+  "category": "finance",
+  "name": "海外餐具锅具进口与电商比价",
+  "description": "海外餐具锅具海淘/进口的全成本比价算例，含关税增值税计算公式与电商比价决策表。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11r"
  }
 ]
