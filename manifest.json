@@ -262097,5 +262097,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10n"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xianyu-fangp",
+  "name": "闲鱼买家防骗与退款（到付调包）",
+  "description": "闲鱼买家防骗与退款实操：到付调包、货不对板取证与退款话术，含算例与可复制模板。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10o"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ershou-shuji",
+  "name": "二手手机买卖与验机",
+  "description": "二手手机买卖验机清单、验机报告模板与回收比价算例，避开翻新机和到手刀。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10o"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xianyu-ding",
+  "name": "闲鱼定价与曝光优化",
+  "description": "闲鱼商品定价公式、曝光优化技巧与利润算例，快速出手不亏本。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10o"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ershou-jiaju",
+  "name": "二手家具家电处置（回收vs挂闲鱼）",
+  "description": "二手家具家电处置决策：回收、挂闲鱼、送人三种渠道的成本收益算例与拆运费陷阱。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10o"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-duansheli-jie",
+  "name": "旧衣旧书捐赠与回收",
+  "description": "旧衣旧书的捐赠渠道鉴别、回收变现价格与清运成本算例，避免公益捐变成商业倒卖。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10o"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zhuanmai-zhuan",
+  "name": "闲鱼纠纷与平台介入",
+  "description": "闲鱼交易纠纷的举证清单、客服介入流程与判责规则，含各情形赔付算例。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10o"
  }
 ]
