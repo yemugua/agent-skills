@@ -261341,5 +261341,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-hongbao-hangqing",
+  "name": "红白喜事随礼行情（同事/亲戚/朋友档位/算例）",
+  "description": "红白喜事随礼行情（同事/亲戚/朋友档位/算例）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10a"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jieri-songli",
+  "name": "节日送礼预算与清单（长辈/领导/老师预算算例）",
+  "description": "节日送礼预算与清单（长辈/领导/老师预算算例）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10a"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-renqing-jizhang",
+  "name": "人情往来记账与回礼（收支平衡/回礼算例）",
+  "description": "人情往来记账与回礼（收支平衡/回礼算例）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10a"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shouli-tuici",
+  "name": "收礼与退礼分寸（贵重礼物/现金/话术模板）",
+  "description": "收礼与退礼分寸（贵重礼物/现金/话术模板）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10a"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-qinshu-jieqian",
+  "name": "亲戚借钱与借条（借条模板/利息/催收话术）",
+  "description": "亲戚借钱与借条（借条模板/利息/催收话术）",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10a"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-juzi-yingchou",
+  "name": "聚会AA与组织分工（聚餐预算/群收款算例）",
+  "description": "聚会AA与组织分工（聚餐预算/群收款算例）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10a"
  }
 ]
