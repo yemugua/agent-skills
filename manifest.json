@@ -260855,5 +260855,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9q"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zufang-hetong",
+  "category": "legal",
+  "name": "租房合同条款避坑（押金/违约金/涨租条款/算例）",
+  "description": "签约前逐条审查押金、违约金、涨租与转租条款，附押金条款改写模板与违约金算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zufang-kanfang",
+  "category": "finance",
+  "name": "看房清单与中介费砍价",
+  "description": "看房打分清单+中介费率基准与三段砍价话术，附砍价算例与渠道费用对比。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zufang-tuifang",
+  "category": "legal",
+  "name": "退租押金与房屋验收",
+  "description": "退租验收清单+押金合法扣项对照+逐项维权算例，含12315/小额诉讼路径。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zhuanzhu-zhuanzu",
+  "category": "tool",
+  "name": "转租与合租分摊",
+  "description": "合法转租四步流程+水电网费分摊公式与分摊表模板，附转租省钱算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zufang-weixiu",
+  "category": "legal",
+  "name": "租房维修责任与费用分担",
+  "description": "自然损耗vs人为损坏责任划分表、报修话术模板与代修抵租算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9r"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-gongyu-yingyun",
+  "category": "finance",
+  "name": "公寓与普通住宅租住比价",
+  "description": "租金/服务费/水电/通勤四项总账算例，算出真实月成本差与比价表模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9r"
  }
 ]
