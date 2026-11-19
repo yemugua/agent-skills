@@ -261017,5 +261017,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuidian-chaobiao",
+  "name": "水电燃气抄表与账单核对",
+  "description": "阶梯电价计算、水量计费、对账算例与多收费申诉模板",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuidian-jiangfeng",
+  "name": "峰谷电价与省电安排",
+  "description": "峰谷时段、家电错峰清单、年省电费算例与开通流程",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ranqi-anquan",
+  "name": "燃气安全检查与换表",
+  "description": "软管更换周期、报警器、费用算例与安检维权",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-wuye-feiyong",
+  "name": "物业费构成与拒缴理由",
+  "description": "收费明细核对、合法抗辩情形与维权话术模板",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-nuifei-shui",
+  "name": "暖气费与集中供暖比价",
+  "description": "供暖方式成本对照、空置报停、退费规则与算例",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shenghuo-jiaofei",
+  "name": "生活缴费自动代扣与积分",
+  "description": "代扣风险清单、积分兑换收益表与年省算例",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9u"
  }
 ]
