@@ -262475,5 +262475,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuaya-bi",
+  "category": "finance",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-shuaya-bi",
+  "description": "电动牙刷与牙膏比价：型号选择与年度花费算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xiya-bu",
+  "category": "finance",
+  "name": "ertong-shucai-shuji-huayao-shengao-xiya-bu",
+  "description": "洗牙与补牙价格：材料选择与费用算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhiya-ji",
+  "category": "finance",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-zhiya-ji",
+  "description": "智齿拔除与种植牙比价：价格区间与算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yacha-jiao",
+  "category": "finance",
+  "name": "ertong-shucai-shuji-huayao-shengao-yacha-jiao",
+  "description": "牙齿矫正方案对比：传统vs隐形价格与算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ya-yiliao",
+  "category": "legal",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-ya-yiliao",
+  "description": "牙科医疗纠纷与维权：举证要点与赔偿算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10v"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ertong-huy",
+  "category": "health",
+  "name": "ertong-shucai-shuji-huayao-shengao-ertong-huy",
+  "description": "儿童口腔护理与涂氟：频次安排与年度费用算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10v"
  }
 ]
