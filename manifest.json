@@ -261449,5 +261449,59 @@
   "source_batch": "biz-P10b",
   "tier": "quality",
   "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yijiu-huanxin",
+  "category": "finance",
+  "name": "家电以旧换新补贴计算",
+  "description": "家电以旧换新补贴计算：国补与平台券叠加规则、补贴上限、到手价公式与精确算例，含核查清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10c"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-nengxiao-bijia",
+  "category": "finance",
+  "name": "能效等级与电费账",
+  "description": "一级vs三级能效差价与年电费账测算：差价回本年限公式、冰箱空调洗衣机精确算例、选购临界点。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10c"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiadian-huishou",
+  "category": "finance",
+  "name": "旧家电回收与拆机费",
+  "description": "旧家电回收估价区间、拆机搬运费陷阱、以旧换新抵扣vs直接卖废品对比算例与防坑话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10c"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiadian-yanhuo",
+  "category": "finance",
+  "name": "家电延保值不值",
+  "description": "家电延保测算：延保费率、故障率与维修成本对比公式、冰箱空调电视精确算例与购买判据。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10c"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiadian-zhuangji",
+  "category": "tool",
+  "name": "家电装机与加长费用",
+  "description": "家电安装费与辅材加价清单：支架/铜管/排水管单价表、空调装机精确算例、防加价话术与验收标准。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10c"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiadian-shouhou",
+  "category": "tool",
+  "name": "家电售后报修与维修比价",
+  "description": "家电报修流程、官方vs第三方维修比价公式、上门费开机费套路与修换临界点算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10c"
  }
 ]
