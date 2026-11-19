@@ -262583,5 +262583,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10w"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xinli-zix",
+  "category": "finance",
+  "name": "心理咨询平台与咨询师比价",
+  "description": "心理咨询平台与咨询师比价：客单价拆解、单次成本算例与平台选择决策，含议价与退费话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10x"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiaolu-zi",
+  "category": "health",
+  "name": "焦虑自测与求助时机",
+  "description": "焦虑自测与求助时机：GAD-7量表自评打分、就医阈值判断与分级求助路径，含自测记录模板。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10x"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shimiang-g",
+  "category": "health",
+  "name": "失眠改善与非药物干预",
+  "description": "失眠改善与非药物干预：睡眠卫生清单、睡眠限制法算例与就医判断标准，含两周执行表。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10x"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yuya-zhil",
+  "category": "finance",
+  "name": "抑郁就医与药物复诊",
+  "description": "抑郁就医与药物复诊：就诊路径、抗抑郁药费用与复诊周期算例，含医保报销与漏服药处置。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10x"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhichang-ya",
+  "category": "tool",
+  "name": "职场压力与倦怠自救",
+  "description": "职场压力与倦怠自救：倦怠自评、边界设定话术模板与减压执行表，含升级求助判断标准。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10x"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-xinli-rex",
+  "category": "tool",
+  "name": "心理危机干预与热线",
+  "description": "心理危机干预与热线：全国心理援助热线清单、危机分级处置流程与陪伴话术，含就医急送路径。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10x"
  }
 ]
