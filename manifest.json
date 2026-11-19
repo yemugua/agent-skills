@@ -261557,5 +261557,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-jipiao",
+  "category": "tool",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-jipiao",
+  "description": "宠物航空托运流程与费用核算：舱位选择、检疫证办理、有氧舱费用算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-jijiu",
+  "category": "health",
+  "name": "ertong-shucai-shuji-huayao-shengao-chongwu-jijiu",
+  "description": "宠物急救常识与急诊费用：中毒/外伤/异物/中暑处置与急诊夜间加价算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-jiezhong",
+  "category": "finance",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-jiezhong",
+  "description": "宠物疫苗年检与驱虫年账：疫苗价格、驱虫药选择与全年养护账单算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-jipu",
+  "category": "finance",
+  "name": "ertong-shucai-shuji-huayao-shengao-chongwu-jipu",
+  "description": "宠物绝育手术比价与术后护理：公母差价构成、呼吸麻醉选择与术后费用算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-jishi",
+  "category": "finance",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-jishi",
+  "description": "宠物寄养与上门喂养比价：寄养费定价规律、上门费构成与节假日溢价算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-yih",
+  "category": "legal",
+  "name": "ertong-shucai-shuji-huayao-shengao-chongwu-yih",
+  "description": "宠物医疗纠纷与维权：误诊举证要点、投诉阶梯与赔偿金额算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10e"
  }
 ]
