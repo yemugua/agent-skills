@@ -1,5 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-14%2C232-blue)](https://github.com/yemugua/agent-skills)
+[![Skills](https://img.shields.io/badge/skills-37%2C609-blue)](https://github.com/yemugua/agent-skills)
 [![Platform](https://img.shields.io/badge/works%20on-Claude%20%7C%20Codex%20%7C%20Cursor%20%7C%20Gemini%20%7C%2055%2B%20agents-orange)](https://skills.sh)
 [![Mirror](https://img.shields.io/badge/国内镜像-Gitee-red)](https://gitee.com/liu-tianbao9088/agent-skills)
 

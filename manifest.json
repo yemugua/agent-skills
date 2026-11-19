@@ -262421,5 +262421,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-guahao-ping",
+  "category": "tool",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-guahao-ping",
+  "description": "挂号平台与专家号比价（放号时间/算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-wenzhen-pingt",
+  "category": "finance",
+  "name": "ertong-shucai-shuji-huayao-shengao-wenzhen-pingt",
+  "description": "线上问诊平台比价（客单价/算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiuzhen-lia",
+  "category": "tool",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-jiuzhen-lia",
+  "description": "就诊流程与病历沟通（主诉话术模板）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiancha-sh",
+  "category": "health",
+  "name": "ertong-shucai-shuji-huayao-shengao-jiancha-sh",
+  "description": "检查检验与过度医疗识别（项目必要/算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-zhuan-yuan",
+  "category": "legal",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-zhuan-yuan",
+  "description": "转院与异地就医备案（流程/算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yiliao-jiuf",
+  "category": "legal",
+  "name": "ertong-shucai-shuji-huayao-shengao-yiliao-jiuf",
+  "description": "医患纠纷与投诉渠道（举证/算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10u"
  }
 ]
