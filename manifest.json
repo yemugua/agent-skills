@@ -262043,5 +262043,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10m"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shengzhi-shm",
+  "category": "tool",
+  "name": "升职加薪谈判与时点",
+  "description": "谈判话术/涨幅算例｜升职加薪谈判与时点",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10n"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-kua-bu-men",
+  "category": "tool",
+  "name": "跨部门协作与推动",
+  "description": "责任划分/邮件留痕/模板｜跨部门协作与推动",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10n"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-nianzhong-p",
+  "category": "finance",
+  "name": "年终奖与调薪测算",
+  "description": "系数/到手算例｜年终奖与调薪测算",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10n"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-gongzi-tiao",
+  "category": "finance",
+  "name": "工资条与个税专项核对",
+  "description": "到手构成/算例｜工资条与个税专项核对",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10n"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jianzhi-wai",
+  "category": "finance",
+  "name": "副业与主业时间分配",
+  "description": "副业收入/税务算例｜副业与主业时间分配",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10n"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zhiye-kong",
+  "category": "legal",
+  "name": "职业空窗期解释与社保",
+  "description": "空窗叙事/续缴算例｜职业空窗期解释与社保",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10n"
  }
 ]
