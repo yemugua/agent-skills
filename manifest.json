@@ -263696,5 +263696,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11r"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-peixun-b",
+  "category": "legal",
+  "name": "兴趣班退费与停课维权",
+  "description": "兴趣班停课/退费纠纷的按课时折算公式、书面催告模板与投诉维权阶梯，附精确金额算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shaоин",
+  "category": "finance",
+  "name": "少儿编程与机器人课比价",
+  "description": "少儿编程/机器人课的单课时实价核算公式与机构比价决策表，含教具与考级成本算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiaojiao-p",
+  "category": "finance",
+  "name": "家教平台与大学生家教比价",
+  "description": "大学生家教、平台签约与机构一对一三种渠道的单价对比公式与签约避坑话术，附学期总成本算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-youery",
+  "category": "finance",
+  "name": "幼小衔接班选择与性价比",
+  "description": "幼小衔接报班决策公式、机构课程核对清单与家庭替代方案成本对比，附三种方案金额算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11s"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiaoс",
+  "category": "legal",
+  "name": "教培机构跑路预兆与预付费自保",
+  "description": "教培机构闭店跑路的六大预兆识别清单、预付费滚动签约自保策略与跑路后72小时维权阶梯。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11s"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-wangxiao-k",
+  "category": "finance",
+  "name": "网课退款与试听策略",
+  "description": "网课试听设计、支付渠道选择与按课时比例退款的主张公式与话术模板，附精确金额算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11s"
  }
 ]
