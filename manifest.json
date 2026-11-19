@@ -264692,5 +264692,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P12k",
   "description": "图书退货客服升级路径与12315投诉实操：话术模板与材料清单"
+ },
+ {
+  "name": "充电宝选型与航空规定（算例）",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chdgb-x",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12l",
+  "description": "充电宝选型与航空携带规定：Wh 换算、额定能量边界、登机算例"
+ },
+ {
+  "name": "充电宝鼓包与起火应急（算例）",
+  "slug": "ertong-shucai-shuji-huayao-shengao-chdgb-h",
+  "category": "health",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12l",
+  "description": "充电宝鼓包识别、起火应急处置步骤与更换成本算例"
+ },
+ {
+  "name": "充电宝质保与召回维权（话术）",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chdgb-w",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12l",
+  "description": "充电宝质保期内鼓包/自燃的维权阶梯、召回查询与赔偿话术"
+ },
+ {
+  "name": "数据线选购与快充协议（算例）",
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuju-x",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12l",
+  "description": "数据线选购与快充协议匹配：PD/QC/UFCS 区分、线材功率上限与算例"
+ },
+ {
+  "name": "手机数据备份与云盘比价（算例）",
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuju-b",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12l",
+  "description": "手机数据备份策略与云盘会员比价：3-2-1 原则、年度成本算例"
+ },
+ {
+  "name": "数据恢复与隐私泄露防范（话术）",
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuju-h",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12l",
+  "description": "手机/硬盘数据恢复的选择与隐私泄露防范：恢复报价、销毁话术与报警模板"
  }
 ]
