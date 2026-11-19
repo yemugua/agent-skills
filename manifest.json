@@ -262853,5 +262853,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11b"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongji-bao",
+  "category": "finance",
+  "name": "重疾险选购与保额测算",
+  "description": "重疾险保额测算公式（3-5倍年收入法+治疗成本法）、消费型与储蓄型差价算例、健康告知避坑与拒赔维权",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11c"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yiliao-xian",
+  "category": "finance",
+  "name": "医疗险免赔额与续保条款",
+  "description": "百万医疗险免赔额分摊计算、保证续保与续保条款鉴别、跨年住院合并算例与理赔实操",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11c"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-ertong-pe",
+  "category": "finance",
+  "name": "儿童配置保险顺序",
+  "description": "家庭保险配置优先级（先大人后小孩/先保障后储蓄）、儿童四险预算分配算例与误区避坑",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11c"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-che-xian-t",
+  "category": "finance",
+  "name": "车险出险与保费上浮测算",
+  "description": "NCD无赔款优待系数表、小额出险与自费临界点算例、出险报案流程与次年保费精算",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11c"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-baoxian-ji",
+  "category": "legal",
+  "name": "保险健康告知与拒赔纠纷",
+  "description": "健康告知举证规则、两年不可抗辩条款适用边界、拒赔申诉与12378投诉流程及证据清单",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11c"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-zeng-e-yi",
+  "category": "finance",
+  "name": "增额终身寿与年金对比",
+  "description": "增额终身寿与年金险IRR测算公式、现金流对比算例、减保取现规则与选购避坑",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11c"
  }
 ]
