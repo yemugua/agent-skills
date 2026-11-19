@@ -261773,5 +261773,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P10h",
   "category": "legal"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-wangke-bijia",
+  "name": "网课平台比价与退费指南",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10i",
+  "description": "网课平台比价与退费指南"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-kaozheng-guihua",
+  "name": "考证成本与回报考量",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10i",
+  "description": "考证成本与回报考量"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xuefei-fentan",
+  "name": "学习时间管理与计划模板",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10i",
+  "description": "学习时间管理与计划模板"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yuyu-xuexi",
+  "name": "语言学习APP比价指南",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10i",
+  "description": "语言学习APP比价指南"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dujian-yingpan",
+  "name": "短期训练营避坑指南",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10i",
+  "description": "短期训练营避坑指南"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dufou-hui",
+  "name": "读书会与知识付费甄别指南",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10i",
+  "description": "读书会与知识付费甄别指南"
  }
 ]
