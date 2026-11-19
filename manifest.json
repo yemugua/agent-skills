@@ -263231,5 +263231,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-baojie-b",
+  "name": "保洁阿姨比价与计价方式（时薪/包月/按次算例）",
+  "description": "保洁阿姨比价与计价方式（时薪/包月/按次算例）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11j"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shendu-b",
+  "name": "深度保洁与日常保洁差异（范围清单与算例）",
+  "description": "深度保洁与日常保洁差异（范围清单与算例）",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11j"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-qingjie-j",
+  "name": "清洁剂选择与配方清单（成本对照/算例）",
+  "description": "清洁剂选择与配方清单（成本对照/算例）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11j"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-baojie-w",
+  "name": "保洁损坏财物与责任划分（索赔路径/算例）",
+  "description": "保洁损坏财物与责任划分（索赔路径/算例）",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11j"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chugui-y",
+  "name": "油烟机与厨卫除垢周期表（成本算例）",
+  "description": "油烟机与厨卫除垢周期表（成本算例）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11j"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-m",
+  "name": "宠物家庭除毛除味方案（工具/成本算例）",
+  "description": "宠物家庭除毛除味方案（工具/成本算例）",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11j"
  }
 ]
