@@ -260309,5 +260309,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9g"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-luyou-yusuan",
+  "category": "finance",
+  "name": "城市旅游五天四晚预算",
+  "description": "城市旅游五天四晚预算：交通/住宿/门票/餐饮分项算例，人均总价一步算清，含超支预警线。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-minsu-taofang",
+  "category": "tool",
+  "name": "民宿比价与退改条款",
+  "description": "民宿比价与退改条款：平台差价、清洁费、退改规则算例，同一间房不同渠道价差可达20%。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-menpiao-lian",
+  "category": "tool",
+  "name": "门票预约与联票选择",
+  "description": "门票预约与联票选择：官方渠道识别、套票划算临界点计算、黄牛票风险清单，附算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-tiyan-huodong",
+  "category": "finance",
+  "name": "当地体验活动比价",
+  "description": "当地体验活动比价：手工课/古镇游/平台抽成算例，直订vs平台下单的价差与退改差异一目了然。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-techan-ban",
+  "category": "finance",
+  "name": "特产购买与快递回程",
+  "description": "特产购买与快递回程：超市vs景区价差、快递费算例、避坑话术，回程行李和钱包都算明白。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9h"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-lvyou-zhangdan",
+  "category": "tool",
+  "name": "旅行记账与费用分摊",
+  "description": "旅行记账与费用分摊：同行分摊表、AA工具选择、结清算例，旅途零扯皮。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9h"
  }
 ]
