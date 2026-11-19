@@ -260693,5 +260693,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9n"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-kuaidi-diu",
+  "category": "legal",
+  "name": "快递丢失与保价理赔",
+  "description": "快递丢失保价理赔：声明价值规则、理赔材料清单、未保价按运费倍数赔付的算例与投诉话术模板。",
+  "source_batch": "biz-P9o",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-kuaidi-man",
+  "category": "tool",
+  "name": "快递延误与催件话术",
+  "description": "快递延误判定标准（各司时效承诺）、三级催件路径与话术模板、延误补偿算例。",
+  "source_batch": "biz-P9o",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-dayun-daji",
+  "category": "finance",
+  "name": "大件物流比价与打木架包装",
+  "description": "大件物流（德邦/顺丰/京东）比价口径、打木架收费规则、抛比系数与运费算例，含包装加固模板。",
+  "source_batch": "biz-P9o",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-kuaidi-dian",
+  "category": "tool",
+  "name": "快递驿站代收与超期费",
+  "description": "快递驿站/快递柜代收规则：免费保管期、超期收费标准、拒收入驿站的方法与投诉算例。",
+  "source_batch": "biz-P9o",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-haiwai-gou",
+  "category": "finance",
+  "name": "海淘转运与关税测算",
+  "description": "海淘转运全流程费用构成、行邮税税率表、到总价测算算例与被税申诉话术。",
+  "source_batch": "biz-P9o",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-tuihuo-yunfei",
+  "category": "finance",
+  "name": "退货上门取件与运费险",
+  "description": "退货上门取件费规则、运费险赔付标准与触发条件、拒收/寄回运费承担算例与商家责任判定。",
+  "source_batch": "biz-P9o",
+  "tier": "quality",
+  "version": "2.0.0"
  }
 ]
