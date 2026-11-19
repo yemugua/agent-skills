@@ -264272,5 +264272,53 @@
   "description": "场景选型表+三年持有成本算例+参数陷阱清单",
   "tier": "quality",
   "source_batch": "biz-P12c"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jians-p",
+  "category": "finance",
+  "name": "健身房年卡私教课比价",
+  "description": "年卡/次卡/私教单次成本折算公式、回本临界点与合同停卡转卡条款谈判话术",
+  "tier": "quality",
+  "source_batch": "biz-P12d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yund-s",
+  "category": "finance",
+  "name": "运动装备鞋服比价",
+  "description": "跑鞋里程折算、奥莱清仓渠道比价与验真三步，装备预算分配表",
+  "tier": "quality",
+  "source_batch": "biz-P12d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yund-s2",
+  "category": "tool",
+  "name": "游泳网球篮球场地预订",
+  "description": "各类场地时段价差表、订场渠道优先级与拼场/季付砍价话术",
+  "tier": "quality",
+  "source_batch": "biz-P12d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yund-s3",
+  "category": "health",
+  "name": "运动扭伤拉伤急救处理",
+  "description": "RICE流程表、就医判断标准与拍片费用算例，48小时禁忌清单",
+  "tier": "quality",
+  "source_batch": "biz-P12d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jians-h",
+  "category": "legal",
+  "name": "健身房跑路预付费维权",
+  "description": "跑路信号清单、证据清单、12315至小额诉讼维权阶梯与话术模板",
+  "tier": "quality",
+  "source_batch": "biz-P12d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yund-y",
+  "category": "finance",
+  "name": "运动营养补剂选购避坑",
+  "description": "循证补剂性价比核算表、每克蛋白成本公式与智商税识别",
+  "tier": "quality",
+  "source_batch": "biz-P12d"
  }
 ]
