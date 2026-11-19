@@ -260201,5 +260201,59 @@
   "tier": "quality",
   "category": "tool",
   "source_batch": "biz-P9e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuimian-richeng",
+  "category": "health",
+  "name": "成年人睡眠时长与入睡技巧",
+  "description": "成年人每晚7-9小时睡眠：睡眠窗口公式、睡前1小时远离屏幕清单、作息表模板与20分钟法则",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9f"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jianzhong-jihua",
+  "category": "health",
+  "name": "久坐办公护腰与工间操",
+  "description": "久坐护腰：工位尺寸公式、每小时起身动作表、护腰垫算例与就医红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9f"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yanshang-yujing",
+  "category": "health",
+  "name": "眼部干涩与20-20-20法则",
+  "description": "20-20-20落地设置、屏幕环境参数表、人工泪液防腐剂红线与眼底急症识别",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9f"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-pao-bu-ji",
+  "category": "finance",
+  "name": "跑步入门与装备预算",
+  "description": "三档装备预算算例、10%月跑量递增计划、跑鞋选型与伤痛就医红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9f"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yinshi-dabiao",
+  "category": "finance",
+  "name": "外卖族营养搭配与预算",
+  "description": "每餐点单公式、月餐费算例、一周轮换模板与外卖食安红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9f"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-tijian-nian",
+  "category": "finance",
+  "name": "成年人年度体检项目选择",
+  "description": "基础套餐清单、按年龄/家族史的加项决策表、无效项目黑名单与报告随访红线",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9f"
  }
 ]
