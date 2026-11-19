@@ -261395,5 +261395,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10a"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-laoren-shuimian",
+  "category": "health",
+  "name": "老人睡眠与起夜安全",
+  "description": "老人睡眠环境改造、起夜照明动线、防跌倒布置与算例，含感应夜灯选型与照护话术。",
+  "source_batch": "biz-P10b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-laoren-zhule",
+  "category": "finance",
+  "name": "助老器具选购比价",
+  "description": "拐杖、轮椅、助听器选购参数、租赁vs购买算例与比价话术，避免为不适配设备白花钱。",
+  "source_batch": "biz-P10b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-laoren-shicai",
+  "category": "health",
+  "name": "老人饮食软烂与营养",
+  "description": "老人软烂餐制作要点、蛋白质摄入算例、少油盐调味方案与吞咽风险自查。",
+  "source_batch": "biz-P10b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-laoren-jush",
+  "category": "finance",
+  "name": "老人居家适老化改造",
+  "description": "扶手、防滑、照明三类核心改造清单、预算算例与施工验收要点，把钱花在防跌倒刀刃上。",
+  "source_batch": "biz-P10b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-laoren-duxing",
+  "category": "tool",
+  "name": "老人独居安全与紧急呼叫",
+  "description": "独居老人监测设备选型（毫米波/摄像头/手环）、月费算例、紧急联络卡与呼叫流程模板。",
+  "source_batch": "biz-P10b",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-laoren-fuyong",
+  "category": "health",
+  "name": "老人康复训练与费用",
+  "description": "康复科就医路径、居家训练动作表、医保报销与自费费用算例，避免囤课与过度康复。",
+  "source_batch": "biz-P10b",
+  "tier": "quality",
+  "version": "2.0.0"
  }
 ]
