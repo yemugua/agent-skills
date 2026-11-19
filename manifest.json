@@ -264320,5 +264320,53 @@
   "description": "循证补剂性价比核算表、每克蛋白成本公式与智商税识别",
   "tier": "quality",
   "source_batch": "biz-P12d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-qianz-b",
+  "category": "tool",
+  "name": "签证办理与拒签再申请",
+  "description": "各国签证拒签率临界点核算、再申请材料修正清单与中介报价拆解模板",
+  "tier": "quality",
+  "source_batch": "biz-P12e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huwai-y",
+  "category": "finance",
+  "name": "境外保险选购与理赔",
+  "description": "旅游险保额配置公式、理赔材料清单与免赔额条款避坑，附精确保费算例",
+  "tier": "quality",
+  "source_batch": "biz-P12e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-huwai-t",
+  "category": "finance",
+  "name": "境外通话流量与eSIM比价",
+  "description": "漫游套餐/eSIM/本地卡三方案成本公式与按天数选型算例，附用量测算表",
+  "tier": "quality",
+  "source_batch": "biz-P12e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huwai-h",
+  "category": "legal",
+  "name": "护照丢失与领事协助",
+  "description": "境外护照丢失的补办流程、临时旅行证件办理与费用明细，含报案文书模板",
+  "tier": "quality",
+  "source_batch": "biz-P12e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-huwai-j",
+  "category": "finance",
+  "name": "免税店与退税流程",
+  "description": "各国退税起退点与手续费对比、免税vs退税临界点算例与机场办理时间表",
+  "tier": "quality",
+  "source_batch": "biz-P12e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-huwai-a",
+  "category": "health",
+  "name": "境外突发疾病就医与翻译",
+  "description": "境外就医流程决策树、医疗费用区间表、保险直付网络使用与病情描述模板",
+  "tier": "quality",
+  "source_batch": "biz-P12e"
  }
 ]
