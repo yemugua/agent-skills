@@ -263804,5 +263804,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11t"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-baoyang-z",
+  "category": "finance",
+  "name": "保养周期与项目比价（4S店vs连锁算例）",
+  "description": "保养周期与项目比价（4S店vs连锁算例）：家用车易损件/保养比价精品技能",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiyou",
+  "category": "finance",
+  "name": "机油型号与更换成本对比（算例）",
+  "description": "机油型号与更换成本对比（算例）：家用车易损件/保养比价精品技能",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-luntai-h",
+  "category": "finance",
+  "name": "轮胎更换与四轮定位比价（算例）",
+  "description": "轮胎更换与四轮定位比价（算例）：家用车易损件/保养比价精品技能",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yu",
+  "category": "tool",
+  "name": "雨刮电瓶火花塞年账（算例）",
+  "description": "雨刮电瓶火花塞年账（算例）：家用车易损件/保养比价精品技能",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11u"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-weixiu-h",
+  "category": "legal",
+  "name": "维修配件原厂副厂争议（算例）",
+  "description": "维修配件原厂副厂争议（算例）：家用车易损件/保养比价精品技能",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11u"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-che-nei-q",
+  "category": "tool",
+  "name": "车内清洁与打蜡自助比价（算例）",
+  "description": "车内清洁与打蜡自助比价（算例）：家用车易损件/保养比价精品技能",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11u"
  }
 ]
