@@ -262907,5 +262907,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11c"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jiac-dian",
+  "name": "阶梯电价与峰谷套利测算",
+  "description": "阶梯电价档位判定、峰谷套利临界点算例、年度电费测算与申请话术模板",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-ranqi-ji",
+  "name": "燃气阶梯价与采暖费对比测算",
+  "description": "燃气阶梯分档算例、壁挂炉采暖认定与集中供暖费用对比、临界点测算",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-erji-shui",
+  "name": "二次供水与水表校验操作指引",
+  "description": "二次供水合规检查清单、水表自校方法、官方校表申请流程与退费规则",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-dianbiao-ji",
+  "name": "电表水表跑偏与抄表争议维权",
+  "description": "走字异常取证、抄表串户申诉、退补费规则与投诉话术模板",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-tingdian-y",
+  "name": "停电停水应急与投诉渠道指南",
+  "description": "停电停水应急处置、责任判断表、投诉渠道阶梯与损失索赔算例",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11d"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jieneng-g",
+  "name": "节能改造回本测算",
+  "description": "保温/LED/门窗改造回本年限精确算例、优先级排序与施工避坑",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P11d"
  }
 ]
