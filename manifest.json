@@ -261719,5 +261719,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10g"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-sijiao-bijia",
+  "name": "私教课比价与课时包",
+  "description": "儿童身材管理场景下私教课与课时包的比价方法：单节均价拆算、退费条款核对、课时包规模算例",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10h",
+  "category": "finance"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jinianka",
+  "name": "健身房年卡与次卡比价",
+  "description": "儿童身材管理场景下健身房年卡与次卡的真实年成本核算：使用频次假设、年成本算例、囤卡陷阱",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10h",
+  "category": "finance"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-jishen-fen",
+  "name": "体测报告解读与目标设定",
+  "description": "儿童体测报告关键指标解读：体脂率、BMI 分龄对照、三个月目标设定算例，拒绝成人标准套用",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10h",
+  "category": "health"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiashui-shi",
+  "name": "居家健身器械选购",
+  "description": "儿童身材管理居家器械选购：哑铃/弹力带/跳绳等按预算的配置算例与安全重量上限",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10h",
+  "category": "finance"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yundong-shang",
+  "name": "运动损伤处理与就医",
+  "description": "儿童运动扭伤的现场处理、就医判断标准与费用构成算例，RICE 原则的儿童版修正",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10h",
+  "category": "health"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jiannian-jie",
+  "name": "健身年卡跑路与退费维权",
+  "description": "健身房闭店跑路的证据固定、退费维权阶梯与金额算例，儿童会员家长版",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10h",
+  "category": "legal"
  }
 ]
