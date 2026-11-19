@@ -260153,5 +260153,53 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P9d"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-wenjian-mingming",
+  "name": "文件命名与归档规范",
+  "description": "日期前缀+版本号+关键词命名公式与搜索效率算例",
+  "tier": "quality",
+  "category": "tool",
+  "source_batch": "biz-P9e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuangjian-beifen",
+  "name": "双端文件同步方案对比",
+  "description": "网盘/NAS/移动硬盘年成本算例与备份节奏",
+  "tier": "quality",
+  "category": "tool",
+  "source_batch": "biz-P9e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-pdf-hebing",
+  "name": "PDF合并拆分与压缩",
+  "description": "免费工具/打印优化/文件大小算例",
+  "tier": "quality",
+  "category": "tool",
+  "source_batch": "biz-P9e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yuancheng-xiezhu",
+  "name": "远程协助父母操作手机",
+  "description": "远程工具对比/常见问题清单/耐心话术",
+  "tier": "quality",
+  "category": "tool",
+  "source_batch": "biz-P9e"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shouji-neicun",
+  "name": "手机内存清理与扩容决策",
+  "description": "缓存清理路径/存储分级/换机算例",
+  "tier": "quality",
+  "category": "tool",
+  "source_batch": "biz-P9e"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-wifi-man",
+  "name": "WiFi慢排查与路由器换新",
+  "description": "信道干扰排查/老路由判废/换新算例",
+  "tier": "quality",
+  "category": "tool",
+  "source_batch": "biz-P9e"
  }
 ]
