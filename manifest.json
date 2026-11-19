@@ -262529,5 +262529,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P10v"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yanjing-pei",
+  "category": "finance",
+  "name": "儿童配镜验光与镜片比价",
+  "description": "儿童配镜验光参数核对与镜片折射率比价的精确算例，含差价公式与可复制议价话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10w"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-yinjing-bu",
+  "category": "finance",
+  "name": "儿童隐形眼镜与护理液年账",
+  "description": "儿童青少年隐形眼镜（含OK镜/RGP）与护理液的年度真实开销台账、更换周期与省钱算例。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10w"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-wangshang-pei",
+  "category": "finance",
+  "name": "儿童网上配镜与实体店比价",
+  "description": "网上配镜与实体店的差价算例、适用度数边界与退货处理，含完整比价流程。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10w"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-jinshi-fang",
+  "category": "health",
+  "name": "儿童近视防控与离焦镜",
+  "description": "儿童近视防控手段的度数进展数据对比与年费用算例，离焦镜/OK镜/阿托品的决策表。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10w"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-yanjing-wei",
+  "category": "legal",
+  "name": "儿童眼镜维修退换与质保",
+  "description": "儿童眼镜断裂变形的维修退换规则、质保期主张与费用算例，含维权话术。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10w"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-laohua-jing",
+  "category": "health",
+  "name": "老花镜与渐进多焦点验配",
+  "description": "老花镜度数速算、单焦vs渐进多焦点费用对比与验配决策算例，含验配清单。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P10w"
  }
 ]
