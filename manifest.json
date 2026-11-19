@@ -259925,5 +259925,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P8z"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-tiyian",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-tiyian",
+  "category": "finance",
+  "description": "宠物年度体检项目与费用（犬猫体检套餐/项目价格表/体检预算算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9a"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-quchong",
+  "name": "ertong-shucai-shuji-huayao-shengao-chongwu-quchong",
+  "category": "tool",
+  "description": "体内外驱虫周期与药价（月龄表/品牌比价/年成本算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9a"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-xunlian",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-xunlian",
+  "category": "tool",
+  "description": "幼犬基础训练与费用（定点排便/拆家纠正/训练班价格算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9a"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-jueyu",
+  "name": "ertong-shucai-shuji-huayao-shengao-chongwu-jueyu",
+  "category": "finance",
+  "description": "绝育时机与费用对比（公母差价/术前检查/恢复期护理算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9a"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-baoxian",
+  "name": "ertong-shucai-shuji-huayao-shengao-chongwu-baoxian",
+  "category": "finance",
+  "description": "宠物保险选择与理赔（报销比例/免赔额/年保费算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9a"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-hangji",
+  "name": "ertong-shucai-shuji-huayao-shengao-chongwu-hangji",
+  "category": "tool",
+  "description": "宠物航空箱与高铁托运规定（尺寸选择/证件清单/费用算例）",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9a"
  }
 ]
