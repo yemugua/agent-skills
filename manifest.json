@@ -264074,5 +264074,53 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P11y"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-l",
+  "category": "finance",
+  "name": "猫粮狗粮配料表选购：从配料表与营养值算出每斤真实喂养成本",
+  "description": "猫粮狗粮配料表选购：从配料表与营养值算出每斤真实喂养成本",
+  "source_batch": "biz-P11z",
+  "tier": "quality"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-s",
+  "category": "finance",
+  "name": "宠物零食冻干与自制比价：冻干单价折算与自制成本对照",
+  "description": "宠物零食冻干与自制比价：冻干单价折算与自制成本对照",
+  "source_batch": "biz-P11z",
+  "tier": "quality"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-h",
+  "category": "health",
+  "name": "换粮过渡与肠胃应急：七日换粮表与腹泻应急处理算例",
+  "description": "换粮过渡与肠胃应急：七日换粮表与腹泻应急处理算例",
+  "source_batch": "biz-P11z",
+  "tier": "quality"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-y",
+  "category": "legal",
+  "name": "宠物食品虚假宣传维权：话术取证与投诉模板",
+  "description": "宠物食品虚假宣传维权：话术取证与投诉模板",
+  "source_batch": "biz-P11z",
+  "tier": "quality"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-chongwu-t",
+  "category": "tool",
+  "name": "宠物零食囤货与临期比价：临期折扣与日均成本测算",
+  "description": "宠物零食囤货与临期比价：临期折扣与日均成本测算",
+  "source_batch": "biz-P11z",
+  "tier": "quality"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-chongwu-j",
+  "category": "finance",
+  "name": "进口宠物食品代购与海关：代购报价拆解与税额算例",
+  "description": "进口宠物食品代购与海关：代购报价拆解与税额算例",
+  "source_batch": "biz-P11z",
+  "tier": "quality"
  }
 ]
