@@ -264530,5 +264530,59 @@
   "tier": "quality",
   "version": "2.0.0",
   "source_batch": "biz-P12h"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuid-s",
+  "name": "水电改造报价与验收算例",
+  "description": "用面积×点位法核算水电改造报价，附墙横平竖直长度估算表、增项临界点与逐项验收清单。",
+  "category": "finance",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuid-c",
+  "name": "水电材料真伪与损耗核对",
+  "description": "电线/水管/线管真伪鉴别、扫码验真、进场清点表与损耗率核算。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuid-y",
+  "name": "水电增项套路识别与拆解话术",
+  "description": "水电改造五大增项套路拆解，附合同条款写法与现场拆解话术。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-fangsh-c",
+  "name": "防水施工与闭水试验验收",
+  "description": "防水施工规范、材料用量算例、48小时闭水试验操作与验收清单。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12i"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-shuid-w",
+  "name": "渗漏责任认定与物业纠纷处理话术",
+  "description": "渗漏责任方判定路径、取证清单与各阶段沟通话术模板。",
+  "category": "legal",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12i"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-shuid-j",
+  "name": "电路负荷测算与家电回路规划",
+  "description": "按家电功率测算回路负荷、定线径与空开配比，附全屋回路规划表。",
+  "category": "tool",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P12i"
  }
 ]
