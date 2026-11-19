@@ -260747,5 +260747,59 @@
   "source_batch": "biz-P9o",
   "tier": "quality",
   "version": "2.0.0"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-xiangqin-bi",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-xiangqin-bi",
+  "category": "finance",
+  "description": "相亲平台会员与红娘服务比价：会员套餐/红娘服务费逐项比价与退费算例，含退费公式、签约问题清单与维权阶梯。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9p"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-lianai-huafei",
+  "name": "ertong-shucai-shuji-huayao-shengao-lianai-huafei",
+  "category": "finance",
+  "description": "恋爱开支与AA制约定：约会预算表、送礼行情、共同开支记录与AA沟通话术，含分手后大额转账处理。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9p"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-tongju-xieyi",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-tongju-xieyi",
+  "category": "legal",
+  "description": "同居财产与开支约定：房租分摊、共同购置归属、财产清单与书面协议模板，含分手分割规则。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9p"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunqian-fangchan",
+  "name": "ertong-shucai-shuji-huayao-shengao-hunqian-fangchan",
+  "category": "legal",
+  "description": "婚前房产加名与登记：加名流程、税费算例、贷款影响与共有方式选择，含全款房与按揭房路径。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9p"
+ },
+ {
+  "slug": "ertong-shucai-shengao-shuji-huayao-shengao-sanzhe-baoxian",
+  "name": "ertong-shucai-shengao-shuji-huayao-shengao-sanzhe-baoxian",
+  "category": "finance",
+  "description": "双方父母赡养与四个老人保障：医疗险配置、体检安排、月度赡养预算算例与分摊规则。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9p"
+ },
+ {
+  "slug": "ertong-shucai-shuji-huayao-shengao-hunyin-goutong",
+  "name": "ertong-shucai-shuji-huayao-shengao-hunyin-goutong",
+  "category": "tool",
+  "description": "婚前沟通清单与红线话题：财务/生育/双方父母必谈问题、沟通模板与红线信号识别，含婚前确认表。",
+  "tier": "quality",
+  "version": "2.0.0",
+  "source_batch": "biz-P9p"
  }
 ]
