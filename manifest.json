@@ -264908,5 +264908,59 @@
   "source_batch": "biz-P12o",
   "tier": "quality",
   "version": "2.0.0"
+ },
+ {
+  "slug": "quanzhi-fulv-baozhang-tianbao",
+  "category": "insurance-guide",
+  "name": "全职主妇家庭保障规划账",
+  "description": "灵活就业社保自缴费用账、家务劳动补偿法律依据、意外与重疾配置、婚姻财产知情清单。",
+  "source_batch": "biz-P12p",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "jinianri-liwu-yusuan-tianbao",
+  "category": "gift-guide",
+  "name": "纪念日礼物预算与挑选账",
+  "description": "婚恋纪念日/父母生日/孩子成人礼的礼物预算分级、踩雷清单、心意话术。",
+  "source_batch": "biz-P12p",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "qianshui-baoxian-anquan-tianbao",
+  "category": "sports-safety",
+  "name": "潜水安全保险与耳压账",
+  "description": "潜水印照等级与深度限制、旅行险是否含潜水的鉴别、耳压伤预防、装备租借检查。",
+  "source_batch": "biz-P12p",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "laoniandaxue-tuifei-tianbao",
+  "category": "elder-care",
+  "name": "老年大学退费转班流程账",
+  "description": "退费规则与时限、转班手续、线上线下班对比、课程冲突协调。",
+  "source_batch": "biz-P12p",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "gucheng-lvedian-bikeng-tianbao",
+  "category": "tour-consumer",
+  "name": "古城古镇消费避坑账",
+  "description": "客栈预订退改、银器玉器购买鉴别、旅拍消费陷阱、门票联票计算。",
+  "source_batch": "biz-P12p",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "wurenji-baoxian-zeren-tianbao",
+  "category": "drone-flying",
+  "name": "无人机飞行保险与炸机账",
+  "description": "机身险与第三者责任险区别、炸机维修成本、禁飞区查询、实名登记衔接。",
+  "source_batch": "biz-P12p",
+  "tier": "quality",
+  "version": "2.0.0"
  }
 ]
