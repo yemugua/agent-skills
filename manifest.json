@@ -264746,5 +264746,59 @@
   "version": "2.0.0",
   "source_batch": "biz-P12l",
   "description": "手机/硬盘数据恢复的选择与隐私泄露防范：恢复报价、销毁话术与报警模板"
+ },
+ {
+  "slug": "caipiao-duijiang-shuiwu-tianbao",
+  "category": "lottery",
+  "name": "彩票兑奖时限与个税流程账",
+  "description": "大奖兑奖60天时限、万元个税20%计算、兑奖渠道与匿名领奖、弃奖案例账。",
+  "source_batch": "biz-P12m",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "caipiaodian-kaidian-hegui-tianbao",
+  "category": "side-hustle",
+  "name": "彩票店开张合规与佣金成本账",
+  "description": "销售许可证申请条件、设备押金、代销佣金比例与月度盈亏账、经营红线。",
+  "source_batch": "biz-P12m",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "fangche-zulin-yanche-tianbao",
+  "category": "travel-consumer",
+  "name": "房车租赁验车清单与押金费用账",
+  "description": "取车验车拍照清单、保险种类、押金与超里程费计算、还车补给的违约账。",
+  "source_batch": "biz-P12m",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "huangjin-gongfei-zhejiu-tianbao",
+  "category": "finance",
+  "name": "金饰回收工费与折旧避坑账",
+  "description": "一口价陷阱、克价与工费拆解、回收折价区间、以旧换新损耗账。",
+  "source_batch": "biz-P12m",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "yuzhicai-peiliaobiao-bijia-tianbao",
+  "category": "kitchen2",
+  "name": "预制菜配料表解读与比价账",
+  "description": "配料表长短与添加剂识别、钠含量NRV%、预制菜与现做同价位对比账、复热方式。",
+  "source_batch": "biz-P12m",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "wenwan-panwan-chushou-tianbao",
+  "category": "collect",
+  "name": "文玩核桃手串盘玩保养与出手价",
+  "description": "盘玩周期与包浆、保养禁忌、二手平台品相分级定价账、卖家话术。",
+  "source_batch": "biz-P12m",
+  "tier": "quality",
+  "version": "2.0.0"
  }
 ]
