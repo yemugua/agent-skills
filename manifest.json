@@ -265016,5 +265016,59 @@
   "source_batch": "biz-P12q",
   "tier": "quality",
   "version": "2.0.0"
+ },
+ {
+  "slug": "hunyan-jiushui-zidai-tianbao",
+  "category": "wedding-banquet",
+  "name": "婚宴酒水自带与开瓶费协商账",
+  "description": "酒店自带酒水规则、开瓶费协商话术、酒水采购比价账、剩酒退换处理。",
+  "source_batch": "biz-P12r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "gaiyi-caifeng-tianbao",
+  "category": "alteration",
+  "name": "改衣裁缝服务价格与避坑账",
+  "description": "常见改衣项目价格表、网购衣服改裤脚/收腰决策、改衣纠纷处理、自行改衣难度评估。",
+  "source_batch": "biz-P12r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "zizhucan-chi-huiben-tianbao",
+  "category": "dining",
+  "name": "自助餐用餐回本攻略账",
+  "description": "回本逻辑与取餐顺序、时段价差、酒水政策、浪费押金规则、预制菜识别。",
+  "source_batch": "biz-P12r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "shequ-shitang-jiucan-tianbao",
+  "category": "gov/welfare",
+  "name": "社区食堂就餐与补贴账",
+  "description": "社区食堂价格账、老人优惠与补贴对象、办卡充值风险、餐品质量观察。",
+  "source_batch": "biz-P12r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "menjinka-banli-tianbao",
+  "category": "home-security",
+  "name": "门禁卡丢失补办与安全账",
+  "description": "IC/ID 卡区别、补办费用与流程、复制风险、手机NFC模拟合规、租户与业主差异。",
+  "source_batch": "biz-P12r",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "xiuxie-fanxin-tianbao",
+  "category": "shoe-care",
+  "name": "修鞋翻新服务价格与避坑账",
+  "description": "常见修鞋项目价格表、贴底保护决策、名鞋翻新值不值、修复纠纷处理。",
+  "source_batch": "biz-P12r",
+  "tier": "quality",
+  "version": "2.0.0"
  }
 ]
