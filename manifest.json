@@ -264962,5 +264962,59 @@
   "source_batch": "biz-P12p",
   "tier": "quality",
   "version": "2.0.0"
+ },
+ {
+  "slug": "meirongyi-xuangou-tianbao",
+  "category": "beauty-device",
+  "name": "家用美容仪选购与医美对比账",
+  "description": "射频/微电流/LED 原理分辨、价位分级、械字号与妆字号资质、与医美项目效果对比账、使用禁忌。",
+  "source_batch": "biz-P12q",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "huifengji-xuangou-tianbao",
+  "category": "hair-care",
+  "name": "吹风机选购与护发账",
+  "description": "高速吹风机与传统款对比、负离子护发原理、价格梯度、头发损伤与功率重量账。",
+  "source_batch": "biz-P12q",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "tixudao-xuangou-tianbao",
+  "category": "grooming",
+  "name": "剃须刀选购与耗材年账",
+  "description": "手动/电动往复/电动旋转三型适配、刀头耗材年账、敏感肌选择、防水等级。",
+  "source_batch": "biz-P12q",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "tuomaojia-jia-yong-tianbao",
+  "category": "beauty-device",
+  "name": "家用脱毛仪使用与医美对比账",
+  "description": "IPL 原理与肤色适配、档位疼痛控制、家用仪与诊所脱毛对比账、周期与停用期。",
+  "source_batch": "biz-P12q",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "chongwu-weishiqi-xuangou-tianbao",
+  "category": "pet-tech",
+  "name": "宠物智能喂食器选型账",
+  "description": "称重精度与出粮误差、断电续航、摄像头机型、多宠识别、防卡粮设计、猫砂盆联动预算。",
+  "source_batch": "biz-P12q",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "zhinengmatong-weixiu-tianbao",
+  "category": "bath-repair",
+  "name": "智能马桶常见故障与维修账",
+  "description": "即热模块故障、水压适配、喷头自洁失灵、除臭风扇、上门维修费账与保内保外策略。",
+  "source_batch": "biz-P12q",
+  "tier": "quality",
+  "version": "2.0.0"
  }
 ]
