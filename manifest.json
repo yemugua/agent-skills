@@ -264800,5 +264800,59 @@
   "source_batch": "biz-P12m",
   "tier": "quality",
   "version": "2.0.0"
+ },
+ {
+  "slug": "jinshi-shoushu-xuanze-tianbao",
+  "category": "eye-care",
+  "name": "近视手术术式选择与费用账",
+  "description": "全飞秒/半飞秒/ICL/全激光术式对比、术前检查项目、费用区间与术后复查账、不适合人群。",
+  "source_batch": "biz-P12n",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "huangjin-jindou-zancun-tianbao",
+  "category": "finance",
+  "name": "攒金豆攒金账与渠道比价",
+  "description": "金豆单价溢价、银行/品牌/电商渠道比价、回收折价与攒金年账。",
+  "source_batch": "biz-P12n",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "yuer-butie-shenling-tianbao",
+  "category": "gov/welfare",
+  "name": "育儿补贴申领流程与到账核对",
+  "description": "国家育儿补贴标准、申领材料与渠道、地方补贴叠加、到账核对方法。",
+  "source_batch": "biz-P12n",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "wenquan-changsuo-piaowu-tianbao",
+  "category": "travel-consumer",
+  "name": "温泉场所选择与票务账",
+  "description": "温泉类型分辨、成人儿童票与次卡比价、温泉酒店套餐拆解、自带装备省钱账。",
+  "source_batch": "biz-P12n",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "diandang-huodang-bijia-tianbao",
+  "category": "finance",
+  "name": "典当行活当死当比价账",
+  "description": "活当死当规则、月息费率计算、黄金名表典当价与回收价对比、赎回续当账。",
+  "source_batch": "biz-P12n",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "fangchenmi-shangxian-guize-tianbao",
+  "category": "consumer-rights",
+  "name": "未成年人防沉迷充值上限规则账",
+  "description": "分年龄段充值上限、时长限制、家长监护工具设置、退款材料与路径衔接。",
+  "source_batch": "biz-P12n",
+  "tier": "quality",
+  "version": "2.0.0"
  }
 ]
