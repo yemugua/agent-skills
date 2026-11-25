@@ -264854,5 +264854,59 @@
   "source_batch": "biz-P12n",
   "tier": "quality",
   "version": "2.0.0"
+ },
+ {
+  "slug": "meishuban-xuanze-tianbao",
+  "category": "kids-edu2",
+  "name": "儿童美术班选择与课时费账",
+  "description": "年龄分段选班、创意美术与素描考级辨析、课时费区间账、试听要点与退费规则。",
+  "source_batch": "biz-P12o",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "gongxiang-chongdianbao-weiquan-tianbao",
+  "category": "consumer-rights",
+  "name": "共享充电宝归还失败与扣费维权",
+  "description": "归还失败仍计费的自证步骤、封顶扣费账、投诉升级路径、押金与免押自查。",
+  "source_batch": "biz-P12o",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "meirongyuan-banka-weiquan-tianbao",
+  "category": "consumer-rights",
+  "name": "美容院办卡冲动与退费维权",
+  "description": "预付费卡冲动办卡识别、退费规则账、店铺转让跑路应对、话术拆解。",
+  "source_batch": "biz-P12o",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "fangdaomen-xuangou-tianbao",
+  "category": "home-security",
+  "name": "防盗门选购等级与锁芯账",
+  "description": "甲乙丙丁级门等级、锁芯 ABC 级、猫眼门中门配置、换门与换锁芯成本账。",
+  "source_batch": "biz-P12o",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "dianhuashoubiao-xuangou-tianbao",
+  "category": "kids-edu2",
+  "name": "儿童电话手表选购与资费账",
+  "description": "定位方式精度对比、通话资费月账、防水等级、防丢与隐私设置、续航充电。",
+  "source_batch": "biz-P12o",
+  "tier": "quality",
+  "version": "2.0.0"
+ },
+ {
+  "slug": "youyongban-xuanze-tianbao",
+  "category": "sports-kids",
+  "name": "儿童游泳班选择与安全核查",
+  "description": "私教团课费用账、教练资质核查、水质观察、课程包次卡风险、退课规则。",
+  "source_batch": "biz-P12o",
+  "tier": "quality",
+  "version": "2.0.0"
  }
 ]
